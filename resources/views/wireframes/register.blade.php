@@ -3,7 +3,7 @@
 @section('content')
 <div id="app">
     <div id="form_div" class="container">
-        <h2>Register</h2>
+        <h2>Registreer</h2>
         <form id="register_form" @submit.prevent="handleForm">
             <div class="form-group row">
                 <label for="email" class="col-sm-2 form-control-label">Email</label>
@@ -39,11 +39,12 @@
                 </div>
             </div>
 
-            <div class="form-group row">
-                <label for="privacy" class="col-sm-6 form-control-label">Mijn naam mag gedeeld worden op mijn vondsten.</label>
-                <div class="col-sm-2">
-                    <input type="checkbox" id="checkbox">
-                </div>
+            <div class="col-sm-2">
+            </div>
+            <div class="checkbox row">
+                <label for="privacy" class="col-sm-6 form-control-label">
+                    <input type="checkbox" id="checkbox">Mijn naam mag gedeeld worden op mijn vondsten.
+                </label>
             </div>
 
             <button type="submit" class="btn btn-default">Registreer</button>

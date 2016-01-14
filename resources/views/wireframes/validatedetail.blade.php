@@ -38,12 +38,18 @@
                     <textarea v-model="feedback" type="text" class="form-control" id="feedback" rows=10></textarea>
                 </div>
             </div>
-            <div class="col-sm-2">
+
+            <div class="form-group row">
+                <div class="col-sm-2">
+                </div>
+                <div class="col-sm-6 checkbox">
+                    <label>
+                        <input v-model="embargo" type="checkbox">Dit is een vondst onder embargo.
+                    </label>
+                </div>
             </div>
-            <div class="col-sm-6 checkbox">
-                <label>
-                    <input type="checkbox">Dit is een vondst onder embargo.
-                </label>
+            <div class="form-group row">
+                <button type="submit" class="btn btn-default" @click="handleFeedback">@{{ feedback_button }}</button>
             </div>
         </form>
     </div>
@@ -57,8 +63,16 @@
         el: '#app',
 
         methods : {
-            handleForm : function () {
+            handleFeedback : function () {
 
+            },
+
+            evaluateFeedbackButton : function () {
+                if (this.feedback.trim() || this.embargo) {
+                    this.feedback_button = "Stuur feedback";
+                } else {
+                    this.feedback_button = "Valideer";
+                }
             }
         },
 
@@ -71,7 +85,19 @@
                 dimension : "5x5 cm"
             },
 
-            feedback : ""
+            feedback : "",
+            feedback_button : "Valideer",
+            embargo : false
+        },
+
+        watch : {
+            'feedback' : function (val, oldVal) {
+                this.evaluateFeedbackButton();
+            },
+
+            'embargo' : function (val, oldVal) {
+                this.evaluateFeedbackButton();
+            }
         }
     });
 </script>
