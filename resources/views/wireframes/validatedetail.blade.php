@@ -2,56 +2,59 @@
 
 @section('content')
 <div id="app" class="container">
-    <h1>Vondst # @{{ find.id }}</h1>
-    <div class="row top-buffer">
-        <div class="col-md-2">
-            Titel
+    <div id="find-info">
+        <h1>Vondst # @{{ find.id }}</h1>
+        <div class="row top-buffer">
+            <div class="col-md-2">
+                Titel
+            </div>
+            <div class="col-md-10">
+                @{{ find.title }}
+            </div>
+            <div class="col-md-2">
+                Category
+            </div>
+            <div class="col-md-10">
+                @{{ find.category }}
+            </div>
+            <div class="col-md-2">
+                Description
+            </div>
+            <div class="col-md-10">
+                @{{ find.description }}
+            </div>
+            <div class="col-md-2">
+                Dimension
+            </div>
+            <div class="col-md-10">
+                @{{ find.dimension }}
+            </div>
         </div>
-        <div class="col-md-10">
-            @{{ find.title }}
-        </div>
-        <div class="col-md-2">
-            Category
-        </div>
-        <div class="col-md-10">
-            @{{ find.category }}
-        </div>
-        <div class="col-md-2">
-            Description
-        </div>
-        <div class="col-md-10">
-            @{{ find.description }}
-        </div>
-        <div class="col-md-2">
-            Dimension
-        </div>
-        <div class="col-md-10">
-            @{{ find.dimension }}
-        </div>
-    </div>
 
-    <div class="row top-buffer">
-        <form id="feedbackform" @submit.prevent="handleForm">
-            <div class="form-group row">
-                <label for="feedback" class="col-sm-2 form-control-label">Feedback</label>
-                <div class="col-sm-6">
-                    <textarea v-model="feedback" type="text" class="form-control" id="feedback" rows=10></textarea>
+        <div class="row top-buffer">
+            <form id="feedbackform" @submit.prevent="handleFeedback">
+                <div class="form-group row">
+                    <label for="feedback" class="col-sm-2 form-control-label">Feedback</label>
+                    <div class="col-sm-6">
+                        <textarea v-model="feedback" type="text" class="form-control" id="feedback" rows=10></textarea>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group row">
-                <div class="col-sm-2">
+                <div class="form-group row">
+                    <div class="col-sm-2">
+                    </div>
+                    <div class="col-sm-6 checkbox">
+                        <label>
+                            <input v-model="embargo" type="checkbox">Dit is een vondst onder embargo.
+                        </label>
+                    </div>
                 </div>
-                <div class="col-sm-6 checkbox">
-                    <label>
-                        <input v-model="embargo" type="checkbox">Dit is een vondst onder embargo.
-                    </label>
+                <div class="form-group row">
+                    <button id="submit" type="submit" class="btn btn-success">@{{ feedback_button }}</button>
+                    <button id="remove" type="submit" @click="remove" class="btn btn-danger">Verwijder</button>
                 </div>
-            </div>
-            <div class="form-group row">
-                <button type="submit" class="btn btn-default" @click="handleFeedback">@{{ feedback_button }}</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -63,22 +66,59 @@
         el: '#app',
 
         methods : {
-            handleFeedback : function () {
+            handleFeedback : function (e) {
 
+                $('#find-info').hide();
+
+                div = '<div class="alert alert-success">';
+
+                message = '';
+
+                if (this.isRemoved) {
+                    message = 'De vondst werd verwijderd en eventuele feedback werd teruggestuurd naar de vinder.';
+                } else if (this.embargo && this.feedback.trim()) {
+                    message = 'De feedback werd verstuurd naar de vinder, de bevoegde personen werden ook op de hoogte gebracht van de vondst onder embargo.';
+                } else if (this.embargo) {
+                    message = 'De vondst is onder embargo geplaatst en de bevoegde personen zijn op de hoogte gebracht. De vondst wordt niet publiek getoond maar is wel gevalideerd.';
+                } else if (this.feedback.trim()) {
+                    message = 'Er waren enkele fouten gevonden bij de input van de vinder, de feedback is verstuurd.';
+                } else {
+                    message = 'De vondst werd gevalideerd en werd publiek gemaakt.';
+                }
+
+                div += message + '</div>';
+
+                $('#app').append(div);
             },
 
             evaluateFeedbackButton : function () {
                 if (this.feedback.trim() || this.embargo) {
                     this.feedback_button = "Stuur feedback";
+
+                    $btn = $('#submit');
+
+                    if (!$btn.hasClass('btn-warning')) {
+                        $btn.removeClass('btn-success');
+                        $btn.addClass('btn-warning');
+                    }
                 } else {
                     this.feedback_button = "Valideer";
+
+                    if (!$btn.hasClass('btn-success')) {
+                        $btn.removeClass('btn-warning');
+                        $btn.addClass('btn-success');
+                    }
                 }
+            },
+
+            remove : function () {
+                this.isRemoved = true;
             }
         },
 
         data : {
             find : {
-                id : 395,
+                id : 15,
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
@@ -87,7 +127,8 @@
 
             feedback : "",
             feedback_button : "Valideer",
-            embargo : false
+            embargo : false,
+            isRemoved : false
         },
 
         watch : {

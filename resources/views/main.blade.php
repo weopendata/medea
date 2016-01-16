@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+     <script type="text/javascript" src="{{ asset('assets/js/vue.js') }}"></script>
 
+  <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
+   <!-- Latest compiled and minified CSS -->
+   <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" crossorigin="anonymous">
+
+   <!-- Latest compiled and minified JavaScript -->
+   <script src="{{ asset('assets/js/bootstrap.min.js') }}" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+   <link type="text/css" href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
     <title>MEDEA</title>
   </head>
 
@@ -25,10 +35,11 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="#">Home</a></li>
-            <li><a href="/validate">Validate</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="/register">Registreer</a></li>
+            <li><a href="/classify">Classificeer</a></li>
+            <li><a href="/validate">Valideer</a></li>
+            <li><a href="/monitor">Monitor</a></li>
           </ul>
         </div>
       </div>
@@ -37,17 +48,6 @@
     <div class="container">
       @yield('content')
     </div>
-
-  <script type="text/javascript" src="{{ asset('assets/js/vue.js') }}"></script>
-  <link type="text/css" href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
-
-  <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-
-   <!-- Latest compiled and minified CSS -->
-   <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" crossorigin="anonymous">
-
-   <!-- Latest compiled and minified JavaScript -->
-   <script src="{{ asset('assets/js/bootstrap.min.js') }}" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
    @yield('script')
    </body>

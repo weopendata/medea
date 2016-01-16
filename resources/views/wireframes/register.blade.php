@@ -32,9 +32,9 @@
                     <select id="role" name="role" class="form-control">
                         <option selected></option>
                         <option>Detectorist</option>
-                        <option>Registrar</option>
-                        <option>Finds Expert</option>
-                        <option>Researcher</option>
+                        <option>Agentschap</option>
+                        <option>Vondstexpert</option>
+                        <option>Registrator</option>
                     </select>
                 </div>
             </div>

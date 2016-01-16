@@ -20,11 +20,20 @@ Route::get('/register', function () {
 });
 
 Route::get('/validate', function () {
-    return view('wireframes.validate');
+    return view('wireframes.validatelist');
 });
 
 Route::get('/validate/{id}', function () {
     return view('wireframes.validatedetail');
+})->where('id', '[0-9]+');
+
+Route::get('/classify', function () {
+    return view('wireframes.classify');
+});
+
+
+Route::get('/classify/{id}', function () {
+    return view('wireframes.classifydetail');
 })->where('id', '[0-9]+');
 
 /*

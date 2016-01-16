@@ -2,46 +2,45 @@
 
 @section('content')
 <div id="app" class="container">
-   <h1>Nieuwe vondsten</h1>
+    <h1>Nieuwe vondsten</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-              <th>Titel</th>
-              <th>Categorie</th>
-              <th>Beschrijving</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="find in finds" class="clickable-row" @click="getDetail">
-                <td>@{{ find.title }}</td>
-                <td>@{{ find.category }}</td>
-                <td>@{{ find.description }}</td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div class="row find-row" v-for="find in finds">
+        <div class="col-md-2">
+            <a href="#" class="thumbnail">
+                <img src="{{ asset('assets/img/thumbnail_coin.jpg') }}">
+            </a>
+        </div>
+
+        <div class="col-md-6">
+            <p><b>Titel: </b>@{{ find.title }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><b>Categorie: </b>@{{ find.category }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><b>Beschrijving: </b>@{{ find.description }}</p>
+        </div>
+        <div class="col-md-6">
+            <a href="validate/15">Bekijk details</a>
+        </div>
+    </div>
 </div>
 @stop
 
 @section('script')
 <script>
-Vue.component('finds', {
-    template : '#finds-template',
+    new Vue({
+        el: '#app',
 
-    props : ['finds']
-})
+        methods : {
+            getDetail : function () {
+                window.location.href = "validate/15";
+            }
+        },
 
-new Vue({
-    el: '#app',
-
-    methods : {
-        getDetail : function () {
-            window.location.href = "validate/15";
-        }
-    },
-
-    data : {
-        finds : [
+        data : {
+            finds : [
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
@@ -168,8 +167,8 @@ new Vue({
                 description : "Een gouden munt uit de vroege romeinse tijd.",
                 dimension : "5x5 cm"
             }
-        ]
-    }
-});
+            ]
+        }
+    });
 </script>
 @stop
