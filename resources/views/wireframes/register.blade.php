@@ -32,10 +32,18 @@
                     <select id="role" name="role" class="form-control">
                         <option selected></option>
                         <option>Detectorist</option>
-                        <option>Agentschap</option>
-                        <option>Vondstexpert</option>
+                        <option>Onderzoeker</option>
+                        <option>Expert</option>
                         <option>Registrator</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="role" class="col-sm-2 form-control-label">Beschrijving</label>
+                <div class="col-sm-6">
+                    <textarea id="description" name="description" class="form-control" rows="10">
+                    </textarea>
                 </div>
             </div>
 

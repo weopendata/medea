@@ -15,6 +15,14 @@ Route::get('/', function () {
     return view('wireframes.home');
 });
 
+Route::get('/finds', function () {
+    return view('wireframes.finds');
+});
+
+Route::get('/finds/new', function () {
+    return view('wireframes.add-find');
+});
+
 Route::get('/register', function () {
     return view('wireframes.register');
 });

@@ -36,6 +36,7 @@
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
+            <li><a href="/finds">Vondsten</a></li>
             <li><a href="/register">Registreer</a></li>
             <li><a href="/classify">Classificeer</a></li>
             <li><a href="/validate">Valideer</a></li>

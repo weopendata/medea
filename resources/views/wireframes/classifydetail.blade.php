@@ -29,11 +29,14 @@
                     <div class="col-sm-6">
                         <select v-model="find.category" class="form-control" id="category">
                             <option selected></option>
-                            <option>Categorie 1</option>
-                            <option>Categorie 2</option>
-                            <option>Categorie 3</option>
-                            <option>Categorie 4</option>
-                            <option>Categorie 5</option>
+                            <option>munt</option>
+                            <option>mantelspeld</option>
+                            <option>vingerhoed</option>
+                            <option>muntgewicht</option>
+                            <option>gesp</option>
+                            <option>riemtong</option>
+                            <option>bijl</option>
+                            <option>pijlpunt</option>
                         </select>
                     </div>
                 </div>
@@ -60,9 +63,10 @@
 
                 <div class="form-group row" id="references">
                     <label class="col-sm-2" for="reference">Referenties</label>
-                    <div class="col-sm-6">
-                        <input v-model="find.references" class="form-control" type="text">
+                    <div class="col-sm-6" v-for="reference in find.references" track-by="$index">
+                        <input v-model="find.references[$index]" class="form-control" type="text" lazy>
                     </div>
+
                     <div class="col-sm-2">
                         <button @click="addReference" class="btn btn-center btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                     </div>
@@ -156,7 +160,7 @@
             addReference : function (e) {
                 e.preventDefault();
 
-                div = '<div class="col-sm-6 col-md-offset-2 reference-row"><input v-model="find.references" class="form-control" type="text"></div>';
+                div = '<div class="col-sm-6 col-md-offset-2 reference-row"><input v-model="find.references[$index]" class="form-control" type="text"></div>';
 
                 $('#references').append(div);
             },
@@ -178,7 +182,9 @@
                 description : "Een gouden munt uit de vroege romeinse tijd.",
                 dimension : "5x5 cm",
                 year : "",
-                references : []
+                references : [
+                    ""
+                ]
             },
 
             classifications : [
@@ -219,6 +225,10 @@
         watch : {
             'find.category' : function (val, oldVal) {
                 console.log(val);
+            },
+
+            'find.references' : function (val, oldVal) {
+                console.log(find.references);
             }
         }
     });

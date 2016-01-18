@@ -1,9 +1,9 @@
 @extends('main')
 
 @section('content')
-    <div class="app">
-    <div class="row">
+TODO
+@stop
 
-    </div>
-    </div>
+@section('script')
+
 @stop
