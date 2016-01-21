@@ -71,14 +71,6 @@ th, td {
   padding: 10px 20px;
 }
 
-th.active {
-  color: #fff;
-}
-
-th.active .arrow {
-  opacity: 1;
-}
-
 .arrow {
   display: inline-block;
   vertical-align: middle;
@@ -100,6 +92,18 @@ th.active .arrow {
   border-top: 4px solid #fff;
 }
 
+.tall-col {
+  height : 600px;
+}
+
+.row-stretch {
+  display: flex;
+}
+
 #search {
   margin-bottom: 10px;
+}
+
+#map {
+  height: 600px;
 }
