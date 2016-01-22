@@ -193,7 +193,6 @@ var vm = new Vue({
       window.markersLayer.clearLayers();
 
       var items = this.origData;
-      console.log(items);
       var filtered = [];
 
       if (val) {

@@ -107,3 +107,7 @@ th, td {
 #map {
   height: 600px;
 }
+
+.dimension-col {
+  padding-top: 10px;
+}

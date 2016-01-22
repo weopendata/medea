@@ -43,6 +43,7 @@
         <li><a href="/classify">Classificeer</a></li>
         <li><a href="/validate">Valideer</a></li>
         <li><a href="/monitor">Monitor</a></li>
+        <li><a href="/api">API</a></li>
     </ul>
 </div>
 </div>
