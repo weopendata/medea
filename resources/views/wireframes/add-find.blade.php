@@ -21,24 +21,58 @@
             </div>
 
             <div class="form-group row">
+            <label for="category" class="col-sm-2 control-label">Categorie</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <select v-model="category" class="form-control">
+                            <option v-for="category in categories">@{{ category }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+            <label for="material" class="col-sm-2 control-label">Materiaal</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <select v-model="material" class="form-control">
+                            <option v-for="material in materials">@{{ material }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+             <div class="form-group row">
+            <label for="productionTechnique" class="col-sm-2 control-label">Techniek</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <select v-model="productionTechnique" class="form-control">
+                            <option v-for="productionTechnique in productionTechniques">@{{ productionTechnique }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
                 <label for="dimensions" class="col-sm-2 control-label">Dimensies</label>
                 <div class="col-md-6">
                     <div class="col-sm-4">
-                            <label control-label>bla</label>
+                        <label control-label>Afmeting</label>
                     </div>
 
                     <div class="col-sm-2">
-                    <label control-label>sfdqs</label>
+                        <label control-label>Hoeveelheid</label>
                     </div>
 
                     <div class="col-sm-3">
-                        <label control-label>blqsfda</label>
+                        <label control-label>Eenheid</label>
                     </div>
 
                     <div class="col-sm-2">
                         <button @click.prevent="addDimension" class="btn btn-center btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                     </div>
                 </div>
+
                 <div v-for="dimension in dimensions" track-by="$index">
                     <div class="col-md-offset-2 col-md-6 dimension-col">
                         <dimension :index="$index" :dimension.sync="dimension" :symbols="dimensionUnitSymbols" :units="dimensionUnits"></dimension>
@@ -78,7 +112,7 @@
                     <option v-for="dimensionUnitSymbol in symbols">@{{ dimensionUnitSymbol }}</option>
                 </select>
             </div>
-        </div><!-- dimension unit symbols-->
+        </div>
 
         <div class="col-sm-2">
             <button @click.prevent="removeDimension" class="btn btn-center btn-danger"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
@@ -108,6 +142,9 @@
 
       data: {
         showForm : true,
+        category : String,
+        material : String,
+        productionTechnique : String,
         dimensionUnitSymbols : [
         "mm",
         "cm",
@@ -128,6 +165,29 @@
             'quantity' : "",
             'symbol' : ""
         }
+        ],
+        categories : [
+        "munt",
+        "mantelspeld",
+        "vingerhoed",
+        "muntgewicht",
+        "gesp",
+        "riemtong",
+        "bijl",
+        "pijlpunt"
+        ],
+        materials : [
+        "brons",
+        "ijzer",
+        "lood",
+        "keramiek"
+        ],
+        productionTechniques : [
+        "boetseren",
+        "smeden",
+        "gieten",
+        "weven",
+        "vlechten"
         ]
     },
 

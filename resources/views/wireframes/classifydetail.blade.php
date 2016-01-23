@@ -61,15 +61,16 @@
                     </div>
                 </div>
 
-                <div class="form-group row" id="references">
-                    <label class="col-sm-2" for="reference">Referenties</label>
-                    <div class="col-sm-6" v-for="reference in find.references" track-by="$index">
-                        <input v-model="find.references[$index]" class="form-control" type="text" lazy>
-                    </div>
+                <div class="form-group row">
+                        <label class="col-sm-2" for="reference">Referenties</label>
 
-                    <div class="col-sm-2">
-                        <button @click="addReference" class="btn btn-center btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                    </div>
+                        <div class="col-sm-2 col-md-offset-6">
+                            <button @click.prevent="addReference" class="btn btn-center btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                        </div>
+                </div>
+
+                <div class="form-group row" v-for="reference in find.references" track-by="$index">
+                   <reference :index="$index" :reference.sync="reference"></reference>
                 </div>
 
                 <div class="form-group row">
@@ -141,10 +142,32 @@
     </div>
 </div>
 
+<template id="reference-template">
+    <div class="col-md-offset-2 col-md-6">
+        <input v-model="reference" type="text" class="form-control" id="reference" placeholder="">
+    </div>
+
+    <div class="col-sm-2">
+        <button @click.prevent="removeReference" class="btn btn-center btn-danger"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+    </div>
+</template>
 @stop
 
 @section('script')
 <script>
+    Vue.component('reference', {
+        template : '#reference-template',
+
+        props : ['reference', 'index'],
+
+        methods : {
+            removeReference : function () {
+                this.$parent.find.references.splice(this.index, 1);
+            }
+        }
+
+    });
+
     new Vue({
         el: '#app',
 
@@ -158,11 +181,7 @@
             },
 
             addReference : function (e) {
-                e.preventDefault();
-
-                div = '<div class="col-sm-6 col-md-offset-2 reference-row"><input v-model="find.references[$index]" class="form-control" type="text"></div>';
-
-                $('#references').append(div);
+                this.find.references.push("");
             },
 
             agree : function (index) {
@@ -220,17 +239,9 @@
             ],
 
             showForm : true,
-        },
-
-        watch : {
-            'find.category' : function (val, oldVal) {
-                console.log(val);
-            },
-
-            'find.references' : function (val, oldVal) {
-                console.log(find.references);
-            }
         }
     });
+
+Vue.config.debug = true;
 </script>
 @stop
