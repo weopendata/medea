@@ -131,7 +131,7 @@
         <div class="row btn-vote">
             <div class="col-sm-2">
                 <button @click="agree($index)" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> @{{ classification.agree }}</button>
-                <button @click="disagree($index)" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> @{{ classification.disagree }}</button>
+                <button @click="disagree($index)" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> @{{ classification.disagree }}</button>
             </div>
         </div>
 
@@ -260,8 +260,8 @@
                 "http://onlinelibrary.wiley.com/doi/10.1111/apaa.12000/full"
                 ],
 
-                category : "categorie 1",
-                agree : 1,
+                category : "munt",
+                agree : 5,
                 disagree: 0
             },
             {
@@ -274,9 +274,9 @@
                 "http://onlinelibrary.wiley.com/doi/10.1111/apaa.12000/full"
                 ],
 
-                category : "categorie2",
-                agree : 5,
-                disagree: 0
+                category : "mantelspeld",
+                agree : 1,
+                disagree: 14
             }
             ],
 
