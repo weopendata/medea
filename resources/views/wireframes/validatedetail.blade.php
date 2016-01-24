@@ -2,8 +2,17 @@
 
 @section('content')
 <div id="app" class="container">
-    <div id="find-info">
+    <div id="find-info" v-show="showDetails">
         <h1>Vondst # @{{ find.id }}</h1>
+
+        <div class="row">
+            <div class="clearfix">
+                <a href="#" class="thumbnail">
+                    <img src="{{ asset('assets/img/thumbnail_coin.jpg') }}">
+                </a>
+            </div>
+        </div>
+
         <div class="row">
             <label class="col-sm-2 control-label">Titel</label>
             <div class="col-md-10">
@@ -18,7 +27,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row top-buffer">
             <label class="col-sm-2 control-label">Description</label>
             <div class="col-sm-2">
                 <label class="control-label">Afmeting</label>
@@ -31,9 +40,6 @@
             <div class="col-sm-2">
                 <label class="control-label">Eenheid</label>
             </div>
-        </div>
-
-        <div class="row">
         </div>
 
         <div v-for="dimension in find.dimension" class="row">
@@ -68,6 +74,17 @@
                         </label>
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-2">
+                    </div>
+                    <div class="col-sm-6 checkbox">
+                        <label>
+                            <input v-model="notifyAgency" type="checkbox">Breng het agentschap op de hoogte.
+                        </label>
+                    </div>
+                </div>
+
                 <div class="form-group row">
                     <button id="submit" type="submit" class="btn btn-success">@{{ feedback_button }}</button>
                     <button id="remove" type="submit" @click.prevent="remove" class="btn btn-danger">Verwijder</button>
@@ -85,9 +102,9 @@
         el: '#app',
 
         methods : {
-            handleFeedback : function (e) {
+            handleFeedback : function () {
 
-                $('#find-info').hide();
+                this.showDetails = false;
 
                 div = '<div class="alert alert-success">';
 
@@ -135,6 +152,7 @@
 
                 if (remove == true) {
                     this.isRemoved = true;
+                    this.handleFeedback();
                 }
             }
         },
@@ -159,10 +177,12 @@
                 ]
             },
 
+            notifyAgency : false,
             feedback : "",
             feedback_button : "Valideer",
             embargo : false,
-            isRemoved : false
+            isRemoved : false,
+            showDetails : true
         },
 
         watch : {
