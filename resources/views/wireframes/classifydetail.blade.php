@@ -137,7 +137,7 @@
 
         <div class="row">
             <div class="col-md-2">
-                Categorie
+                <label class="control-label">Categorie</label>
             </div>
             <div class="col-md-4">
                 @{{ classification.category }}
@@ -146,7 +146,7 @@
 
         <div class="row">
             <div class="col-md-2">
-                Datering
+                <label class="control-label">Datering</label>
             </div>
             <div class="col-md-2">
                 <span>@{{ classification.date.start_year }} - @{{ classification.date.end_year }}</span>
@@ -161,15 +161,11 @@
 
         <div class="row">
             <div class="col-sm-2">
-                Referenties
+                <label class="control-label">Referenties</label>
             </div>
             <div v-for="reference in classification.references" track-by="$index">
-                <div class="col-sm-6" v-if="$index == 0">
-                    @{{ reference }}
-                </div>
-
-                <div class="col-sm-6 col-md-offset-2" v-if="$index == 1">
-                    @{{ reference }}
+                <div class="col-sm-6">
+                    <a href="@{{ reference }}">@{{ reference }}</a>
                 </div>
             </div>
         </div>

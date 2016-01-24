@@ -76,16 +76,6 @@
                 </div>
 
                 <div class="form-group row">
-                    <div class="col-sm-2">
-                    </div>
-                    <div class="col-sm-6 checkbox">
-                        <label>
-                            <input v-model="notifyAgency" type="checkbox">Breng het agentschap op de hoogte.
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group row">
                     <button id="submit" type="submit" class="btn btn-success">@{{ feedback_button }}</button>
                     <button id="remove" type="submit" @click.prevent="remove" class="btn btn-danger">Verwijder</button>
                 </div>
