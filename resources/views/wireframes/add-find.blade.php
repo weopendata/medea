@@ -23,7 +23,7 @@
             <div class="form-group row">
                 <label for="datefind" class="col-sm-2 control-label">Tijdstip van de vondst</label>
                 <div class="col-sm-2">
-                    <input type="text" class="form-control" v-datepicker="findDate"/>
+                    <input type="date" v-model="findDate" class="form-control"/>
                 </div>
             </div>
 
@@ -266,6 +266,12 @@
                 'quantity' : "",
                 'symbol' : ""
             });
+        }
+    },
+
+    watch : {
+        findDate : function (val) {
+            console.log(val);
         }
     }
 });
