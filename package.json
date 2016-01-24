@@ -4,7 +4,9 @@
     "gulp": "^3.8.8"
   },
   "dependencies": {
+    "bootstrap-sass": "^3.0.0",
     "laravel-elixir": "^4.0.0",
-    "bootstrap-sass": "^3.0.0"
+    "vue": "^1.0.15",
+    "vue-datetime-picker": "^0.1.1"
   }
 }

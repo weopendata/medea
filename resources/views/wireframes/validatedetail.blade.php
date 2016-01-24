@@ -4,34 +4,53 @@
 <div id="app" class="container">
     <div id="find-info">
         <h1>Vondst # @{{ find.id }}</h1>
-        <div class="row top-buffer">
-            <div class="col-md-2">
-                Titel
-            </div>
+        <div class="row">
+            <label class="col-sm-2 control-label">Titel</label>
             <div class="col-md-10">
                 @{{ find.title }}
             </div>
-            <div class="col-md-2">
-                Category
-            </div>
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Category</label>
             <div class="col-md-10">
                 @{{ find.category }}
             </div>
-            <div class="col-md-2">
-                Description
+        </div>
+
+        <div class="row">
+            <label class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-2">
+                <label class="control-label">Afmeting</label>
             </div>
-            <div class="col-md-10">
-                @{{ find.description }}
+
+            <div class="col-sm-2">
+                <label class="control-label">Hoeveelheid</label>
             </div>
-            <div class="col-md-2">
-                Dimension
-            </div>
-            <div class="col-md-10">
-                @{{ find.dimension }}
+
+            <div class="col-sm-2">
+                <label class="control-label">Eenheid</label>
             </div>
         </div>
 
-        <div class="row top-buffer">
+        <div class="row">
+        </div>
+
+        <div v-for="dimension in find.dimension" class="row">
+            <div class="col-md-2 col-md-offset-2">
+                @{{ dimension.property }}
+            </div>
+
+            <div class="col-md-2">
+                @{{ dimension.quantity }}
+            </div>
+
+            <div class="col-md-2">
+                @{{ dimension.unit }}
+            </div>
+        </div>
+
+        <div class="top-buffer">
             <form id="feedbackform" @submit.prevent="handleFeedback">
                 <div class="form-group row">
                     <label for="feedback" class="col-sm-2 form-control-label">Feedback</label>
@@ -51,7 +70,7 @@
                 </div>
                 <div class="form-group row">
                     <button id="submit" type="submit" class="btn btn-success">@{{ feedback_button }}</button>
-                    <button id="remove" type="submit" @click="remove" class="btn btn-danger">Verwijder</button>
+                    <button id="remove" type="submit" @click.prevent="remove" class="btn btn-danger">Verwijder</button>
                 </div>
             </form>
         </div>
@@ -94,7 +113,7 @@
             evaluateFeedbackButton : function () {
                 if (this.feedback.trim() || this.embargo) {
                     this.feedback_button = "Stuur feedback";
-
+                    console.log("fb!");
                     $btn = $('#submit');
 
                     if (!$btn.hasClass('btn-warning')) {
@@ -111,8 +130,12 @@
                 }
             },
 
-            remove : function () {
-                this.isRemoved = true;
+            remove : function (e) {
+                remove = window.confirm("Ben je zeker dat je deze vondst wil verwijderen?");
+
+                if (remove == true) {
+                    this.isRemoved = true;
+                }
             }
         },
 
@@ -122,7 +145,18 @@
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : [
+                    {
+                        "unit" : "cm",
+                        "quantity" : 5,
+                        "property" : "diameter"
+                    },
+                    {
+                        "unit" : "g",
+                        "quantity" : 40,
+                        "property" : "gewicht"
+                    }
+                ]
             },
 
             feedback : "",
@@ -132,11 +166,10 @@
         },
 
         watch : {
-            'feedback' : function (val, oldVal) {
+            feedback : function (val) {
                 this.evaluateFeedbackButton();
             },
-
-            'embargo' : function (val, oldVal) {
+            embargo : function () {
                 this.evaluateFeedbackButton();
             }
         }

@@ -21,7 +21,34 @@
             </div>
 
             <div class="form-group row">
-            <label for="category" class="col-sm-2 control-label">Categorie</label>
+                <label for="datefind" class="col-sm-2 control-label">Tijdstip van de vondst</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" v-datepicker="findDate"/>
+                </div>
+            </div>
+
+             <div class="form-group row">
+                <label for="location" class="col-sm-2 control-label">Locatie</label>
+                <div class="col-sm-2">
+                    <label>latitude</label>
+                </div>
+                <div class="col-sm-2">
+                    <label>longitude</label>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-offset-2 col-sm-2">
+                    <input v-model="location.lat" type="text" class="form-control">
+                </div>
+                <div class="col-sm-2">
+                    <input v-model="location.lon" type="text" class="form-control">
+                </div>
+            </div>
+
+
+            <div class="form-group row">
+                <label for="category" class="col-sm-2 control-label">Categorie</label>
                 <div class="col-sm-6">
                     <div class="input-group">
                         <select v-model="category" class="form-control">
@@ -125,6 +152,7 @@
 
 @section('script')
 <script>
+    // Dimension component
     Vue.component('dimension', {
         template : '#dimension-template',
 
@@ -137,14 +165,42 @@
         }
     });
 
+    // Datepicker directive
+    Vue.directive('datepicker', {
+          bind: function () {
+            var vm = this.vm;
+            var key = this.expression;
+            $(this.el).datepicker({
+              dateFormat: 'dd.mm.yy',
+              onClose: function (date) {
+                if (date.match(/^(0?[1-9]|[12][0-9]|3[01])[\/\-\.](0?[1-9]|1[012])[\/\-\.]\d{4}$/))
+                  vm.$set(key, date);
+              else {
+                  vm.$set(key, "");
+                  console.log('invalid date');
+              }
+          }
+      });
+        },
+        update: function (val) {
+            $(this.el).datepicker('setDate', val);
+        }
+    });
+
     new Vue({
       el: '#app',
 
       data: {
+        findDate: '',
         showForm : true,
         category : String,
         material : String,
         productionTechnique : String,
+        location : {
+            "lat" : "",
+            "lon" : ""
+        },
+        description : "",
         dimensionUnitSymbols : [
         "mm",
         "cm",
@@ -198,6 +254,10 @@
             div = '<div class="alert alert-success">Uw vondst werd geregistreerd. Experten en andere leden van het platform zullen de vondst classificeren en valideren.</div>';
 
             $('#app').append(div);
+        },
+
+        checkDate : function () {
+            console.log(this.findDate);
         },
 
         addDimension : function () {
