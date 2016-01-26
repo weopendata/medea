@@ -13,6 +13,7 @@
     <link type="text/css" href="{{ asset('assets/css/main.css') }}" rel="stylesheet"/>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css"/>
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700' rel='stylesheet' type='text/css'>
 
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.min.js') }}" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -25,7 +26,6 @@
 </head>
 
 <body>
-
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -34,20 +34,20 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">MEDEA</a>
+            </button>
+            <a class="navbar-brand" href="#">MEDEA</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/finds">Vondsten</a></li>
+            <li><a href="/register">Registreer</a></li>
+            <li><a href="/classify">Classificeer</a></li>
+            <li><a href="/validate">Valideer</a></li>
+            <li><a href="/api">API</a></li>
+        </ul>
+        </div>
     </div>
-    <div id="navbar" class="collapse navbar-collapse">
-      <ul class="nav navbar-nav">
-        <li><a href="/">Home</a></li>
-        <li><a href="/finds">Vondsten</a></li>
-        <li><a href="/register">Registreer</a></li>
-        <li><a href="/classify">Classificeer</a></li>
-        <li><a href="/validate">Valideer</a></li>
-        <li><a href="/api">API</a></li>
-    </ul>
-</div>
-</div>
 </nav>
 
 <div class="container">

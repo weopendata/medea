@@ -42,10 +42,13 @@ h2 {
 }
 
 body {
-  font-family: Helvetica Neue, Arial, sans-serif;
-  font-size: 14px;
-  color: #444;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  background: none;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
 }
+
 /*
 table {
   border: 2px solid #42b983;
@@ -120,4 +123,24 @@ th, td {
   display: none;
   z-index: 9999 !important;
   position: relative;
+}
+
+.full {
+  background: url(../img/bg_medea.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  position: absolute;
+  top: 51px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.landing {
+  font-weight: 700;
+  max-width: 700px;
+  font-size: 3em;
+  padding-top: 40px;
 }
