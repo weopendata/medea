@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="{{ asset('assets/css/leaflet.extra-markers.min.css') }}"/>
     <link type="text/css" href="{{ asset('assets/css/main.css') }}" rel="stylesheet"/>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+    <link rel="stylesheet" href="{{ asset('assets/css/leaflet.css') }}" rel="stylesheet"/>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css"/>
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700' rel='stylesheet' type='text/css'>
 
@@ -21,7 +21,6 @@
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="{{ asset('assets/js/leaflet.extra-markers.min.js') }}"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
     <title>MEDEA</title>
 </head>
 
@@ -41,7 +40,7 @@
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
             <li><a href="/finds">Vondsten</a></li>
-            <li><a href="/register">Registreer</a></li>
+            <li><a href="/finds/create">Nieuwe vondst</a></li>
             <li><a href="/classify">Classificeer</a></li>
             <li><a href="/validate">Valideer</a></li>
             <li><a href="/api">API</a></li>

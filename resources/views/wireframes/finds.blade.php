@@ -30,15 +30,11 @@
     <div class="col-md-3">
       <div class="row">
         <form id="search" @submit.prevent="">
-          <div class="input-group col-md-6 form-group pull-left">
+          <div class="input-group col-md-12 form-group pull-left">
             <input type="text" class="form-control" v-model="searchQuery">
             <span class="input-group-btn">
               <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
             </span>
-          </div>
-
-          <div class="input-group col-md-2 form-group pull-right">
-            <a href="finds/new" class="btn btn-success pull-right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Voeg toe</a>
           </div>
         </form>
       </div>
