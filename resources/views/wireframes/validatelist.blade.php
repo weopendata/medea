@@ -22,7 +22,7 @@
             <p><b>Beschrijving: </b>@{{ find.description }}</p>
         </div>
         <div class="col-md-6">
-            <a href="validate/15">Bekijk details</a>
+            <a href="validate/15">Valideer</a>
         </div>
     </div>
 </div>

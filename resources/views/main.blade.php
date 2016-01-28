@@ -24,7 +24,7 @@
     <title>MEDEA</title>
 </head>
 
-<body>
+<body id="app">
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -44,6 +44,14 @@
             <li><a href="/classify">Classificeer</a></li>
             <li><a href="/validate">Valideer</a></li>
             <li><a href="/api">API</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <select class="navbar-btn form-control" v-model="viewRole">
+                <option selected>Publiek</option>
+                <option>Onderzoeker</option>
+                <option>Detectorist</option>
+                <option>Vondstexpert</option>
+            </select>
         </ul>
         </div>
     </div>

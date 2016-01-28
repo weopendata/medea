@@ -19,7 +19,7 @@ Route::get('/finds', function () {
     return view('wireframes.finds');
 });
 
-Route::get('/finds/new', function () {
+Route::get('/finds/create', function () {
     return view('wireframes.add-find');
 });
 
