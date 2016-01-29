@@ -39,6 +39,7 @@
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
+            <li><a href="/myfinds">Mijn vondsten</a></li>
             <li><a href="/finds">Vondsten</a></li>
             <li><a href="/finds/create">Nieuwe vondst</a></li>
             <li><a href="/classify">Classificeer</a></li>
@@ -47,10 +48,7 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <select class="navbar-btn form-control" v-model="viewRole">
-                <option selected>Publiek</option>
-                <option>Onderzoeker</option>
-                <option>Detectorist</option>
-                <option>Vondstexpert</option>
+                <option v-for="viewRole in viewRoles">@{{ viewRole }}</option>
             </select>
         </ul>
         </div>

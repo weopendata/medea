@@ -19,8 +19,20 @@ Route::get('/finds', function () {
     return view('wireframes.finds');
 });
 
+Route::get('/finds/15', function () {
+    return view('wireframes.find-detail');
+});
+
 Route::get('/finds/create', function () {
     return view('wireframes.add-find');
+});
+
+Route::get('/finds/edit', function () {
+    return view('wireframes.edit-find');
+});
+
+Route::get('/myfinds', function () {
+    return view('wireframes.my-finds');
 });
 
 Route::get('/register', function () {

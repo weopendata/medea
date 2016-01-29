@@ -3,11 +3,10 @@
 @section('content')
 <div id="app" class="container">
     <h1>Nieuwe vondsten</h1>
-
-
+    <span class="help-block">Volgende vondsten vallen onder uw expertise, namelijk munten en potten uit de Romeinse periode in West-Vlaanderen.</span>
     <div class="row find-row" v-for="find in finds">
         <div class="col-md-2">
-            <a href="#" class="thumbnail">
+            <a href="validate/15" class="thumbnail">
                 <img src="{{ asset('assets/img/thumbnail_coin.jpg') }}">
             </a>
         </div>
@@ -40,6 +39,10 @@
         },
 
         data : {
+            viewRoles : [
+            "Onderzoeker",
+            "Vondstexpert"
+            ],
             finds : [
             {
                 title : "Gouden Romeinse munt",

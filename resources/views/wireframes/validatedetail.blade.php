@@ -66,18 +66,37 @@
                 </div>
 
                 <div class="form-group row">
-                    <div class="col-sm-2">
+                    <label class="col-sm-2 form-control-label">Foto</label>
+                    <div class="col-sm-6">
+                        <select v-model="photoValidation" class="form-control">
+                            <option>ok</option>
+                            <option>onscherp</option>
+                            <option>te kleine resolutie</option>
+                            <option>onvoldoende ingezoomd</option>
+                            <option>teveel ingezoomd</option>
+                            <option>over/onderbelicht</option>
+                        </select>
                     </div>
-                    <div class="col-sm-6 checkbox">
-                        <label>
-                            <input v-model="embargo" type="checkbox">Dit is een vondst onder embargo.
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-8 col-sm-offset-2">
+                        <label class="form-control-label">
+                            Valideer deze vondstinformatie door de optie te kiezen die van toepassing is
                         </label>
+                    </div>
+                    <div class="col-sm-6 col-sm-offset-2">
+                        <select v-model="validationOption" class="form-control">
+                            <option value="ok">In orde: Informatie is volledig en correct, en mag gepubliceerd worden</option>
+                            <option value="revision">Revisie nodig: Informatie is onvolledig of mogelijk niet correct, en moet herzien worden voor publicatie</option>
+                            <option value="embargo">Embargo nodig: Informatie is gevoelig en mag voorlopig niet gepubliceerd worden</option>
+                            <option value="frauduleus">Frauduleus: Informatie is mogelijk frauduleus en moet in dat geval verwijderd worden</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <button id="submit" type="submit" class="btn btn-success">@{{ feedback_button }}</button>
-                    <button id="remove" type="submit" @click.prevent="remove" class="btn btn-danger">Verwijder</button>
                 </div>
             </form>
         </div>
@@ -118,9 +137,9 @@
             },
 
             evaluateFeedbackButton : function () {
-                if (this.feedback.trim() || this.embargo) {
+                if (this.feedback.trim() || this.embargo || this.photoValidation != 'ok') {
                     this.feedback_button = "Stuur feedback";
-                    console.log("fb!");
+
                     $btn = $('#submit');
 
                     if (!$btn.hasClass('btn-warning')) {
@@ -135,19 +154,16 @@
                         $btn.addClass('btn-success');
                     }
                 }
-            },
-
-            remove : function (e) {
-                remove = window.confirm("Ben je zeker dat je deze vondst wil verwijderen?");
-
-                if (remove == true) {
-                    this.isRemoved = true;
-                    this.handleFeedback();
-                }
             }
         },
 
         data : {
+            photoValidation : 'ok',
+            viewRoles : [
+            "Onderzoeker",
+            "Vondstexpert"
+            ],
+            validationOption : '',
             find : {
                 id : 15,
                 title : "Gouden Romeinse munt",
@@ -176,11 +192,16 @@
         },
 
         watch : {
-            feedback : function (val) {
-                this.evaluateFeedbackButton();
-            },
-            embargo : function () {
-                this.evaluateFeedbackButton();
+            validationOption : function (val) {
+                if (val == 'ok') {
+                    this.feedback_button = 'Valideer';
+                } else if (val == 'revision') {
+                    this.feedback_button = 'Revisie nodig';
+                } else if (val == 'frauduleus') {
+                    this.feedback_button = 'Meld fraude';
+                } else if (val == 'embargo') {
+                    this.feedback_button = 'Plaats onder embargo';
+                }
             }
         }
     });

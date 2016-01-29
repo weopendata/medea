@@ -3,7 +3,8 @@
 @section('content')
 <div id="app">
     <div class="container" v-show="showForm == true">
-        <h2>Nieuwe vondst</h2>
+        <h2>Pas uw vondst aan</h2>
+        <span class="help-block">Dit is een generieke vondst die je kan aanpassen en is niet consistent met andere data.</span>
         <form id="new_find">
             <div class="form-group row has-error">
                 <label class="col-sm-2 control-label">Fotomateriaal*</label>
@@ -15,15 +16,14 @@
             <div class="form-group row">
                 <label for="description" class="col-sm-2 control-label">Beschrijving</label>
                 <div class="col-sm-6">
-                    <textarea v-model="description" type="text" class="form-control" id="description" rows="10">
-                    </textarea>
+                    <textarea v-model="description" type="text" class="form-control" id="description" rows="10">"Een gouden munt uit de vroege romeinse tijd.</textarea>
                 </div>
             </div>
 
             <div class="form-group row">
                 <label for="datefind" class="col-sm-2 control-label">Tijdstip van de vondst</label>
                 <div class="col-sm-2">
-                    <input type="date" v-model="findDate" class="form-control"/>
+                    <input type="date" value="01/02/2016" v-model="findDate" class="form-control"/>
                 </div>
             </div>
 
@@ -39,10 +39,10 @@
 
             <div class="form-group row">
                 <div class="col-sm-offset-2 col-sm-2">
-                    <input v-model="location.lat" type="text" class="form-control">
+                    <input value="50.806905897875" v-model="location.lat" type="text" class="form-control">
                 </div>
                 <div class="col-sm-2">
-                    <input v-model="location.lon" type="text" class="form-control">
+                    <input value="3.3014484298127" v-model="location.lon" type="text" class="form-control">
                 </div>
             </div>
 
@@ -51,7 +51,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <select v-model="category" class="form-control">
-                            <option v-for="category in categories">@{{ category }}</option>
+                            <option v-for="category in categories" selected>@{{ category }}</option>
                         </select>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                 <div class="col-sm-6">
                     <div class="input-group error">
                         <select v-model="material" class="form-control">
-                            <option v-for="material in materials">@{{ material }}</option>
+                            <option v-for="material in materials" selected>@{{ material }}</option>
                         </select>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <select v-model="productionTechnique" class="form-control">
-                            <option v-for="productionTechnique in productionTechniques">@{{ productionTechnique }}</option>
+                            <option v-for="productionTechnique in productionTechniques" selected>@{{ productionTechnique }}</option>
                         </select>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <select v-model="surfaceTreatment" class="form-control">
-                            <option v-for="surfaceTreatment in surfaceTreatments">@{{ surfaceTreatment }}</option>
+                            <option v-for="surfaceTreatment in surfaceTreatments" selected="">@{{ surfaceTreatment }}</option>
                         </select>
                     </div>
                 </div>
@@ -123,8 +123,8 @@
                     <label for="feedback" class="col-sm-2 form-control-label">Categorie</label>
                     <div class="col-sm-6">
                         <select v-model="category" class="form-control" id="category">
-                            <option selected></option>
-                            <option>munt</option>
+                            <option></option>
+                            <option selected>munt</option>
                             <option>mantelspeld</option>
                             <option>vingerhoed</option>
                             <option>muntgewicht</option>
@@ -139,19 +139,19 @@
                 <div class="form-group row">
                     <label for="date" class="col-sm-2 form-control-label">Datering</label>
                     <div class="col-sm-2">
-                        <input v-model="start_year" class="form-control" id="category" type="text">
+                        <input value="50" v-model="start_year" class="form-control" id="category" type="text">
                     </div>
 
                     <p class="text-center col-md-1">-</p>
 
                     <div class="col-sm-2">
-                        <input v-model="end_year" class="form-control" id="category" type="text">
+                        <input value="150" v-model="end_year" class="form-control" id="category" type="text">
                     </div>
 
                     <div class="col-sm-1">
                         <select v-model="era" class="form-control">
-                            <option selected>v. Chr.</option>
-                            <option>n. Chr.</option>
+                            <option>v. Chr.</option>
+                            <option selected="">n. Chr.</option>
                         </select>
                     </div>
                 </div>
@@ -275,13 +275,6 @@
       el: '#app',
 
       data: {
-         viewRoles : [
-        "Publiek",
-        "Detectorist",
-        "Onderzoeker",
-        "Vondstexpert",
-        "Registrator"
-        ],
         category : '',
         findDate: '',
         showForm : true,
@@ -346,17 +339,9 @@
         "vlechten"
         ],
         surfaceTreatments : [
-            "email (cloissoné)",
-            "niello",
-            "filigraan",
-            "gegraveerd",
-            "opengewerkt",
-            "verguld",
-            "verzilverd",
-            "gedreven",
-            "gedamasceerd",
-            "email (groeven)",
-            "andere"
+            'optie 1',
+            'optie 2',
+            'meerdere'
         ]
     },
 

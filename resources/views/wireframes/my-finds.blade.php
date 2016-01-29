@@ -2,11 +2,11 @@
 
 @section('content')
 <div id="app" class="container">
-    <h1>Nieuwe vondsten</h1>
-    <span class="help-block">Volgende vondsten vallen onder uw expertise, namelijk munten en potten uit de Romeinse periode in West-Vlaanderen. Voeg een classificatie toe waar mogelijk of geef feedback op eerder gemaakte classificaties.</span>
+    <h1>Mijn vondsten</h1>
+
     <div class="row find-row" v-for="find in finds">
         <div class="col-md-2">
-            <a href="classify/15" class="thumbnail">
+            <a href="validate/15" class="thumbnail">
                 <img src="{{ asset('assets/img/thumbnail_coin.jpg') }}">
             </a>
         </div>
@@ -14,13 +14,18 @@
         <div class="col-md-6">
             <p><b>Titel: </b>@{{ find.title }}</p>
         </div>
-
+        <div class="col-md-6">
+            <p><b>Categorie: </b>@{{ find.category }}</p>
+        </div>
         <div class="col-md-6">
             <p><b>Beschrijving: </b>@{{ find.description }}</p>
         </div>
 
         <div class="col-md-6">
-            <a href="classify/15">Classificeer</a>
+            <p><b>Status: </b>@{{ find.status }}</p>
+        </div>
+        <div class="col-md-6" v-if="find.status == 'In revisie'">
+            <a href="finds/edit">Pas aan</a>
         </div>
     </div>
 </div>
@@ -33,141 +38,162 @@
 
         methods : {
             getDetail : function () {
-                window.location.href = "classify/15";
+                window.location.href = "validate/15";
             }
         },
 
         data : {
             viewRoles : [
-                "Onderzoeker",
-                "Vondstexpert"
+            "Onderzoeker",
+            "Vondstexpert"
             ],
             finds : [
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "In revisie"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Verwijderd door een admin"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             },
             {
                 title : "Gouden Romeinse munt",
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
-                dimension : "5x5 cm"
+                dimension : "5x5 cm",
+                status : "Gepubliceerd"
             }
             ]
         }

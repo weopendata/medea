@@ -81,14 +81,15 @@
 
             <div class="form-group row">
                 <label for="date" class="col-sm-2 form-control-label">Datering</label>
+                <p class="col-md-1">van</p>
                 <div class="col-sm-2">
-                    <input v-model="find.start_year" class="form-control" id="category" type="text">
+                    <input v-model="find.start_year" class="form-control" id="category" type="number">
                 </div>
 
-                <p class="text-center col-md-1">-</p>
+                <p class="text-center col-md-1">tot</p>
 
                 <div class="col-sm-2">
-                    <input v-model="find.end_year" class="form-control" id="category" type="text">
+                    <input v-model="find.end_year" class="form-control" id="category" type="number">
                 </div>
 
                 <div class="col-sm-1">
@@ -97,6 +98,7 @@
                         <option>n. Chr.</option>
                     </select>
                 </div>
+                <p class="col-md-6 col-md-offset-2 help-block">e.g. Van 1140 tot 1540 n.Chr.</p>
             </div>
 
             <div class="form-group row">
@@ -110,6 +112,14 @@
             <div class="form-group row" v-for="reference in find.references" track-by="$index">
                <reference :index="$index" :reference.sync="reference"></reference>
            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2" for="reference">Opmerking</label>
+
+                <div class="col-sm-6">
+                    <textarea class="form-control" rows="10"></textarea>
+                </div>
+            </div>
 
            <div class="form-group row">
             <div class="col-md-2">
@@ -149,7 +159,7 @@
                 <label class="control-label">Datering</label>
             </div>
             <div class="col-md-2">
-                <span>@{{ classification.date.start_year }} - @{{ classification.date.end_year }}</span>
+                <span>van @{{ classification.date.start_year }} tot @{{ classification.date.end_year }}</span>
                 <span class="text-center" v-if="classification.date.era == 1">
                     n. Chr.
                 </span>
@@ -167,6 +177,15 @@
                 <div class="col-sm-6">
                     <a href="@{{ reference }}">@{{ reference }}</a>
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-2">
+                <label class="control-label">Opmerking</label>
+            </div>
+            <div class="col-sm-6">
+                <p>@{{ classification.note }}</p>
             </div>
         </div>
 
@@ -226,7 +245,10 @@
 
         data : {
             viewRole  : '',
-
+            viewRoles : [
+            "Onderzoeker",
+            "Vondstexpert"
+            ],
             find : {
                 id : 15,
                 title : "Gouden Romeinse munt",
@@ -264,7 +286,8 @@
 
                 category : "munt",
                 agree : 5,
-                disagree: 0
+                disagree: 0,
+                note : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
             },
             {
                 date : {
@@ -278,7 +301,8 @@
 
                 category : "mantelspeld",
                 agree : 1,
-                disagree: 14
+                disagree: 14,
+                note : 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. '
             }
             ],
 
