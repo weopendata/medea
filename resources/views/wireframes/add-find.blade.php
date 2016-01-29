@@ -4,11 +4,11 @@
 <div id="app">
     <div class="container" v-show="showForm == true">
         <h2>Nieuwe vondst</h2>
-        <form id="new_find" @submit.prevent="handleForm">
-            <div class="form-group row">
-                <label for="title" class="col-sm-2 control-label">Titel</label>
+        <form id="new_find">
+            <div class="form-group row has-error">
+                <label class="col-sm-2 control-label">Fotomateriaal*</label>
                 <div class="col-sm-6">
-                    <input v-model="title" type="title" class="form-control" id="title" placeholder="">
+                   <button class="btn btn-default" @click.prevent="showUpload">Upload foto's</button>
                 </div>
             </div>
 
@@ -46,7 +46,6 @@
                 </div>
             </div>
 
-
             <div class="form-group row">
                 <label for="category" class="col-sm-2 control-label">Categorie</label>
                 <div class="col-sm-6">
@@ -58,10 +57,10 @@
                 </div>
             </div>
 
-            <div class="form-group row">
-            <label for="material" class="col-sm-2 control-label">Materiaal</label>
+            <div class="form-group row has-error">
+            <label for="material" class="col-sm-2 control-label">Materiaal*</label>
                 <div class="col-sm-6">
-                    <div class="input-group">
+                    <div class="input-group error">
                         <select v-model="material" class="form-control">
                             <option v-for="material in materials">@{{ material }}</option>
                         </select>
@@ -69,7 +68,7 @@
                 </div>
             </div>
 
-             <div class="form-group row">
+            <div class="form-group row">
             <label for="productionTechnique" class="col-sm-2 control-label">Techniek</label>
                 <div class="col-sm-6">
                     <div class="input-group">
@@ -81,7 +80,18 @@
             </div>
 
             <div class="form-group row">
-                <label for="dimensions" class="col-sm-2 control-label">Dimensies</label>
+            <label class="col-sm-2 control-label">Oppervlaktebehandeling</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <select v-model="surfaceTreatment" class="form-control">
+                            <option v-for="surfaceTreatment in surfaceTreatments">@{{ surfaceTreatment }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row has-error">
+                <label for="dimensions" class="col-sm-2 control-label">Dimensies*</label>
                 <div class="col-md-6">
                     <div class="col-sm-4">
                         <label control-label>Afmeting</label>
@@ -108,9 +118,8 @@
             </div><!-- dimensies -->
 
             <div class="form-group row">
-                <div class="col-md-2">
-                    <button id="submit" type="submit" class="btn btn-success">Voeg toe</button>
-                </div>
+                <button id="submit" type="submit" @click.prevent="validateFind" class="btn btn-success">Laten valideren</button>
+                <button id="submit" type="submit" @click.prevent="saveFind" class="btn btn-warning">Bewaren</button>
             </div>
         </form>
     </div>
@@ -195,6 +204,7 @@
         showForm : true,
         category : String,
         material : String,
+        viewRole : '',
         productionTechnique : String,
         location : {
             "lat" : "",
@@ -236,7 +246,8 @@
         "brons",
         "ijzer",
         "lood",
-        "keramiek"
+        "keramiek",
+        "meerdere"
         ],
         productionTechniques : [
         "boetseren",
@@ -244,20 +255,29 @@
         "gieten",
         "weven",
         "vlechten"
+        ],
+        surfaceTreatments : [
+            'optie 1',
+            'optie 2',
+            'meerdere'
         ]
     },
 
     methods : {
-        handleForm : function () {
+        validateFind : function () {
             this.showForm = false;
 
-            div = '<div class="alert alert-success">Uw vondst werd geregistreerd. Experten en andere leden van het platform zullen de vondst classificeren en valideren.</div>';
+            div = '<div class="container"><div class="row text-center"><div class="alert alert-success col-md-12">Uw vondstfiche zal gevalideerd worden, waarna andere bezoekers van het platform toegang krijgen tot de beschrijving ervan en vondstexperten informatie kunnen toevoegen. Uw identiteitsgegevens en de precieze vondstlocatie worden afgeschermd voor niet-geautoriseerde gebruikers. U wordt op de hoogte gehouden van wijzigingen aan deze vondstfiche.</div></div></div>';
 
             $('#app').append(div);
         },
 
-        checkDate : function () {
-            console.log(this.findDate);
+        saveFind : function () {
+            this.showForm = false;
+
+            div = '<div class="container"><div class="row text-center"><div class="alert alert-success col-md-12">Uw vondst werd bewaard en kan later nog aangepast worden. Eens u klaar bent met de fiche kan u deze laten valideren.</div></div></div>';
+
+            $('#app').append(div);
         },
 
         addDimension : function () {
@@ -266,6 +286,10 @@
                 'quantity' : "",
                 'symbol' : ""
             });
+        },
+
+        showUpload : function () {
+            window.alert("Op deze manier zal u foto's kunnen uploaden.");
         }
     },
 
