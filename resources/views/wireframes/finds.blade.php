@@ -33,7 +33,7 @@
 <div id="app" class="container">
     <div id="experts" v-if="viewRole == 'Publiek'">
       <div class="row row-stretch tall-col">
-        <div class="col-md-6">
+        <div class="col-md-3">
           <div class="row">
             <form id="search" @submit.prevent="">
               <div class="input-group col-md-12 form-group pull-left">
