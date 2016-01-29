@@ -117,6 +117,58 @@
                 </div>
             </div><!-- dimensies -->
 
+            <div class="row top-buffer">
+                <h2>Classificeer</h2>
+                <div class="form-group row">
+                    <label for="feedback" class="col-sm-2 form-control-label">Categorie</label>
+                    <div class="col-sm-6">
+                        <select v-model="category" class="form-control" id="category">
+                            <option selected></option>
+                            <option>munt</option>
+                            <option>mantelspeld</option>
+                            <option>vingerhoed</option>
+                            <option>muntgewicht</option>
+                            <option>gesp</option>
+                            <option>riemtong</option>
+                            <option>bijl</option>
+                            <option>pijlpunt</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="date" class="col-sm-2 form-control-label">Datering</label>
+                    <div class="col-sm-2">
+                        <input v-model="start_year" class="form-control" id="category" type="text">
+                    </div>
+
+                    <p class="text-center col-md-1">-</p>
+
+                    <div class="col-sm-2">
+                        <input v-model="end_year" class="form-control" id="category" type="text">
+                    </div>
+
+                    <div class="col-sm-1">
+                        <select v-model="era" class="form-control">
+                            <option selected>v. Chr.</option>
+                            <option>n. Chr.</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2" for="reference">Referenties</label>
+
+                    <div class="col-sm-2 col-md-offset-6">
+                        <button @click.prevent="addReference" class="btn btn-center btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+
+                <div class="form-group row" v-for="reference in references" track-by="$index">
+                 <reference :index="$index" :reference.sync="reference"></reference>
+             </div>
+         </form>
+
             <div class="form-group row">
                 <button id="submit" type="submit" @click.prevent="validateFind" class="btn btn-success">Laten valideren</button>
                 <button id="submit" type="submit" @click.prevent="saveFind" class="btn btn-warning">Bewaren</button>
@@ -157,11 +209,34 @@
 </div>
 </template>
 
+<template id="reference-template">
+    <div class="col-md-offset-2 col-md-6">
+        <input v-model="reference" type="text" class="form-control" id="reference" placeholder="">
+    </div>
+
+    <div class="col-sm-2">
+        <button @click.prevent="removeReference" class="btn btn-center btn-danger"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+    </div>
+</template>
+
 @stop
 
 @section('script')
 <script>
     // Dimension component
+    Vue.component('reference', {
+        template : '#reference-template',
+
+        props : ['reference', 'index'],
+
+        methods : {
+            removeReference : function () {
+                this.$parent.references.splice(this.index, 1);
+            }
+        }
+
+    });
+
     Vue.component('dimension', {
         template : '#dimension-template',
 
@@ -200,11 +275,18 @@
       el: '#app',
 
       data: {
+        category : '',
         findDate: '',
         showForm : true,
         category : String,
         material : String,
         viewRole : '',
+        references : [
+            ""
+        ],
+
+        era : '',
+
         productionTechnique : String,
         location : {
             "lat" : "",
@@ -264,6 +346,10 @@
     },
 
     methods : {
+        addReference : function (e) {
+                this.references.push("");
+        },
+
         validateFind : function () {
             this.showForm = false;
 

@@ -225,6 +225,8 @@
         },
 
         data : {
+            viewRole  : '',
+
             find : {
                 id : 15,
                 title : "Gouden Romeinse munt",

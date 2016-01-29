@@ -56,16 +56,14 @@
             </div>
 
             <div class="form-group row">
-                <label for="privacy" class="col-sm-2 form-control-label">Privacy</label>
-                <div class="col-sm-6">
+                <label for="privacy" class="col-sm-10 form-control-label">
+                    Mogen uw naam en contactgegevens zichtbaar zijn op uw gepubliceerde vondstfiche?
+                </label>
+                <div class="col-sm-2">
                     <label for="privacy" class="form-control-label">
                         <select v-model="privacy" id="role" name="role" class="form-control">
-                            <option selected></option>
-                            <option id="">delen met iedereen</option>
-                            <option id="">alleen delen met onderzoekers en de overheid</option>
-                            <option id="">alleen delen met onderzoekers</option>
-                            <option id="">alleen delen met onderzoekers na verzoek</option>
-                            <option id="">alleen delen met alle geregistreerde gebruikers</option>
+                            <option>Ja</option>
+                            <option>Nee</option>
                         </select>
                     </label>
                 </div>

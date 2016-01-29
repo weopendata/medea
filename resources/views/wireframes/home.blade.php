@@ -106,21 +106,51 @@
                                 </div>
                             </div>
 
+                            <h4>Privacy</h4>
+
+                            <hr>
+
                             <div class="form-group row">
-                                <label for="privacy" class="col-sm-3 form-control-label">Privacy</label>
+                                <label for="privacy" class="col-sm-10 form-control-label">
+                                    Mogen uw naam en contactgegevens zichtbaar zijn op uw gepubliceerde vondstfiche?
+                                </label>
                                 <div class="col-sm-6">
                                     <label for="privacy" class="form-control-label">
                                         <select v-model="privacy" id="role" name="role" class="form-control">
-                                            <option selected></option>
-                                            <option id="">delen met iedereen</option>
-                                            <option id="">alleen delen met onderzoekers en de overheid</option>
-                                            <option id="">alleen delen met onderzoekers</option>
-                                            <option id="">alleen delen met onderzoekers na verzoek</option>
-                                            <option id="">alleen delen met alle geregistreerde gebruikers</option>
+                                            <option>Nooit</option>
+                                            <option>Enkel voor geregistreerde gebruikers</option>
+                                            <option>Enkel voor vondstexperten en onderzoekers</option>
                                         </select>
                                     </label>
-                                    <p class="help-block">Geef aan hoe uw naam en contactgegevens zichtbaar mogen zijn op gepubliceerde vondstfiches.</p>
                                 </div>
+                            </div>
+
+                            <div class="form-group row">
+                                 <p class="help-block col-md-12" v-show="showNotification">
+                                    Vondstexperten en onderzoekers kunnen contact met u opnemen via het MEDEA-platform. U wordt op de hoogte gesteld van de vraag van de geïnteresseerde gebruiker, zonder dat daarbij informatie van uw kant wordt vrijgegeven. U kunt vervolgens beslissen of u aan de vraag tegemoet komt en het contact met de vraagsteller opneemt.
+
+                                </p>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="privacy" class="col-sm-10 form-control-label">
+                                    Mag uw naam worden doorgegeven wanneer informatie over uw vondsten aan het Agentschap Onroerend Erfgoed wordt gemeld
+                                </label>
+                                <div class="col-sm-2">
+                                    <label for="privacy" class="form-control-label">
+                                        <select id="role" name="role" class="form-control">
+                                            <option selected></option>
+                                            <option>Ja</option>
+                                            <option>Nee</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                               <p class="help-block col-md-10">
+                                Merk op: Vanaf 1 april 2016 geldt de verplichting om als detectorist erkend te zijn door Onroerend Erfgoed. Indien u een erkenning heeft, dient u zich dus steeds bekend te maken bij melding van vondsten gedaan vanaf deze datum. Enkel toevalsvondsten kunnen nog gemeld worden zonder persoonsgegevens.
+                            </p>
                             </div>
 
                             <button type="submit" class="btn btn-success btn-default">Registreer</button>
@@ -141,6 +171,7 @@ new Vue({
     el : '#app',
 
     data : {
+        showNotification : false,
         email : "",
         title : "",
         first_name : "",
@@ -153,6 +184,16 @@ new Vue({
     methods : {
         handleForm : function () {
             $('#registerModal').modal('toggle');
+        }
+    },
+
+    watch : {
+        privacy : function (val) {
+            if (val == 'Nooit') {
+                this.showNotification = true;
+            } else {
+                this.showNotification = false;
+            }
         }
     }
 });
