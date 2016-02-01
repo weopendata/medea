@@ -25,7 +25,7 @@
             <p><b>Status: </b>@{{ find.status }}</p>
         </div>
         <div class="col-md-6" v-if="find.status == 'In revisie'">
-            <a href="finds/edit">Pas aan</a>
+            <a href="myfinds/revision">Pas aan</a>
         </div>
     </div>
 </div>
@@ -74,7 +74,7 @@
                 category : "munt",
                 description : "Een gouden munt uit de vroege romeinse tijd.",
                 dimension : "5x5 cm",
-                status : "Gepubliceerd"
+                status : "Onder embargo geplaatst"
             },
             {
                 title : "Gouden Romeinse munt",
