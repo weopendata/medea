@@ -27,6 +27,13 @@
             </div>
         </div>
 
+         <div class="row">
+            <label class="col-sm-2 control-label">Materiaal</label>
+            <div class="col-md-10">
+                @{{ find.material }}
+            </div>
+        </div>
+
         <div class="row top-buffer">
             <label class="col-sm-2 control-label">Description</label>
             <div class="col-sm-2">
@@ -180,7 +187,9 @@
                         "quantity" : 40,
                         "property" : "gewicht"
                     }
-                ]
+                ],
+                material : "goud"
+
             },
 
             notifyAgency : false,
