@@ -29,10 +29,10 @@
              <div class="form-group row">
                 <label for="location" class="col-sm-2 control-label">Locatie</label>
                 <div class="col-sm-2">
-                    <label>latitude</label>
+                    <label>breedtegraad</label>
                 </div>
                 <div class="col-sm-2">
-                    <label>longitude</label>
+                    <label>lengtegraad</label>
                 </div>
             </div>
 

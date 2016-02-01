@@ -30,10 +30,10 @@
              <div class="form-group row">
                 <label for="location" class="col-sm-2 control-label">Locatie</label>
                 <div class="col-sm-2">
-                    <label>latitude</label>
+                    <label>breedtegraad</label>
                 </div>
                 <div class="col-sm-2">
-                    <label>longitude</label>
+                    <label>lengtegraad</label>
                 </div>
             </div>
 
@@ -43,17 +43,6 @@
                 </div>
                 <div class="col-sm-2">
                     <input value="3.3014484298127" v-model="location.lon" type="text" class="form-control">
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <label for="category" class="col-sm-2 control-label">Categorie</label>
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        <select v-model="category" class="form-control">
-                            <option v-for="category in categories" selected>@{{ category }}</option>
-                        </select>
-                    </div>
                 </div>
             </div>
 
