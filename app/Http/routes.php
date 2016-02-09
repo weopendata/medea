@@ -35,6 +35,10 @@ Route::get('/myfinds', function () {
     return view('wireframes.my-finds');
 });
 
+Route::get('/myfinds/revision', function () {
+    return view('wireframes.revision');
+});
+
 Route::get('/register', function () {
     return view('wireframes.register');
 });
