@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Repositories\UserRepository;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Person;
 
 class AuthController extends Controller
 {
@@ -38,6 +42,32 @@ class AuthController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['except' => 'logout']);
+    }
+
+    public function login(Request $request)
+    {
+        $users = new UserRepository();
+
+        if ($request->method() == 'POST') {
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            $user = $users->getUser($email);
+            $person = new Person($user);
+
+            if (!empty($user)) {
+                // Check password
+                if (Hash::check($password, $user->getProperty('password'))) {
+                    Auth::login($person);
+
+                    return redirect($this->redirectTo);
+                } else {
+                    return response()->json(['code' => '400', 'errors' => ['password' => 'The password was incorrect.']]);
+                }
+            } else {
+                return response()->json(['code' => '400', 'errors' => ['email' => 'The email was not found.']]);
+            }
+        }
     }
 
     /**
