@@ -46,7 +46,7 @@ class BaseRepository
     {
         $neo4j_config = \Config::get('database.connections.neo4j');
 
-        // Create an admin
+        // Create a new client with user and password
         $client = new Client($neo4j_config['host'], $neo4j_config['port']);
         $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
 
@@ -74,7 +74,8 @@ class BaseRepository
 
             if ($valid) {
                 // Invoke the delete method on the wrapper model
-                $model = new $this->model($node);
+                $model = new $this->model();
+                $model->setNode($node);
                 $model->delete();
             }
 

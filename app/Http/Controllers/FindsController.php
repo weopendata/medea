@@ -50,11 +50,6 @@ class FindsController extends Controller
 
         // Make find
         $find = $this->finds->store($input);
-
-        // Make object
-        $object = $this->objects->store($input['object']);
-
-        $find->makeRelationship($object, 'OCCURED_IN_THE_PRESENCE_OF');
     }
 
     /**

@@ -9,17 +9,11 @@ class FindEvent extends Base
     public static $NODE_TYPE = 'E10';
     public static $NODE_NAME = 'findEvent';
 
-    public function __construct($node)
-    {
-        $this->node = $node;
-    }
-
-    public static function create($properties = [])
-    {
-        static::$fillable = self::$fillable;
-
-        $node = parent::createNode($properties);
-
-        return new FindEvent($node);
-    }
+    protected $relatedModels = [
+        'P12' => [
+            'key' => 'object',
+            'model_name' => 'Object',
+            'cascade_delete' => true
+        ]
+    ];
 }

@@ -9,14 +9,12 @@ class Object extends Base
     public static $NODE_TYPE = 'E22';
     public static $NODE_NAME = 'object';
 
-    public static function create($properties = [])
-    {
-        static::$fillable = self::$fillable;
-
-        $node = parent::createNode($properties);
-
-        return new Object($node);
-    }
+    protected $implicitModels = [
+        'P43' => [
+            'key' => 'dimensions',
+            'object' => 'Dimension',
+        ]
+    ];
 
     /**
      * Dimension is not a main entity, so we create it in this object only
@@ -61,9 +59,6 @@ class Object extends Base
         $dimension_unit->addLabels([self::makeLabel('E58'), self::makeLabel($general_id)]);
 
         $dimension_node->relateTo($dimension_unit, 'P91')->save();
-
-        // Relate the object to the dimension
-        $this->node->relateTo($dimension_node, 'P43')->save();
 
         return $dimension_node;
     }

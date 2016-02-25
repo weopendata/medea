@@ -13,7 +13,7 @@ class FindsRepository extends BaseRepository
 
     public function store($properties)
     {
-        $find = FindEvent::create($properties);
+        $find = new FindEvent($properties);
 
         $find->save();
 
