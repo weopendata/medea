@@ -4,10 +4,16 @@ namespace App\Models;
 
 class Object extends Base
 {
-    protected static $fillable = ['description', 'inscription', 'material', 'technique', 'bibliography'];
-
     public static $NODE_TYPE = 'E22';
     public static $NODE_NAME = 'object';
+
+    protected $relatedModels = [
+        'P108' => [
+            'key' => 'productionEvent',
+            'model_name' => 'ProductionEvent',
+            'cascade_delete' => true
+        ]
+    ];
 
     protected $implicitModels = [
         'P43' => [

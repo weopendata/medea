@@ -66,7 +66,7 @@ class Base
                 $input = $properties[$config['key']];
 
                 if (!empty($input)) {
-                    $model_name = '\App\Models\\' . $config['model_name'];
+                    $model_name = 'App\Models\\' . $config['model_name'];
                     $model = new $model_name($input);
                     $model->save();
 
@@ -80,15 +80,13 @@ class Base
                 if (!empty($input)) {
                     if (is_array($input)) {
                         foreach ($input as $entry) {
-                            $create_function = 'create' . $config['object'];
-                            $related_node = $this->$create_function($entry);
+                            $related_node = $this->createImplicitNode($entry, $config, $general_id);
 
                             // Make the relationship
                             $this->node->relateTo($related_node, $relationship_name)->save();
                         }
                     } else {
-                        $create_function = 'create' . $config['object'];
-                        $related_node = $this->$create_function($input);
+                        $related_node = $this->createImplicitNode($input, $config, $general_id);
 
                         // Make the relationship
                         $this->node->relateTo($related_node, $relationship_name)->save();
@@ -96,7 +94,28 @@ class Base
                 }
             }
         }
+    }
 
+    private function createImplicitNode($input, $config, $general_id)
+    {
+        $client = self::getClient();
+
+        // If a single value is set, this means a simple creation of a node is
+        // viable and can be automated. If not the specific create function will be called
+        // to create the further internal model
+        if (!empty($config['single_value']) && $config['single_value']) {
+            $related_node = $client->makeNode();
+            $related_node->save();
+
+            $related_node->addLabels([self::makeLabel($config['entity_name']), self::makeLabel($general_id)]);
+            $related_node->setProperty('value', $input);
+            $related_node->save();
+        } else {
+            $create_function = 'create' . $config['object'];
+            $related_node = $this->$create_function($input);
+        }
+
+        return $related_node;
     }
 
     protected function getGeneralId()
