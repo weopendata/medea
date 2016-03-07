@@ -15,26 +15,26 @@ class ProductionClassification extends Base
         'P2' => [
             'key' => 'type',
             'object' => 'Type',
-            'single_value' => true,
-            'entity_name' => 'E55'
+            'value_node' => true,
+            'cidoc_type' => 'E55'
         ],
         'P3' => [
             'key' => 'description',
             'object' => 'Description',
-            'single_value' => true,
-            'entity_name' => 'E62'
+            'value_node' => true,
+            'cidoc_type' => 'E62'
         ],
         'P42' => [
             'key' => 'culture',
             'object' => 'Culture',
-            'single_value' => true,
-            'entity_name' => 'E55'
+            'value_node' => true,
+            'cidoc_type' => 'E55'
         ],
         'P42' => [
             'key' => 'nation',
             'object' => 'Nation',
-            'single_value' => true,
-            'entity_name' => 'E55'
+            'value_node' => true,
+            'cidoc_type' => 'E55'
         ]
     ];
 }

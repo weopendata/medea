@@ -56,10 +56,12 @@ class Base
             $this->node = $client->makeNode();
             // Identify all related nodes with the main node (being Object)
             // Eases the way in which we can perform a delete (and find)
-            $general_id = "MEDEA" . sha1(time() . "__" . time());
+            $general_id = "MEDEA" . sha1(str_random(10) . "__" . time());
 
             $this->node->setProperty($this->unique_identifer, $general_id)->save();
             $this->node->save();
+
+            \Log::info($general_id);
 
             // Initiate model relationship cascading that are one level deep
             foreach ($this->relatedModels as $relationship_name => $config) {
@@ -78,7 +80,7 @@ class Base
                 $input = $properties[$config['key']];
 
                 if (!empty($input)) {
-                    if (is_array($input)) {
+                    if (is_array($input) && !$this->isAssoc($input)) {
                         foreach ($input as $entry) {
                             $related_node = $this->createImplicitNode($entry, $config, $general_id);
 
@@ -100,16 +102,12 @@ class Base
     {
         $client = self::getClient();
 
-        // If a single value is set, this means a simple creation of a node is
+        // If the variable value_node is set, this means a simple creation of a node is
         // viable and can be automated. If not the specific create function will be called
-        // to create the further internal model
-        if (!empty($config['single_value']) && $config['single_value']) {
-            $related_node = $client->makeNode();
-            $related_node->save();
-
-            $related_node->addLabels([self::makeLabel($config['entity_name']), self::makeLabel($general_id)]);
-            $related_node->setProperty('value', $input);
-            $related_node->save();
+        // to create the further internal model. Basically this means we only need to do
+        // a one to one translation from a value and a node -> make the node and set the value property.
+        if (!empty($config['value_node']) && $config['value_node']) {
+            $related_node = $this->createValueNode([$config['cidoc_type']], $input);
         } else {
             $create_function = 'create' . $config['object'];
             $related_node = $this->$create_function($input);
@@ -127,11 +125,11 @@ class Base
     {
         $this->node->save();
 
-        $cidocLabel = self::makeLabel(static::$NODE_TYPE);
-        $humanLabel = self::makeLabel(static::$NODE_NAME);
-        $medeaLabel = self::makeLabel('MEDEA_NODE');
+        $cidoc_label = self::makeLabel(static::$NODE_TYPE);
+        $human_label = self::makeLabel(static::$NODE_NAME);
+        $medea_label = self::makeLabel('MEDEA_NODE');
 
-        $this->node->addLabels([$cidocLabel, $humanLabel, $medeaLabel]);
+        $this->node->addLabels([$cidoc_label, $human_label, $medea_label]);
     }
 
     public function getNode()
@@ -139,6 +137,13 @@ class Base
         return $this->node;
     }
 
+    /**
+     * Set the Everyman Node instance of the object
+     *
+     * @param $node Node
+     *
+     * @return void
+     */
     public function setNode($node)
     {
         $this->node = $node;
@@ -147,6 +152,8 @@ class Base
     /**
      * Delete node and all accompanied relationships
      * Take into account the explicit relationships that need cascading deletion
+     *
+     * @return void
      */
     public function delete()
     {
@@ -186,5 +193,41 @@ class Base
     public function makeRelationship($end_model, $relationship)
     {
         $this->node->relateTo($end_model->getNode(), $relationship)->save();
+    }
+
+    /**
+     * Create a node instance with a value property,
+     * the general id of the invoking class is automatically added as a label
+     *
+     * @param $labels array      Array of strings that need to be added to the node as labels
+     * @param $value  int|string Int or string that contains the value of the node
+     *
+     * @return Node
+     */
+    protected function createValueNode($labels, $value)
+    {
+        $client = self::getClient();
+
+        $general_id = $this->getGeneralId();
+
+        $node = $client->makeNode();
+        $node->save();
+
+        $node_labels = [self::makeLabel($general_id)];
+
+        foreach ($labels as $label) {
+            $node_labels[] = self::makeLabel($label);
+        }
+
+        $node->addLabels($node_labels);
+        $node->setProperty('value', $value);
+        $node->save();
+
+        return $node;
+    }
+
+    private function isAssoc($arr)
+    {
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }
