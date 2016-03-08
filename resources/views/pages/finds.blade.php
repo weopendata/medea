@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('content')
-<FindsList></FindsList>
+<finds-list></finds-list>
 @endsection
 
 @section('script')

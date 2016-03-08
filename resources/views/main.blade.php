@@ -9,19 +9,19 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/leaflet.extra-markers.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('assets/css/leaflet.css') }}" rel="stylesheet"/>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700'>
     <link rel="stylesheet" href="{{ asset('assets/css/semantic.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
 
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vue.js') }}"></script>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="{{ asset('assets/js/leaflet.extra-markers.min.js') }}"></script>
     <script src="{{ asset('assets/js/semantic.min.js') }}"></script>
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>MEDEA</title>
 </head>
 
-<body id="app">
+<body>
 <div class="ui page grid">
     <div class="computer tablet only row">
         <div class="ui green menu navbar">
@@ -36,5 +36,11 @@
   @yield('content')
 </div>
 @yield('script')
+
+@if (Config::get('app.debug'))
+<script type="text/javascript">
+document.write('<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
+</script> 
+@endif
 </body>
 </html>

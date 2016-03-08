@@ -24,10 +24,8 @@
                     <textarea></textarea>
                 </div>
             </div>
-
-            <div class="inline fields">
         </div>
+        {!! Form::close() !!}
     </div>
 </div>
-{!! Form::close() !!}
 @endsection

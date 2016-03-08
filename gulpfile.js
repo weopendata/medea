@@ -1,6 +1,6 @@
 var elixir = require('laravel-elixir');
-
-require('laravel-elixir-vueify');
+require('laravel-elixir-webpack-ex');
+require('laravel-elixir-livereload');
 
 /*
  |--------------------------------------------------------------------------
@@ -14,6 +14,23 @@ require('laravel-elixir-vueify');
  */
 
 elixir(function(mix) {
-    mix.sass('app.scss');
-    mix.browserify('findslist.js');
+	mix.sass('app.scss', 'public/css')
+	mix.webpack({
+			findslist: 'findslist.js'
+		}, {
+			module: {
+				loaders: [
+					{ test: /\.css$/, loader: 'style!css' },
+					{ test: /\.vue$/, loader: 'vue' },
+					{ test: /\.scss$/, loaders: ['style', 'css', 'sass', 'scss'] },
+					{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader', exclude: /node_modules/ },
+				],
+			},
+			resolve: {
+				extensions: ['', '.js', '.vue']
+			},
+		},
+		'./public/js', 'resources/assets/js'
+	)
+	mix.livereload()
 });

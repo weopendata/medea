@@ -1,40 +1,24 @@
 <template>
-    <table class="table">
-        <thead>
-            <tr>
-                <th v-for="column in columns"
-                @click="sortBy(column.objectKey)">
-                @{{column.displayName | capitalize}}
-                <span class="arrow"
-                :class="sortOrders[column.objectKey] > 0 ? 'asc' : 'dsc'">
-                </span>
-                </th>
-                <th v-show="viewRole == 'Detectorist/Registrator'"></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-          <tr v-for="entry in finds">
-              <td v-for="column in columns">
-                @{{entry[column.objectKey]}}
-            </td>
-            <td>
-                <a href="finds/15"><span class="fa fa-eye"></span></a>
-            </td>
-
-        </tr>
-    </tbody>
-</table>
+  <div v-for="findEvent in findEvents">
+    <h1 v-text="findEvent.object.productionEvent.classification.description"></h1>
+    <pre v-text="findEvent|json"></pre>
+  </div>
 </template>
 
 <script>
-    export default {
-
-        props : ['columns', 'finds'],
-
-        ready () {
-            alert("lets do this");
-        }
+export default {
+  props: ['columns', 'finds'],
+  data () {
+    return {
+      findEvents: []
     }
-
+  },
+  ready () {
+    this.$http.get('/api-mock/finds.json').then(function (res) {
+      this.findEvents = res.data
+    }, function () {
+      console.error('could not find findevents')
+    });
+  }
+}
 </script>
