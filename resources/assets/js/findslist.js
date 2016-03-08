@@ -1,16 +1,11 @@
-var Vue = require('vue');
+import Vue from 'Vue';
+import VueResource from 'vue-resource';
+import FindsList from './components/FindsList.vue';
 
-import Findslist from './components/FindsList.vue';
-
+Vue.use(VueResource)
 new Vue({
-
-  el: '#app',
-
-  components : {
-    Findslist
-  },
-
-  ready () {
-    // Fetch data and fill it in the finds list component
+  el: 'body',
+  components: {
+    FindsList
   }
 });
