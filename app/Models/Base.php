@@ -61,10 +61,12 @@ class Base
             $this->node->setProperty($this->unique_identifer, $general_id)->save();
             $this->node->save();
 
-            \Log::info($general_id);
-
             // Initiate model relationship cascading that are one level deep
             foreach ($this->relatedModels as $relationship_name => $config) {
+                // Check if the related model is required
+                if (empty($properties[$config['key']]) && (empty($config['required']) || $config['required'])) {
+                    \App::abort(400, "The property '" . $config['key'] . "'' is required in order to create the model '" . static::$NODE_NAME ."'");
+                }
                 $input = $properties[$config['key']];
 
                 if (!empty($input)) {

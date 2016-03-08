@@ -12,20 +12,23 @@ class FindSpot extends Base
             'key' => 'type',
             'object' => 'Type',
             'value_node' => true,
-            'cidoc_type' => 'E55'
+            'cidoc_type' => 'E55',
+            'required' => false
         ],
 
         'P3' => [
             'key' => 'description',
             'object' => 'Note',
             'value_node' => true,
-            'cidoc_type' => 'E62'
+            'cidoc_type' => 'E62',
+            'required' => false
         ],
         'P1' => [
             'key' => 'title',
             'object' => 'Appellation',
             'value_node' => true,
-            'cidoc_type' => 'E41'
+            'cidoc_type' => 'E41',
+            'required' => false
         ]
     ];
 

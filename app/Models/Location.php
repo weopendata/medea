@@ -14,7 +14,8 @@ class Location extends Base
         ],
         'P89' => [
             'key' => 'address',
-            'object' => 'Address'
+            'object' => 'Address',
+            'required' => false
         ]
     ];
 
