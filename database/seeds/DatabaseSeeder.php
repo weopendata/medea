@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Seeder;
 use Everyman\Neo4j\Client;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -47,5 +46,8 @@ class DatabaseSeeder extends Seeder
         } else {
             $this->command->info("The admin user already exists.");
         }
+
+        // Seed the values in the lists of MEDEA
+        $this->seedListValues();
     }
 }

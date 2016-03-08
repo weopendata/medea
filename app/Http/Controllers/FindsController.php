@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FindEvent;
 use App\Repositories\FindsRepository;
 use App\Repositories\ObjectRepository;
+use App\Repositories\ListValueRepository;
 
 class FindsController extends Controller
 {
@@ -16,6 +17,7 @@ class FindsController extends Controller
     {
         $this->finds = new FindsRepository();
         $this->objects = new ObjectRepository();
+        $this->list_values = new ListValueRepository();
     }
 
     /**
@@ -35,6 +37,7 @@ class FindsController extends Controller
      */
     public function create()
     {
+        dd($this->list_values->getFindTemplate());
         return view('pages.newfind');
     }
 
