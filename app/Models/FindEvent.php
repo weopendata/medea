@@ -21,11 +21,14 @@ class FindEvent extends Base
     ];
 
     protected $implicitModels = [
-        'P4' => [
-            'key' => 'findDate',
-            'object' => 'findPeriod',
-            'value_node' => true,
-            'cidoc_type' => 'E52'
+        [
+            'relationship' => 'P4',
+            'config' => [
+                'key' => 'findDate',
+                'name' => 'findPeriod',
+                'value_node' => true,
+                'cidoc_type' => 'E52'
+            ]
         ]
     ];
 
@@ -34,7 +37,7 @@ class FindEvent extends Base
         parent::save();
 
         // Add an ID to the node
-        $id_node = $id_node = $this->createValueNode(['E42', 'findId'], $this->node->getId());
+        $id_node = $id_node = $this->createValueNode('identifier', ['E42', 'findId'], $this->node->getId());
 
         $this->node->relateTo($id_node, 'P1')->save();
     }

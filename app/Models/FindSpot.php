@@ -7,36 +7,45 @@ class FindSpot extends Base
     public static $NODE_TYPE = 'E27';
     public static $NODE_NAME = 'findSpot';
 
-    protected $implicitModels = [
-        'P2' => [
-            'key' => 'type',
-            'object' => 'Type',
-            'value_node' => true,
-            'cidoc_type' => 'E55',
-            'required' => false
-        ],
-
-        'P3' => [
-            'key' => 'description',
-            'object' => 'Note',
-            'value_node' => true,
-            'cidoc_type' => 'E62',
-            'required' => false
-        ],
-        'P1' => [
-            'key' => 'title',
-            'object' => 'Appellation',
-            'value_node' => true,
-            'cidoc_type' => 'E41',
-            'required' => false
-        ]
-    ];
-
     protected $relatedModels = [
         'P53' => [
             'key' => 'location',
             'model_name' => 'Location',
             'cascade_delete' => true
+        ]
+    ];
+
+    protected $implicitModels = [
+        [
+            'relationship' => 'P2',
+            'config' => [
+                'key' => 'type',
+                'name' => 'Type',
+                'value_node' => true,
+                'cidoc_type' => 'E55',
+                'required' => false
+            ]
+        ],
+
+        [
+            'relationship' => 'P3',
+            'config' => [
+                'key' => 'description',
+                'name' => 'Note',
+                'value_node' => true,
+                'cidoc_type' => 'E62',
+                'required' => false
+            ]
+        ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'title',
+                'name' => 'Appellation',
+                'value_node' => true,
+                'cidoc_type' => 'E41',
+                'required' => false
+            ]
         ]
     ];
 
@@ -46,7 +55,7 @@ class FindSpot extends Base
 
         // Add an ID to the node
         $client = self::getClient();
-        $id_node = $this->createValueNode(['E42', 'findSpotId'], $this->node->getId());
+        $id_node = $this->createValueNode('identifier', ['E42', 'findSpotId'], $this->node->getId());
 
         $this->node->relateTo($id_node, 'P1')->save();
     }

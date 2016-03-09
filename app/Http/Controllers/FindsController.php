@@ -25,8 +25,12 @@ class FindsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $limit = $request->input('limit', 20);
+        $offset = $request->input('offset', 0);
+
+        dd($this->finds->get($limit, $offset));
         return view('pages.finds');
     }
 

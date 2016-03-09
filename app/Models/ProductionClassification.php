@@ -12,29 +12,41 @@ class ProductionClassification extends Base
     ];
 
     protected $implicitModels = [
-        'P2' => [
-            'key' => 'type',
-            'object' => 'Type',
-            'value_node' => true,
-            'cidoc_type' => 'E55'
+        [
+            'relationship' => 'P2',
+            'config' => [
+                'key' => 'type',
+                'name' => 'type',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
         ],
-        'P3' => [
-            'key' => 'description',
-            'object' => 'Description',
-            'value_node' => true,
-            'cidoc_type' => 'E62'
+        [
+            'relationship' => 'P3',
+            'config' => [
+                'key' => 'description',
+                'name' => 'description',
+                'value_node' => true,
+                'cidoc_type' => 'E62'
+            ]
         ],
-        'P42' => [
-            'key' => 'culture',
-            'object' => 'Culture',
-            'value_node' => true,
-            'cidoc_type' => 'E55'
+        [
+            'relationship' => 'P42',
+            'config' => [
+                'key' => 'culture',
+                'name' => 'culture',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
         ],
-        'P42' => [
-            'key' => 'nation',
-            'object' => 'Nation',
-            'value_node' => true,
-            'cidoc_type' => 'E55'
+        [
+            'relationship' => 'P42',
+            'config' => [
+                'key' => 'nation',
+                'name' => 'nation',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
         ]
     ];
 }
