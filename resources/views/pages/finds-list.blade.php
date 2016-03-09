@@ -5,5 +5,5 @@
 @endsection
 
 @section('script')
-<script src="{{ asset('js/findslist.js') }}"></script>
+<script src="{{ asset('js/finds-list.js') }}"></script>
 @endsection

@@ -12,8 +12,12 @@
 @import "../../../node_modules/semantic-ui-css/components/form";
 @import "../../../node_modules/semantic-ui-css/components/input";
 @import "../../../node_modules/semantic-ui-css/components/checkbox";
+
+// Fancy select
 @import "../../../node_modules/semantic-ui-css/components/dropdown";
 @import "../../../node_modules/semantic-ui-css/components/transition";
+
+@import "../../../node_modules/semantic-ui-css/components/step";
 
 @import "../../../node_modules/semantic-ui-css/components/icon";
 @import "../../../node_modules/semantic-ui-css/components/button";
@@ -37,4 +41,9 @@ dt {
 }
 dd {
 	margin-left: 90px;
+}
+
+.leaflet-map {
+	height: 300px;
+	background-color: #ccc;
 }
