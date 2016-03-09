@@ -1,0 +1,57 @@
+{
+	"id": 15,
+	"findDate": "07/01/2016",
+	"finder": {
+		"id": 187460
+	},
+	"object": {
+		"description": "Een speer uit de duitse tijd.",
+		"images": [
+			"speer4.jpg",
+			"speer2.jpg",
+			"speer1.jpg",
+			"speer5.jpg"
+		],
+		"dimensions": [{
+			"type": "diameter",
+			"unit": "cm",
+			"value": "7"
+		}, {
+			"type": "breedte",
+			"unit": "cm",
+			"value": "30"
+		}],
+		"material": "metaal",
+		"technique": "other",
+		"bibliography": "http://paperonacientgreek.com",
+		"productionEvent": {
+			"classification": {
+				"type": "Type 2.3",
+				"description": "Mooie speer zeg",
+				"culture": "Duits",
+				"nation": "Duitsland",
+				"publications": [
+					"http://paperongreekswords.com",
+					"http://anothergreekswordspaper.com"
+				]
+			}
+		}
+	},
+	"findSpot": {
+		"type": "akkerland",
+		"title": "een title van de vindplaats",
+		"description": "Braak liggend akkerland",
+		"location": {
+			"locationPlaceName": {
+				"appellation": "Bachtn de kuppe",
+				"type": "TBD"
+			},
+			"address": {
+				"street": "Akkerlandstraat",
+				"number": "3",
+				"locality": "Aalst",
+				"postalCode": "8900"
+			}
+		}
+	}
+}

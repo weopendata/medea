@@ -1,24 +1,16 @@
 <template>
-  <div v-for="findEvent in findEvents">
-    <h1 v-text="findEvent.object.productionEvent.classification.description"></h1>
-    <pre v-text="findEvent|json"></pre>
+  <div class="ui very relaxed items">
+    <find-event v-for="findEvent in finds" :find="findEvent" :user="user"></find-event>
   </div>
 </template>
 
 <script>
+import FindEvent from './FindEvent';
+
 export default {
-  props: ['columns', 'finds'],
-  data () {
-    return {
-      findEvents: []
-    }
-  },
-  ready () {
-    this.$http.get('/api-mock/finds.json').then(function (res) {
-      this.findEvents = res.data
-    }, function () {
-      console.error('could not find findevents')
-    });
+  props: ['user', 'finds'],
+  components: {
+    FindEvent
   }
 }
 </script>

@@ -1,7 +1,11 @@
 [{
+	"id": 15,
 	"findDate": "01/03/2016",
 	"object": {
 		"description": "Een speer uit de griekse tijd.",
+		"images": [
+			"speer3.jpg"
+		],
 		"dimensions": [{
 			"type": "diameter",
 			"unit": "cm",
@@ -14,6 +18,7 @@
 		"inscription": "Let the die be cast.",
 		"material": "ijzer",
 		"technique": "other",
+		"category": "pijlpunt",
 		"bibliography": "http://paperonacientgreek.com",
 		"productionEvent": {
 			"classification": {
@@ -46,9 +51,16 @@
 		}
 	}
 }, {
+	"id": 15,
 	"findDate": "07/01/2016",
 	"object": {
 		"description": "Een speer uit de duitse tijd.",
+		"images": [
+			"speer4.jpg",
+			"speer2.jpg",
+			"speer5.jpg",
+			"speer1.jpg"
+		],
 		"dimensions": [{
 			"type": "diameter",
 			"unit": "cm",
@@ -58,8 +70,7 @@
 			"unit": "cm",
 			"value": "30"
 		}],
-		"inscription": "Let the die be cast.",
-		"material": "koper",
+		"material": "metaal",
 		"technique": "other",
 		"bibliography": "http://paperonacientgreek.com",
 		"productionEvent": {

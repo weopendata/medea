@@ -64,6 +64,7 @@ class FindsController extends Controller
     public function show($id)
     {
         $find = $this->finds->getById($id);
+        return view('pages.find', ['find' => $find]);
     }
 
     /**

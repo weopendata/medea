@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('content')
-<finds-list></finds-list>
+<finds-list :finds="finds" :user="user"></finds-list>
 @endsection
 
 @section('script')
