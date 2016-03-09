@@ -37,8 +37,7 @@ class FindsController extends Controller
      */
     public function create()
     {
-        dd($this->list_values->getFindTemplate());
-        return view('pages.finds-create');
+        return view('pages.finds-create', ['fields' => $this->list_values->getFindTemplate()]);
     }
 
     /**

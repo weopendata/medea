@@ -18,6 +18,7 @@ elixir(function(mix) {
 	mix.webpack([
 			'finds-list.js',
 			'finds-detail.js',
+			'finds-create.js',
 		], {
 			module: {
 				loaders: [
