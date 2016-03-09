@@ -27,7 +27,7 @@ class FindsController extends Controller
      */
     public function index()
     {
-        return view('pages.finds');
+        return view('pages.finds-list');
     }
 
     /**
@@ -38,7 +38,7 @@ class FindsController extends Controller
     public function create()
     {
         dd($this->list_values->getFindTemplate());
-        return view('pages.newfind');
+        return view('pages.finds-create');
     }
 
     /**
@@ -63,8 +63,7 @@ class FindsController extends Controller
      */
     public function show($id)
     {
-        $find = $this->finds->getById($id);
-        return view('pages.find', ['find' => $find]);
+        return view('pages.finds-detail');
     }
 
     /**

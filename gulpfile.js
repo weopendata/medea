@@ -15,10 +15,10 @@ require('laravel-elixir-livereload');
 
 elixir(function(mix) {
 	mix.sass('app.scss', 'public/css')
-	mix.webpack({
-			findslist: 'findslist.js',
-			find: 'find.js',
-		}, {
+	mix.webpack([
+			'finds-list.js',
+			'finds-detail.js',
+		], {
 			module: {
 				loaders: [
 					{ test: /\.css$/, loader: 'style!css' },
