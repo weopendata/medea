@@ -11,16 +11,16 @@
       <div class="description">
         <object-features :find="find"></object-features>
       </div>
-      <div class="extra" v-if="user.isFindExpert">
+      <div class="extra" v-if="user.isFindExpert&&!find.object.classificationCount">
         <button class="ui green button">
           <i class="tag icon"></i>
           Classificeer
         </button>
       </div>
-      <div class="extra" v-if="!user.isFindExpert">
+      <div class="extra" v-if="find.object.classificationCount">
         <a class="ui blue button" href="/finds/{{find.id}}">
           <i class="tag icon"></i>
-          Classificaties bekijken
+           {{find.object.classificationCount}} classificaties bekijken
         </a>
       </div>
     </div>

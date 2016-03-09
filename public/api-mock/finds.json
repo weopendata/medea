@@ -20,18 +20,7 @@
 		"technique": "other",
 		"category": "pijlpunt",
 		"bibliography": "http://paperonacientgreek.com",
-		"productionEvent": {
-			"classification": {
-				"type": "Type 2.3",
-				"description": "Deze speer is duidelijk van de Griekse oudheid, het bevat zelfs een griekse inscriptie op de speer zelf.",
-				"culture": "Grieks",
-				"nation": "Griekenland",
-				"publications": [
-					"http://paperongreekswords.com",
-					"http://anothergreekswordspaper.com"
-				]
-			}
-		}
+		"classificationCount": 4
 	},
 	"findSpot": {
 		"type": "akkerland",
@@ -73,18 +62,7 @@
 		"material": "metaal",
 		"technique": "other",
 		"bibliography": "http://paperonacientgreek.com",
-		"productionEvent": {
-			"classification": {
-				"type": "Type 2.3",
-				"description": "Mooie speer zeg",
-				"culture": "Duits",
-				"nation": "Duitsland",
-				"publications": [
-					"http://paperongreekswords.com",
-					"http://anothergreekswordspaper.com"
-				]
-			}
-		}
+		"classificationCount": 0
 	},
 	"findSpot": {
 		"type": "akkerland",
