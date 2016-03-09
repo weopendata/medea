@@ -267,9 +267,8 @@ class Base
             if (!empty($this->implicitModels)) {
                 $end_node = $relationship->getEndNode();
                 $node_name = $end_node->getProperty('name');
-                //var_dump($model_map);
-                if (!empty($model_map[$node_name]['value_node'])
-                    && $model_map[$node_name]['value_node']) {
+
+                if (!empty($end_node->getProperty('value'))) {
                     $data[$node_name] = $end_node->getProperty('value');
                 } else {
                     // Check for duplicate relationships (= build an array of values)
