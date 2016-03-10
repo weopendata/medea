@@ -1,3 +1,4 @@
+var path = require('path');
 var elixir = require('laravel-elixir');
 require('laravel-elixir-webpack-ex');
 require('laravel-elixir-livereload');
@@ -25,7 +26,10 @@ elixir(function(mix) {
 					{ test: /\.css$/, loader: 'style!css' },
 					{ test: /\.vue$/, loader: 'vue' },
 					{ test: /\.scss$/, loaders: ['style', 'css', 'sass', 'scss'] },
-					{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader', exclude: /node_modules/ },
+					{ test: /\.js$/, loader: 'babel-loader', include:  [
+						path.resolve(__dirname, 'resources/assets'),
+						path.resolve(__dirname, 'node_modules/vue-google-maps')
+					]}
 				],
 			},
 			resolve: {
