@@ -26,5 +26,6 @@ Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
     Route::get('/', 'HomeController@index');
-    Route::resource('finds', 'FindsController');
+    Route::resource('finds', 'FindController');
+    Route::resource('objects/{id}/classifications', 'ClassificationController');
 });

@@ -7,6 +7,8 @@ class FindEvent extends Base
     public static $NODE_TYPE = 'E10';
     public static $NODE_NAME = 'FindEvent';
 
+    protected $has_unique_id = true;
+
     protected $relatedModels = [
         'P12' => [
             'key' => 'object',
@@ -31,14 +33,4 @@ class FindEvent extends Base
             ]
         ]
     ];
-
-    public function save()
-    {
-        parent::save();
-
-        // Add an ID to the node
-        $id_node = $id_node = $this->createValueNode('identifier', ['E42', 'findId'], $this->node->getId());
-
-        $this->node->relateTo($id_node, 'P1')->save();
-    }
 }

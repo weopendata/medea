@@ -3,8 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\FindEvent;
+use App\Models\ProductionClassification;
 
-class FindsRepository extends BaseRepository
+class FindRepository extends BaseRepository
 {
     public function __construct()
     {

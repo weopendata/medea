@@ -7,15 +7,15 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\FindEvent;
-use App\Repositories\FindsRepository;
+use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\ListValueRepository;
 
-class FindsController extends Controller
+class FindController extends Controller
 {
     public function __construct()
     {
-        $this->finds = new FindsRepository();
+        $this->finds = new FindRepository();
         $this->objects = new ObjectRepository();
         $this->list_values = new ListValueRepository();
     }

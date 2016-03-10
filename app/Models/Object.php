@@ -7,11 +7,14 @@ class Object extends Base
     public static $NODE_TYPE = 'E22';
     public static $NODE_NAME = 'object';
 
+    protected $has_unique_id = true;
+
     protected $relatedModels = [
         'P108' => [
             'key' => 'productionEvent',
             'model_name' => 'ProductionEvent',
-            'cascade_delete' => true
+            'cascade_delete' => true,
+            'required' => false
         ]
     ];
 

@@ -9,6 +9,8 @@ class Base
 {
     protected $node;
 
+    protected $has_unique_id = false;
+
     protected $unique_identifer = "MEDEA_UUID";
 
     /* List the related models (that are 1 level deep) with their respective relationship_name, this way we can cascade CRUD more eloquently */
@@ -64,17 +66,20 @@ class Base
             // Initiate model relationship cascading that are one level deep
             foreach ($this->relatedModels as $relationship_name => $config) {
                 // Check if the related model is required
-                if (empty($properties[$config['key']]) && (empty($config['required']) || $config['required'])) {
+                if (empty($properties[$config['key']]) && @$config['required']) {
+                    \Log::info($config);
                     \App::abort(400, "The property '" . $config['key'] . "'' is required in order to create the model '" . static::$NODE_NAME ."'");
-                }
-                $input = $properties[$config['key']];
 
-                if (!empty($input)) {
-                    $model_name = 'App\Models\\' . $config['model_name'];
-                    $model = new $model_name($input);
-                    $model->save();
+                } elseif (!empty($properties[$config['key']])) {
+                    $input = $properties[$config['key']];
 
-                    $this->makeRelationship($model, $relationship_name);
+                    if (!empty($input)) {
+                        $model_name = 'App\Models\\' . $config['model_name'];
+                        $model = new $model_name($input);
+                        $model->save();
+
+                        $this->makeRelationship($model, $relationship_name);
+                    }
                 }
             }
 
@@ -135,6 +140,14 @@ class Base
         $medea_label = self::makeLabel('MEDEA_NODE');
 
         $this->node->addLabels([$cidoc_label, $human_label, $medea_label]);
+
+        if ($this->has_unique_id) {
+            // Add an ID to the node
+            $id_name = lcfirst(static::$NODE_NAME) . 'Id';
+            $id_node = $id_node = $this->createValueNode('identifier', ['E42', $id_name], $this->node->getId());
+
+            $this->node->relateTo($id_node, 'P1')->save();
+        }
     }
 
     public function getNode()

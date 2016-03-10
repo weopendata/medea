@@ -7,6 +7,8 @@ class FindSpot extends Base
     public static $NODE_TYPE = 'E27';
     public static $NODE_NAME = 'findSpot';
 
+    protected $has_unique_id = true;
+
     protected $relatedModels = [
         'P53' => [
             'key' => 'location',
@@ -48,17 +50,6 @@ class FindSpot extends Base
             ]
         ]
     ];
-
-    public function save()
-    {
-        parent::save();
-
-        // Add an ID to the node
-        $client = self::getClient();
-        $id_node = $this->createValueNode('identifier', ['E42', 'findSpotId'], $this->node->getId());
-
-        $this->node->relateTo($id_node, 'P1')->save();
-    }
 
     public function delete()
     {
