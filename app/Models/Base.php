@@ -262,8 +262,12 @@ class Base
         // Because we don't use the relationship as a unique key in the implicit models array (duplicates occur in the data model)
         // We need to inverse map the name on to the config, which is unique ( <=> relationship)
         $model_map = $this->getImplicitModelMap();
+        $implicit_relationships = $this->getImplicitRelationships();
 
-        foreach ($this->node->getRelationships($this->getImplicitRelationships(), Relationship::DirectionOut) as $relationship) {
+        // Add the computed identifier relationship by default
+        $implicit_relationships[] = 'P1';
+
+        foreach ($this->node->getRelationships($implicit_relationships, Relationship::DirectionOut) as $relationship) {
             if (!empty($this->implicitModels)) {
                 $end_node = $relationship->getEndNode();
                 $node_name = $end_node->getProperty('name');
