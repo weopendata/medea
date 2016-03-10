@@ -18,10 +18,15 @@ class Location extends Base
         [
             'relationship' => 'P87',
             'config' => [
-                'key' => 'coordinates',
-                'name' => 'coordinates',
-                'value_node' => true,
-                'cidoc_type' => 'E47'
+                'key' => 'lng',
+                'name' => 'lng',
+            ]
+        ],
+        [
+            'relationship' => 'P87',
+            'config' => [
+                'key' => 'lat',
+                'name' => 'lat',
             ]
         ],
         [
@@ -46,6 +51,32 @@ class Location extends Base
         $id_node = $this->createValueNode('identifier', ['E42', 'locationplaceNameId'], $this->node->getId());
 
         $this->node->relateTo($id_node, 'P1')->save();
+    }
+
+    public function createLat($lat)
+    {
+        $client = $this->getClient();
+
+        $lat_node = $this->createValueNode('lat', ['47', 'locationSpatialCoordinate'], $lat);
+
+        $latitude_type = $this->createValueNode('latitude', ['E55', 'locationspatialCoordinateQualifier'], 'latitude');
+
+        $lat_node->relateTo($latitude_type, 'P2')->save();
+
+        return $lat_node;
+    }
+
+    public function createLng($lng)
+    {
+        $client = $this->getClient();
+
+        $lng_node = $this->createValueNode('lng', ['47', 'locationSpatialCoordinate'], $lng);
+
+        $latitude_type = $this->createValueNode('longitude', ['E55', 'locationspatialCoordinateQualifier'], 'longitude');
+
+        $lng_node->relateTo($latitude_type, 'P2')->save();
+
+        return $lng_node;
     }
 
     public function createAddress($address)

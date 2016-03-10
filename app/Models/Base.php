@@ -128,7 +128,6 @@ class Base
 
     public function save()
     {
-        var_dump(static::$NODE_NAME);
         $this->node->save();
 
         $cidoc_label = self::makeLabel(static::$NODE_TYPE);
