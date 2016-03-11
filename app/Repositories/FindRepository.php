@@ -40,17 +40,4 @@ class FindRepository extends BaseRepository
 
         return $finds;
     }
-
-    /**
-     * Fetches the relevant data that the front-end needs
-     * in order to visualize a certain find and it's related data
-     *
-     * @param Node $find
-     *
-     * @return array
-     */
-    private function buildFindEvent($find)
-    {
-        return $find->getValues();
-    }
 }

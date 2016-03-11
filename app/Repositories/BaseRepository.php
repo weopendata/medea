@@ -84,4 +84,26 @@ class BaseRepository
 
         return false;
     }
+
+    /**
+     * Fetches the relevant data that the front-end needs
+     * in order to visualize a certain find and it's related data
+     *
+     * @param integer
+     *
+     * @return array
+     */
+    public function expandValues($id)
+    {
+        $node = $this->getById($id);
+
+        if (!empty($node)) {
+            $model = new $this->model();
+            $model->setNode($node);
+
+            return $model->getValues();
+        }
+
+        return [];
+    }
 }

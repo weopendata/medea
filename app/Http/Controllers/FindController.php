@@ -65,13 +65,8 @@ class FindController extends Controller
      */
     public function show($id)
     {
-        $find = $this->finds->get(1, 0)[3];
-        $find['object']['images'] = ['speer3.jpg'];
-        $find['object']['productionEvent'] = ['classification' => [
-        'description' => 'superspeer',
-        'culture' => 'renaissance',
-        'description' => 'superspeer',
-        ]];
+        $find = $this->finds->expandValues($id);
+
         return view('pages.finds-detail', ['find' => $find]);
     }
 
