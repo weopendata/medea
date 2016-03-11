@@ -33,9 +33,7 @@ class FindRepository extends BaseRepository
 
         foreach ($find_nodes as $find_node) {
             // Build a structure out of a find event
-            $find_model = new $this->model();
-            $find_model->setNode($find_node);
-            $finds[] = $this->buildFindEvent($find_model);
+            $finds[] = $this->expandValues($find_node->getId());
         }
 
         return $finds;

@@ -66,6 +66,8 @@ class FindController extends Controller
     public function show($id)
     {
         $find = $this->finds->expandValues($id);
+        // Remove the following line when the image upload is up and running
+        $find['object']['images'] = ['speer3.jpg'];
 
         return view('pages.finds-detail', ['find' => $find]);
     }
