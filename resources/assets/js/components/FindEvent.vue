@@ -24,7 +24,7 @@
           <i class="tag icon"></i>
           {{find.object.classificationCount}} classificaties bekijken
         </a>
-        <button class="ui red button" @click="rm" v-if="user.isAdmin&&find.object.identifier">
+        <button class="ui red button" @click="rm" v-if="user.isAdmin&&find.identifier">
           <i class="trash icon"></i>
           Verwijderen
         </button>
@@ -48,8 +48,8 @@ export default {
   },
   methods: {
     rm () {
-      this.$http.delete('/finds/'+(this.find.object.identifier-1), 'yes', {emulateHTTP:true}).then(function (res) {
-        console.log('removed', this.find.object.identifier)
+      this.$http.delete('/finds/'+(this.find.identifier), 'yes', {emulateHTTP:true}).then(function (res) {
+        console.log('removed', this.find.identifier)
       });
     }
   }
