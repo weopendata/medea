@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('content')
-{!! Form::open(array('url' => 'finds', 'files' => true, ':is' => '"ajax-form"')) !!}
+{!! Form::open(array('url' => 'finds', 'files' => true, ':is' => '"ajax-form"', ':submittable' => 'step1valid&&step2valid&&step==3')) !!}
 
 <div class="ui fluid ordered steps">
   <div class="step" v-bind:class="{active:step==1, completed:step1valid}" @click="toStep(1)">

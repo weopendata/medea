@@ -40,22 +40,39 @@ new Vue({
       find: {
         finderName: '',
         findDate: (new Date()).toJSON().substr(0, 10),
-        findSpot: {
-          location: {
-            locationPlaceName: {appellation:''},
-            latlng:  {lat: 50.9, lng: 4.3},
-            address: {
-              street: ''
-            }
+        "findSpot": {
+          "type": "akkerland",
+          "title": "een title van de vindplaats",
+          "description": "Braak liggend akkerland",
+          "location": {
+            "locationPlaceName": {
+              "appellation": "Bachtn de kuppe",
+              "type": "TBD"
+            },
+            "address": {
+              "street": "Akkerlandstraat",
+              "number": "3",
+              "locality": "Ieper",
+              "postalCode": "8900"
+            },
+            "latlng": {},
+            "lat": "4.3487800",
+            "lng": "50.8504500"
           }
         },
+
         object: {
+          "description" : "Een speer uit de griekse tijd.",
+          "inscription" : "Let the die be cast.",
+          "material" : "ijzer",
+          "technique" : "other",
+          "bibliography" : "http://paperonacientgreek.com",
           images: [],
           dimensions: []
         }
       },
       dimensionText: '',
-      step: 2,
+      step: 1,
       user: window.medeaUser
     }
   },
@@ -78,7 +95,7 @@ new Vue({
     }
   },
   ready () {
-    $('.ui.dropdown').dropdown()
+    $('.ui.dropdown').dropdown();
   },
   watch: {
     'dimensionText' (val) {

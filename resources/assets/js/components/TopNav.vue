@@ -18,6 +18,9 @@
     <label class="item">
       <input type="checkbox" v-model="user.isResearcher"> Res
     </label>
+    <label class="item">
+      <input type="checkbox" v-model="user.isAdmin"> Adm
+    </label>
     <a href="login" class="right floated item {{path==='/login'?'active':''}}">Log in</a>
   </div>
 </template>

@@ -36,7 +36,7 @@
             </div>
           </div>
           <button class="ui green button" type="submit" v-if="!photoValidation.length">Foto's goedkeuren</button>
-          <button class="ui blue button" type="submit" v-if="photoValidation.length">Feedback versturen</button>
+          <button class="ui orange button" type="submit" v-if="photoValidation.length">Feedback versturen</button>
         </div>
       </div>
     </div>

@@ -40,6 +40,7 @@ try {
     isFindExpert: true,
     isResearcher: true,
     isRegistrar: true,
+    isAgency: true,
     isAdmin: true
   }
 }

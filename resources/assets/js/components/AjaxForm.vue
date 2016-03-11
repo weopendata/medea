@@ -6,15 +6,18 @@
 
 <script>
 export default {
-  props: ['action'],
+  props: ['action', 'submittable'],
   methods: {
     submit (event) {
+      event.preventDefault()
+      if (!this.submittable) {
+        return;
+      }
       this.$http.post(this.action, this.$root.find).then(function () {
         console.log('yes!')
       },function () {
         console.log('too bad!')
       })
-      event.preventDefault()
     }
   },
   attached () {

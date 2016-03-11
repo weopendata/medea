@@ -30,7 +30,7 @@ class FindController extends Controller
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
-        return view('pages.finds-list');
+        return view('pages.finds-list', ['finds' => $this->finds->get($limit, $offset)]);
     }
 
     /**
@@ -65,7 +65,14 @@ class FindController extends Controller
      */
     public function show($id)
     {
-        return view('pages.finds-detail');
+        $find = $this->finds->get(1, 0)[3];
+        $find['object']['images'] = ['speer3.jpg'];
+        $find['object']['productionEvent'] = ['classification' => [
+        'description' => 'superspeer',
+        'culture' => 'renaissance',
+        'description' => 'superspeer',
+        ]];
+        return view('pages.finds-detail', ['find' => $find]);
     }
 
     /**
@@ -99,6 +106,6 @@ class FindController extends Controller
      */
     public function destroy($id)
     {
-        $this->finds->delete($id);
+        return "delete ".$id.$this->finds->delete($id);
     }
 }

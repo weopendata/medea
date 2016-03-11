@@ -18,11 +18,21 @@ new Vue({
     }
   },
   ready () {
-    this.$http.get('/api-mock/find15.json').then(function (res) {
-      this.find = res.data
-    }, function () {
-      console.error('could not find findEvent 15')
-    });
+    console.log(window.initialFind )
+    if (window.initialFind && window.initialFind.identifier) {
+      this.find = window.initialFind;
+    } else {
+      this.fetch()
+    }
+  },
+  methods: {
+    fetch () {
+      this.$http.get('/api-mock/find15.json').then(function (res) {
+        this.find = res.data
+      }, function () {
+        console.error('could not find findEvent 15')
+      });
+    }
   },
   watch: {
     'user': {
