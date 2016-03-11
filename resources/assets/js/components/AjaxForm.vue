@@ -1,19 +1,34 @@
 <template>
-  <div class="ui page grid">
-    <div class="column">
-  <div class="ui form">
+  <form class="form-container ui form">
     <slot>Form expected within ajax-form</slot>
-  </div>
-  </div></div>
+  </form>
 </template>
 
 <script>
-import dropdown from 'semantic-ui-css/components/dropdown.min.js';
-import transition from 'semantic-ui-css/components/transition.min.js';
-
 export default {
-  ready () {
-    $('.ui.dropdown').dropdown()
+  props: ['action'],
+  methods: {
+    submit (event) {
+      this.$http.post(this.action, this.$root.find).then(function () {
+        console.log('yes!')
+      },function () {
+        console.log('too bad!')
+      })
+      event.preventDefault()
+    }
+  },
+  attached () {
+    this.$el.addEventListener('submit', this.submit, false);
+  },
+  detached () {
+    this.$el.removeEventListener('submit', this.submit, false);
   }
 }
 </script>
+
+<style lang="sass">
+  .ui.form-container {
+    margin: 0 auto;
+    max-width: 800px;
+  }
+</style>
