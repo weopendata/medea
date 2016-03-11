@@ -28,9 +28,9 @@ class BaseRepository
     }
 
     /**
-     * Return a Neo4j client
+     * Return the configured
      *
-     * @return Client
+     * @return Label
      */
     protected function getLabel()
     {

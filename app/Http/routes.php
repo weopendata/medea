@@ -24,8 +24,11 @@
 
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
+    Route::get('register/confirm/{token}', 'Auth\AuthController@confirmEmail');
 
     Route::get('/', 'HomeController@index');
     Route::resource('finds', 'FindController');
     Route::resource('objects/{id}/classifications', 'ClassificationController');
+
+    Route::delete('users/{id}', 'UserController@delete');
 });

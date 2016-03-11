@@ -13,11 +13,26 @@ class Base
 
     protected $unique_identifer = "MEDEA_UUID";
 
-    /* List the related models (that are 1 level deep) with their respective relationship_name, this way we can cascade CRUD more eloquently */
+    /**
+     * List the related models (that are 1 level deep) with their respective relationship_name,
+     * this way we can cascade CRUD more eloquently
+     */
     protected $relatedModels = [
     ];
 
+    /**
+     *
+     * List the models that need to be created implicitly, they don't exist in the sense of Model classes
+     * These nodes are only relevant to a node that has been modeled in a Model class
+     */
     protected $implicitModels = [
+    ];
+
+    /**
+     * List of the properties of the model that
+     * should be added as a property on the node
+     */
+    protected $properties = [
     ];
 
     protected $lazy_deletion = false;
@@ -61,13 +76,24 @@ class Base
             $general_id = "MEDEA" . sha1(str_random(10) . "__" . time());
 
             $this->node->setProperty($this->unique_identifer, $general_id)->save();
+
+            // Set value properties for the node
+            foreach ($this->properties as $property_config) {
+                $property_name = $property_config['name'];
+
+                if (!empty($properties[$property_name])) {
+                    $this->node->setProperty($property_name, $properties[$property_name]);
+                } elseif (array_key_exists('default_value', $property_config)) {
+                    $this->node->setProperty($property_name, $property_config['default_value']);
+                }
+            }
+
             $this->node->save();
 
             // Initiate model relationship cascading that are one level deep
             foreach ($this->relatedModels as $relationship_name => $config) {
                 // Check if the related model is required
                 if (empty($properties[$config['key']]) && @$config['required']) {
-                    \Log::info($config);
                     \App::abort(400, "The property '" . $config['key'] . "'' is required in order to create the model '" . static::$NODE_NAME ."'");
 
                 } elseif (!empty($properties[$config['key']])) {
@@ -87,7 +113,7 @@ class Base
                 $relationship = $config['relationship'];
                 $model_config = $config['config'];
 
-                $input = $properties[$model_config['key']];
+                $input = @$properties[$model_config['key']];
 
                 if (!empty($input)) {
                     if (is_array($input) && !$this->isAssoc($input)) {

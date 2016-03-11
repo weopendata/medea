@@ -30,8 +30,6 @@ class FindController extends Controller
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
-        dd($this->finds->get($limit, $offset));
-
         return view('pages.finds-list');
     }
 

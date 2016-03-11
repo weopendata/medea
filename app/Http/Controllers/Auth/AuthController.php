@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Person;
+use App\Mailers\AppMailer;
 
 class AuthController extends Controller
 {
@@ -32,16 +33,18 @@ class AuthController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new authentication controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserRepository $users)
     {
         $this->middleware('guest', ['except' => 'logout']);
+
+        $this->users = $users;
     }
 
     public function login(Request $request)
@@ -52,22 +55,61 @@ class AuthController extends Controller
             $email = $request->input('email');
             $password = $request->input('password');
 
-            $user = $users->getUser($email);
-            $person = new Person($user);
+            $user_node = $users->getUser($email);
 
-            if (!empty($user)) {
+            // Create the Person model
+            $user = new Person();
+            $user->setNode($user_node);
+
+            if (!empty($user) && $user->verified) {
                 // Check password
-                if (Hash::check($password, $user->getProperty('password'))) {
-                    Auth::login($person);
+                if (Hash::check($password, $user->password)) {
+                    Auth::login($user);
 
                     return redirect($this->redirectTo);
                 } else {
-                    return response()->json(['code' => '400', 'errors' => ['password' => 'The password was incorrect.']]);
+                    return response()->json(['errors' => ['password' => 'Het wachtwoord is incorrect.']], 400);
                 }
             } else {
-                return response()->json(['code' => '400', 'errors' => ['email' => 'The email was not found.']]);
+                return response()->json(['errors' => ['email' => 'Het emailadres werd niet gevonden.']], 400);
             }
         }
+    }
+
+    public function register(Request $request, AppMailer $mailer)
+    {
+        $input = $request->json()->all();
+
+        $validator = $this->validator($input);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Check if the user already exists
+        if (!$this->users->userExists($input['email'])) {
+            $user = $this->users->store($input);
+
+            $mailer->sendRegistrationToAdmin($user);
+
+            return response()->json(['message' => 'U registratie is doorgevoerd, een admin moet deze echter wel nog goedkeuren.']);
+        } else {
+            return response()->json(['error' => ['email' => 'Een gebruiker met dit email adres is reeds geregistreerd.']], 400);
+        }
+    }
+
+    /**
+     * Confirm a user's email address.
+     *
+     * @param  string $token
+     * @return mixed
+     */
+    public function confirmEmail($token)
+    {
+        $this->users->confirmUser($token);
+
+        //TODO send message with "ok"?
+        return redirect('/');
     }
 
     /**
@@ -79,24 +121,10 @@ class AuthController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ]);
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'firstName' => 'required|max:255',
+            'lastName' => 'required|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|min:6',
         ]);
     }
 }

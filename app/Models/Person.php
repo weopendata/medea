@@ -3,13 +3,109 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Hash;
+use Everyman\Neo4j\Relationship;
 
-class Person implements Authenticatable
+class Person extends Base implements Authenticatable
 {
-    public function __construct($node)
+    public static $NODE_TYPE = 'E21';
+    public static $NODE_NAME = 'Person';
+
+    protected $has_unique_id = true;
+
+    protected $implicitModels = [
+        [
+            'relationship' => 'P131',
+            'config' => [
+                'key' => 'firstName',
+                'name' => 'firstName',
+                'cidoc_type' => 'E82',
+            ]
+        ],
+        [
+            'relationship' => 'P131',
+            'config' => [
+                'key' => 'lastName',
+                'name' => 'lastName',
+                'cidoc_type' => 'E82',
+            ]
+        ],
+        [
+            'relationship' => 'P2',
+            'config' => [
+                'key' => 'roles',
+                'name' => 'roles',
+                'cidoc_type' => 'E55',
+            ]
+        ]
+    ];
+
+    protected $properties = [
+        [
+            'name' => 'email',
+        ],
+        [
+            'name' => 'verified',
+            'default_value' => 'false'
+        ],
+        [
+            'name' => 'firstName'
+        ],
+        [
+            'name' => 'lastName'
+        ]
+    ];
+
+    public function __construct($properties = [])
+    {
+        parent::__construct($properties);
+
+        if (!empty($properties)) {
+            $this->node->setProperty('token', str_random(40));
+            $this->node->setProperty('password', Hash::make($properties['password']));
+            $this->node->save();
+        }
+    }
+
+    public function createFirstName($first_name)
+    {
+        $name_node = $this->createValueNode('value', ['E82', 'personName'], $first_name);
+
+        $name_type = $this->createValueNode('voornaam', ['E55', 'personNameType'], 'voornaam');
+
+        $name_node->relateTo($name_type, 'P2')->save();
+
+        return $name_node;
+    }
+
+    public function createLastName($last_name)
+    {
+        $name_node = $this->createValueNode('value', ['E82', 'personName'], $last_name);
+
+        $name_type = $this->createValueNode('achternaam', ['E55', 'personNameType'], 'achternaam');
+
+        $name_node->relateTo($name_type, 'P2')->save();
+
+        return $name_node;
+    }
+
+    public function createRoles($role)
+    {
+        $role_node = $this->createValueNode('value', ['E55', 'personType'], $role);
+
+        return $role_node;
+    }
+
+    /**
+     * Set the Node object for the Person model
+     *
+     * @param Node $node
+     */
+    public function setNode($node)
     {
         $this->node = $node;
     }
+
     /**
      * Get the name of the unique identifier for the user.
      *
@@ -38,7 +134,7 @@ class Person implements Authenticatable
      */
     public function getAuthPassword()
     {
-        return $this->node->getProperty('passsword');
+        return $this->node->getProperty('password');
     }
 
     /**
@@ -71,6 +167,31 @@ class Person implements Authenticatable
     public function getRememberTokenName()
     {
         return 'remember_token';
+    }
+
+    /**
+     * Get the roles of a user
+     *
+     * @return array
+     */
+    public function getRoles()
+    {
+        $roles = [];
+
+        $type_rel = $this->node->getRelationships(['P2'], Relationship::DirectionOut);
+
+        foreach ($type_rel as $rel) {
+            $end_node = $rel->getEndNode();
+            $labels = $end_node->getLabels();
+
+            foreach ($labels as $label) {
+                if ($label->getName() == 'personType') {
+                    $roles[] = $end_node->getProperty('value');
+                }
+            }
+        }
+
+        return $roles;
     }
 
     public function __get($key)

@@ -12,10 +12,10 @@ class Neo4jUserProvider implements UserProvider
 {
     public function __construct()
     {
-        $this->client = $this->getClient();
+        $this->person_label = $this->getPersonLabel();
     }
 
-    private function getClient()
+    private function getPersonLabel()
     {
         $neo4j_config = \Config::get('database.connections.neo4j');
 
@@ -24,7 +24,7 @@ class Neo4jUserProvider implements UserProvider
         $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
 
         // Set a label configured client, equivalent of only returning a certain eloquent model
-        return $client->makeLabel('Person');
+        return $client->makeLabel('E21');
     }
 
      /**
@@ -35,10 +35,13 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveById($identifier)
     {
-        $users = $this->client->getNodes('email', $identifier);
+        $users = $this->person_label->getNodes('email', $identifier);
 
         if ($users->count() > 0) {
-            return new Person($users[0]);
+            $person = new Person();
+            $person->setNode($users[0]);
+
+            return $person;
         }
 
         return null;
@@ -53,13 +56,16 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveByToken($identifier, $token)
     {
-        $users = $this->client->getNodes('email', $identifier);
+        $users = $this->person_label->getNodes('email', $identifier);
 
         if ($users->count() > 0) {
             $user = $users[0];
 
             if ($user->getProperty('remember_me') == $token) {
-                return new Person($user);
+                $person = new Person();
+                $person->setNode($users[0]);
+
+                return $person;
             }
         }
 
@@ -75,14 +81,15 @@ class Neo4jUserProvider implements UserProvider
      */
     public function updateRememberToken(Authenticatable $user, $token)
     {
-        $users = $this->client->getNodes('email', $identifier);
+        $users = $this->person_label->getNodes('email', $identifier);
 
         if ($users->count() > 0) {
-            $user = $users[0];
-        }
+            $user_node = $users[0];
 
-        $person = new Person($user);
-        $person->setRememberToken($token);
+            $person = new Person();
+            $person->setNode($user_node);
+            $person->setRememberToken($token);
+        }
     }
 
     /**
@@ -93,11 +100,15 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        $users = $this->client->getNodes('email', $identifier);
+        $users = $this->person_label->getNodes('email', $identifier);
 
         if ($users->count() > 0) {
-            $user = $users[0];
-            return new Person($user);
+            $user_node = $users[0];
+
+            $person = new Person();
+            $person->setNode($user_node);
+
+            return $person;
         }
 
         return user;

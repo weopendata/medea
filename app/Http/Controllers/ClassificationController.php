@@ -30,7 +30,7 @@ class ClassificationController extends Controller
         $classification_node = $this->objects->addClassification($id, $classification);
 
         if (empty($classification_node)) {
-            \App::abort(400, "Something went wrong while adding the classification. Make sure body is correct and the object id exists.");
+            return response()->json(['errors' => ['message' => 'Something has gone wrong, make sure the object exists.']], 404);
         }
     }
 }
