@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="userinfo" content="{{ json_encode($user) }}">
 
     <!-- <link rel="stylesheet" href="{{ asset('assets/css/leaflet.extra-markers.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('assets/css/leaflet.css') }}" rel="stylesheet"/> -->
@@ -29,7 +30,6 @@
   </div>
   @yield('content')
 </div>
-
 <script type="text/javascript">
 try {
   var medeaUser = JSON.parse(localStorage.debugUser);
@@ -50,7 +50,7 @@ try {
 @if (Config::get('app.debug'))
 <script type="text/javascript">
 document.write('<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
-</script> 
+</script>
 @endif
 </body>
 </html>

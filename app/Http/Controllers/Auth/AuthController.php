@@ -92,7 +92,7 @@ class AuthController extends Controller
 
             $mailer->sendRegistrationToAdmin($user);
 
-            return response()->json(['message' => 'U registratie is doorgevoerd, een admin moet deze echter wel nog goedkeuren.']);
+            return response()->json(['message' => 'Uw registratie is doorgevoerd, een admin moet deze echter wel nog goedkeuren.']);
         } else {
             return response()->json(['error' => ['email' => 'Een gebruiker met dit email adres is reeds geregistreerd.']], 400);
         }

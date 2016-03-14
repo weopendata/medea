@@ -91,7 +91,7 @@ class Person extends Base implements Authenticatable
 
     public function createRoles($role)
     {
-        $role_node = $this->createValueNode('value', ['E55', 'personType'], $role);
+        $role_node = $this->createValueNode('personType', ['E55', 'personType'], $role);
 
         return $role_node;
     }

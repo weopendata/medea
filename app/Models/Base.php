@@ -311,7 +311,13 @@ class Base
                 $node_name = $end_node->getProperty('name');
 
                 if (!empty($end_node->getProperty('value'))) {
-                    $data[$node_name] = $end_node->getProperty('value');
+                    if (!empty($data[$node_name])) {
+                        $tmp = $data[$node_name];
+                        $data[$node_name] = [$tmp];
+                        $data[$node_name][] = $end_node->getProperty('value');
+                    } else {
+                        $data[$node_name] = $end_node->getProperty('value');
+                    }
                 } else {
                     // Check for duplicate relationships (= build an array of values)
                     if (!empty($data[$node_name])) {
@@ -322,6 +328,15 @@ class Base
                         $data[$node_name] = $this->getImplicitValues($end_node);
                     }
                 }
+            }
+        }
+
+        // Get the data properties
+        foreach ($this->properties as $property) {
+            $val = $this->node->getProperty($property['name']);
+
+            if (!empty($val)) {
+                $data[$property['name']] = $val;
             }
         }
 
