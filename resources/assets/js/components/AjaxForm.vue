@@ -1,5 +1,5 @@
 <template>
-  <form class="form-container ui form">
+  <form class="form-container">
     <slot>Form expected within ajax-form</slot>
   </form>
 </template>
@@ -9,11 +9,12 @@ export default {
   props: ['action', 'submittable'],
   methods: {
     submit (event) {
+      console.log('subbb!')
       event.preventDefault()
       if (!this.submittable) {
         return;
       }
-      this.$http.post(this.action, this.$root.find).then(function () {
+      this.$http.post(this.action, this.$root.formdata()).then(function () {
         console.log('yes!')
       },function () {
         console.log('too bad!')

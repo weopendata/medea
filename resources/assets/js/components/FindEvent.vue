@@ -1,7 +1,8 @@
 <template>
   <div class="item fe">
-    <a class="big image fe-image" href="/finds/{{find.id}}">
-      <img :src="'/uploads/' + src" v-for="src in find.object.images" v-if="find.object.images">
+    <a class="big image fe-image" href="/finds/{{find.identifier}}">
+      <img class="fe-img" :src="img.src || img" v-for="img in find.object.images">
+      <div class="fe-img fe-img-placeholder" v-if="!find.object.images || !find.object.images.length">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
       <a class="header" href="/finds/{{find.id}}">{{find.object.description}}</a>
@@ -41,14 +42,9 @@ export default {
   components: {
     ObjectFeatures
   },
-  data () {
-    return {
-      findEvents: []
-    }
-  },
   methods: {
     rm () {
-      this.$http.delete('/finds/'+(this.find.identifier), 'yes', {emulateHTTP:true}).then(function (res) {
+      this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
       });
     }

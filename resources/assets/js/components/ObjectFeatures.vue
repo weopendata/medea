@@ -21,7 +21,7 @@
     <dt>Opschrift</dt>
     <dd>{{find.object.inscription}}</dd>
   </dl>
-  <dl v-if="find.object.dimensions">
+  <dl v-if="find.object.dimensions && find.object.dimensions.length">
     <dt>Dimensies</dt>
     <dd v-for="dim in find.object.dimensions">{{dim.type}}: {{dim.value}}{{dim.unit}}</dd>
   </dl>

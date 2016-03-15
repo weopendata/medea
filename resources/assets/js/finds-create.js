@@ -3,6 +3,7 @@ import VueResource from 'vue-resource';
 import TopNav from './components/TopNav';
 import AjaxForm from './components/AjaxForm';
 import Step from './components/Step';
+import checkbox from 'semantic-ui-css/components/checkbox.min.js';
 import dropdown from 'semantic-ui-css/components/dropdown.min.js';
 import transition from 'semantic-ui-css/components/transition.min.js';
 
@@ -12,6 +13,8 @@ import Marker from 'vue-google-maps/src/components/marker.vue';
 import PlaceInput from 'vue-google-maps/src/components/PlaceInput.vue';
 
 import PhotoUpload from './components/PhotoUpload';
+import DimInput from './components/DimInput.vue';
+import FindEvent from './components/FindEvent';
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k', libraries:'places'})
 
@@ -26,7 +29,9 @@ new Vue({
     Map,
     PlaceInput,
     Marker,
-    PhotoUpload
+    PhotoUpload,
+    DimInput,
+    FindEvent
   },
   data () {
     return {
@@ -38,75 +43,132 @@ new Vue({
         clickable: true
       },
       find: {
+        toValidate: true,
         finderName: '',
         findDate: (new Date()).toJSON().substr(0, 10),
         "findSpot": {
           "type": "akkerland",
           "title": "een title van de vindplaats",
-          "description": "Braak liggend akkerland",
+          "description": "",
           "location": {
             "locationPlaceName": {
-              "appellation": "Bachtn de kuppe",
+              "appellation": "",
               "type": "TBD"
             },
             "address": {
-              "street": "Akkerlandstraat",
-              "number": "3",
-              "locality": "Ieper",
-              "postalCode": "8900"
+              "street": "",
+              "number": "",
+              "locality": "",
+              "postalCode": ""
             },
-            "latlng": {},
-            "lat": "4.3487800",
-            "lng": "50.8504500"
+            "lat": "",
+            "lng": ""
           }
         },
-
         object: {
-          "description" : "Een speer uit de griekse tijd.",
-          "inscription" : "Let the die be cast.",
-          "material" : "ijzer",
-          "technique" : "other",
+          "description" : "",
+          "inscription" : "",
+          category: "",
+          "material" : "",
+          "technique" : "",
           "bibliography" : "http://paperonacientgreek.com",
           images: [],
           dimensions: []
         }
       },
       dimensionText: '',
+      dims: {
+        lengte: {unit: 'cm' },
+        breedte: {unit: 'cm' },
+        diepte: {unit: 'cm' },
+        omtrek: {unit: 'cm' },
+        diameter: {unit: 'cm' },
+        gewicht: {unit: 'g'}
+      },
+      show: {
+        map: false,
+        place: false,
+        address: false,
+        locality: false,
+        co: false,
+        lengte: false,
+        breedte: false,
+        diepte: false,
+        omtrek: false,
+        diameter: false,
+        gewicht: false
+      },
       step: 1,
       user: window.medeaUser
     }
   },
   computed: {
     step1valid () {
-      return this.find.findSpot.location.description && this.find.findSpot.location.address.street
+      return this.hasFindDetails
     },
+    hasFindDetails () {
+      return this.hasFindSpot && this.find.finderName && this.find.findDate
+    },
+    hasFindSpot () {
+      return this.hasLocation && this.find.findSpot.description
+    },
+    hasLocation () {
+      return (this.find.findSpot.location.lat && this.find.findSpot.location.lng) || this.find.findSpot.location.locationPlaceName.appellation || this.find.findSpot.location.address.locality || this.find.findSpot.location.address.street || this.find.findSpot.location.address.line
+    },
+
     step2valid () {
-      return this.find.findSpot.location.description && this.find.findSpot.location.address.street
+      return this.hasImages && this.find.object.description && this.hasDimensions
+    },
+    hasImages () {
+      return this.find.object.images.length
+    },
+    hasDimensions () {
+      return this.dims.lengte.value || this.dims.breedte.value || this.dims.diepte.value || this.dims.omtrek.value || this.dims.diameter.value || this.dims.gewicht.value
     }
   },
   methods: {
     toStep (i) {
+      this.formdata()
       this.step = i
     },
     setMarker (event) {
       this.marker.visible = true
-      this.find.findSpot.location.latlng.lat = event.latLng.lat()
-      this.find.findSpot.location.latlng.lng = event.latLng.lng()
+      this.marker.position.lat = event.latLng.lat()
+      this.marker.position.lng = event.latLng.lng()
+      this.find.findSpot.location.lat = event.latLng.lat()
+      this.find.findSpot.location.lng = event.latLng.lng()
+    },
+    changeMarker (event) {
+      console.log(event, 'dragged')
+    },
+    formdata () {
+      this.find.object.dimensions = []
+      for (let type in this.dims) {
+        if (this.dims[type].value) {
+          this.find.object.dimensions.push({
+            type: type,
+            value: this.dims[type].value,
+            unit: this.dims[type].unit
+          })
+        }
+      }
+      return this.find
     }
   },
   ready () {
-    $('.ui.dropdown').dropdown();
+    $('.ui.checkbox').checkbox()
+    $('.ui.dropdown').dropdown()
+    this.categoryMap = window.categoryMap
   },
   watch: {
-    'dimensionText' (val) {
-      this.find.object.dimensions = val.split('\n').map(function (v) {
-        var arr = /([a-zA-Z]*)[:,.\s]*(\d+)\s*([a-zA-Z]*)/.exec(v)
-        return {
-          type: arr && arr[1],
-          value: arr && arr[2],
-          unit: arr && arr[3],
+    'find.object.category' (val) {
+      console.log(val, this.categoryMap)
+      if (val in this.categoryMap) {
+        var dims = this.categoryMap[val]
+        for (var i = 0; i < dims.length; i++) {
+          this.show[dims[i]] = true;
         }
-      })
+      }
     },
     'user': {
       deep: true,

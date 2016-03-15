@@ -5,7 +5,7 @@
     </div>
     <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
     <div class="photo-upload-img" v-for="(i, image) in images">
-      <img :src="imageData[i]">
+      <img :src="image.src">
     </div>
   </div>
 </template>
@@ -15,11 +15,6 @@ export default {
   props: {
     images: {
       default: []
-    }
-  },
-  data() {
-    return {
-      imageData: []
     }
   },
   attached () {
@@ -46,13 +41,19 @@ export default {
       var image = new Image();
       var reader = new FileReader();
       var vm = this;
+      if (file.type.substr(0, 5) !== 'image') {
+        return console.warn(file.name, 'has unsupported type:', file.type.substr(0, 5));
+      }
+      if (file.size > 1024*1024*4) {
+        return console.warn(file.name, 'is too large:', file.size);
+      }
 
       reader.onload = (e) => {
-        if (e.target.result.length > 1024*1024*4) {
-          return;
-        }
-        vm.imageData.push(e.target.result);
-        vm.images.push({name: 'image name', size: Math.ceil(e.target.result.length*.00075)});
+        vm.images.push({
+          name: file.name,
+          size: file.size,
+          src: e.target.result
+        });
       };
       reader.readAsDataURL(file);
     },
