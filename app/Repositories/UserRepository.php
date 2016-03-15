@@ -41,7 +41,13 @@ class UserRepository extends BaseRepository
         $label = $this->getLabel();
 
         // Get all of the Person node with the admin email
-        return $label->getNodes("email", $email)->current();
+        $user_nodes = $label->getNodes("email", $email);
+
+        if ($user_nodes->count() > 0) {
+            return $user_nodes->current();
+        } else {
+            return [];
+        }
     }
 
     /**

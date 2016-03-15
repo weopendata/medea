@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Person;
 use App\Mailers\AppMailer;
+use Illuminate\Support\MessageBag;
 
 class AuthController extends Controller
 {
@@ -51,28 +52,34 @@ class AuthController extends Controller
     {
         $users = new UserRepository();
 
-        if ($request->method() == 'POST') {
+        if (!empty($request->input('email'))) {
             $email = $request->input('email');
             $password = $request->input('password');
 
             $user_node = $users->getUser($email);
 
-            // Create the Person model
-            $user = new Person();
-            $user->setNode($user_node);
+            if (!empty($user_node) && $user->verified) {
+                // Create the Person model
+                $user = new Person();
+                $user->setNode($user_node);
 
-            if (!empty($user) && $user->verified) {
                 // Check password
                 if (Hash::check($password, $user->password)) {
+                    dd("logging in");
                     Auth::login($user);
 
                     return redirect($this->redirectTo);
                 } else {
-                    return response()->json(['errors' => ['password' => 'Het wachtwoord is incorrect.']], 400);
+                    $message_bag = new MessageBag();
+                    return redirect()->back()->with('errors', $message_bag->add('password', 'Het wachtwoord is incorrect.'));
                 }
             } else {
-                return response()->json(['errors' => ['email' => 'Het emailadres werd niet gevonden.']], 400);
+                $message_bag = new MessageBag();
+                return redirect()->back()->with('errors', $message_bag->add('email', 'Het emailadres werd niet gevonden.'));
             }
+        } else {
+            $message_bag = new MessageBag();
+            return redirect()->back()->with('errors', $message_bag->add('email', 'Het emailadres werd niet gevonden.'));
         }
     }
 

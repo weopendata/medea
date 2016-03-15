@@ -12,9 +12,9 @@
                 <input type="text" name="email" placeholder="Email">
 
                 @if ($errors->has('email'))
-                <span class="help-block">
-                    <strong>{{ $errors->first('email') }}</strong>
-                </span>
+                <div class="ui negative message">
+                    <p>{{ $errors->first('email') }}</p>
+                </div>
                 @endif
             </div>
 
@@ -23,9 +23,9 @@
                 <input type="password" class="form-control" name="password">
 
                 @if ($errors->has('password'))
-                <span class="help-block">
-                    <strong>{{ $errors->first('password') }}</strong>
-                </span>
+                <div class="ui negative message">
+                    <p>{{ $errors->first('password') }}</p>
+                </div>
                 @endif
             </div>
 
