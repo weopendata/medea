@@ -33,9 +33,10 @@ class Person extends Base implements Authenticatable
         [
             'relationship' => 'P2',
             'config' => [
-                'key' => 'roles',
-                'name' => 'roles',
+                'key' => 'personType',
+                'name' => 'personType',
                 'cidoc_type' => 'E55',
+                'plural' => true
             ]
         ]
     ];
@@ -89,11 +90,11 @@ class Person extends Base implements Authenticatable
         return $name_node;
     }
 
-    public function createRoles($role)
+    public function createPersonType($type)
     {
-        $role_node = $this->createValueNode('personType', ['E55', 'personType'], $role);
+        $person_type = $this->createValueNode('personType', ['E55', 'personType'], $type);
 
-        return $role_node;
+        return $person_type;
     }
 
     /**

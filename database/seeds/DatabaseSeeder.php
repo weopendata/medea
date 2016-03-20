@@ -48,6 +48,6 @@ class DatabaseSeeder extends Seeder
         }
 
         // Seed the values in the lists of MEDEA
-        $this->seedListValues();
+        $this->call(ListValueSeeder::class);
     }
 }

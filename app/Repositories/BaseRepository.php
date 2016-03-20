@@ -18,6 +18,10 @@ class BaseRepository
 
         $node = $client->getNode($id);
 
+        if (empty($node)) {
+            return [];
+        }
+
         foreach ($node->getLabels() as $label) {
             if ($label->getName() == $this->label) {
                 return $node;

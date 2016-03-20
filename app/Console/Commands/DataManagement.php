@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Repositories\FindRepository;
+use App\Models\FindEvent;
 
 class DataManagement extends Command
 {
@@ -25,9 +27,11 @@ class DataManagement extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(FindRepository $finds)
     {
         parent::__construct();
+
+        $this->finds = $finds;
     }
 
     /**
@@ -40,6 +44,7 @@ class DataManagement extends Command
         $this->info("Warning! Any changes you commit through this command immediatly effect the data that is withing the Neo4j of the MEDEA project.");
 
         $this->info("Choose from the following commands: (enter the number)");
+        $this->info("1. Remove all finds.");
 
         $choice = $this->ask("Enter your choice of action: ");
         $this->executeCommand($choice);
@@ -49,9 +54,25 @@ class DataManagement extends Command
     {
         switch ($choice) {
             case 1:
+                $this->removeAllFinds();
                 break;
             default:
                 break;
         }
+    }
+
+    private function removeAllFinds()
+    {
+        $count = 0;
+
+        foreach ($this->finds->getAll(0, 500) as $find_node) {
+            $find = new FindEvent();
+            $find->setNode($find_node);
+
+            $find->delete();
+            $count++;
+        }
+
+        $this->info("Removed $count FindEvent nodes.");
     }
 }

@@ -71,6 +71,7 @@ class Base
             $client = self::getClient();
 
             $this->node = $client->makeNode();
+
             // Identify all related nodes with the main node (being Object)
             // Eases the way in which we can perform a delete (and find)
             $general_id = "MEDEA" . sha1(str_random(10) . "__" . time());
@@ -100,11 +101,21 @@ class Base
                     $input = $properties[$config['key']];
 
                     if (!empty($input)) {
-                        $model_name = 'App\Models\\' . $config['model_name'];
-                        $model = new $model_name($input);
-                        $model->save();
+                        if (is_array($input) && !$this->isAssoc($input)) {
+                            foreach ($input as $entry) {
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name($entry);
+                                $model->save();
 
-                        $this->makeRelationship($model, $relationship_name);
+                                $this->makeRelationship($model, $relationship_name);
+                            }
+                        } else {
+                            $model_name = 'App\Models\\' . $config['model_name'];
+                            $model = new $model_name($input);
+                            $model->save();
+
+                            $this->makeRelationship($model, $relationship_name);
+                        }
                     }
                 }
             }
@@ -311,18 +322,20 @@ class Base
                 $node_name = $end_node->getProperty('name');
 
                 if (!empty($end_node->getProperty('value'))) {
-                    if (!empty($data[$node_name])) {
-                        $tmp = $data[$node_name];
-                        $data[$node_name] = [$tmp];
+                    if (!empty($model_map[$node_name]['plural']) && $model_map[$node_name]['plural']) {
+                        if (empty($data[$node_name])) {
+                            $data[$node_name] = [];
+                        }
                         $data[$node_name][] = $end_node->getProperty('value');
                     } else {
                         $data[$node_name] = $end_node->getProperty('value');
                     }
                 } else {
                     // Check for duplicate relationships (= build an array of values)
-                    if (!empty($data[$node_name])) {
-                        $tmp = $data[$node_name];
-                        $data[$node_name] = [$tmp];
+                    if (!empty($model_map[$node_name]['plural']) && $model_map[$node_name]['plural']) {
+                        if (empty($data[$node_name])) {
+                            $data[$node_name] = [];
+                        }
                         $data[$node_name][] = $this->getImplicitValues($end_node);
                     } else {
                         $data[$node_name] = $this->getImplicitValues($end_node);

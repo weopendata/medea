@@ -58,14 +58,13 @@ class AuthController extends Controller
 
             $user_node = $users->getUser($email);
 
-            if (!empty($user_node) && $user->verified) {
-                // Create the Person model
-                $user = new Person();
-                $user->setNode($user_node);
+            // Create the Person model
+            $user = new Person();
+            $user->setNode($user_node);
 
+            if (!empty($user_node) && $user->verified) {
                 // Check password
                 if (Hash::check($password, $user->password)) {
-                    dd("logging in");
                     Auth::login($user);
 
                     return redirect($this->redirectTo);

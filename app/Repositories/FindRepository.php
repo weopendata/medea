@@ -38,4 +38,26 @@ class FindRepository extends BaseRepository
 
         return $finds;
     }
+
+    /**
+     * Get all the bare nodes of a find
+     *
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array
+     */
+    public function getAll($limit = 500, $offset = 0)
+    {
+        $client = $this->getClient();
+
+        $finds = [];
+
+        $find_label = $client->makeLabel($this->label);
+
+        // TODO paging (not sure if that's even possible in the regular RMDBS sense)
+        $find_nodes = $find_label->getNodes();
+
+        return $find_nodes;
+    }
 }

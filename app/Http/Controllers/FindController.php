@@ -53,6 +53,21 @@ class FindController extends Controller
     {
         $input = $request->json()->all();
 
+        $images = [];
+
+        // Check for images, they need special processing before the Neo4j writing is initiated
+        if (!empty($input['object']['images'])) {
+            foreach ($input['object']['images'] as $image) {
+                list($name, $name_small) = $this->processImage($image);
+
+                // TODO add rights, creation date
+                $images[] = ['name' => $request->root() . '/uploads/' . $name];
+                $images[] = ['name' => $request->root() . '/uploads/' . $name_small];
+            }
+        }
+
+        $input['object']['images'] = $images;
+
         // Make find
         $find = $this->finds->store($input);
     }
@@ -66,6 +81,7 @@ class FindController extends Controller
     public function show($id)
     {
         $find = $this->finds->expandValues($id);
+
         // Remove the following line when the image upload is up and running
         $find['object']['images'] = ['speer3.jpg'];
 
@@ -104,5 +120,28 @@ class FindController extends Controller
     public function destroy($id)
     {
         return "delete ".$id.$this->finds->delete($id);
+    }
+
+    /**
+     * Process an image
+     *
+     * @param array $image The configuration of an image, contains a base64 encoded image
+     * @return array
+     */
+    private function processImage($image_config)
+    {
+        $image = \Image::make($image_config['src']);
+
+        $public_path = public_path('uploads/');
+
+        $image_name = $image_config['name'];
+        $image_name_small = 'small_' . $image_config['name'];
+
+        $image->save($public_path . $image_name);
+
+        // Resize the image and save it under a different name
+        $image->resize(640, 480)->save($public_path . $image_name_small);
+
+        return [$image_name, $image_name_small];
     }
 }

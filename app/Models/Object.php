@@ -15,7 +15,13 @@ class Object extends Base
             'model_name' => 'ProductionEvent',
             'cascade_delete' => true,
             'required' => false
-        ]
+        ],
+        'P62' => [
+            'key' => 'images',
+            'model_name' => 'Photograph',
+            'cascade_delete' => true,
+            'required' => false
+        ],
     ];
 
     protected $implicitModels = [
@@ -24,6 +30,7 @@ class Object extends Base
             'config' => [
                 'key' => 'dimensions',
                 'name' => 'dimension',
+                'plural' => true
             ]
         ],
         [
