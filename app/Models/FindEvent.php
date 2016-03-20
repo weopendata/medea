@@ -19,6 +19,13 @@ class FindEvent extends Base
             'key' => 'findSpot',
             'model_name' => 'FindSpot',
             'cascade_delete' => true
+        ],
+        'P29' => [
+            'key' => 'person',
+            'model_name' => 'Person',
+            'cascade_delete' => false,
+            'link_only' => true,
+            'reverse_relationhip' => 'P29'
         ]
     ];
 

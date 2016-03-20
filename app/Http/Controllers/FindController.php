@@ -10,6 +10,8 @@ use App\Models\FindEvent;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\ListValueRepository;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\UserRepository;
 
 class FindController extends Controller
 {
@@ -49,9 +51,16 @@ class FindController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, UserRepository $users)
     {
         $input = $request->json()->all();
+
+        $user = $request->user();
+
+        // Test code in order to test with PostMan requests
+        /*$user_node = $users->getUser('foo@bar.com');
+        $user = new \App\Models\Person();
+        $user->setNode($user_node);*/
 
         $images = [];
 
@@ -67,6 +76,7 @@ class FindController extends Controller
         }
 
         $input['object']['images'] = $images;
+        $input['person'] = ['id' => $user->id];
 
         // Make find
         $find = $this->finds->store($input);

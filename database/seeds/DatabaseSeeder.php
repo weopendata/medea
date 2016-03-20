@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
 
         if ($nodes->count() == 0) {
             $person_label = $client->makeLabel('Person');
+            $cidoc_label = $client->makeLabel('E21');
             $person = $client->makeNode();
 
             // TODO Create the admin user through an env configuration
@@ -40,7 +41,7 @@ class DatabaseSeeder extends Seeder
             $person->save();
 
             // Set the type
-            $person->addLabels([$person_label]);
+            $person->addLabels([$person_label, $cidoc_label]);
 
             $this->command->info("An admin user was created.");
         } else {

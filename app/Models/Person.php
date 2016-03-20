@@ -197,6 +197,10 @@ class Person extends Base implements Authenticatable
 
     public function __get($key)
     {
+        if ($key == 'id') {
+            return $this->node->getId();
+        }
+
         return $this->node->getProperty($key);
     }
 }

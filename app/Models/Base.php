@@ -110,11 +110,22 @@ class Base
                                 $this->makeRelationship($model, $relationship_name);
                             }
                         } else {
-                            $model_name = 'App\Models\\' . $config['model_name'];
-                            $model = new $model_name($input);
-                            $model->save();
+                            if (!empty($config['link_only']) && $config['link_only']) {
+                                // Fetch the node and create the relationship
+                                $model = $this->searchNode($input['id'], $config['model_name']);
+                            } else {
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name($input);
+                                $model->save();
+                            }
 
-                            $this->makeRelationship($model, $relationship_name);
+                            if (!empty($model)) {
+                                $this->makeRelationship($model, $relationship_name);
+
+                                if (!empty($config['reverse_relationhip'])) {
+                                    $model->getNode()->relateTo($this->node, $config['reverse_relationhip'])->save();
+                                }
+                            }
                         }
                     }
                 }
@@ -127,6 +138,8 @@ class Base
                 $input = @$properties[$model_config['key']];
 
                 if (!empty($input)) {
+                    // We can have multiple instances of an implicit node (e.g. multiple dimensions)
+                    // Check which of the cases it is by checking whether the array is associative or not
                     if (is_array($input) && !$this->isAssoc($input)) {
                         foreach ($input as $entry) {
                             $related_node = $this->createImplicitNode($entry, $model_config, $general_id);
@@ -354,6 +367,42 @@ class Base
         }
 
         return $data;
+    }
+
+    /**
+     * Search a node and retrieve the Node object
+     * this is necessary for example when the base node doesn't need
+     * to instantiate new nodes, but rather needs to link with existing ones
+     *
+     * @param integer $node_id
+     * @param string  $model
+     *
+     * @return null|Node
+     */
+    private function searchNode($node_id, $model)
+    {
+        $client = self::getClient();
+
+        $node = $client->getNode($node_id);
+
+        if (empty($node)) {
+            return [];
+        }
+
+        foreach ($node->getLabels() as $label) {
+            // We can use the model name as a label because
+            // the models that we fetch are all related models
+            // meaning they have cidoc labels and model name labels
+            if ($label->getName() == $model) {
+                 $model_name = 'App\Models\\' . $model;
+                 $model = new $model_name();
+                 $model->setNode($node);
+
+                 return $model;
+            }
+        }
+
+        return null;
     }
 
     private function getImplicitValues($implicit_node)
