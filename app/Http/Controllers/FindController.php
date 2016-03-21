@@ -58,9 +58,9 @@ class FindController extends Controller
         $user = $request->user();
 
         // Test code in order to test with PostMan requests
-        /*$user_node = $users->getUser('foo@bar.com');
+        $user_node = $users->getUser('foo@bar.com');
         $user = new \App\Models\Person();
-        $user->setNode($user_node);*/
+        $user->setNode($user_node);
 
         $images = [];
 

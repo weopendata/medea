@@ -60,9 +60,4 @@ class FindRepository extends BaseRepository
 
         return $find_nodes;
     }
-
-    public function linkToPerson($user, $find)
-    {
-        dd($user);
-    }
 }

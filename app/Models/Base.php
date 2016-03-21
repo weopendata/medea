@@ -316,7 +316,15 @@ class Base
                 $related_model = new $model_name();
                 $related_model->setNode($end_node);
 
-                $data[$this->relatedModels[$relationship->getType()]['key']] = $related_model->getValues();
+                if (!empty($this->relatedModels[$relationship->getType()]['plural']) && $this->relatedModels[$relationship->getType()]['plural']) {
+                    if (empty($data[$this->relatedModels[$relationship->getType()]['key']])) {
+                        $data[$this->relatedModels[$relationship->getType()]['key']] = [];
+                    }
+
+                    $data[$this->relatedModels[$relationship->getType()]['key']][] = $related_model->getValues();
+                } else {
+                    $data[$this->relatedModels[$relationship->getType()]['key']] = $related_model->getValues();
+                }
             }
         }
 

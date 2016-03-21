@@ -14,13 +14,14 @@ class Object extends Base
             'key' => 'productionEvent',
             'model_name' => 'ProductionEvent',
             'cascade_delete' => true,
-            'required' => false
+            'required' => false,
         ],
         'P62' => [
             'key' => 'images',
             'model_name' => 'Photograph',
             'cascade_delete' => true,
-            'required' => false
+            'required' => false,
+            'plural' => true
         ],
     ];
 
