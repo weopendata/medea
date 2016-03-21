@@ -27,10 +27,10 @@ new Vue({
   },
   methods: {
     fetch () {
-      this.$http.get('/api-mock/find15.json').then(function (res) {
+      this.$http.get('/api/finds/' + window.initialFind.identifier).then(function (res) {
         this.find = res.data
       }, function () {
-        console.error('could not find findEvent 15')
+        console.error('could not fetch findEvent', window.initialFind.identifier)
       });
     }
   },

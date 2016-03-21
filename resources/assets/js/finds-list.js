@@ -19,16 +19,16 @@ new Vue({
   },
   ready () {
     console.log(JSON.parse(JSON.stringify(window.initialFinds)))
-    if (!this.finds && !this.finds.length) {
+    if (!this.finds || !this.finds.length) {
       this.fetch()
     }
   },
   methods: {
     fetch () {
-      this.$http.get('/api-mock/finds.json').then(function (res) {
+      this.$http.get('/api/finds').then(function (res) {
         this.finds = res.data
       }, function () {
-        console.error('could not find findevents')
+        console.error('could not fetch findevents')
       });
     }
   },

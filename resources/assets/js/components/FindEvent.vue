@@ -2,7 +2,7 @@
   <div class="item fe">
     <a class="big image fe-image" href="/finds/{{find.identifier}}">
       <img class="fe-img" :src="img.src || img" v-for="img in find.object.images">
-      <div class="fe-img fe-img-placeholder" v-if="!find.object.images || !find.object.images.length">Afbeelding niet beschikbaar</div>
+      <div class="fe-img fe-img-placeholder" v-if="!find.object.images">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
       <a class="header" href="/finds/{{find.identifier}}">{{find.object.description}}</a>
