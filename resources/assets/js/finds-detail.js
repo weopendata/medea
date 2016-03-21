@@ -18,7 +18,7 @@ new Vue({
     }
   },
   ready () {
-    console.log(window.initialFind )
+    console.log(JSON.parse(JSON.stringify(window.initialFind)))
     if (window.initialFind && window.initialFind.identifier) {
       this.find = window.initialFind;
     } else {

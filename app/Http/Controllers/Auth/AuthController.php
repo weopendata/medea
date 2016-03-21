@@ -62,9 +62,12 @@ class AuthController extends Controller
             $user = new Person();
             $user->setNode($user_node);
 
-            if (!empty($user_node) && $user->verified) {
-                // Check password
-                if (Hash::check($password, $user->password)) {
+            if (!empty($user_node)) {
+                // Check password and verification
+                if (!$user->verified) {
+                    $message_bag = new MessageBag();
+                    return redirect()->back()->with('errors', $message_bag->add('email', 'Dit emailadres is nog niet geverifieerd.'));
+                } elseif (Hash::check($password, $user->password)) {
                     Auth::login($user);
 
                     return redirect($this->redirectTo);

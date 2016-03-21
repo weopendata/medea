@@ -5,7 +5,7 @@
       <div class="fe-img fe-img-placeholder" v-if="!find.object.images || !find.object.images.length">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
-      <a class="header" href="/finds/{{find.id}}">{{find.object.description}}</a>
+      <a class="header" href="/finds/{{find.identifier}}">{{find.object.description}}</a>
       <div class="meta">
         <span>Gevonden op {{find.identifier}} in de buurt van <u>{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
@@ -13,15 +13,15 @@
         <object-features :find="find"></object-features>
       </div>
       <div class="extra">
-        <a class="ui blue button" href="/finds/{{find.id}}" v-if="find.object.validationCount<8&&find.object.classificationCount<2">
+        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="find.object.validationCount<8&&find.object.classificationCount<2">
           <i class="check icon"></i>
           Valideer
         </a>
-        <a class="ui green button" href="/finds/{{find.id}}" v-if="user.isFindExpert&&!find.object.classificationCount">
+        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.isFindExpert&&!find.object.classificationCount">
           <i class="tag icon"></i>
           Classificeer
         </a>
-        <a class="ui blue button" href="/finds/{{find.id}}" v-if="find.object.classificationCount">
+        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="find.object.classificationCount">
           <i class="tag icon"></i>
           {{find.object.classificationCount}} classificaties bekijken
         </a>

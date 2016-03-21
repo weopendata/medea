@@ -31,9 +31,9 @@
 
 <step number="1" v-show="step==1">
   <div class="two fields">
-    <div class="required field">
+    <div class="field" :class="{required:user.isRegistrar}">
       <label>Vinder</label>
-      <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder">
+      <input type="text" v-model="find.finderName" value="John Dfoe" placeholder="Naam van de vinder" :disabled="!user.isRegistrar">
     </div>
     <div class="required field">
       <label>Datum</label>

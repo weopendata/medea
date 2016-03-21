@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             // TODO Create the admin user through an env configuration
             $person->setProperty('name', 'medea-admin');
             $person->setProperty('email', 'foo@bar.com');
+            $person->setProperty('verified', true);
 
             $password = Hash::make('admin');
             $person->setProperty('password', $password);

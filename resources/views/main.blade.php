@@ -23,7 +23,7 @@
 <body>
 <div class="ui page container">
   <div :is="'TopNav'" :user="user" class="ui secondary green pointing menu">
-    <a href="" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
+    <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
     <a href="/finds" class="item {{ (Request::is('/finds') ? 'active' : '') }}">Vondsten</a>
     <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
     <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>

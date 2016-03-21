@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="ui eight column centered grid">
+<div class="ui four column centered doubling grid">
     <div class="column">
         <form class="ui form" role="form" method="POST" action="{{ url('/login') }}">
             {!! csrf_field() !!}

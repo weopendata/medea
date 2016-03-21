@@ -13,15 +13,13 @@ new Vue({
   },
   data () {
     return {
-      finds: [],
+      finds: window.initialFinds || [],
       user: window.medeaUser
     }
   },
   ready () {
-    console.log(window.initialFinds )
-    if (window.initialFinds && window.initialFinds.length) {
-      this.finds = window.initialFinds;
-    } else {
+    console.log(JSON.parse(JSON.stringify(window.initialFinds)))
+    if (!this.finds && !this.finds.length) {
       this.fetch()
     }
   },

@@ -1,6 +1,6 @@
 <template>
   <div class="ui secondary green pointing menu">
-    <a href="" class="item {{path==='/'?'active':''}}"><i class="home icon"></i></a>
+    <a href="/" class="item {{path==='/'?'active':''}}"><i class="home icon"></i></a>
     <a href="/finds" class="item {{path==='/finds'?'active':''}}">Vondsten</a>
     <a href="/finds/create" class="item {{path==='/finds/create'?'active':''}}">Nieuwe vondst</a>
     <label class="item">
@@ -21,7 +21,7 @@
     <label class="item">
       <input type="checkbox" v-model="user.isAdmin"> Adm
     </label>
-    <a href="login" class="right floated item {{path==='/login'?'active':''}}">Log in</a>
+    <a href="/login" class="right floated item {{path==='/login'?'active':''}}">Log in</a>
   </div>
 </template>
 
