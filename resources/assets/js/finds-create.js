@@ -1,7 +1,6 @@
-import Vue from 'Vue';
-import VueResource from 'vue-resource';
-import TopNav from './components/TopNav';
-import AjaxForm from './components/AjaxForm';
+import Vue from 'vue/dist/vue.min.js';
+import VueResource from 'vue-resource/dist/vue-resource.min.js';
+import DevBar from './components/DevBar';
 import Step from './components/Step';
 import checkbox from 'semantic-ui-css/components/checkbox.min.js';
 import dropdown from 'semantic-ui-css/components/dropdown.min.js';
@@ -15,24 +14,13 @@ import PlaceInput from 'vue-google-maps/src/components/PlaceInput.vue';
 import PhotoUpload from './components/PhotoUpload';
 import DimInput from './components/DimInput.vue';
 import FindEvent from './components/FindEvent';
+import Ajax from './mixins/Ajax';
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k', libraries:'places'})
 
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
-  el: 'body',
-  components: {
-    TopNav,
-    AjaxForm,
-    Step,
-    Map,
-    PlaceInput,
-    Marker,
-    PhotoUpload,
-    DimInput,
-    FindEvent
-  },
   data () {
     return {
       centerStart: {lat: 50.9, lng: 4.3},
@@ -99,10 +87,14 @@ new Vue({
         gewicht: false
       },
       step: 1,
+      submitAction: '/finds',
       user: window.medeaUser
     }
   },
   computed: {
+    submittable () {
+      return this.step1valid && this.step2valid && this.step==3
+    },
     step1valid () {
       return this.hasFindDetails
     },
@@ -176,5 +168,17 @@ new Vue({
         localStorage.debugUser = JSON.stringify(user) 
       }
     }
+  },
+  el: 'body',
+  mixins: [Ajax],
+  components: {
+    DevBar,
+    Step,
+    Map,
+    PlaceInput,
+    Marker,
+    PhotoUpload,
+    DimInput,
+    FindEvent
   }
 });

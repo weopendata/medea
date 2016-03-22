@@ -1,14 +1,14 @@
-import Vue from 'Vue';
-import VueResource from 'vue-resource';
+import Vue from 'vue/dist/vue.min.js';
+import VueResource from 'vue-resource/dist/vue-resource.min.js';
 import FindEventDetail from './components/FindEventDetail';
-import TopNav from './components/TopNav';
+import DevBar from './components/DevBar';
 
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
   el: 'body',
   components: {
-    TopNav,
+    DevBar,
     FindEventDetail
   },
   data () {
