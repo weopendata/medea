@@ -93,6 +93,7 @@ class FindController extends Controller
     public function show($id)
     {
         $find = $this->finds->expandValues($id);
+        dd($find);
         return view('pages.finds-detail', ['find' => $find]);
     }
 

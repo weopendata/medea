@@ -369,7 +369,7 @@ class Base
         foreach ($this->properties as $property) {
             $val = $this->node->getProperty($property['name']);
 
-            if (!empty($val)) {
+            if (!is_null($val)) {
                 $data[$property['name']] = $val;
             }
         }

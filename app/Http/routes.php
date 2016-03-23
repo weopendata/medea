@@ -29,6 +29,8 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/', 'HomeController@index');
     Route::resource('finds', 'FindController');
     Route::resource('objects/{id}/classifications', 'ClassificationController');
+    Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
+    Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
 
     Route::delete('users/{id}', 'UserController@delete');
     Route::get('settings', 'UserController@showSettings');

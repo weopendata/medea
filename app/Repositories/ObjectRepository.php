@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Object;
 use App\Models\ProductionEvent;
+use Everyman\Neo4j\Cypher\Query;
 
 class ObjectRepository extends BaseRepository
 {
@@ -44,5 +45,23 @@ class ObjectRepository extends BaseRepository
         }
 
         return null;
+    }
+
+    public function getClassification($id, $classification_id)
+    {
+        // To make this more neat, we'll use a specific Cypher query to bypass the
+        // productionEvent link that lies between object and classification
+        $query = "match (n)-[*2..2]-(classification) where id(n) = $id AND id(classification) = $classification_id return classification";
+
+        $client = $this->getClient();
+
+        $cypher_query = new Query($client, $query);
+        $result = $cypher_query->getResultSet();
+
+        if (!empty($result->current())) {
+            return $result->current()->current();
+        } else {
+            return null;
+        }
     }
 }

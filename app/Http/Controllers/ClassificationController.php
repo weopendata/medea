@@ -34,4 +34,42 @@ class ClassificationController extends Controller
         }
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Add a like/dislike and add a link to the person
+     *
+     * @param $id                integer The id of the object
+     * @param $classification_id integer The classification id
+     *
+     * @return Node
+     */
+    public function agree($id, $classification_id)
+    {
+        $classification = $this->objects->getClassification($id, $classification_id);
+
+        if (!empty($classification)) {
+            $agree = $classification->getProperty('agree');
+            $agree++;
+
+            $classification->setProperty('agree', $agree)->save();
+
+            return $agree;
+        }
+
+        return [];
+    }
+
+    /**
+     * Add a like/dislike and add a link to the person
+     *
+     * @param $id                integer The id of the object
+     * @param $classification_id integer The classification id
+     * @param $request  Request
+     *
+     * @return Node
+     */
+    public function disagree($id, $classification_id, $request)
+    {
+
+    }
 }
