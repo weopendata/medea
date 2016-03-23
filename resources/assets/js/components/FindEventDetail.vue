@@ -52,7 +52,7 @@
           <object-features :find="find" detail="all"></object-features>
         </div>
         <div class="twelve wide column">
-          <classification v-for="cls in find.object.productionEvent" :cls="cls"></classification>
+          <classification v-for="prod in find.object.productionEvent" :cls="prod.classification" :obj="find.object.identifier"></classification>
           <div class="ui orange message" v-if="!find.object.productionEvent">
             <div class="ui header">Deze vondst is niet geclassificeerd</div>
             <p v-if="user.isFindExpert">Voeg jij een classificatie toe?</p>

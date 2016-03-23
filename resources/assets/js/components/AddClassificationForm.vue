@@ -16,7 +16,7 @@
     </div>
     <div class="field">
       <label for="description">Opmerkingen</label>
-      <textarea id="description" v-model="cls.description" :rows="descriptionLen"></textarea>
+      <textarea id="description" v-model="cls.description" rows="3" :rows="descriptionLen"></textarea>
     </div>
     <datalist id="cultures">
       <option value="Bronstijd">
@@ -67,6 +67,11 @@ export default {
       })
     } else if (!this.cls.references) {
       this.$set('cls.references', [''])
+    }
+  },
+  computed: {
+    descriptionLen () {
+      return 3 + Math.floor(this.cls.description.length / 50)
     }
   },
   watch: {

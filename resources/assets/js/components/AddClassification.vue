@@ -27,13 +27,10 @@ export default {
   },
   computed: {
   	submittable () {
-  		return this.culture && this.description
+  		return this.cls.culture && this.cls.description
   	},
   	submitAction () {
   		return '/objects/' + this.object.identifier + '/classifications'
-  	},
-  	descriptionLen () {
-  		return 3 + Math.floor(this.cls.description.length / 50)
   	}
   },
   methods: {
