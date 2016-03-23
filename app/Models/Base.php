@@ -356,8 +356,6 @@ class Base
                 } else {
                     // Parse non-value nodes
                     // Check for duplicate relationships (= build an array of values)
-                    var_dump($model_map);
-                    var_dump($node_name);
                     if (!empty($model_map[$node_name]['plural']) && $model_map[$node_name]['plural']) {
                         if (empty($data[$node_name])) {
                             $data[$node_name] = [];
