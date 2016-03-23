@@ -134,9 +134,10 @@
       <label>Profiel openstellen voor</label>
       <select class="ui dropdown" v-model="">
         <option>Iedereen (publiek)</option>
-        <option>Onderzoekers, vondstexperten en detectoristen</option>
-        <option>Onderzoekers en vondstexperten</option>
+        <option>Geregistreerde gebruikers</option>
+        <option>Onderzoekers en overheid</option>
         <option>Onderzoekers</option>
+        <option>Onderzoekers na verzoek</option>
         <option>Alleen ik</option>
       </select>
     </div>
