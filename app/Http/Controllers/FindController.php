@@ -137,7 +137,7 @@ class FindController extends Controller
      */
     private function processImage($image_config)
     {
-        $image = \Image::make($image_config['src']);
+        $image = \Image::make($image_config['identifier']);
 
         $public_path = public_path('uploads/');
 
@@ -147,7 +147,10 @@ class FindController extends Controller
         $image->save($public_path . $image_name);
 
         // Resize the image and save it under a different name
-        $image->resize(640, 480)->save($public_path . $image_name_small);
+        $image->resize(640, 480, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        })->save($public_path . $image_name_small);
 
         return [$image_name, $image_name_small];
     }

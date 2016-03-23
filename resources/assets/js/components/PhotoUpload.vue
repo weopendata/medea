@@ -5,7 +5,7 @@
     </div>
     <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
     <div class="photo-upload-img" v-for="(i, image) in images">
-      <img :src="image.src">
+      <img :src="image.identifier">
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default {
         vm.images.push({
           name: file.name,
           size: file.size,
-          src: e.target.result
+          identifier: e.target.result
         });
       };
       reader.readAsDataURL(file);

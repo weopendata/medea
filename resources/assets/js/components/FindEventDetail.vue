@@ -2,7 +2,7 @@
   <article>
     <div class="fe-imglist">
       <div class="fe-imglist-abs">
-        <img :src="src" v-for="src in find.object.images">
+        <img :src="src.identifier || src" v-for="src in find.object.images">
         <div class="fe-imglist-feedback ui form">
           <h3>Feedback</h3>
           <div class="field">
