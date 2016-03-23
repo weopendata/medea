@@ -47,6 +47,11 @@
         </div>
         <div class="twelve wide column">
           <classification v-for="cls in find.object.productionEvent" :cls="cls"></classification>
+          <div class="ui orange message" v-if="!find.object.productionEvent">
+            <div class="ui header">Deze vondst is niet geclassificeerd</div>
+            <p v-if="user.isFindExpert">Voeg jij een classificatie toe?</p>
+          </div>
+          <add-classification :object="find.object" v-if="user.isFindExpert"></add-classification>
         </div>
       </div>
     </section>
@@ -57,21 +62,22 @@
 import checkbox from 'semantic-ui-css/components/checkbox.min.js';
 import ObjectFeatures from './ObjectFeatures';
 import Classification from './Classification';
+import AddClassification from './AddClassification';
 
 export default {
   props: ['user', 'find'],
-  components: {
-    ObjectFeatures,
-    Classification
-  },
   data () {
     return {
-      findEvents: [],
       photoValidation: []
     }
   },
   ready () {
     $('.ui.checkbox').checkbox()
+  },
+  components: {
+    AddClassification,
+    Classification,
+    ObjectFeatures
   }
 }
 </script>
