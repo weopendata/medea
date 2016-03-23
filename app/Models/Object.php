@@ -15,6 +15,7 @@ class Object extends Base
             'model_name' => 'ProductionEvent',
             'cascade_delete' => true,
             'required' => false,
+            'plural' => true,
         ],
         'P62' => [
             'key' => 'images',
