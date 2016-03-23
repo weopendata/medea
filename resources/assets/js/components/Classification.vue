@@ -21,11 +21,15 @@ export default {
   },
   methods: {
     agree () {
+      this.cls[this.voted]--
       this.voted = this.voted === 'agree' ? false : 'agree'
+      this.cls[this.voted]++
       this.$http.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree')
     },
     disagree () {
+      this.cls[this.voted]--
       this.voted = this.voted === 'disagree' ? false : 'disagree'
+      this.cls[this.voted]++
       this.$http.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree')
     },
     rm () {
