@@ -78,6 +78,7 @@ class FindController extends Controller
 
         $input['object']['images'] = $images;
         $input['person'] = ['id' => $user->id];
+        $input['objectValidationStatus'] = 'in bewerking';
 
         // Make find
         $find = $this->finds->store($input);
@@ -126,7 +127,7 @@ class FindController extends Controller
      */
     public function destroy($id)
     {
-        return "delete ".$id.$this->finds->delete($id);
+        return $this->finds->delete($id);
     }
 
     /**

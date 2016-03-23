@@ -49,4 +49,15 @@ class ProductionClassification extends Base
             ]
         ]
     ];
+
+    protected $properties = [
+        [
+            'name' => 'agree',
+            'default_value' => 0
+        ],
+        [
+            'name' => 'disagree',
+            'default_value' => 0
+        ]
+    ];
 }
