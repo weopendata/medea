@@ -35,12 +35,18 @@
               <label>over/onderbelicht</label>
             </div>
           </div>
+          <div class="field">
+            <div class="ui checkbox">
+              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="meetschaal">
+              <label>geen meetschaal in beeld</label>
+            </div>
+          </div>
           <button class="ui green button" type="submit" v-if="!photoValidation.length">Foto's goedkeuren</button>
           <button class="ui orange button" type="submit" v-if="photoValidation.length">Feedback versturen</button>
         </div>
       </div>
     </div>
-    <section class="fe-summary">
+    <section class="ui container fe-summary">
       <div class="ui two columns doubling grid">
         <div class="four wide column">
           <object-features :find="find" detail="all"></object-features>

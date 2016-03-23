@@ -12,7 +12,7 @@
 
 <body :class="{registered:registered}">
   <div class="hero">
-    <div class="ui page container">
+    <div class="ui container">
       <p class="lead">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
       <p>
         <a href="/finds" class="ui green big button"><i class="eye icon"></i> Vondsten bekijken </a>

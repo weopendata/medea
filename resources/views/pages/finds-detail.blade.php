@@ -1,5 +1,7 @@
 @extends('main')
 
+@section('title', 'Vondst')
+
 @section('content')
 <find-event-detail v-if="find" :find="find" :user="user"></find-event-detail>
 @endsection

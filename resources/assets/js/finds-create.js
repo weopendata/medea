@@ -14,6 +14,7 @@ import PlaceInput from 'vue-google-maps/src/components/PlaceInput.vue';
 import PhotoUpload from './components/PhotoUpload';
 import DimInput from './components/DimInput.vue';
 import FindEvent from './components/FindEvent';
+import AddClassificationForm from './components/AddClassificationForm'
 import Ajax from './mixins/Ajax';
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k', libraries:'places'})
@@ -179,6 +180,7 @@ new Vue({
     Marker,
     PhotoUpload,
     DimInput,
-    FindEvent
+    FindEvent,
+    AddClassificationForm
   }
 });

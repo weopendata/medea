@@ -1,9 +1,11 @@
 @extends('main')
 
+@section('title', 'Instellingen')
+
 @section('content')
 {!! Form::open(array(
 'novalidate' => '',
-'class' => 'ui form',
+'class' => 'ui container form',
 '@submit.prevent' => 'submit',
 )) !!}
 <div class="ui stackable grid two columns">

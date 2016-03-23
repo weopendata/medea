@@ -1,13 +1,13 @@
-.container {
+.mycontainer {
 	margin: 0 auto;
-	padding: 0 1rem;
 	max-width: 50rem;
+}
+.ui.container-723 {
+	max-width: 723px!important;
 }
 
 @media only screen and (min-width: 992px) {
-	.container {
-		margin: 0 auto;
-		padding: 0 1rem;
+	.mycontainer {
 		max-width: 60rem;
 	}
 }

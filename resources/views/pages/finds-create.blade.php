@@ -1,10 +1,12 @@
 @extends('main')
 
+@section('title', 'Vondst toevoegen')
+
 @section('content')
 {!! Form::open(array(
 'files' => true,
 'novalidate' => '',
-'class' => 'ui create-container form',
+'class' => 'ui container container-723 form',
 '@submit.prevent' => 'submit',
 )) !!}
 
@@ -23,8 +25,8 @@
   </div>
   <div class="step" v-bind:class="{active:step==3}" @click="toStep(3)">
     <div class="content">
-      <div class="title">Overzicht</div>
-      <div class="description">Notificaties en publiceren</div>
+      <div class="title">Classificatie</div>
+      <div class="description">Typologische info</div>
     </div>
   </div>
 </div>
@@ -204,6 +206,8 @@
 <step number="3" v-show="step==3">
   <div class="ui very relaxed items">
     <find-event :find="find" :user="user"></find-event>
+    
+    <add-classification-form :cls.sync="cls"></add-classification-form>
   </div>
 
   <div class="field">

@@ -1,7 +1,11 @@
 @extends('main')
 
+@section('title', 'Vondsten')
+
 @section('content')
+<div class="ui container">
 <finds-list :finds="finds" :user="user"></finds-list>
+</div>
 @endsection
 
 @section('script')
