@@ -7,8 +7,9 @@ class ProductionClassification extends Base
     public static $NODE_TYPE = 'E17';
     public static $NODE_NAME = 'productionClassification';
 
-    protected $relatedModels = [
+    protected $has_unique_id = true;
 
+    protected $relatedModels = [
     ];
 
     protected $implicitModels = [
