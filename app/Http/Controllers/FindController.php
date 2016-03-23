@@ -12,6 +12,7 @@ use App\Repositories\ObjectRepository;
 use App\Repositories\ListValueRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
+use Illuminate\Support\MessageBag;
 
 class FindController extends Controller
 {
@@ -33,6 +34,19 @@ class FindController extends Controller
         $offset = $request->input('offset', 0);
 
         return view('pages.finds-list', ['finds' => $this->finds->get($limit, $offset)]);
+    }
+
+    public function myfinds(Request $request)
+    {
+        $user = $request->user();
+
+        if (empty($user)) {
+            $message_bag = new MessageBag();
+            return redirect()->back()->with('errors', $message_bag->add('message', 'Log in in order to see your personal finds.'));
+        }
+
+        $personal_finds = $this->finds->getForPerson($user);
+        dd($personal_finds);
     }
 
     /**
@@ -93,7 +107,6 @@ class FindController extends Controller
     public function show($id)
     {
         $find = $this->finds->expandValues($id);
-        dd($find);
         return view('pages.finds-detail', ['find' => $find]);
     }
 

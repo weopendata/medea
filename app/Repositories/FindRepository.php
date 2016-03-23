@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\FindEvent;
 use App\Models\ProductionClassification;
+use Everyman\Neo4j\Relationship;
 
 class FindRepository extends BaseRepository
 {
@@ -59,5 +60,36 @@ class FindRepository extends BaseRepository
         $find_nodes = $find_label->getNodes();
 
         return $find_nodes;
+    }
+
+    /**
+     * Get all of the finds for a person
+     *
+     * @param Person  $person The Person object
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array
+     */
+    public function getForPerson($person, $limit = 20, $offset = 0)
+    {
+        // Get all of the related finds
+        $person_node = $person->getNode();
+
+        $find_relations = $person_node->getRelationships(['P29'], Relationship::DirectionOut);
+
+        $finds = [];
+
+        foreach ($find_relations as $relation) {
+            $find_node = $relation->getEndNode();
+
+            $find_event = new FindEvent();
+            $find_event->setNode($find_node);
+
+            // Get the entire data that's behind the find
+            $finds[] = $find_event->getValues();
+        }
+
+        return $finds;
     }
 }
