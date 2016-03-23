@@ -3,8 +3,8 @@
     <h4>{{cls.description || 'There should always be a description'}}</h4>
     <div>
       <div class="ui small icon buttons">
-        <button class="ui button" :class="{green:voted==='agree'}" @click.stop="agree">0 <i class="thumbs up icon"></i></button>
-        <button class="ui button" :class="{red:voted==='disagree'}" @click.stop="disagree">2 <i class="thumbs down icon"></i></button>
+        <button class="ui button" :class="{green:voted==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
+        <button class="ui button" :class="{red:voted==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
       </div>
       <button class="ui small basic red button" @click.stop="rm" v-if="$root.user.isAdmin">Delete</button>
     </div>
@@ -21,11 +21,15 @@ export default {
   },
   methods: {
     agree () {
+      this.cls[this.voted]--
       this.voted = this.voted === 'agree' ? false : 'agree'
+      this.cls[this.voted]++
       this.$http.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree')
     },
     disagree () {
+      this.cls[this.voted]--
       this.voted = this.voted === 'disagree' ? false : 'disagree'
+      this.cls[this.voted]++
       this.$http.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree')
     },
     rm () {
