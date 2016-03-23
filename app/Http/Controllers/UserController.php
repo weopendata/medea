@@ -23,4 +23,9 @@ class UserController extends Controller
             return response()->json(['errors' => ['Something went wrong while deleting, make sure the user id is correct.']], 400);
         }
     }
+
+    public function showSettings(Request $request)
+    {
+        return view('pages.settings');
+    }
 }

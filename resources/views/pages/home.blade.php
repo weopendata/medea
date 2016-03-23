@@ -28,7 +28,7 @@
 '@submit.prevent' => 'submit',
 )) !!}
   <h2 id="register">Registreren</h2>
-  <h3 @click="submit">Contactgegevens</h3>
+  <h3>Contactgegevens</h3>
   <div class="two fields">
     <div class="field">
       <label for="first_name">Voornaam</label>

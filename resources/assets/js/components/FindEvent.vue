@@ -46,6 +46,7 @@ export default {
     rm () {
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
+        this.$root.fetch()
       });
     }
   }

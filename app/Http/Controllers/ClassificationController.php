@@ -32,5 +32,6 @@ class ClassificationController extends Controller
         if (empty($classification_node)) {
             return response()->json(['errors' => ['message' => 'Something has gone wrong, make sure the object exists.']], 404);
         }
+        return response()->json(['success' => true]);
     }
 }

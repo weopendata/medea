@@ -28,7 +28,7 @@
     @if (Auth::guest())
     <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
     @else
-    <a href="/profile" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">{{Auth::user()->name}}</a>
+    <a href="/settings" class="right floated item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
     @endif
   </div>
   @yield('content')
