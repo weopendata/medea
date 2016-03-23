@@ -2,7 +2,7 @@
   <article>
     <div class="fe-imglist">
       <div class="fe-imglist-abs">
-        <img :src="'/uploads/' + src" v-for="src in find.object.images">
+        <img :src="src" v-for="src in find.object.images">
         <div class="fe-imglist-feedback ui form">
           <h3>Feedback</h3>
           <div class="field">
@@ -68,11 +68,6 @@ export default {
     return {
       findEvents: [],
       photoValidation: []
-    }
-  },
-  computed: {
-    thumb () {
-      return this.find.object.images && ('/uploads/' + this.find.object.images[0]);
     }
   },
   ready () {

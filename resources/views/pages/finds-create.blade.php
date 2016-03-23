@@ -1,12 +1,12 @@
 @extends('main')
 
 @section('content')
-{!! Form::open(array('url' => 'finds', 'files' => true,
+{!! Form::open(array(
+'files' => true,
 'novalidate' => '',
-'class' => 'ui form',
-':is' => '"ajax-form"',
-':submittable' => 'step1valid&&step2valid&&step==3'))
-!!}
+'class' => 'ui create-container form',
+'@submit.prevent' => 'submit',
+)) !!}
 
 <div class="ui fluid ordered steps">
   <div class="step" v-bind:class="{active:step==1, completed:step1valid}" @click="toStep(1)">
@@ -222,8 +222,13 @@
       <label>Hou mij op de hoogte van wijzigingen aan vondstfiches</label>
     </div>
   </div>
-  <button v-if="!find.toValidate" class="ui orange button" type="submit">Bewaren als draft</button>
-  <button v-if="find.toValidate" class="ui green button" type="submit">Bewaren en laten valideren</button>
+  <p v-if="!submittable" style="color:red">
+    Niet alle verplichte velden zijn ingevuld.
+  </p>
+  <p>
+    <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Bewaren als draft</button>
+    <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+  </p>
 </step>
 
 {!! Form::close() !!}

@@ -20,6 +20,7 @@ elixir(function(mix) {
 			'finds-list.js',
 			'finds-detail.js',
 			'finds-create.js',
+			'home.js',
 		], {
 			module: {
 				loaders: [

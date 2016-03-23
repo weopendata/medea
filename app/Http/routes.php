@@ -31,4 +31,5 @@ Route::group(['middleware' => 'web'], function () {
     Route::resource('objects/{id}/classifications', 'ClassificationController');
 
     Route::delete('users/{id}', 'UserController@delete');
+    Route::get('settings', 'UserController@showSettings');
 });

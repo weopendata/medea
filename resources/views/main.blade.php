@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <meta name="userinfo" content="{{ json_encode($user) }}">
 
     <!-- <link rel="stylesheet" href="{{ asset('assets/css/leaflet.extra-markers.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('assets/css/leaflet.css') }}" rel="stylesheet"/> -->
@@ -22,19 +21,29 @@
 
 <body>
 <div class="ui page container">
-  <div :is="'TopNav'" :user="user" class="ui secondary green pointing menu">
+  <div class="ui secondary green pointing menu">
     <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
     <a href="/finds" class="item {{ (Request::is('/finds') ? 'active' : '') }}">Vondsten</a>
     <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
+    @if (Auth::guest())
     <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
+    @else
+    <a href="/settings" class="right floated item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
+    @endif
   </div>
   @yield('content')
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <dev-bar :user="user"></dev-bar>
 </div>
 <script type="text/javascript">
+// var medeaUser = {!! json_encode($user) !!};
+var medeaUser;
 try {
-  var medeaUser = JSON.parse(localStorage.debugUser);
+  medeaUser = JSON.parse(localStorage.debugUser);
 } catch (e) {
-  var medeaUser = {
+  medeaUser = {
     name: 'John Doe',
     isDetectorist: true,
     isFindExpert: true,
@@ -44,6 +53,10 @@ try {
     isAdmin: true
   }
 }
+@if (!Auth::guest())
+medeaUser.name = '{{ Auth::user()->name }}';
+medeaUser.email = '{{ Auth::user()->email }}';
+@endif
 </script>
 @yield('script')
 
