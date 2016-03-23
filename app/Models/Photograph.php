@@ -23,6 +23,12 @@ class Photograph extends Base
         ]
     ];
 
+    protected $properties = [
+        [
+            'name' => 'resized',
+        ]
+    ];
+
     public function createPhotographId($photograph_name)
     {
         $client = $this->getClient();

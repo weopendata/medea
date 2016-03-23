@@ -69,9 +69,10 @@ class FindController extends Controller
             foreach ($input['object']['images'] as $image) {
                 list($name, $name_small) = $this->processImage($image);
 
-                // TODO add rights, creation date
-                $images[] = ['name' => $request->root() . '/uploads/' . $name];
-                $images[] = ['name' => $request->root() . '/uploads/' . $name_small];
+                $images[] = [
+                    'name' => $request->root() . '/uploads/' . $name,
+                    'resized' => $request->root() . '/uploads/' . $name_small
+                ];
             }
         }
 
