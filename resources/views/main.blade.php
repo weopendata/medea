@@ -16,11 +16,13 @@
     <script src="{{ asset('assets/js/leaflet.extra-markers.min.js') }}"></script> -->
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>MEDEA</title>
+    <title>@yield('title') - MEDEA</title>
 </head>
 
 <body>
-<div class="ui page container">
+
+@section('nav')
+<nav class="ui container">
   <div class="ui secondary green pointing menu">
     <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
     <a href="/finds" class="item {{ (Request::is('/finds') ? 'active' : '') }}">Vondsten</a>
@@ -31,12 +33,16 @@
     <a href="/settings" class="right floated item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
     @endif
   </div>
-  @yield('content')
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <dev-bar :user="user"></dev-bar>
-</div>
+</nav>
+@show
+
+@yield('content')
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<dev-bar :user="user"></dev-bar>
+
 <script type="text/javascript">
 // var medeaUser = {!! json_encode($user) !!};
 var medeaUser;
