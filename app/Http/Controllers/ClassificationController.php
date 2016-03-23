@@ -68,8 +68,19 @@ class ClassificationController extends Controller
      *
      * @return Node
      */
-    public function disagree($id, $classification_id, $request)
+    public function disagree($id, $classification_id)
     {
+        $classification = $this->objects->getClassification($id, $classification_id);
 
+        if (!empty($classification)) {
+            $disagree = $classification->getProperty('disagree');
+            $disagree++;
+
+            $classification->setProperty('disagree', $disagree)->save();
+
+            return $disagree;
+        }
+
+        return [];
     }
 }
