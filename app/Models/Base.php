@@ -273,7 +273,7 @@ class Base
      *
      * @return Node
      */
-    protected function createValueNode($name, $labels, $value)
+    public function createValueNode($name, $labels, $value)
     {
         $client = self::getClient();
 

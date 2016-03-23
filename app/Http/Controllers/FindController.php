@@ -78,7 +78,7 @@ class FindController extends Controller
 
         $input['object']['images'] = $images;
         $input['person'] = ['id' => $user->id];
-        $input['objectValidationStatus'] = 'in bewerking';
+        $input['object']['objectValidationStatus'] = 'in bewerking';
 
         // Make find
         $find = $this->finds->store($input);
@@ -93,6 +93,7 @@ class FindController extends Controller
     public function show($id)
     {
         $find = $this->finds->expandValues($id);
+        dd($find);
         return view('pages.finds-detail', ['find' => $find]);
     }
 

@@ -14,4 +14,16 @@ class ObjectController extends Controller
     {
         $this->objects = $objects;
     }
+
+    /**
+     * We expect the body to hold the new validationstatus of the find
+     *
+     * @param string
+     */
+    public function validation($id, Request $request)
+    {
+        $input = $request->json()->all();
+
+        $this->objects->setValidationStatus($id, $input['objectValidationStatus']);
+    }
 }

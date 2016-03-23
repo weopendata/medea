@@ -39,14 +39,5 @@ class FindEvent extends Base
                 'cidoc_type' => 'E52'
             ]
         ],
-        [
-            'relationship' => 'P2',
-            'config' => [
-                'key' => 'objectValidationStatus',
-                'name' => 'objectValidationStatus',
-                'value_node' => true,
-                'cidoc_type' => 'E55'
-            ]
-        ]
     ];
 }

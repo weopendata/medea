@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Object;
 use App\Models\ProductionEvent;
 use Everyman\Neo4j\Cypher\Query;
+use Everyman\Neo4j\Relationship;
 
 class ObjectRepository extends BaseRepository
 {
@@ -63,5 +64,34 @@ class ObjectRepository extends BaseRepository
         } else {
             return null;
         }
+    }
+
+    /**
+     * Set the validation status of a certain object
+     *
+     * @param $id     integer The id of the object
+     * @param $status string  The new status of the object
+     *
+     * @return Node
+     */
+    public function setValidationStatus($id, $status)
+    {
+        $object_node = $this->getById($id);
+
+        $relationships = $object_node->getRelationships(['P2'], Relationship::DirectionOut);
+
+        foreach ($relationships as $relationship) {
+            $type_node = $relationship->getEndNode();
+
+            $relationship->delete();
+            $type_node->delete();
+        }
+
+        $object = new Object();
+        $object->setNode($object_node);
+
+        $type_node = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);
+
+        return $object_node->relateTo($type_node, 'P2')->save();
     }
 }

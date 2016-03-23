@@ -52,6 +52,15 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E57'
             ]
+        ],
+        [
+            'relationship' => 'P2',
+            'config' => [
+                'key' => 'objectValidationStatus',
+                'name' => 'objectValidationStatus',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
         ]
     ];
 
