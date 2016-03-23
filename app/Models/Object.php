@@ -31,7 +31,7 @@ class Object extends Base
             'relationship' => 'P43',
             'config' => [
                 'key' => 'dimensions',
-                'name' => 'dimension',
+                'name' => 'dimensions',
                 'plural' => true
             ]
         ],
@@ -62,7 +62,7 @@ class Object extends Base
      *
      * @return Node
      */
-    public function createDimension($dimension)
+    public function createDimensions($dimension)
     {
         $client = self::getClient();
 
@@ -70,7 +70,7 @@ class Object extends Base
 
         // Make E54 Dimension
         $dimension_node = $client->makeNode();
-        $dimension_node->setProperty('name', 'dimension');
+        $dimension_node->setProperty('name', 'dimensions');
         $dimension_node->save();
 
         // Set the proper labels to the objectDimensionType
