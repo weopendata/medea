@@ -43,6 +43,16 @@
     </div>
 
     <h2>Profiel</h2>
+    <div class="two fields">
+      <div class="field">
+        <label for="email">Functie</label>
+        <input v-model="user.function" type="text">
+      </div>
+      <div class="field">
+        <label for="last_name">Affiliatie</label>
+        <input v-model="user.affiliation" type="text">
+      </div>
+    </div>
     <div class="field" v-if="roles.detectorist">
       <label for="email">Erkenningsnummer</label>
       <div class="ui labeled input double-labeled">

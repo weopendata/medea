@@ -7,7 +7,9 @@
     </div>
     <photo-validation :model="photos"></photo-validation>
     <p>
-      <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">Publiceren</button>
+      <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
+        <i class="thumbs up icon"></i> Publiceren
+      </button>
     </p>
     <p>&nbsp;</p>
     <div class="equal width fields">

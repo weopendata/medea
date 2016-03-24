@@ -5,7 +5,7 @@
       <div class="fe-img fe-img-placeholder" v-if="!find.object.images">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
-      <a class="header" href="/finds/{{find.identifier}}">{{find.object.description}}</a>
+      <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.category}}</a>
       <div class="meta">
         <span>Gevonden op {{find.identifier}} in de buurt van <u>{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
@@ -28,6 +28,10 @@
         <button class="ui red button" @click="rm" v-if="user.isAdmin&&find.identifier">
           <i class="trash icon"></i>
           Verwijderen
+        </button>
+        <button class="ui green button" @click="rm" v-if="user.isValidator&&find.object.objectValidationStatus == 'in bewerking'">
+          <i class="thumbs up icon"></i>
+          Publiceren
         </button>
       </div>
     </div>
