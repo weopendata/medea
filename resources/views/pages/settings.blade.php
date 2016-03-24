@@ -8,6 +8,7 @@
 'class' => 'ui container form',
 '@submit.prevent' => 'submit',
 )) !!}
+    <a href="/logout" class="ui red button" style="position:absolute;top:0;right:0">Afmelden</a>
 <div class="ui stackable grid two columns">
   <div class="column">
     
