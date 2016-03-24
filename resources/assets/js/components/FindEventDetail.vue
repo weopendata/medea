@@ -3,55 +3,20 @@
     <div class="fe-imglist">
       <div class="fe-imglist-abs">
         <img :src="src.identifier || src" v-for="src in find.object.images">
-        <div class="fe-imglist-feedback ui form">
-          <h3>Feedback</h3>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="onscherp">
-              <label>onscherp</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="te kleine resolutie">
-              <label>te kleine resolutie</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="onvoldoende ingezoomd">
-              <label>onvoldoende ingezoomd</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="teveel ingezoomd">
-              <label>teveel ingezoomd</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="overbelicht">
-              <label>over/onderbelicht</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" tabindex="0" class="hidden" v-model="photoValidation" value="meetschaal">
-              <label>geen meetschaal in beeld</label>
-            </div>
-          </div>
-          <button class="ui green button" type="submit" v-if="!photoValidation.length">Foto's goedkeuren</button>
-          <button class="ui orange button" type="submit" v-if="photoValidation.length">Feedback versturen</button>
-        </div>
       </div>
     </div>
     <section class="ui container fe-summary">
       <div class="ui two columns doubling grid">
         <div class="four wide column">
+          <p>
+            #{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.category}}
+          </p>
           <object-features :find="find" detail="all"></object-features>
         </div>
-        <div class="twelve wide column">
+        <div class="twelve wide column" v-if="user.isValidator&&find.object.objectValidationStatus == 'in bewerking'">
+          <validation-form :obj="find.object.identifier"></validation-form>
+        </div>
+        <div class="twelve wide column" v-else>
           <classification v-for="prod in find.object.productionEvent" :cls="prod.classification" :obj="find.object.identifier"></classification>
           <div class="ui orange message" v-if="!find.object.productionEvent">
             <div class="ui header">Deze vondst is niet geclassificeerd</div>
@@ -66,24 +31,26 @@
 
 <script>
 import checkbox from 'semantic-ui-css/components/checkbox.min.js';
-import ObjectFeatures from './ObjectFeatures';
-import Classification from './Classification';
+
 import AddClassification from './AddClassification';
+import Classification from './Classification';
+import ObjectFeatures from './ObjectFeatures';
+import ValidationForm from './ValidationForm';
 
 export default {
   props: ['user', 'find'],
   data () {
     return {
-      photoValidation: []
+      show: {
+        validation: false
+      }
     }
-  },
-  ready () {
-    $('.ui.checkbox').checkbox()
   },
   components: {
     AddClassification,
     Classification,
-    ObjectFeatures
+    ObjectFeatures,
+    ValidationForm,
   }
 }
 </script>

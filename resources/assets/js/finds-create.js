@@ -146,6 +146,9 @@ new Vue({
         }
       }
       return this.find
+    },
+    submitSuccess () {
+      window.location.href = '/finds'
     }
   },
   ready () {

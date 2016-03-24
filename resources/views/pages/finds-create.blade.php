@@ -230,7 +230,7 @@
     Niet alle verplichte velden zijn ingevuld.
   </p>
   <p>
-    <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Bewaren als draft</button>
+    <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
     <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
   </p>
 </step>

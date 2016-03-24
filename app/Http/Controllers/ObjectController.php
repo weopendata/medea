@@ -25,5 +25,7 @@ class ObjectController extends Controller
         $input = $request->json()->all();
 
         $this->objects->setValidationStatus($id, $input['objectValidationStatus']);
+
+        return response()->json(['success' => true]);
     }
 }

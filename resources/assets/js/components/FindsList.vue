@@ -1,6 +1,6 @@
 <template>
   <div class="ui very relaxed items">
-    <find-event v-for="findEvent in finds" :find="findEvent" :user="user"></find-event>
+    <find-event v-for="f in finds | filterBy relevant" :find="f" :user="user"></find-event>
   </div>
 </template>
 
@@ -9,6 +9,13 @@ import FindEvent from './FindEvent';
 
 export default {
   props: ['user', 'finds'],
+  methods: {
+    relevant (find) {
+      console.log('rel')
+      return find.object.objectValidationStatus == 'gevalideerd'
+      || (this.user.isValidator && find.object.objectValidationStatus == 'in bewerking')
+    }
+  },
   components: {
     FindEvent
   }

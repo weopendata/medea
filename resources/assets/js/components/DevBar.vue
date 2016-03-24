@@ -22,6 +22,11 @@
     </div>
     <div class="item">
       <label>
+        <input type="checkbox" v-model="user.isValidator"> Val
+      </label>
+    </div>
+    <div class="item">
+      <label>
         <input type="checkbox" v-model="user.isResearcher"> Res
       </label>
     </div>

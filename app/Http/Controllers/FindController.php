@@ -45,8 +45,10 @@ class FindController extends Controller
             return redirect()->back()->with('errors', $message_bag->add('message', 'Log in in order to see your personal finds.'));
         }
 
-        $personal_finds = $this->finds->getForPerson($user);
-        dd($personal_finds);
+        $limit = $request->input('limit', 20);
+        $offset = $request->input('offset', 0);
+
+        return view('pages.finds-list', ['finds' => $this->finds->getForPerson($user, $limit, $offset)]);
     }
 
     /**
@@ -96,6 +98,8 @@ class FindController extends Controller
 
         // Make find
         $find = $this->finds->store($input);
+
+        return response()->json($find);
     }
 
     /**
@@ -131,6 +135,7 @@ class FindController extends Controller
     public function update(Request $request, $id)
     {
         //
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -141,7 +146,8 @@ class FindController extends Controller
      */
     public function destroy($id)
     {
-        return $this->finds->delete($id);
+        $this->finds->delete($id);
+        return response()->json(['success' => true]);
     }
 
     /**

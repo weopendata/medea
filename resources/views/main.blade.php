@@ -55,6 +55,7 @@ try {
     isFindExpert: true,
     isResearcher: true,
     isRegistrar: true,
+    isValidator: true,
     isAgency: true,
     isAdmin: true
   }
