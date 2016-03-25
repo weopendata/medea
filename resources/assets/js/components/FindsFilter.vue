@@ -1,19 +1,32 @@
 <template>
   <div class="ui form" @change="change">
-    <div class="fields">
+    <div class="equal width fields">
       <div class="field">
-        <label>Categorie</label>
-        <select class="ui dropdown" v-model="model.category">
-          <option value="">Alle</option>
-          <option v-for="opt in fields.object.category" v-text="opt"></option>
+        <select class="ui search fluid dropdown category" v-model="model.category">
+          <option value="*">Alle categorieën</option>
+          <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
         </select>
       </div>
       <div class="field">
-        <label>Myfinds</label>
-        <input type="checkbox" v-model="model.myfinds" value="true">
+        <select class="ui search fluid dropdown category" v-model="model.culture">
+          <option value="*">Alle culturen</option>
+          <option v-for="opt in fields.classification.culture" :value="opt" v-text="opt"></option>
+        </select>
       </div>
       <div class="field">
-        <button  class="ui button" :class="{purple:model.myfinds}" @click.prevent="model.myfinds=!model.myfinds">Mijn vondsten</button>
+        <select class="ui search fluid dropdown category" v-model="model.material">
+          <option value="*">Alle materialen</option>
+          <option v-for="opt in fields.object.material" :value="opt" v-text="opt"></option>
+        </select>
+      </div>
+      <div class="field">
+        <select class="ui search fluid dropdown category" v-model="model.technique">
+          <option value="*">Alle technieken</option>
+          <option v-for="opt in fields.object.technique" :value="opt" v-text="opt"></option>
+        </select>
+      </div>
+      <div class="field">
+        <button  class="ui fluid button" :class="{purple:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
       </div>
     </div>
   </div>
@@ -45,12 +58,15 @@ export default {
     $('.ui.dropdown').dropdown()
   },
   methods: {
+    toggleMyfinds () {
+      this.model.myfinds = !this.model.myfinds
+      this.change()
+    },
     change () {
       var model = this.model
       var query = Object.keys(this.model).map(function(key, index) {
-        return key + '=' + encodeURIComponent(model[key]);
-      }).join('&');
-      console.log(query, this.model, this.query)
+        return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
+      }).filter(Boolean).join('&');
       if (this.query !== query) {
         this.query = query
         this.$root.fetch(query)

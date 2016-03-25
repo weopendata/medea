@@ -1,6 +1,7 @@
 import Vue from 'vue/dist/vue.min.js'
 import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import DevBar from './components/DevBar'
+import TextareaGrowing from './components/TextareaGrowing'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
 import Ajax from './mixins/Ajax'
@@ -27,8 +28,15 @@ new Vue({
         lastName: '',
         email: '',
         password: '',
+        expertise: '',
+        research: '',
+        bio: '',
         passContactInfoToAgency: false,
         showContactInfo: false
+      },
+      oeerk: {
+        jjjj: null,
+        nnnnn: null,
       },
       submitAction: 'register',
       registered: false
@@ -48,6 +56,9 @@ new Vue({
           data.personType.push(type)
         }
       }
+      if (this.oeerk.jjjj) {
+        data.oeerk = 'OE/ERK/Metaaldetectorist/' + this.oeerk.jjjj + '/' + this.oeerk.nnnnn
+      }
       return data
     },
     submitSuccess () {
@@ -60,6 +71,7 @@ new Vue({
   el: 'body',
   mixins: [Ajax],
   components: {
+    TextareaGrowing,
     DevBar
   }
 });

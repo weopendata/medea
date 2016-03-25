@@ -31,6 +31,7 @@ new Vue({
         draggable: true,
         clickable: true
       },
+      fields: window.fields,
       find: {
         toValidate: true,
         finderName: '',
@@ -45,24 +46,29 @@ new Vue({
               "type": "TBD"
             },
             "address": {
-              "street": "",
-              "number": "",
-              "locality": "",
-              "postalCode": ""
+              "street": null,
+              "number": null,
+              "locality": null,
+              "postalCode": null
             },
-            "lat": "",
-            "lng": ""
+            "lat": null,
+            "lng": null
           }
         },
         object: {
-          "description" : "",
-          "inscription" : "",
-          category: "",
-          "material" : "",
-          "technique" : "",
-          "bibliography" : "http://paperonacientgreek.com",
+          description: null,
+          inscription: null,
+          category: null,
+          material: null,
+          technique: null,
+          surfaceTreatment: null,
+          period: null,
+          bibliography: 'http://paperonacientgreek.com',
           images: [],
-          dimensions: []
+          dimensions: [],
+          productionEvent: {
+            classification: null
+          }
         }
       },
       dimensionText: '',
@@ -75,6 +81,7 @@ new Vue({
         gewicht: {unit: 'g'}
       },
       show: {
+        cls: false,
         map: false,
         place: false,
         address: false,
@@ -110,7 +117,7 @@ new Vue({
     },
 
     step2valid () {
-      return this.hasImages && this.find.object.description && this.hasDimensions
+      return this.hasImages // && this.find.object.description && this.hasDimensions
     },
     hasImages () {
       return this.find.object.images.length

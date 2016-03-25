@@ -88,16 +88,16 @@
     </div>
   </div>
   <div class="required field" v-if="roles.expert">
-    <label for="role">Expertise</label>
-    <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
+    <label for="expertise">Expertise</label>
+    <textarea-growing  id="expertise" :model.sync="user.expertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
   </div>
   <div class="required field" v-if="roles.onderzoeker">
-    <label for="role">Onderzoek</label>
-    <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
+    <label for="research">Onderzoek</label>
+    <textarea-growing id="research" :model.sync="user.research" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
   </div>
   <div class="required field" v-if="roles.detectorist||roles.registrator">
-    <label for="role">Biografie</label>
-    <textarea id="description" name="description" rows="5" placeholder="Schrijf een korte biografie."></textarea>
+    <label for="bio">Biografie</label>
+    <textarea-growing id="bio" :model.sync="user.bio" placeholder="Schrijf een korte biografie."></textarea-growing>
   </div>
   <div class="field" v-if="roles.detectorist">
     <label for="email">Erkenningsnummer</label>
@@ -105,11 +105,11 @@
       <div class="ui default label">
         OE/ERK/Metaaldetectorist/
       </div>
-      <input type="text" placeholder="jjjj" style="min-width: 0;flex-shrink: 1">
+      <input type="text" v-model="oeerk.jjjj" placeholder="jjjj" style="min-width: 0;flex-shrink: 1">
       <div class="ui default label">
       /
       </div>
-      <input type="text" placeholder="00000" style="min-width: 0;flex-shrink: 1">
+      <input type="text" v-model="oeerk.nnnnn" placeholder="00000" style="min-width: 0;flex-shrink: 1">
     </div>
   </div>
   <div v-show="roles.detectorist">

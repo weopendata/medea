@@ -104,15 +104,12 @@
       <input type="file" class="">
     </div>
   </div>
-  <div class="required field">
-    <label>Beschrijving van het object</label>
-    <input type="text" v-model="find.object.description">
-  </div>
+  <h3>Gestructureerde beschrijving</h3>
   <div class="two fields">
     <div class="required field">
       <label>Categorie</label>
       <select class="ui dropdown" v-model="find.object.category">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
         @foreach ($fields['object']['category'] as $category)
         <option value="{{$category}}">{{$category}}</option>
         @endforeach
@@ -121,7 +118,7 @@
     <div class="field">
       <label>Materiaal</label>
       <select class="ui dropdown" v-model="find.object.material">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
         @foreach ($fields['object']['material'] as $material)
         <option value="{{$material}}">{{$material}}</option>
         @endforeach
@@ -132,7 +129,8 @@
     <div class="field">
       <label>Techniek</label>
       <select class="ui dropdown" v-model="find.object.technique">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
+        <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
         <option value="{{$technique}}">{{$technique}}</option>
         @endforeach
@@ -141,7 +139,8 @@
     <div class="field">
       <label>Oppervlaktebehandeling</label>
       <select class="ui dropdown" v-model="find.object.surfaceTreatment">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
+        <option>meerdere</option>
         <option>email (cloissoné)</option>
         <option>niello</option>
         <option>filigraan</option>
@@ -156,9 +155,29 @@
       </select>
     </div>
   </div>
+  <div class="two fields">
+    <div class="field">
+      <label>Opschrift</label>
+      <input type="text" v-model="find.object.inscription" placeholder="-- geen opschrift --">
+    </div>
+    <div class="field">
+      <label>Datering</label>
+      <select class="ui dropdown" v-model="find.object.period">
+        <option selected>onbekend</option>    
+        <option>Bronstijd</option>
+        <option>IJzertijd</option>
+        <option>Romeins</option>
+        <option>middeleeuws</option>
+        <option>postmiddeleeuws</option>
+        <option>modern</option>
+        <option>Wereldoorlog I</option>
+        <option>Wereldoorlog II</option>
+      </select>
+    </div>
+  </div>
   <div class="field">
-    <label>Opschrift</label>
-    <input type="text" v-model="find.findSpot.inscription" placeholder="-- geen opschrift --">
+    <label>Opmerkingen bij het object</label>
+    <input type="text" v-model="find.object.description">
   </div>
   <h3>Dimensies</h3>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
@@ -204,12 +223,20 @@
 </step>
 
 <step number="3" v-show="step==3">
-  <div class="ui very relaxed items">
-    <find-event :find="find" :user="user"></find-event>
-    
-    <add-classification-form :cls.sync="cls"></add-classification-form>
+    <h3>Classificatie</h3>
+  <div v-if="show.cls">
+    <add-classification-form :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+  </div>
+  <div v-else>
+    <p>
+      Jouw vondstfiche zal voorgelegd worden aan vondstexperten om te classificeren.
+    </p>
+    <p>
+      <button v-if="!show.cls" @click.prevent="show.cls=1" class="ui blue button" type="submit">Zelf classificeren</button>
+    </p>
   </div>
 
+  <h3>Klaar met vondstfiche</h3>
   <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="find.toValidate">
@@ -220,19 +247,19 @@
       </label>
     </div>
   </div>
-  <div class="field">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="user.findNotifications">
-      <label>Hou mij op de hoogte van wijzigingen aan vondstfiches</label>
-    </div>
-  </div>
-  <p v-if="!submittable" style="color:red">
-    Niet alle verplichte velden zijn ingevuld.
-  </p>
   <p>
     <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
     <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
   </p>
+  <p v-if="!submittable" style="color:red">
+    Niet alle verplichte velden zijn ingevuld.
+  </p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <h3>Alvast een voorbeeld van hoe de vondstfiche eruit zal zien:</h3>
+  <div class="ui very relaxed items">
+    <find-event :find="find" :user="user"></find-event>
+  </div>
 </step>
 
 {!! Form::close() !!}
