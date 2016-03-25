@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     submittable () {
-      return this.cls.culture && this.cls.description
+      return this.cls.culture || this.cls.nation || this.cls.description
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'
