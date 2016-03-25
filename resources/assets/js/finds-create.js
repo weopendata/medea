@@ -62,6 +62,7 @@ new Vue({
           material: null,
           technique: null,
           surfaceTreatment: null,
+          period: null,
           bibliography: 'http://paperonacientgreek.com',
           images: [],
           dimensions: [],
@@ -116,7 +117,7 @@ new Vue({
     },
 
     step2valid () {
-      return this.hasImages && this.find.object.description && this.hasDimensions
+      return this.hasImages // && this.find.object.description && this.hasDimensions
     },
     hasImages () {
       return this.find.object.images.length
