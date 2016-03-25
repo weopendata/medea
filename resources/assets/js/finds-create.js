@@ -12,6 +12,7 @@ import Marker from 'vue-google-maps/src/components/marker.vue';
 import PlaceInput from 'vue-google-maps/src/components/PlaceInput.vue';
 
 import PhotoUpload from './components/PhotoUpload';
+import DatingPicker from './components/DatingPicker';
 import DimInput from './components/DimInput.vue';
 import FindEvent from './components/FindEvent';
 import AddClassificationForm from './components/AddClassificationForm'
@@ -189,6 +190,7 @@ new Vue({
     PlaceInput,
     Marker,
     PhotoUpload,
+    DatingPicker,
     DimInput,
     FindEvent,
     AddClassificationForm

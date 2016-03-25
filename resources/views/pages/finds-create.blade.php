@@ -155,26 +155,11 @@
       </select>
     </div>
   </div>
-  <div class="two fields">
-    <div class="field">
-      <label>Opschrift</label>
-      <input type="text" v-model="find.object.inscription" placeholder="-- geen opschrift --">
-    </div>
-    <div class="field">
-      <label>Datering</label>
-      <select class="ui dropdown" v-model="find.object.period">
-        <option selected>onbekend</option>    
-        <option>Bronstijd</option>
-        <option>IJzertijd</option>
-        <option>Romeins</option>
-        <option>middeleeuws</option>
-        <option>postmiddeleeuws</option>
-        <option>modern</option>
-        <option>Wereldoorlog I</option>
-        <option>Wereldoorlog II</option>
-      </select>
-    </div>
+  <div class="field">
+    <label>Opschrift</label>
+    <input type="text" v-model="find.object.inscription" placeholder="-- geen opschrift --">
   </div>
+  <dating-picker :model="find.object"></dating-picker>
   <div class="field">
     <label>Opmerkingen bij het object</label>
     <input type="text" v-model="find.object.description">
