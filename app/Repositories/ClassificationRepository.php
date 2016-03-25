@@ -14,7 +14,7 @@ class ClassificationRepository extends BaseRepository
 
     public function getVoteOfUser($classification_id, $user_id)
     {
-        $query = "match (n)--(person:Person) where id(n) = $classification_id AND id(person) = $user_id return person";
+        $query = "match (n)-[r]-(person:Person) where id(n) = $classification_id AND id(person) = $user_id return r";
         $client = $this->getClient();
 
         $cypher_query = new Query($client, $query);

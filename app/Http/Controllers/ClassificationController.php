@@ -65,7 +65,7 @@ class ClassificationController extends Controller
             }
 
             $vote_relationship->delete();
-            $classification->getProperty('disagree');
+            $disagree = $classification->getProperty('disagree');
 
             $disagree--;
 
@@ -94,7 +94,7 @@ class ClassificationController extends Controller
      *
      * @return Node
      */
-    public function disagree($id, $classification_id)
+    public function disagree($id, $classification_id, Request $request)
     {
         $user = $request->user();
         $user_id = $user->id;
@@ -114,7 +114,7 @@ class ClassificationController extends Controller
             }
 
             $vote_relationship->delete();
-            $classification->getProperty('agree');
+            $agree = $classification->getProperty('agree');
 
             $agree--;
 
