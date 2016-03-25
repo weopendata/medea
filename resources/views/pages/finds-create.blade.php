@@ -104,15 +104,12 @@
       <input type="file" class="">
     </div>
   </div>
-  <div class="required field">
-    <label>Beschrijving van het object</label>
-    <input type="text" v-model="find.object.description">
-  </div>
+  <h3>Gestructureerde beschrijving</h3>
   <div class="two fields">
     <div class="required field">
       <label>Categorie</label>
       <select class="ui dropdown" v-model="find.object.category">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
         @foreach ($fields['object']['category'] as $category)
         <option value="{{$category}}">{{$category}}</option>
         @endforeach
@@ -121,7 +118,7 @@
     <div class="field">
       <label>Materiaal</label>
       <select class="ui dropdown" v-model="find.object.material">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
         @foreach ($fields['object']['material'] as $material)
         <option value="{{$material}}">{{$material}}</option>
         @endforeach
@@ -132,7 +129,8 @@
     <div class="field">
       <label>Techniek</label>
       <select class="ui dropdown" v-model="find.object.technique">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
+        <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
         <option value="{{$technique}}">{{$technique}}</option>
         @endforeach
@@ -141,7 +139,8 @@
     <div class="field">
       <label>Oppervlaktebehandeling</label>
       <select class="ui dropdown" v-model="find.object.surfaceTreatment">
-        <option>Kiezen...</option>
+        <option selected>onbekend</option>
+        <option>meerdere</option>
         <option>email (cloissoné)</option>
         <option>niello</option>
         <option>filigraan</option>
@@ -158,7 +157,11 @@
   </div>
   <div class="field">
     <label>Opschrift</label>
-    <input type="text" v-model="find.findSpot.inscription" placeholder="-- geen opschrift --">
+    <input type="text" v-model="find.object.inscription" placeholder="-- geen opschrift --">
+  </div>
+  <div class="field">
+    <label>Opmerkingen bij het object</label>
+    <input type="text" v-model="find.object.description">
   </div>
   <h3>Dimensies</h3>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
