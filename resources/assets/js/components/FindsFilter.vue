@@ -4,9 +4,8 @@
       <div class="field">
         <label>Categorie</label>
         <select class="ui dropdown" v-model="model.category">
-          <option>Alle</option>
-          <option value="d">Alsle</option>
-          <option v-for="opt in filters.category" v-text="opt"></option>
+          <option value="">Alle</option>
+          <option v-for="opt in fields.object.category" v-text="opt"></option>
         </select>
       </div>
       <div class="field">
@@ -30,6 +29,7 @@ export default {
   props: ['model'],
   data () {
     return {
+      fields: window.fields,
       query: ''
     }
   },

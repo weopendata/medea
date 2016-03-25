@@ -50,6 +50,7 @@ class FindController extends Controller
                 'myfinds' => $myfinds,
                 'category' => $category
             ],
+            'fields' => $this->list_values->getFindTemplate(),
         ]);
     }
 
