@@ -62,7 +62,10 @@ new Vue({
           "technique" : "",
           "bibliography" : "http://paperonacientgreek.com",
           images: [],
-          dimensions: []
+          dimensions: [],
+          productionEvent: {
+            classification: null
+          }
         }
       },
       dimensionText: '',
@@ -75,6 +78,7 @@ new Vue({
         gewicht: {unit: 'g'}
       },
       show: {
+        cls: false,
         map: false,
         place: false,
         address: false,

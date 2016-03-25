@@ -204,12 +204,20 @@
 </step>
 
 <step number="3" v-show="step==3">
-  <div class="ui very relaxed items">
-    <find-event :find="find" :user="user"></find-event>
-    
-    <add-classification-form :cls.sync="cls"></add-classification-form>
+    <h3>Classificatie</h3>
+  <div v-if="show.cls">
+    <add-classification-form :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+  </div>
+  <div v-else>
+    <p>
+      Jouw vondstfiche zal voorgelegd worden aan vondstexperten om te classificeren.
+    </p>
+    <p>
+      <button v-if="!show.cls" @click.prevent="show.cls=1" class="ui blue button" type="submit">Zelf classificeren</button>
+    </p>
   </div>
 
+  <h3>Klaar met vondstfiche</h3>
   <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="find.toValidate">
@@ -220,19 +228,19 @@
       </label>
     </div>
   </div>
-  <div class="field">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="user.findNotifications">
-      <label>Hou mij op de hoogte van wijzigingen aan vondstfiches</label>
-    </div>
-  </div>
-  <p v-if="!submittable" style="color:red">
-    Niet alle verplichte velden zijn ingevuld.
-  </p>
   <p>
     <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
     <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
   </p>
+  <p v-if="!submittable" style="color:red">
+    Niet alle verplichte velden zijn ingevuld.
+  </p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <h3>Alvast een voorbeeld van hoe de vondstfiche eruit zal zien:</h3>
+  <div class="ui very relaxed items">
+    <find-event :find="find" :user="user"></find-event>
+  </div>
 </step>
 
 {!! Form::close() !!}
