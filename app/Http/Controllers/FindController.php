@@ -85,7 +85,11 @@ class FindController extends Controller
      */
     public function create()
     {
-        return view('pages.finds-create', ['fields' => $this->list_values->getFindTemplate()]);
+        if (Auth::check()) {
+            return view('pages.finds-create', ['fields' => $this->list_values->getFindTemplate()]);
+        }
+
+        return redirect('/');
     }
 
     /**
@@ -149,7 +153,9 @@ class FindController extends Controller
      */
     public function edit($id)
     {
-        //
+        if (Auth::check()) {
+            // Show the edit form
+        }
     }
 
     /**
