@@ -86,4 +86,20 @@ class UserRepository extends BaseRepository
             $user->save();
         }
     }
+
+    /**
+     * Make a vote connection between a user and a classification
+     *
+     * @param Node    $classification
+     * @param integer $person_id
+     * @param string  $vote_type agree|disagree
+     *
+     * @return Relationship
+     */
+    public function addVote($classification, $person_id, $vote_type)
+    {
+        $user_node = $this->getById();
+
+        return $user_node->relateTo($classification, $vote_type)->save();
+    }
 }

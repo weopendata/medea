@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\FindEvent;
 use App\Models\ProductionClassification;
 use Everyman\Neo4j\Relationship;
+use Everyman\Neo4j\Cypher\Query;
 
 class FindRepository extends BaseRepository
 {
@@ -91,5 +92,48 @@ class FindRepository extends BaseRepository
         }
 
         return $finds;
+    }
+
+    public function expandValues($find_id, $user = null)
+    {
+        $find = parent::expandValues($find_id);
+
+        // Add the vote of the user
+        if (!empty($user)) {
+            // Get the vote of the user for the find
+            $query = "match (person:Person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) where id(person) = $user->id AND id(find) = $find_id return r";
+
+            $client = $this->getClient();
+
+            $cypher_query = new Query($client, $query);
+            $results = $cypher_query->getResultSet();
+
+            if ($results->count() > 0) {
+                foreach ($results as $result) {
+                    $relationship = $result->current();
+
+                    $classification_id = $relationship->getEndNode()->getId();
+
+                    $processed_classifications = [];
+
+                    foreach ($find['object']['productionEvent'] as $classification) {
+                        $processed_classification = $classification;
+
+                        if ($classification['classification']['identifier'] == $classification_id) {
+                            $processed_classification['classification']['me'] = $relationship->getType();
+                        } else {
+                            $processed_classification['classification']['me'] = false;
+                        }
+
+                        $processed_classifications[] = $processed_classification;
+                    }
+                }
+
+                $find['object']['productionEvent'] = $processed_classifications;
+            }
+
+        }
+
+        return $find;
     }
 }

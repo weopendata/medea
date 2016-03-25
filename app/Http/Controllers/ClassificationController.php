@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Repositories\ObjectRepository;
+use App\Repositories\ClassificationRepository;
 
 class ClassificationController extends Controller
 {
-    public function __construct(ObjectRepository $objects)
+    public function __construct(ObjectRepository $objects, ClassificationRepository $classifications)
     {
         $this->objects = $objects;
+        $this->classifications = $classifications;
     }
 
     /**
@@ -43,15 +45,39 @@ class ClassificationController extends Controller
      *
      * @return Node
      */
-    public function agree($id, $classification_id)
+    public function agree($id, $classification_id, Request $request)
     {
+        $user = $request->user();
+        $user_id = $user->id;
+
         $classification = $this->objects->getClassification($id, $classification_id);
+
+        // Get the current votes of the user and adjust where necessary
+        $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user_id);
+
+        if (!empty($vote_relationship) && !empty($classification)) {
+            // Check which vote he casted, if he agreed, abort.
+            // if he disagreed, remove link, adjust disagree count
+            $type = $vote_relationship->getType();
+
+            if ($type == 'agree') {
+                return response()->json(['errors' => ['message' => 'The user has already agreed to this classification.']], 400);
+            }
+
+            $vote_relationship->delete();
+            $classification->getProperty('disagree');
+
+            $disagree--;
+
+            $classification->setProperty('disagree', $disagree)->save();
+        }
 
         if (!empty($classification)) {
             $agree = $classification->getProperty('agree');
             $agree++;
 
             $classification->setProperty('agree', $agree)->save();
+            $user->getNode()->relateTo($classification, 'agrees')->save();
 
             return $agree;
         }
@@ -70,13 +96,37 @@ class ClassificationController extends Controller
      */
     public function disagree($id, $classification_id)
     {
+        $user = $request->user();
+        $user_id = $user->id;
+
         $classification = $this->objects->getClassification($id, $classification_id);
+
+        // Get the current votes of the user and adjust where necessary
+        $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user_id);
+
+        if (!empty($vote_relationship) && !empty($classification)) {
+            // Check which vote he casted, if he agreed, abort.
+            // if he disagreed, remove link, adjust disagree count
+            $type = $vote_relationship->getType();
+
+            if ($type == 'disagree') {
+                return response()->json(['errors' => ['message' => 'The user has already disagreed to this classification.']], 400);
+            }
+
+            $vote_relationship->delete();
+            $classification->getProperty('agree');
+
+            $agree--;
+
+            $classification->setProperty('agree', $agree)->save();
+        }
 
         if (!empty($classification)) {
             $disagree = $classification->getProperty('disagree');
             $disagree++;
 
             $classification->setProperty('disagree', $disagree)->save();
+            $user->getNode()->relateTo($classification, 'disagrees')->save();
 
             return $disagree;
         }

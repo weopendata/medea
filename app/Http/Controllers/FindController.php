@@ -34,6 +34,7 @@ class FindController extends Controller
         $offset = $request->input('offset', 0);
         $category = $request->input('category', null);
         $myfinds = $request->has('myfinds');
+
         if ($myfinds) {
             $user = $request->user();
             if (empty($user)) {
@@ -139,9 +140,9 @@ class FindController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $find = $this->finds->expandValues($id);
+        $find = $this->finds->expandValues($id, $request->user());
         return view('pages.finds-detail', ['find' => $find]);
     }
 
