@@ -1,6 +1,7 @@
 import Vue from 'vue/dist/vue.min.js';
 import VueResource from 'vue-resource/dist/vue-resource.min.js';
 import FindsList from './components/FindsList';
+import FindsFilter from './components/FindsFilter';
 import DevBar from './components/DevBar';
 
 Vue.use(VueResource)
@@ -9,11 +10,13 @@ new Vue({
   el: 'body',
   components: {
     DevBar,
+    FindsFilter,
     FindsList
   },
   data () {
     return {
       finds: window.initialFinds || [],
+      filterState: window.filterState || {myfinds: false},
       user: window.medeaUser
     }
   },
@@ -24,9 +27,11 @@ new Vue({
     }
   },
   methods: {
-    fetch () {
-      this.$http.get('/api/finds').then(function (res) {
-        this.finds = res.data
+    fetch (query) {
+      query = query || ''
+      this.$http.get('/api/finds?' + query).then(function (res) {
+        this.finds = res.data.finds
+        this.filterState = res.data.filterState
       }, function () {
         console.error('could not fetch findevents')
       });

@@ -48,9 +48,11 @@ export default {
   },
   methods: {
     rm () {
+      this.find.object.objectValidationStatus = 'verwijderd'
+      var $root = this.$root
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
-        this.$root.fetch()
+        $root.fetch()
       });
     }
   }

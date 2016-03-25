@@ -32,23 +32,49 @@ class FindController extends Controller
     {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
-
-        return view('pages.finds-list', ['finds' => $this->finds->get($limit, $offset)]);
-    }
-
-    public function myfinds(Request $request)
-    {
-        $user = $request->user();
-
-        if (empty($user)) {
-            $message_bag = new MessageBag();
-            return redirect()->back()->with('errors', $message_bag->add('message', 'Log in in order to see your personal finds.'));
+        $category = $request->input('category', null);
+        $myfinds = $request->has('myfinds');
+        if ($myfinds) {
+            $user = $request->user();
+            if (empty($user)) {
+                $message_bag = new MessageBag();
+                return redirect()->back()->with('errors', $message_bag->add('message', 'Log in in order to see your personal finds.'));
+            }
         }
 
+        $finds = $myfinds ? $this->finds->getForPerson($user, $limit, $offset) : $this->finds->get($limit, $offset);
+
+        return view('pages.finds-list', [
+            'finds' => $finds,
+            'filterState' => [
+                'myfinds' => $myfinds,
+                'category' => $category
+            ],
+        ]);
+    }
+
+    public function apiIndex(Request $request)
+    {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
+        $category = $request->input('category', null);
+        $myfinds = $request->has('myfinds');
+        if ($myfinds) {
+            $user = $request->user();
+            if (empty($user)) {
+                return response()->json(['errors' => ['We kunnen je vondsten niet tonen omdat je niet aangemeld bent.']], 401);
+            }
+        }
 
-        return view('pages.finds-list', ['finds' => $this->finds->getForPerson($user, $limit, $offset)]);
+        $finds = $myfinds ? $this->finds->getForPerson($user, $limit, $offset) : $this->finds->get($limit, $offset);
+
+        return response()->json([
+            'finds' => $finds,
+            'filterState' => [
+                'myfinds' => $myfinds,
+                'category' => $category
+            ],
+        ]);
     }
 
     /**

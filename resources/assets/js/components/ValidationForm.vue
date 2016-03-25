@@ -14,7 +14,7 @@
     <p>&nbsp;</p>
     <div class="equal width fields">
       <div class="field">
-        <p><button @click="post('in bewerking')" class="ui button" :class="{yellow:!valid}">Revisie</button>
+        <p><button @click="post('revisie nodig')" class="ui button" :class="{yellow:!valid}">Revisie</button>
         <p>De informatie is onvolledig of mogelijk niet correct en moet herzien worden voor publicatie
       </div>
       <div class="field">
