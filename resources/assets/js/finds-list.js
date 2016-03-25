@@ -32,6 +32,7 @@ new Vue({
       this.$http.get('/api/finds?' + query).then(function (res) {
         this.finds = res.data.finds
         this.filterState = res.data.filterState
+        window.history.pushState({}, document.title, '?' + query)
       }, function () {
         console.error('could not fetch findevents')
       });

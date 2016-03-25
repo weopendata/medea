@@ -32,7 +32,7 @@ class FindController extends Controller
     {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
-        $category = $request->input('category', null);
+        $category = $request->input('category', '*');
         $myfinds = $request->has('myfinds');
         if ($myfinds) {
             $user = $request->user();
@@ -48,7 +48,10 @@ class FindController extends Controller
             'finds' => $finds,
             'filterState' => [
                 'myfinds' => $myfinds,
-                'category' => $category
+                'category' => $category,
+                'culture' => '*',
+                'technique' => '*',
+                'material' => '*',
             ],
             'fields' => $this->list_values->getFindTemplate(),
         ]);
@@ -58,7 +61,7 @@ class FindController extends Controller
     {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
-        $category = $request->input('category', null);
+        $category = $request->input('category', '*');
         $myfinds = $request->has('myfinds');
         if ($myfinds) {
             $user = $request->user();
@@ -73,7 +76,10 @@ class FindController extends Controller
             'finds' => $finds,
             'filterState' => [
                 'myfinds' => $myfinds,
-                'category' => $category
+                'category' => $category,
+                'culture' => '*',
+                'technique' => '*',
+                'material' => '*',
             ],
         ]);
     }
