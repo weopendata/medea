@@ -77,7 +77,7 @@ class ClassificationController extends Controller
             $agree++;
 
             $classification->setProperty('agree', $agree)->save();
-            $user->getNode()->relateTo($classification, 'agrees')->save();
+            $user->getNode()->relateTo($classification, 'agree')->save();
 
             return $agree;
         }
@@ -126,7 +126,7 @@ class ClassificationController extends Controller
             $disagree++;
 
             $classification->setProperty('disagree', $disagree)->save();
-            $user->getNode()->relateTo($classification, 'disagrees')->save();
+            $user->getNode()->relateTo($classification, 'disagree')->save();
 
             return $disagree;
         }
