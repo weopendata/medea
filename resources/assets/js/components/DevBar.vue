@@ -46,7 +46,9 @@ export default {
 
 <style lang="sass">
 .devbar {
-  opacity: .1;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
   &:hover {
     opacity: 1;
   }

@@ -25,8 +25,11 @@
           <option v-for="opt in fields.object.technique" :value="opt" v-text="opt"></option>
         </select>
       </div>
+      <div class="field" v-if="!$root.user.isGuest">
+        <button class="ui fluid button" :class="{purple:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
+      </div>
       <div class="field">
-        <button  class="ui fluid button" :class="{purple:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
+        <button class="ui fluid teal button" @click.prevent="$parent.showmap=true"><i class="marker icon"></i> Map</button>
       </div>
     </div>
   </div>

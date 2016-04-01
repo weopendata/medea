@@ -32,56 +32,63 @@
 </div>
 
 <step number="1" v-show="step==1">
-  <div class="two fields">
-    <div class="field" :class="{required:user.isRegistrar}">
-      <label>Vinder</label>
-      <input type="text" v-model="find.finderName" value="John Dfoe" placeholder="Naam van de vinder" :disabled="!user.isRegistrar">
-    </div>
+  <div class="fields">
     <div class="required field">
       <label>Datum</label>
       <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
     </div>
+    <div class="required field" v-if="user.isdRegistrar">
+      <label>Vinder</label>
+      <input type="text" v-model="find.finderName" value="John Dfoe" placeholder="Naam van de vinder" :disabled="!user.isRegistrar">
+    </div>
   </div>
-  <div class="required field">
-    <label>Vondstlocatie</label>
+  <div class="field" v-if="!show.spotdescription||!show.place||!show.address">
+    <label>Vondstlocatie verfijnen</label>
+    <button v-if="!show.spotdescription" @click.prevent="show.spotdescription=1" class="ui button">Beschrijving</button>
+    <button v-if="!show.place" @click.prevent="show.place=1" class="ui button">Plaatsnaam</button>
+    <button v-if="!show.address" @click.prevent="show.address=1" class="ui button">Adres</button>
+  </div>
+  <div class="field" v-if="show.spotdescription">
+    <label>Beschrijving van de vindplaats</label>
     <input type="text" v-model="find.findSpot.description" placeholder="Beschrijving van de vindplaats">
   </div>
-  <div class="field">
+  <div class="field" v-if="show.place">
     <label>Plaatsnaam</label>
-    <button v-if="!show.place" @click.prevent="show.place=1" class="ui button">Plaatsnaam toevoegen</button>
-    <input v-if="show.place" type="text" v-model="find.findSpot.location.locationPlaceName.appellation" placeholder="">
+    <input type="text" v-model="find.findSpot.location.locationPlaceName.appellation" placeholder="">
   </div>
-  <div class="fields">
-    <div class="eight wide field" v-if="!show.address" @click.prevent="show.address=1">
-      <label for="street">Straat</label>
-      <button v-if="!show.address" class="ui button">Adres toevoegen</button>
-    </div>
-    <div class="six wide field" v-if="show.address">
+  <div class="fields" v-if="show.address">
+    <div class="six wide field">
       <label>Straat</label>
-      <input type="text" v-model="find.findSpot.location.address.street" placeholder="" id="street">
+      <input type="text" v-model="find.findSpot.location.address.street" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" id="street">
     </div>
-    <div class="two wide field" v-if="show.address">
+    <div class="two wide field">
       <label>Nummer</label>
       <input type="number" v-model="find.findSpot.location.address.number" placeholder="">
     </div>
   </div>
-  <div class="fields">
+  <div class="fields" id="location-picker">
     <div class="two wide field" v-if="show.address">
       <label>Postcode</label>
-      <input type="text" v-model="find.findSpot.location.address.postalCode" placeholder="">
+      <input type="text" v-model="find.findSpot.location.address.postalCode">
     </div>
     <div class="six wide required field" v-bind:class="{six:show.address,eight:!show.address}">
-      <label>Gemeente</label>
-      <input type="text" v-model="find.findSpot.location.address.locality" placeholder="">
+      <label v-text="show.address||show.map?'Stad/gemeente':'Straat en/of gemeente/stad'">Stad/gemeente</label>
+      <input type="text" v-model="find.findSpot.location.address.locality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
-    <div class="eight wide field" v-if="!show.map">
-      <label>&nbsp;</label>
-      <button @click.prevent="show.map=1" class="ui blue button">Aanduiden op kaart</button>
+    <div class="eight wide field" v-if="show.map">
+      <label>Nauwkeurigheid (meter)</label>
+      <input type="number" v-model="find.findSpot.location.accuracy" min="0" :step="accuracyStep">
     </div>
   </div>
+  <div class="field">
+    <button v-if="!show.map" @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locality}">
+      Aanduiden op kaart
+    </button>
+  </div>
   <div class="field" v-if="show.map&&step==1">  
-    <map :center.sync="centerStart" :zoom.sync="8" @g-click="setMarker" style="display:block;height:300px;">
-      <marker v-if="marker.visible" @g-drag="setMarker" @g-dragend="setMarker" :position.sync="marker.position" :clickable.sync="true" :draggable.sync="true"></marker>
+    <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
+      <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
+      <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :draggable.sync="true" :options="marker.options"></circle>
     </map>
   </div>
   <div class="two fields" v-if="show.co||show.map">
@@ -94,7 +101,7 @@
       <input type="number" v-model="find.findSpot.location.lng" placeholder="lng">
     </div>
   </div>
-  <button class="ui button" v-bind:class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)">Ga naar stap 2</button>
+  <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)">Ga naar stap 2</button>
 </step>
 
 <step number="2" v-show="step==2">
@@ -208,8 +215,8 @@
 </step>
 
 <step number="3" v-show="step==3">
-    <h3>Classificatie</h3>
-  <div v-if="show.cls">
+  <h3>Classificatie</h3>
+  <div v-if="find.object.productionEvent">
     <add-classification-form :cls.sync="find.object.productionEvent.classification"></add-classification-form>
   </div>
   <div v-else>
@@ -217,7 +224,7 @@
       Jouw vondstfiche zal voorgelegd worden aan vondstexperten om te classificeren.
     </p>
     <p>
-      <button v-if="!show.cls" @click.prevent="show.cls=1" class="ui blue button" type="submit">Zelf classificeren</button>
+      <button v-if="!show.cls" @click.prevent="pushCls" class="ui blue button" type="submit">Zelf classificeren</button>
     </p>
   </div>
 
@@ -248,6 +255,9 @@
 </step>
 
 {!! Form::close() !!}
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 @endsection
 
 @section('script')

@@ -8,7 +8,7 @@
     </div>
     <div class="five wide field" v-show="show.period">
       <label>Datering op cultuur</label>
-      <select class="ui dropdown" v-model="find.object.period">
+      <select class="ui dropdown" v-model="model.period">
         <option selected>onbekend</option>    
         <option>Bronstijd</option>
         <option>IJzertijd</option>
@@ -22,7 +22,7 @@
     </div>
     <div class="six wide field" v-show="show.century">
       <label>Datering per eeuw</label>
-      <select class="ui fluid dropdown" v-model="find.object.century">
+      <select class="ui fluid dropdown" v-model="model.century">
         <option selected>onbekend</option>    
         <option>20ste E. (1900/1999)</option>
         <option v-for="n in 9" v-text="(19-n)+'de E. (1'+(8-n)+'00/1'+(8-n)+'99)'"></option>
@@ -36,7 +36,7 @@
     </div>
     <div class="five wide field" v-show="show.ruler">
       <label>Datering per heerser</label>
-      <select class="ui dropdown" v-model="find.object.ruler">
+      <select class="ui dropdown" v-model="model.ruler">
         <option selected>onbekend</option> 
         <option>Napoleon</option>
         <option>Filips de Schone</option>

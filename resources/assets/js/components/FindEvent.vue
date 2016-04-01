@@ -25,13 +25,17 @@
           <i class="tag icon"></i>
           {{find.object.classificationCount}} classificaties bekijken
         </a>
-        <button class="ui red button" @click="rm" v-if="user.isAdmin&&find.identifier">
-          <i class="trash icon"></i>
-          Verwijderen
-        </button>
-        <button class="ui green button" @click="rm" v-if="user.isValidator&&find.object.objectValidationStatus == 'in bewerking'">
+        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.isValidator&&find.object.objectValidationStatus == 'in bewerking'">
           <i class="thumbs up icon"></i>
           Publiceren
+        </a>
+        <button class="ui blue button" @click="mapFocus" v-if="hasLocation">
+          <i class="marker icon"></i>
+          Op de kaart
+        </button>
+        <button class="ui basic red button" @click="rm" v-if="user.isAdmin&&find.identifier">
+          <i class="trash icon"></i>
+          Verwijderen
         </button>
       </div>
     </div>
@@ -46,6 +50,11 @@ export default {
   components: {
     ObjectFeatures
   },
+  computed: {
+    hasLocation () {
+      return this.find.findSpot.location && this.find.findSpot.location.lat
+    }
+  },
   methods: {
     rm () {
       this.find.object.objectValidationStatus = 'verwijderd'
@@ -54,6 +63,9 @@ export default {
         console.log('removed', this.find.identifier)
         $root.fetch()
       });
+    },
+    mapFocus () {
+      this.$dispatch('mapFocus', {lat:this.find.findSpot.location.lat, lng:this.find.findSpot.location.lng}, 100)
     }
   }
 }

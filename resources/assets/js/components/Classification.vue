@@ -16,7 +16,7 @@ export default {
   props: ['cls', 'obj'],
   data () {
     return {
-      me: this.cls.me || false
+      me: this.cls ? this.cls.me : false
     }
   },
   methods: {

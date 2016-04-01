@@ -175,6 +175,11 @@
 
 
 {!! Form::close() !!}
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<dev-bar :user="user"></dev-bar>
 @endsection
 
 @section('script')

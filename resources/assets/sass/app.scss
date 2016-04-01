@@ -31,13 +31,7 @@
 	max-width: 100%;
 }
 
-body {
-	overflow: auto;
-}
-nav {
-	margin-bottom: 2rem;
-}
-
+/* Base */
 
 dl {
 	margin:0 0 .5em;
@@ -51,10 +45,6 @@ dd {
 	margin-left: 90px;
 }
 
-.leaflet-map {
-	height: 300px;
-	background-color: #ccc;
-}
 
 .ui.create-container.form {
   margin: 0 auto;
@@ -76,3 +66,62 @@ dd {
 	border-bottom-left-radius: 0!important;
 	border-left-color: transparent;
 }
+
+/* Map */
+
+.map-controls {
+	position: absolute;
+	left: 10px;
+	z-index: 123245;
+	top: 60px;
+	max-width: 20em;
+}
+.map-modal {
+	background: white;
+	padding: .5rem 1rem;
+}
+.vue-map-size {
+	display: block;
+	height: 300px;
+	@media (min-height: 450px) {
+		height: 350px;
+	}
+	@media (min-height: 500px) {
+		height: 400px;
+	}
+}
+
+/* Vue transitioning */
+
+.fromleft-transition {
+	transition: transform .5s ease;
+	transform: translateX(0);
+}
+.fromleft-enter,
+.fromleft-leave {
+	transform: translateX(-100%);
+}
+.fromright-transition {
+	transition: transform .5s ease;
+	transform: translateX(0);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.fromright-enter,
+.fromright-leave {
+	transform: translateX(100%);
+}
+
+/* This effect is based on body class */
+.ui.menu {
+	transition: top 0.6s;
+	position: relative;
+	top: 0;
+}
+.showmap .ui.menu {
+	top: -60px;
+}
+

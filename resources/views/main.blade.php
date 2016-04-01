@@ -19,17 +19,17 @@
     <title>@yield('title') - MEDEA</title>
 </head>
 
-<body>
+<body :class="{showmap:showmap}">
 
 @section('nav')
 <nav class="ui container">
   <div class="ui secondary green pointing menu">
     <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
     <a href="/finds" class="item {{ (Request::is('/finds') ? 'active' : '') }}">Vondsten</a>
-    <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
     @if (Auth::guest())
     <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
     @else
+    <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
     <a href="/settings" class="right floated item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
     @endif
   </div>
@@ -38,14 +38,10 @@
 
 @yield('content')
 
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<dev-bar :user="user"></dev-bar>
-
 <script type="text/javascript">
 // var medeaUser = {!! json_encode($user) !!};
-var medeaUser;
+var medeaUser = {isGuest: true};
+@if (!Auth::guest())
 try {
   medeaUser = JSON.parse(localStorage.debugUser);
 } catch (e) {
@@ -60,7 +56,6 @@ try {
     isAdmin: true
   }
 }
-@if (!Auth::guest())
 medeaUser.name = '{{ Auth::user()->name }}';
 medeaUser.email = '{{ Auth::user()->email }}';
 @endif
