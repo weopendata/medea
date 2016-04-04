@@ -315,21 +315,20 @@ class Base
 
                 $related_model = new $model_name();
                 $related_model->setNode($end_node);
+                $related_model_values = $related_model->getValues();
 
                 $relationship_key = $this->relatedModels[$relationship->getType()]['key'];
 
-                if (!empty($this->relatedModels[$relationship->getType()]['plural']) && $this->relatedModels[$relationship->getType()]['plural']) {
-                    if (empty($data[$relationship_key])) {
-                        $data[$relationship_key] = [];
-                    }
+                if (!empty($related_model_values)) {
+                    if (!empty($this->relatedModels[$relationship->getType()]['plural']) && $this->relatedModels[$relationship->getType()]['plural']) {
+                        if (empty($data[$relationship_key])) {
+                            $data[$relationship_key] = [];
+                        }
 
-                    $values = $related_model->getValues();
-
-                    if (!empty($values)) {
-                        $data[$relationship_key][] = $values;
+                        $data[$relationship_key][] = $related_model_values;
+                    } else {
+                        $data[$relationship_key] = $related_model_values;
                     }
-                } else {
-                    $data[$relationship_key] = $related_model->getValues();
                 }
             }
         }
@@ -366,9 +365,18 @@ class Base
                         if (empty($data[$node_name])) {
                             $data[$node_name] = [];
                         }
-                        $data[$node_name][] = $this->getImplicitValues($end_node);
+
+                        $values = $this->getImplicitValues($end_node);
+
+                        if (!empty($values)) {
+                            $data[$node_name][] = $values;
+                        }
                     } else {
-                        $data[$node_name] = $this->getImplicitValues($end_node);
+                        $values = $this->getImplicitValues($end_node);
+
+                        if (!empty($values)) {
+                            $data[$node_name] = $values;
+                        }
                     }
                 }
             }
@@ -436,7 +444,7 @@ class Base
                     $tmp = $data[$end_node->getProperty('name')];
                     $data[$end_node->getProperty('name')] = [$tmp];
                     $data[$end_node->getProperty('name')][] = $this->getImplicitValues($end_node);
-                } else {
+                } elseif (!empty($end_node->getProperty('name'))) {
                     $data[$end_node->getProperty('name')] = $this->getImplicitValues($end_node);
                 }
             }
