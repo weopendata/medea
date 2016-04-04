@@ -28,7 +28,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::get('/', 'HomeController@index');
     Route::resource('finds', 'FindController');
-    Route::get('api/finds', 'FindController@apiIndex');
+    Route::get('api/finds', 'Api\FindController@index');
 
     Route::post('objects/{id}/validation', 'ObjectController@validation');
     Route::resource('objects/{id}/classifications', 'ClassificationController');

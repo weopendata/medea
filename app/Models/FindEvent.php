@@ -5,7 +5,7 @@ namespace App\Models;
 class FindEvent extends Base
 {
     public static $NODE_TYPE = 'E10';
-    public static $NODE_NAME = 'FindEvent';
+    public static $NODE_NAME = 'findEvent';
 
     protected $has_unique_id = true;
 

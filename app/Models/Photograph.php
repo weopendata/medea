@@ -5,7 +5,7 @@ namespace App\Models;
 class Photograph extends Base
 {
     public static $NODE_TYPE = 'E38';
-    public static $NODE_NAME = 'Photograph';
+    public static $NODE_NAME = 'photograph';
 
     protected $relatedModels = [
 

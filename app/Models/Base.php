@@ -316,14 +316,20 @@ class Base
                 $related_model = new $model_name();
                 $related_model->setNode($end_node);
 
+                $relationship_key = $this->relatedModels[$relationship->getType()]['key'];
+
                 if (!empty($this->relatedModels[$relationship->getType()]['plural']) && $this->relatedModels[$relationship->getType()]['plural']) {
-                    if (empty($data[$this->relatedModels[$relationship->getType()]['key']])) {
-                        $data[$this->relatedModels[$relationship->getType()]['key']] = [];
+                    if (empty($data[$relationship_key])) {
+                        $data[$relationship_key] = [];
                     }
 
-                    $data[$this->relatedModels[$relationship->getType()]['key']][] = $related_model->getValues();
+                    $values = $related_model->getValues();
+
+                    if (!empty($values)) {
+                        $data[$relationship_key][] = $values;
+                    }
                 } else {
-                    $data[$this->relatedModels[$relationship->getType()]['key']] = $related_model->getValues();
+                    $data[$relationship_key] = $related_model->getValues();
                 }
             }
         }

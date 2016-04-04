@@ -58,33 +58,6 @@ class FindController extends Controller
         ]);
     }
 
-    public function apiIndex(Request $request)
-    {
-        $limit = $request->input('limit', 20);
-        $offset = $request->input('offset', 0);
-        $category = $request->input('category', '*');
-        $myfinds = $request->has('myfinds');
-        if ($myfinds) {
-            $user = $request->user();
-            if (empty($user)) {
-                return response()->json(['errors' => ['We kunnen je vondsten niet tonen omdat je niet aangemeld bent.']], 401);
-            }
-        }
-
-        $finds = $myfinds ? $this->finds->getForPerson($user, $limit, $offset) : $this->finds->get($limit, $offset);
-
-        return response()->json([
-            'finds' => $finds,
-            'filterState' => [
-                'myfinds' => $myfinds,
-                'category' => $category,
-                'culture' => '*',
-                'technique' => '*',
-                'material' => '*',
-            ],
-        ]);
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -111,10 +84,12 @@ class FindController extends Controller
 
         $user = $request->user();
 
-        // Test code in order to test with PostMan requests
-        $user_node = $users->getUser('foo@bar.com');
-        $user = new \App\Models\Person();
-        $user->setNode($user_node);
+        if (empty($user)) {
+            // Test code in order to test with PostMan requests
+            $user_node = $users->getUser('foo@bar.com');
+            $user = new \App\Models\Person();
+            $user->setNode($user_node);
+        }
 
         $images = [];
 
@@ -149,6 +124,7 @@ class FindController extends Controller
     public function show($id, Request $request)
     {
         $find = $this->finds->expandValues($id, $request->user());
+        dd($find);
         return view('pages.finds-detail', ['find' => $find]);
     }
 

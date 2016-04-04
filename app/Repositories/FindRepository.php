@@ -125,4 +125,59 @@ class FindRepository extends BaseRepository
 
         return $find;
     }
+
+    /**
+     * Return FindEvents that are filtered
+     *
+     * @param array $filters
+     *
+     * @return
+     */
+    public function getAllWithFilter($filters)
+    {
+        // We expect that all filters are object filters (e.g. category, culture, technique, material)
+        // We'll have to make our queries based on the filters that are configured,
+        // some are filters on object relationships, some on find event, some on classifications
+        // For now, we'll use the UNION statement to make the query building more transparent
+
+        $match_statements = [];
+        $where_statements = [];
+
+        $material = @$filters['material'];
+        $technique = @$filters['technique'];
+        $category = @$filters['category'];
+        $culture = @$filters['culture'];
+
+        if (!empty($material)) {
+            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P45]-(material:E57)";
+
+            $where_statements[] = "material.value = '$material'";
+        } elseif (!empty($technique)) {
+            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E17)-[P2]-(type:E55)";
+            $where_statements[] = "type.value = '$technique'";
+        } elseif (!empty($culture)) {
+            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
+            $where_statements[] = "culture.value = '$culture'";
+        }
+
+        $client = $this->getClient();
+
+        $match_statement = implode(', ', $match_statements);
+        $where_statement = implode(' AND ', $where_statements);
+
+        $query = "MATCH $match_statement WHERE $where_statement return find";
+
+        $cypher_query = new Query($client, $query);
+        $results = $cypher_query->getResultSet();
+
+        $data = [];
+
+        foreach ($results as $result) {
+            $find = new FindEvent();
+            $find->setNode($result->current());
+            $data[] = $find->getValues();
+        }
+
+        return $data;
+    }
 }

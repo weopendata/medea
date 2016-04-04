@@ -9,7 +9,7 @@ use Everyman\Neo4j\Relationship;
 class Person extends Base implements Authenticatable
 {
     public static $NODE_TYPE = 'E21';
-    public static $NODE_NAME = 'Person';
+    public static $NODE_NAME = 'person';
 
     protected $has_unique_id = true;
 
