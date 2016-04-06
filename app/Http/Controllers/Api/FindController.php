@@ -28,8 +28,12 @@ class FindController extends Controller
 
     public function getAllWithFilter($filters)
     {
+        if (empty($filters)) {
+            return $this->finds->get();
+        }
+
         $finds = $this->finds->getAllWithFilter($filters);
 
-        dd($finds);
+        return $finds;
     }
 }

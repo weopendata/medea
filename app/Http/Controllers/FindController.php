@@ -32,18 +32,8 @@ class FindController extends Controller
     {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
-        $category = $request->input('category', '*');
-        $myfinds = $request->has('myfinds');
 
-        if ($myfinds) {
-            $user = $request->user();
-            if (empty($user)) {
-                $message_bag = new MessageBag();
-                return redirect()->back()->with('errors', $message_bag->add('message', 'Log in in order to see your personal finds.'));
-            }
-        }
-
-        $finds = $myfinds ? $this->finds->getForPerson($user, $limit, $offset) : $this->finds->get($limit, $offset);
+        $finds = $this->finds->get($limit, $offset);
 
         return view('pages.finds-list', [
             'finds' => $finds,

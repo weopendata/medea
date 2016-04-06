@@ -23,7 +23,7 @@ class FindRepository extends BaseRepository
         return $find;
     }
 
-    public function get($limit, $offset)
+    public function get($limit = 500, $offset = 0)
     {
         $client = $this->getClient();
 
@@ -136,9 +136,8 @@ class FindRepository extends BaseRepository
     public function getAllWithFilter($filters)
     {
         // We expect that all filters are object filters (e.g. category, culture, technique, material)
-        // We'll have to make our queries based on the filters that are configured,
+        // We'll have to build our query based on the filters that are configured,
         // some are filters on object relationships, some on find event, some on classifications
-        // For now, we'll use the UNION statement to make the query building more transparent
 
         $match_statements = [];
         $where_statements = [];
@@ -158,6 +157,10 @@ class FindRepository extends BaseRepository
         } elseif (!empty($culture)) {
             $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
             $where_statements[] = "culture.value = '$culture'";
+        } elseif (!empty($category)) {
+            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P2]-(category:E55)";
+
+            $where_statements[] = "category.value = '$category'";
         }
 
         $client = $this->getClient();

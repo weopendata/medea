@@ -70,6 +70,15 @@ class Object extends Base
                 'cidoc_type' => 'E12',
                 'plural' => true
             ]
+        ],
+        [
+            'relationship' => 'p2',
+            'config' => [
+                'key' => 'category',
+                'name' => 'category',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
         ]
     ];
 
