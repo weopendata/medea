@@ -35,11 +35,13 @@ class FindController extends Controller
 
         $finds = $this->finds->get($limit, $offset);
 
+        $myfinds = [];
+
         return view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
                 'myfinds' => $myfinds,
-                'category' => $category,
+                'category' => '*',
                 'culture' => '*',
                 'technique' => '*',
                 'material' => '*',

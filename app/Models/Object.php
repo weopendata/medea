@@ -16,6 +16,7 @@ class Object extends Base
             'cascade_delete' => true,
             'required' => false,
             'plural' => true,
+            'nested' => true
         ],
         'P62' => [
             'key' => 'images',
@@ -65,14 +66,15 @@ class Object extends Base
         [
             'relationship' => 'P108',
             'config' => [
-                'key' => 'productionEvent',
+                'key' => 'technique',
                 'name' => 'productionEvent',
                 'cidoc_type' => 'E12',
-                'plural' => true
+                'plural' => false,
+                'nested' => true
             ]
         ],
         [
-            'relationship' => 'p2',
+            'relationship' => 'P2',
             'config' => [
                 'key' => 'category',
                 'name' => 'category',
@@ -144,7 +146,7 @@ class Object extends Base
         parent::delete();
     }
 
-    public function createTechnique($technique)
+    public function createProductionEvent($technique)
     {
         $client = self::getClient();
 
@@ -166,7 +168,7 @@ class Object extends Base
         $production_node->relateTo($production_technique, 'P33')->save();
 
         // Make E55 productionType
-        $production_type = $this->createValueNode('value', ['E55'], $technique);
+        $production_type = $this->createValueNode('type', ['E55'], $technique);
         $production_technique->relateTo($production_type, 'P2')->save();
 
         return $production_node;

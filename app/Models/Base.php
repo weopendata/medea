@@ -310,22 +310,35 @@ class Base
         // Ask all of the values of the related models
         foreach ($this->node->getRelationships(array_keys($this->relatedModels), Relationship::DirectionOut) as $relationship) {
             if (!empty($this->relatedModels)) {
+                $model_config = $this->relatedModels[$relationship->getType()];
+
                 $end_node = $relationship->getEndNode();
-                $model_name = 'App\Models\\' . $this->relatedModels[$relationship->getType()]['model_name'];
+                $model_name = 'App\Models\\' . $model_config['model_name'];
 
                 $related_model = new $model_name();
                 $related_model->setNode($end_node);
                 $related_model_values = $related_model->getValues();
 
-                $relationship_key = $this->relatedModels[$relationship->getType()]['key'];
+                $relationship_key = $model_config['key'];
 
                 if (!empty($related_model_values)) {
-                    if (!empty($this->relatedModels[$relationship->getType()]['plural']) && $this->relatedModels[$relationship->getType()]['plural']) {
-                        if (empty($data[$relationship_key])) {
-                            $data[$relationship_key] = [];
-                        }
+                    if (!empty($model_config['plural']) && $model_config['plural']) {
+                        if (!empty($model_config['nested']) && $model_config['nested']) {
+                            $key = key($related_model_values);
+                            $values = $related_model_values[$key];
 
-                        $data[$relationship_key][] = $related_model_values;
+                            if (empty($data[$relationship_key])) {
+                                $data[$relationship_key][$key] = [];
+                            }
+
+                            $data[$relationship_key][$key][] = $values;
+                        } else {
+                            if (empty($data[$relationship_key])) {
+                                $data[$relationship_key] = [];
+                            }
+
+                            $data[$relationship_key][] = $related_model_values;
+                        }
                     } else {
                         $data[$relationship_key] = $related_model_values;
                     }
@@ -359,23 +372,43 @@ class Base
                         $data[$node_name] = $end_node->getProperty('value');
                     }
                 } else {
+                    $values = $this->getImplicitValues($end_node);
+
                     // Parse non-value nodes
                     // Check for duplicate relationships (= build an array of values)
                     if (!empty($model_map[$node_name]['plural']) && $model_map[$node_name]['plural']) {
-                        if (empty($data[$node_name])) {
-                            $data[$node_name] = [];
-                        }
+                        if (!empty($model_map[$node_name]['nested']) && $model_map[$node_name]['nested']) {
+                            $key = key($values);
+                            $values = $values[$key];
 
-                        $values = $this->getImplicitValues($end_node);
+                            if (empty($data[$node_name][$key])) {
+                                $data[$node_name][$key] = [];
+                            }
 
-                        if (!empty($values)) {
-                            $data[$node_name][] = $values;
+                            if (!empty($values)) {
+                                $data[$node_name][$key][] = $values;
+                            }
+                        } else {
+                            if (empty($data[$node_name])) {
+                                $data[$node_name] = [];
+                            }
+
+                            if (!empty($values)) {
+                                $data[$node_name][] = $values;
+                            }
                         }
                     } else {
-                        $values = $this->getImplicitValues($end_node);
+                        if (!empty($model_map[$node_name]['nested']) && $model_map[$node_name]['nested']) {
+                            if (!empty($values)) {
+                                $key = key($values);
+                                $values = $values[$key];
 
-                        if (!empty($values)) {
-                            $data[$node_name] = $values;
+                                $data[$node_name][$key] = $values;
+                            }
+                        } else {
+                            if (!empty($values)) {
+                                $data[$node_name] = $values;
+                            }
                         }
                     }
                 }
@@ -469,7 +502,7 @@ class Base
         $model_map = [];
 
         foreach ($this->implicitModels as $model_config) {
-            $model_map[$model_config['config']['key']] = $model_config['config'];
+            $model_map[$model_config['config']['name']] = $model_config['config'];
         }
 
         return $model_map;
