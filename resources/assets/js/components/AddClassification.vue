@@ -38,10 +38,11 @@ export default {
       return this.cls
     },
     submitSuccess ({data}) {
-      console.log(data)
+      window.location.reload()
     },
     submitError ({data}) {
       console.warn(data)
+      window.location.reload()
     }
   },
   mixins: [Ajax],
