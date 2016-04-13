@@ -125,3 +125,16 @@ dd {
 	top: -60px;
 }
 
+/* FindsList > Empty state */
+.finds-empty {
+	margin: 10% auto;
+	text-align: center;
+	small {
+		display: block;
+		opacity: .4;
+		margin-bottom: 3rem;
+	}
+}
+.finds-cta {
+	margin: 5% auto;
+}

@@ -148,19 +148,25 @@ class FindRepository extends BaseRepository
         $culture = @$filters['culture'];
 
         if (!empty($material)) {
-            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P45]-(material:E57)";
-
+            $match_statements[] = "(object:E22)-[P45]-(material:E57)";
             $where_statements[] = "material.value = '$material'";
-        } elseif (!empty($technique)) {
-            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E17)-[P2]-(type:E55)";
+        }
+        if (!empty($technique)) {
+            $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E17)-[P2]-(type:E55)";
             $where_statements[] = "type.value = '$technique'";
-        } elseif (!empty($culture)) {
-            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
+        }
+        if (!empty($culture)) {
+            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
             $where_statements[] = "culture.value = '$culture'";
-        } elseif (!empty($category)) {
-            $match_statements[] = "(find:E10)-[P12]-(object:E22)-[P2]-(category:E55)";
-
+        }
+        if (!empty($category)) {
+            $match_statements[] = "(object:E22)-[P2]-(category:E55)";
             $where_statements[] = "category.value = '$category'";
+        }
+
+        // No filters selected
+        if (empty($match_statements)) {
+            return $this->get();
         }
 
         $client = $this->getClient();
@@ -168,7 +174,7 @@ class FindRepository extends BaseRepository
         $match_statement = implode(', ', $match_statements);
         $where_statement = implode(' AND ', $where_statements);
 
-        $query = "MATCH $match_statement WHERE $where_statement return find";
+        $query = "MATCH (find:E10)-[P12]-(object:E22), $match_statement WHERE $where_statement return find";
 
         $cypher_query = new Query($client, $query);
         $results = $cypher_query->getResultSet();

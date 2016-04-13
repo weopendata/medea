@@ -35,24 +35,31 @@
 	text-align: center;
 }
 
-
 /* list of object features and findevent stuff*/
 
-.fe-summary {
+.fe-summary {}
+
+/* simple image carousel */
+
+.fe-header {
+	margin-top: -30px;
+	margin-bottom: 2rem;
+	padding: 68px 0 1rem;
+	text-align: center;
+	background: #666;
+	color: white;
+	>h1 {
+		font-weight: normal;
+		margin: 1rem 0;
+	}
 }
 
 /* simple image carousel */
 
 .fe-imglist {
-	margin-bottom: 2rem;
-	height: 400px;
-}
-
-/* simple image carousel */
-
-.fe-imglist-abs {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	overflow-y: auto;
 	>img {
 		margin-right: 1.5rem;
@@ -62,7 +69,6 @@
 		}
 	}
 }
-
 .fe-imglist-feedback {
 	width: 400px;
 	flex-basis: 50vw;

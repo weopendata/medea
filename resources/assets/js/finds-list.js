@@ -50,8 +50,7 @@ new Vue({
     fetch (query) {
       query = query || ''
       this.$http.get('/api/finds?' + query).then(function (res) {
-        this.finds = res.data.finds
-        this.filterState = res.data.filterState
+        this.finds = res.data
         window.history.pushState({}, document.title, '?' + query)
       }, function () {
         console.error('could not fetch findevents')
