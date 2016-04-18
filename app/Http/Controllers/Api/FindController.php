@@ -23,7 +23,14 @@ class FindController extends Controller
 
     public function index(Request $request)
     {
-        return $this->getAllWithFilter($request->all());
+        $filters = $request->all();
+
+        // Check if personal finds are set
+        if ($request->has('myfinds')) {
+            $filters['myfinds'] = $request->user()->email;
+        }
+
+        return $this->getAllWithFilter($filters);
     }
 
     public function getAllWithFilter($filters)

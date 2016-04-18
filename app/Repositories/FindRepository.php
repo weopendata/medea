@@ -146,22 +146,34 @@ class FindRepository extends BaseRepository
         $technique = @$filters['technique'];
         $category = @$filters['category'];
         $culture = @$filters['culture'];
+        $email = @$filters['myfinds'];
+
+        // Non personal find statement
+        $initial_statement = "(find:E10)-[P12]-(object:E22)";
 
         if (!empty($material)) {
             $match_statements[] = "(object:E22)-[P45]-(material:E57)";
             $where_statements[] = "material.value = '$material'";
         }
+
         if (!empty($technique)) {
             $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E17)-[P2]-(type:E55)";
             $where_statements[] = "type.value = '$technique'";
         }
+
         if (!empty($culture)) {
             $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
             $where_statements[] = "culture.value = '$culture'";
         }
+
         if (!empty($category)) {
             $match_statements[] = "(object:E22)-[P2]-(category:E55)";
             $where_statements[] = "category.value = '$category'";
+        }
+
+        if (!empty($email)) {
+            $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)";
+            $where_statements[] = "person.email = '$email'";
         }
 
         // No filters selected
@@ -174,7 +186,7 @@ class FindRepository extends BaseRepository
         $match_statement = implode(', ', $match_statements);
         $where_statement = implode(' AND ', $where_statements);
 
-        $query = "MATCH (find:E10)-[P12]-(object:E22), $match_statement WHERE $where_statement return find";
+        $query = "MATCH $initial_statement, $match_statement WHERE $where_statement return find";
 
         $cypher_query = new Query($client, $query);
         $results = $cypher_query->getResultSet();
