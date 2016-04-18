@@ -5,6 +5,7 @@ namespace App\Models;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
+use Everyman\Neo4j\Exception;
 
 class Base
 {
@@ -238,7 +239,12 @@ class Base
 
                     $model = new $model_name();
                     $model->setNode($end_node);
-                    $model->delete();
+                    try {
+                        $model->delete();
+                    } catch (Exception $ex) {
+                        // Do nothing, this can happen
+                        // when a node is already deleted, but is referenced by others
+                    }
                 }
             }
         }
@@ -248,6 +254,14 @@ class Base
         foreach ($relationships as $relationship) {
             $relationship->delete();
         }
+
+        $general_id = $this->node->getProperty($this->unique_identifer);
+
+        // Delete its subtree as well
+        $query = "MATCH (n:" . static::$NODE_TYPE . ")-[r*]-(e)
+                WHERE e.MEDEA_UUID=\"$general_id\"
+                FOREACH (rel IN r| DELETE rel)
+                DELETE e";
 
         $this->node->delete();
     }
