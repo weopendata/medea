@@ -13,7 +13,7 @@ class Person extends Base implements Authenticatable
 
     protected $has_unique_id = true;
 
-    protected $implicitModels = [
+    protected $implicit_models = [
         [
             'relationship' => 'P131',
             'config' => [

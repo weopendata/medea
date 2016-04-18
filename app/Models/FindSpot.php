@@ -9,7 +9,7 @@ class FindSpot extends Base
 
     protected $has_unique_id = true;
 
-    protected $relatedModels = [
+    protected $related_models = [
         'P53' => [
             'key' => 'location',
             'model_name' => 'Location',
@@ -17,7 +17,7 @@ class FindSpot extends Base
         ]
     ];
 
-    protected $implicitModels = [
+    protected $implicit_models = [
         [
             'relationship' => 'P2',
             'config' => [

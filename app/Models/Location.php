@@ -7,12 +7,13 @@ class Location extends Base
     public static $NODE_TYPE = 'E53';
     public static $NODE_NAME = 'location';
 
-    protected $implicitModels = [
+    protected $implicit_models = [
         [
             'relationship' => 'P87',
             'config' => [
                 'key' => 'locationPlaceName',
-                'name' => 'locationPlaceName'
+                'name' => 'locationPlaceName',
+                'cidoc_type' => 'E48'
             ]
         ],
         [
@@ -20,6 +21,7 @@ class Location extends Base
             'config' => [
                 'key' => 'lng',
                 'name' => 'lng',
+                'cidoc_type' => 'E47'
             ]
         ],
         [
@@ -27,6 +29,7 @@ class Location extends Base
             'config' => [
                 'key' => 'lat',
                 'name' => 'lat',
+                'cidoc_type' => 'E47'
             ]
         ],
         [
@@ -34,12 +37,13 @@ class Location extends Base
             'config' => [
                 'key' => 'address',
                 'name' => 'address',
-                'required' => false
+                'required' => false,
+                'cidoc_type' => 'E53'
             ]
         ],
     ];
 
-    protected $relatedModels = [
+    protected $related_models = [
     ];
 
     public function save()

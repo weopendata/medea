@@ -9,10 +9,10 @@ class ProductionClassification extends Base
 
     protected $has_unique_id = true;
 
-    protected $relatedModels = [
+    protected $related_models = [
     ];
 
-    protected $implicitModels = [
+    protected $implicit_models = [
         [
             'relationship' => 'P2',
             'config' => [

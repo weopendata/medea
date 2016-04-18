@@ -9,7 +9,7 @@ class FindEvent extends Base
 
     protected $has_unique_id = true;
 
-    protected $relatedModels = [
+    protected $related_models = [
         'P12' => [
             'key' => 'object',
             'model_name' => 'Object',
@@ -29,7 +29,7 @@ class FindEvent extends Base
         ]
     ];
 
-    protected $implicitModels = [
+    protected $implicit_models = [
         [
             'relationship' => 'P4',
             'config' => [

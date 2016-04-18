@@ -35,8 +35,6 @@ class FindController extends Controller
 
         $finds = $this->finds->get($limit, $offset);
 
-        $myfinds = [];
-
         return view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
@@ -116,6 +114,7 @@ class FindController extends Controller
     public function show($id, Request $request)
     {
         $find = $this->finds->expandValues($id, $request->user());
+        dd($find);
         return view('pages.finds-detail', ['find' => $find]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Relationship;
+use Everyman\Neo4j\Cypher\Query;
 
 class Base
 {
@@ -17,7 +18,7 @@ class Base
      * List the related models (that are 1 level deep) with their respective relationship_name,
      * this way we can cascade CRUD more eloquently
      */
-    protected $relatedModels = [
+    protected $related_models = [
     ];
 
     /**
@@ -25,7 +26,7 @@ class Base
      * List the models that need to be created implicitly, they don't exist in the sense of Model classes
      * These nodes are only relevant to a node that has been modeled in a Model class
      */
-    protected $implicitModels = [
+    protected $implicit_models = [
     ];
 
     /**
@@ -77,6 +78,7 @@ class Base
             $general_id = "MEDEA" . sha1(str_random(10) . "__" . time());
 
             $this->node->setProperty($this->unique_identifer, $general_id)->save();
+            $this->node->setProperty('name', static::$NODE_NAME)->save();
 
             // Set value properties for the node
             foreach ($this->properties as $property_config) {
@@ -92,7 +94,7 @@ class Base
             $this->node->save();
 
             // Initiate model relationship cascading that are one level deep
-            foreach ($this->relatedModels as $relationship_name => $config) {
+            foreach ($this->related_models as $relationship_name => $config) {
                 // Check if the related model is required
                 if (empty($properties[$config['key']]) && @$config['required']) {
                     \App::abort(400, "The property '" . $config['key'] . "'' is required in order to create the model '" . static::$NODE_NAME ."'");
@@ -131,7 +133,7 @@ class Base
                 }
             }
 
-            foreach ($this->implicitModels as $config) {
+            foreach ($this->implicit_models as $config) {
                 $relationship = $config['relationship'];
                 $model_config = $config['config'];
 
@@ -225,7 +227,7 @@ class Base
      */
     public function delete()
     {
-        foreach ($this->relatedModels as $relationship_name => $config) {
+        foreach ($this->related_models as $relationship_name => $config) {
             if ($config['cascade_delete']) {
                 $relationships = $this->node->getRelationships([$relationship_name], Relationship::DirectionOut);
 
@@ -308,22 +310,25 @@ class Base
         $data = [];
 
         // Ask all of the values of the related models
-        foreach ($this->node->getRelationships(array_keys($this->relatedModels), Relationship::DirectionOut) as $relationship) {
-            if (!empty($this->relatedModels)) {
-                $model_config = $this->relatedModels[$relationship->getType()];
+        foreach ($this->related_models as $relationship => $config) {
+            $model_name = 'App\Models\\' . $config['model_name'];
+            $related_nodes = $this->getRelatedNodes(
+                $relationship,
+                $model_name::$NODE_TYPE
+            );
 
-                $end_node = $relationship->getEndNode();
-                $model_name = 'App\Models\\' . $model_config['model_name'];
+            foreach ($related_nodes as $related_node) {
+                $end_node = $related_node->current();
 
                 $related_model = new $model_name();
                 $related_model->setNode($end_node);
                 $related_model_values = $related_model->getValues();
 
-                $relationship_key = $model_config['key'];
+                $relationship_key = $config['key'];
 
                 if (!empty($related_model_values)) {
-                    if (!empty($model_config['plural']) && $model_config['plural']) {
-                        if (!empty($model_config['nested']) && $model_config['nested']) {
+                    if (!empty($config['plural']) && $config['plural']) {
+                        if (!empty($config['nested']) && $config['nested']) {
                             $key = key($related_model_values);
                             $values = $related_model_values[$key];
 
@@ -346,67 +351,74 @@ class Base
             }
         }
 
-        // Ask of the values of the implicit models
-        // Because we don't use the relationship as a unique key in the implicit models array (duplicates occur in the data model)
-        // We need to inverse map the name on to the config, which is unique ( <=> relationship)
-        $model_map = $this->getImplicitModelMap();
-        $implicit_relationships = $this->getImplicitRelationships();
+        // Add the computed property identifier to the implicit models in order to fetch it with the values
+        $this->implicit_models[] = [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'identifier',
+                'name' => 'identifier',
+                'plural' => false,
+                'cidoc_type' => 'E42'
+            ]
+        ];
 
-        // Add the computed identifier relationship by default
-        $implicit_relationships[] = 'P1';
+        // For every implicit model, fetch its related nodes according to the configuration of that model
+        foreach ($this->implicit_models as $model_config) {
+            // Fetch the related node(s)
+            $related_nodes = $this->getImplicitRelatedNodes(
+                $model_config['relationship'],
+                $model_config['config']['cidoc_type'],
+                $model_config['config']['name']
+            );
 
-        foreach ($this->node->getRelationships($implicit_relationships, Relationship::DirectionOut) as $relationship) {
-            if (!empty($this->implicitModels)) {
-                $end_node = $relationship->getEndNode();
-                $node_name = $end_node->getProperty('name');
+            // For every related node, check if it's a value node or not
+            // Then add the value of the node (and subtree of the node if it's not a value node)
+            // according to the configuration (e.g. is it plural/nested)
+            foreach ($related_nodes as $related_node) {
+                $related_node = $related_node->current();
+                $node_name = $model_config['config']['name'];
 
                 // Parse value nodes
-                if (!empty($end_node->getProperty('value'))) {
-                    if (!empty($model_map[$node_name]['plural']) && $model_map[$node_name]['plural']) {
+                if (!empty($related_node->getProperty('value'))) {
+                    if (!empty($model_config['config']['plural']) && $model_config['config']['plural']) {
                         if (empty($data[$node_name])) {
                             $data[$node_name] = [];
                         }
 
-                        $data[$node_name][] = $end_node->getProperty('value');
+                        $data[$node_name][] = $related_node->getProperty('value');
                     } else {
-                        $data[$node_name] = $end_node->getProperty('value');
+                        $data[$node_name] = $related_node->getProperty('value');
                     }
                 } else {
-                    $values = $this->getImplicitValues($end_node);
+                    $values = $this->getImplicitValues($related_node);
 
                     // Parse non-value nodes
                     // Check for duplicate relationships (= build an array of values)
-                    if (!empty($model_map[$node_name]['plural']) && $model_map[$node_name]['plural']) {
-                        if (!empty($model_map[$node_name]['nested']) && $model_map[$node_name]['nested']) {
-                            $key = key($values);
-                            $values = $values[$key];
+                    if (!empty($values)) {
+                        if (!empty($model_config['config']['plural']) && $model_config['config']['plural']) {
+                            if (!empty($model_config['config']['nested']) && $model_config['config']['nested']) {
+                                $key = key($values);
+                                $values = $values[$key];
 
-                            if (empty($data[$node_name][$key])) {
-                                $data[$node_name][$key] = [];
-                            }
+                                if (empty($data[$node_name][$key])) {
+                                    $data[$node_name][$key] = [];
+                                }
 
-                            if (!empty($values)) {
                                 $data[$node_name][$key][] = $values;
-                            }
-                        } else {
-                            if (empty($data[$node_name])) {
-                                $data[$node_name] = [];
-                            }
+                            } else {
+                                if (empty($data[$node_name])) {
+                                    $data[$node_name] = [];
+                                }
 
-                            if (!empty($values)) {
                                 $data[$node_name][] = $values;
                             }
-                        }
-                    } else {
-                        if (!empty($model_map[$node_name]['nested']) && $model_map[$node_name]['nested']) {
-                            if (!empty($values)) {
+                        } else {
+                            if (!empty($model_config['config']['nested']) && $model_config['config']['nested']) {
                                 $key = key($values);
                                 $values = $values[$key];
 
                                 $data[$node_name][$key] = $values;
-                            }
-                        } else {
-                            if (!empty($values)) {
+                            } else {
                                 $data[$node_name] = $values;
                             }
                         }
@@ -486,26 +498,45 @@ class Base
         return $data;
     }
 
-    private function getImplicitRelationships()
+    /**
+     * Retrieve a node's related nodes through the relationship type and the end node type
+     *
+     * @param string $rel_type
+     * @param string $endnode_type
+     *
+     * @return
+     */
+    private function getImplicitRelatedNodes($rel_type, $endnode_type, $node_name)
     {
-        $relationships = [];
+        $node_id = $this->node->getId();
 
-        foreach ($this->implicitModels as $model_config) {
-            $relationships[] = $model_config['relationship'];
-        }
+        $query = "MATCH (start:" . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
+                  WHERE id(start) = $node_id AND end.name = '$node_name'
+                  RETURN distinct end";
 
-        return $relationships;
+        $cypher_query = new Query($this->getClient(), $query);
+        return $cypher_query->getResultSet();
     }
 
-    private function getImplicitModelMap()
+    /**
+     * Retrieve a node's related nodes through the relationship type and the end node type
+     * Meant for nodes of models that are related through their related_model property
+     *
+     * @param string $rel_type
+     * @param string $endnode_type
+     *
+     * @return
+     */
+    private function getRelatedNodes($rel_type, $endnode_type)
     {
-        $model_map = [];
+        $node_id = $this->node->getId();
 
-        foreach ($this->implicitModels as $model_config) {
-            $model_map[$model_config['config']['name']] = $model_config['config'];
-        }
+        $query = "MATCH (start:" . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
+                  WHERE id(start) = $node_id
+                  RETURN distinct end";
 
-        return $model_map;
+        $cypher_query = new Query($this->getClient(), $query);
+        return $cypher_query->getResultSet();
     }
 
     private function isAssoc($arr)

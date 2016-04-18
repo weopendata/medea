@@ -9,7 +9,7 @@ class Object extends Base
 
     protected $has_unique_id = true;
 
-    protected $relatedModels = [
+    protected $related_models = [
         'P108' => [
             'key' => 'productionEvent',
             'model_name' => 'ProductionEvent',
@@ -27,13 +27,14 @@ class Object extends Base
         ],
     ];
 
-    protected $implicitModels = [
+    protected $implicit_models = [
         [
             'relationship' => 'P43',
             'config' => [
                 'key' => 'dimensions',
                 'name' => 'dimensions',
-                'plural' => true
+                'plural' => true,
+                'cidoc_type' => 'E54'
             ]
         ],
         [
@@ -69,7 +70,7 @@ class Object extends Base
                 'key' => 'technique',
                 'name' => 'productionEvent',
                 'cidoc_type' => 'E12',
-                'plural' => false,
+                'plural' => true,
                 'nested' => true
             ]
         ],
@@ -153,11 +154,20 @@ class Object extends Base
         $general_id = $this->getGeneralId();
         $id_label = $client->makeLabel($general_id);
 
-        // Make E12 production
-        $production_node = $client->makeNode();
-        $production_node->setProperty('name', 'productionEvent');
-        $production_node->save();
-        $production_node->addLabels([self::makeLabel('E12'), self::makeLabel('productionEvent'), $id_label]);
+        // Upsert E12 productionEvent
+
+        // Check if a productionEvent already exists
+        $relationship = $this->node->getFirstRelationship(['P108']);
+
+        if (!empty($relationship)) {
+            $production_node = $relationship->getEndNode();
+        } else {
+            $production_node = $client->makeNode();
+            $production_node->setProperty('name', 'productionEvent');
+            $production_node->save();
+            $production_node->addLabels([self::makeLabel('E12'), self::makeLabel('productionEvent'), $id_label]);
+        }
+
 
         // Make E29 design or procedure
         $production_technique = $client->makeNode();
