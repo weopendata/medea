@@ -18,6 +18,7 @@ new Vue({
         roles: false
       },
       roles: {
+        validator: false,
         detectorist: false,
         onderzoeker: false,
         expert: false,

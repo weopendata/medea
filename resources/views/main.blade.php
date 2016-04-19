@@ -30,7 +30,10 @@
     <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
     @else
     <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
-    <a href="/settings" class="right floated item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
+    <div class="right menu">
+      <a href="/notifications" class=" item {{ (Request::is('/notifications') ? 'active' : '') }}"><i class="ui alarm icon"></i> Notificaties</a>
+      <a href="/settings" class=" item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
+    </div>
     @endif
   </div>
 </nav>
@@ -43,15 +46,16 @@
 var medeaUser = {isGuest: true};
 @if (!Auth::guest())
 try {
-  medeaUser = JSON.parse({!! json_encode(json_encode([
+  medeaUser = {!! json_encode([
     'email' => Auth::user()->email,
     'roles' => Auth::user()->getRoles()
-  ])) !!});
+  ]) !!};
   for (var i = 0; i < medeaUser.roles.length; i++) {
     medeaUser[medeaUser.roles[i]] = true
   }
   if (medeaUser.email == 'foo@bar.com') {
     medeaUser.validator = true;
+    medeaUser.detectorist = true;
     medeaUser.onderzoeker = true;
     medeaUser.expert = true;
     medeaUser.registrator = true;

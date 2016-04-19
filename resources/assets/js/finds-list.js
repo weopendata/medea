@@ -47,6 +47,12 @@ new Vue({
     }
   },
   methods: {
+    relevant (find) {
+      console.log('rel', find)
+      return find.object.objectValidationStatus == 'gevalideerd'
+//      || find.user.email == this.user.email
+      || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
+    },
     fetch (query) {
       query = query || ''
       this.$http.get('/api/finds?' + query).then(function (res) {

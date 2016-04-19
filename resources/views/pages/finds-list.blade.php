@@ -6,29 +6,7 @@
 <div v-if="!showmap" transition="fromleft">
   <div class="ui container">
     <finds-filter :model.sync="filterState"></finds-filter>
-    <finds-list :finds="finds" :user="user"></finds-list>
-    <div v-if="!finds.length" class="finds-empty">
-      <h1>
-        Geen resultaten
-        <br><small>Er zijn geen vondsten die voldoen aan de criteria</small>
-      </h1>
-    </div>
-    <div class="finds-cta">
-      <p>
-        Blijf op de hoogte van vondsten met deze criteria:
-      </p>
-      <p>
-        <a href="" class="ui green button" :class="{big:!finds.length&&!user.isGuest}">Zoekopdracht bewaren</a>
-      </p>
-    </div>
-    <div class="finds-cta">
-      <p>
-        Zelf iets gevonden?
-      </p>
-      <p>
-        <a href="{{url('/finds/create')}}" class="ui green button" :class="{big:!finds.length&&!user.isGuest}">Vondst toevoegen</a>
-      </p>
-    </div>
+    <finds-list :finds="finds | filterBy relevant" :user="user"></finds-list>
   </div>
 </div>
 <div v-if="showmap" transition="fromright">
