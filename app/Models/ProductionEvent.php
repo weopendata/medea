@@ -11,7 +11,8 @@ class ProductionEvent extends Base
         'P41' => [
             'key' => 'classification',
             'model_name' => 'ProductionClassification',
-            'cascade_delete' => true
+            'cascade_delete' => true,
+            'plural' => true
         ]
     ];
 
