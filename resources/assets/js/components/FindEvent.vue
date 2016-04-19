@@ -27,7 +27,7 @@
         </a>
         <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           <i class="thumbs up icon"></i>
-          Publiceren
+          Valideren
         </a>
         <button class="ui blue button" @click="mapFocus" v-if="hasLocation">
           <i class="marker icon"></i>
