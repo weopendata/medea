@@ -90,7 +90,12 @@ new Vue({
           century: null,
           bibliography: 'http://paperonacientgreek.com',
           images: [],
-          dimensions: []
+          dimensions: [],
+          productionEvent: {
+            productionTechnique: {
+              type: null
+            }
+          }
         }
       },
       dimensionText: '',
@@ -146,7 +151,7 @@ new Vue({
       return this.map.zoom < 21 - Math.log2(this.accuracy)
     },
     submittable () {
-      return this.step1valid && this.step2valid && this.step==3
+      return this.step1valid && this.step2valid
     },
     step1valid () {
       return this.hasFindDetails

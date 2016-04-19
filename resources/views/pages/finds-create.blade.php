@@ -10,28 +10,7 @@
 '@submit.prevent' => 'submit',
 )) !!}
 
-<div class="ui fluid ordered steps">
-  <div class="step" v-bind:class="{active:step==1, completed:step1valid}" @click="toStep(1)">
-    <div class="content">
-      <div class="title">Vondst</div>
-      <div class="description">Omstandigheden vondst</div>
-    </div>
-  </div>
-  <div class="step" v-bind:class="{active:step==2, completed:step2valid}" @click="toStep(2)">
-    <div class="content">
-      <div class="title">Object</div>
-      <div class="description">Eigenschappen object</div>
-    </div>
-  </div>
-  <div class="step" v-bind:class="{active:step==3}" @click="toStep(3)">
-    <div class="content">
-      <div class="title">Classificatie</div>
-      <div class="description">Typologische info</div>
-    </div>
-  </div>
-</div>
-
-<step number="1" v-show="step==1">
+<step number="1":class="{active:step==1, completed:step1valid}">
   <div class="fields">
     <div class="required field">
       <label>Datum</label>
@@ -101,10 +80,10 @@
       <input type="number" v-model="find.findSpot.location.lng" placeholder="lng">
     </div>
   </div>
-  <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)">Ga naar stap 2</button>
+  <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)" v-show="false">Ga naar stap 2</button>
 </step>
 
-<step number="2" v-show="step==2">
+<step number="2" :class="{active:step==2, completed:step2valid}">
   <div class="field cleared">
     <div :is="'photo-upload'" :images.sync="find.object.images">
       <label>Foto's</label>
@@ -135,8 +114,8 @@
   <div class="two fields">
     <div class="field">
       <label>Techniek</label>
-      <select class="ui dropdown" v-model="find.object.technique">
-        <option selected>onbekend</option>
+      <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.type">
+        <option value="" selected>onbekend</option>
         <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
         <option value="{{$technique}}">{{$technique}}</option>
@@ -211,13 +190,13 @@
   <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
     <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies tonen</button>
   </div>
-  <button class="ui button" v-bind:class="{green:step2valid}" :disabled="!step2valid" @click.prevent="toStep(3)">Ga naar stap 3</button>
+  <button class="ui button" v-bind:class="{green:step2valid}" :disabled="!step2valid" @click.prevent="toStep(3)" v-show="false">Ga naar stap 3</button>
 </step>
 
-<step number="3" v-show="step==3">
+<step number="3" :class="{active:step==3}">
   <h3>Classificatie</h3>
   <div v-if="find.object.productionEvent">
-    <add-classification-form :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+    <add-classification-form v-if="find.object.productionEvent.classification" :cls.sync="find.object.productionEvent.classification"></add-classification-form>
   </div>
   <div v-else>
     <p>
