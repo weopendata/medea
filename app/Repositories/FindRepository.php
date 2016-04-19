@@ -57,7 +57,7 @@ class FindRepository extends BaseRepository
 
         $find_label = $client->makeLabel($this->label);
 
-        // TODO paging (not sure if that's even possible in the regular RMDBS sense)
+        // TODO paging (on the level of finds)
         $find_nodes = $find_label->getNodes();
 
         return $find_nodes;
@@ -101,7 +101,7 @@ class FindRepository extends BaseRepository
         // Add the vote of the user
         if (!empty($user)) {
             // Get the vote of the user for the find
-            $query = "match (person:Person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) where id(person) = $user->id AND id(find) = $find_id return r";
+            $query = "match (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) where id(person) = $user->id AND id(find) = $find_id return r";
 
             $client = $this->getClient();
 
