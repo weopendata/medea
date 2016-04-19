@@ -48,12 +48,11 @@ class ClassificationController extends Controller
     public function agree($id, $classification_id, Request $request)
     {
         $user = $request->user();
-        $user_id = $user->id;
 
         $classification = $this->objects->getClassification($id, $classification_id);
 
         // Get the current votes of the user and adjust where necessary
-        $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user_id);
+        $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user->id);
 
         if (!empty($vote_relationship) && !empty($classification)) {
             // Check which vote he casted, if he agreed, abort.
@@ -64,7 +63,8 @@ class ClassificationController extends Controller
                 return response()->json(['errors' => ['message' => 'The user has already agreed to this classification.']], 400);
             }
 
-            $vote_relationship->delete();
+            $result = $vote_relationship->delete();
+
             $disagree = $classification->getProperty('disagree');
 
             $disagree--;
