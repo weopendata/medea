@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Object;
+use App\Models\ProductionClassification;
 use App\Models\ProductionEvent;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Relationship;
@@ -37,10 +38,21 @@ class ObjectRepository extends BaseRepository
         $object = $this->getById($id);
 
         if (!empty($object)) {
-            $production_event = new ProductionEvent(['classification' => $classification]);
-            $production_event->save();
+            $production_classification = new ProductionClassification($classification);
+            $production_classification->save();
 
-            $object->relateTo($production_event->getNode(), 'P108')->save();
+            // Check if a productionEvent already exists
+            $production_event_rel = $object->getFirstRelationship(['P108']);
+
+            if (empty($production_event_rel)) {
+                $production_event = new ProductionEvent(['classification' => $classification]);
+
+                $object->relateTo($production_event, 'P108')->save();
+            } else {
+                $production_event = $production_event_rel->getEndNode();
+
+                $production_event->relateTo($production_classification->getNode(), 'P41')->save();
+            }
 
             return $object;
         }

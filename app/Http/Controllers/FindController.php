@@ -38,7 +38,7 @@ class FindController extends Controller
         return view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
-                'myfinds' => $myfinds,
+                'myfinds' => 'yes',
                 'category' => '*',
                 'culture' => '*',
                 'technique' => '*',

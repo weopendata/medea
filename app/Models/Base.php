@@ -255,14 +255,6 @@ class Base
             $relationship->delete();
         }
 
-        $general_id = $this->node->getProperty($this->unique_identifer);
-
-        // Delete its subtree as well
-        $query = "MATCH (n:" . static::$NODE_TYPE . ")-[r*]-(e)
-                WHERE e.MEDEA_UUID=\"$general_id\"
-                FOREACH (rel IN r| DELETE rel)
-                DELETE e";
-
         $this->node->delete();
     }
 

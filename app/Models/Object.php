@@ -14,9 +14,7 @@ class Object extends Base
             'key' => 'productionEvent',
             'model_name' => 'ProductionEvent',
             'cascade_delete' => true,
-            'required' => false,
-            'plural' => true,
-            'nested' => true
+            'required' => false
         ],
         'P62' => [
             'key' => 'images',
@@ -62,16 +60,6 @@ class Object extends Base
                 'name' => 'objectValidationStatus',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
-            ]
-        ],
-        [
-            'relationship' => 'P108',
-            'config' => [
-                'key' => 'technique',
-                'name' => 'productionEvent',
-                'cidoc_type' => 'E12',
-                'plural' => true,
-                'nested' => true
             ]
         ],
         [
@@ -145,42 +133,5 @@ class Object extends Base
 
         // Delete the main node
         parent::delete();
-    }
-
-    public function createProductionEvent($technique)
-    {
-        $client = self::getClient();
-
-        $general_id = $this->getGeneralId();
-        $id_label = $client->makeLabel($general_id);
-
-        // Upsert E12 productionEvent
-
-        // Check if a productionEvent already exists
-        $relationship = $this->node->getFirstRelationship(['P108']);
-
-        if (!empty($relationship)) {
-            $production_node = $relationship->getEndNode();
-        } else {
-            $production_node = $client->makeNode();
-            $production_node->setProperty('name', 'productionEvent');
-            $production_node->save();
-            $production_node->addLabels([self::makeLabel('E12'), self::makeLabel('productionEvent'), $id_label]);
-        }
-
-
-        // Make E29 design or procedure
-        $production_technique = $client->makeNode();
-        $production_technique->setProperty('name', 'productionTechnique');
-        $production_technique->save();
-        $production_technique->addLabels([self::makeLabel('E29'), self::makeLabel('productionTechnique'), $id_label]);
-
-        $production_node->relateTo($production_technique, 'P33')->save();
-
-        // Make E55 productionType
-        $production_type = $this->createValueNode('type', ['E55'], $technique);
-        $production_technique->relateTo($production_type, 'P2')->save();
-
-        return $production_node;
     }
 }
