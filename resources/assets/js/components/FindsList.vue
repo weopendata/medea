@@ -15,9 +15,10 @@ export default {
   props: ['user', 'finds'],
   methods: {
     relevant (find) {
-      console.log('rel')
+      console.log('rel', this.user)
       return find.object.objectValidationStatus == 'gevalideerd'
-      || (this.user.isValidator && find.object.objectValidationStatus == 'in bewerking')
+//      || find.user.identifier == this.user.identifier
+      || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
     }
   },
   components: {

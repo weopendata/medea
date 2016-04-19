@@ -7,7 +7,7 @@
   <div class="ui container">
     <finds-filter :model.sync="filterState"></finds-filter>
     <finds-list :finds="finds" :user="user"></finds-list>
-    <div v-if="!finds.length&&!user.isGuest" class="finds-empty">
+    <div v-if="!finds.length" class="finds-empty">
       <h1>
         Geen resultaten
         <br><small>Er zijn geen vondsten die voldoen aan de criteria</small>
@@ -49,6 +49,7 @@
     <a class="ui black button" @click.prevent="showmap=false">Terug naar lijst</a>
   </div>
 </div>
+<dev-bar :user="user"></dev-bar>
 @endsection
 
 @section('script')

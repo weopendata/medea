@@ -53,7 +53,7 @@ export default {
     relevant (find) {
       console.log('rel')
       return find.object.objectValidationStatus == 'gevalideerd'
-      || (this.user.isValidator && find.object.objectValidationStatus == 'in bewerking')
+      || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
     }
   },
   ready () {

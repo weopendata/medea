@@ -43,18 +43,22 @@
 var medeaUser = {isGuest: true};
 @if (!Auth::guest())
 try {
-  medeaUser = JSON.parse(localStorage.debugUser);
-} catch (e) {
-  medeaUser = {
-    name: 'John Doe',
-    isDetectorist: true,
-    isFindExpert: true,
-    isResearcher: true,
-    isRegistrar: true,
-    isValidator: true,
-    isAgency: true,
-    isAdmin: true
+  medeaUser = JSON.parse({!! json_encode(json_encode([
+    'email' => Auth::user()->email,
+    'roles' => Auth::user()->getRoles()
+  ])) !!});
+  for (var i = 0; i < medeaUser.roles.length; i++) {
+    medeaUser[medeaUser.roles[i]] = true
   }
+  if (medeaUser.email == 'foo@bar.com') {
+    medeaUser.validator = true;
+    medeaUser.onderzoeker = true;
+    medeaUser.expert = true;
+    medeaUser.registrator = true;
+    medeaUser.admin = true;
+  }
+} catch (e) {
+  window.alert('Something wrong with user profile');
 }
 medeaUser.name = '{{ Auth::user()->name }}';
 medeaUser.email = '{{ Auth::user()->email }}';

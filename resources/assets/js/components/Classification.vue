@@ -6,7 +6,7 @@
         <button class="ui button" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
         <button class="ui button" :class="{red:me==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
       </div>
-      <button class="ui small basic red button" @click.stop="rm" v-if="$root.user.isAdmin">Delete</button>
+      <button class="ui small basic red button" @click.stop="rm" v-if="$root.user.admin">Delete</button>
     </div>
   </div>
 </template>
