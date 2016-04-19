@@ -39,6 +39,7 @@ new Vue({
         jjjj: null,
         nnnnn: null,
       },
+      errors: {},
       submitAction: 'register',
       registered: false
     }
@@ -64,6 +65,10 @@ new Vue({
     },
     submitSuccess () {
       this.registered = true
+      this.errors = {}
+    },
+    submitError (res) {
+      this.errors = res.data
     }
   },
   ready () {

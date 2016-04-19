@@ -39,13 +39,15 @@
       <input v-model="user.lastName" type="text">
     </div>
   </div>
-  <div class="field">
+  <div class="field" :class="{error:errors.email}">
     <label for="email">Email</label>
     <input v-model="user.email" type="email">
+    <div v-for="msg in errors.email" v-text="msg" class="input"></div>
   </div>
-  <div class="field">
+  <div class="field" :class="{error:errors.password}">
     <label for="pw" @click="show.password=!show.password">Wachtwoord <a href="#" @click.prevent style="color:#999;font-weight:normal" v-text="show.password?'wordt getoond':'tonen'">tonen</a></label>
     <input v-model="user.password" :type="show.password?'text':'password'">
+    <div v-for="msg in errors.password" v-text="msg" class="input"></div>
   </div>
   <h3>Rollen</h3>
   <div class="field">
