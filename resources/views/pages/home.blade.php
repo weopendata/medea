@@ -87,6 +87,15 @@
       </label>
     </div>
   </div>
+  <div class="field" v-show="show.roles">
+    <div class="ui checkbox">
+      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.validator">
+      <label>
+        <b>Validator</b>
+        <br>kan vondsten valideren.
+      </label>
+    </div>
+  </div>
   <div class="required field" v-if="roles.expert">
     <label for="expertise">Expertise</label>
     <textarea-growing  id="expertise" :model.sync="user.expertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>

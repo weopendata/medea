@@ -1,14 +1,11 @@
 <template>
-  <div class="uid pagd gridd">
-    <div class="coldumn">
-      <slot>Content expected</slot>
-    </div>
+  <div class="step" :class="{active:current==number, muted:current!=number}">
+    <slot>Content expected</slot>
   </div>
 </template>
 
 <script>
 export default {
-  ready () {
-  }
+	props: ['number', 'current']
 }
 </script>

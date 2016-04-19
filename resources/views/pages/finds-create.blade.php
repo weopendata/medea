@@ -10,7 +10,8 @@
 '@submit.prevent' => 'submit',
 )) !!}
 
-<step number="1":class="{active:step==1, completed:step1valid}">
+<step number="1" :current="step">
+  <h3>Algemene vondstgegevens</h3>
   <div class="fields">
     <div class="required field">
       <label>Datum</label>
@@ -80,16 +81,25 @@
       <input type="number" v-model="find.findSpot.location.lng" placeholder="lng">
     </div>
   </div>
-  <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)" v-show="false">Ga naar stap 2</button>
+  <p>
+    <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)">Bevestig locatie</button>
+  </p>
 </step>
 
-<step number="2" :class="{active:step==2, completed:step2valid}">
+<step number="2" :current="step" :class="{active:step==2, completed:step2valid}">
+  <h3>Afbeeldingen</h3>
   <div class="field cleared">
     <div :is="'photo-upload'" :images.sync="find.object.images">
       <label>Foto's</label>
       <input type="file" class="">
     </div>
   </div>
+  <p>
+    <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Klaar met afbeeldingen</button>
+  </p>
+</step>
+
+<step number="3" :current="step">
   <h3>Gestructureerde beschrijving</h3>
   <div class="two fields">
     <div class="required field">
@@ -150,6 +160,12 @@
     <label>Opmerkingen bij het object</label>
     <input type="text" v-model="find.object.description">
   </div>
+  <p>
+    <button class="ui green button" @click.prevent="toStep(4)">Volgende stap</button>
+  </p>
+</step>
+
+<step number="4" :current="step">
   <h3>Dimensies</h3>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
     <div class="field" v-if="show.lengte">
@@ -190,21 +206,25 @@
   <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
     <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies tonen</button>
   </div>
-  <button class="ui button" v-bind:class="{green:step2valid}" :disabled="!step2valid" @click.prevent="toStep(3)" v-show="false">Ga naar stap 3</button>
+  <p>
+    <button class="ui button" v-bind:class="{green:step2valid}" :disabled="!step2valid" @click.prevent="toStep(5)">Ga naar stap 5</button>
+  </p>
 </step>
 
-<step number="3" :class="{active:step==3}">
+<step number="5" :current="step">
   <h3>Classificatie</h3>
-  <div v-if="find.object.productionEvent">
-    <add-classification-form v-if="find.object.productionEvent.classification" :cls.sync="find.object.productionEvent.classification"></add-classification-form>
-  </div>
-  <div v-else>
-    <p>
-      Jouw vondstfiche zal voorgelegd worden aan vondstexperten om te classificeren.
-    </p>
-    <p>
-      <button v-if="!show.cls" @click.prevent="pushCls" class="ui blue button" type="submit">Zelf classificeren</button>
-    </p>
+  <div class="field">
+    <div v-if="find.object.productionEvent">
+      <add-classification-form v-if="find.object.productionEvent.classification" :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+    </div>
+    <div v-else>
+      <p>
+        Jouw vondstfiche zal voorgelegd worden aan vondstexperten om te classificeren.
+      </p>
+      <p>
+        <button v-if="!show.cls" @click.prevent="pushCls" class="ui blue button" type="submit">Zelf classificeren</button>
+      </p>
+    </div>
   </div>
 
   <h3>Klaar met vondstfiche</h3>
@@ -218,18 +238,20 @@
       </label>
     </div>
   </div>
-  <p>
-    <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
-    <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
-  </p>
-  <p v-if="!submittable" style="color:red">
-    Niet alle verplichte velden zijn ingevuld.
-  </p>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <h3>Alvast een voorbeeld van hoe de vondstfiche eruit zal zien:</h3>
-  <div class="ui very relaxed items">
-    <find-event :find="find" :user="user"></find-event>
+  <div class="field">
+    <p>
+      <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
+      <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+    </p>
+    <p v-if="!submittable" style="color:red">
+      Niet alle verplichte velden zijn ingevuld.
+    </p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <h3>Alvast een voorbeeld van hoe de vondstfiche eruit zal zien:</h3>
+    <div class="ui very relaxed items">
+      <find-event :find="find" :user="user"></find-event>
+    </div>
   </div>
 </step>
 

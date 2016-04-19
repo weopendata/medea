@@ -48,7 +48,9 @@ export default {
 .devbar {
   position: relative;
   z-index: 2;
+  display: inline-block;
   opacity: 0;
+  background: white;
   &:hover {
     opacity: 1;
   }
