@@ -1,7 +1,7 @@
 <template>
   <div class="ui very relaxed items">
     <find-event v-for="f in finds | filterBy relevant" :find="f" :user="user"></find-event>
-    <div>
+    <div v-if="finds.length>20">
       <button class="ui button">Vorige</button>
       <button class="ui blue button">Volgende</button>
     </div>
