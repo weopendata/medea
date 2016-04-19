@@ -2,17 +2,17 @@
   <div class="devbar ui items horizontal">
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.isDetectorist"> Det
+        <input type="checkbox" v-model="user.detectorist"> Det
       </label>
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.isRegistrar"> Reg
+        <input type="checkbox" v-model="user.registrator"> Reg
       </label>
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.isFindExpert"> Exp
+        <input type="checkbox" v-model="user.expert"> Exp
       </label>
     </div>
     <div class="item">
@@ -22,17 +22,17 @@
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.isValidator"> Val
+        <input type="checkbox" v-model="user.validator"> Val
       </label>
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.isResearcher"> Res
+        <input type="checkbox" v-model="user.onderzoeker"> Res
       </label>
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.isAdmin"> Adm
+        <input type="checkbox" v-model="user.admin"> Adm
       </label>
     </div>
   </div>

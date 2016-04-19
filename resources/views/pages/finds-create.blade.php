@@ -18,7 +18,7 @@
     </div>
     <div class="required field" v-if="user.isdRegistrar">
       <label>Vinder</label>
-      <input type="text" v-model="find.finderName" value="John Dfoe" placeholder="Naam van de vinder" :disabled="!user.isRegistrar">
+      <input type="text" v-model="find.finderName" value="John Dfoe" placeholder="Naam van de vinder" :disabled="!user.registrator">
     </div>
   </div>
   <div class="field" v-if="!show.spotdescription||!show.place||!show.address">

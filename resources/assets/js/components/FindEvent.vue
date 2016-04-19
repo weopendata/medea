@@ -17,7 +17,7 @@
           <i class="check icon"></i>
           Valideer
         </a>
-        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.isFindExpert&&!find.object.classificationCount">
+        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!find.object.classificationCount">
           <i class="tag icon"></i>
           Classificeer
         </a>
@@ -25,7 +25,7 @@
           <i class="tag icon"></i>
           {{find.object.classificationCount}} classificaties bekijken
         </a>
-        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.isValidator&&find.object.objectValidationStatus == 'in bewerking'">
+        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           <i class="thumbs up icon"></i>
           Publiceren
         </a>
@@ -33,7 +33,7 @@
           <i class="marker icon"></i>
           Op de kaart
         </button>
-        <button class="ui basic red button" @click="rm" v-if="user.isAdmin&&find.identifier">
+        <button class="ui basic red button" @click="rm" v-if="user.admin&&find.identifier">
           <i class="trash icon"></i>
           Verwijderen
         </button>
