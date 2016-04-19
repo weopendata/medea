@@ -1,6 +1,19 @@
 <template>
   <div class="classification">
-    <h4>{{cls.description || 'There should always be a description'}}</h4>
+    <div class="two fields">
+      <div class="field">
+        <label>Cultuur</label>
+        <span>{{cls.culture}}</span>
+      </div>
+      <div class="field">
+        <label>Natie</label>
+        <span>{{cls.nation}}</span>
+      </div>
+    </div>
+    <div class="field">
+      <label for="description">Opmerkingen</label>
+      <textarea rows="3">{{cls.description}}</textarea>
+    </div>
     <div>
       <div class="ui small icon buttons">
         <button class="ui button" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
