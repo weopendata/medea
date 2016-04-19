@@ -117,6 +117,7 @@ class AuthController extends Controller
     {
         $this->users->confirmUser($token);
 
+        //TODO send email to user that was confirmed
         //TODO send message with "ok"?
         return redirect('/');
     }

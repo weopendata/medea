@@ -45,7 +45,7 @@ new Vue({
   },
   computed: {
     submittable () {
-      return this.user.firstName && this.user.lastName && this.user.email && this.user.password
+      return !this.registered && this.user.firstName && this.user.lastName && this.user.email && this.user.password
     }
   },
   methods: {

@@ -143,6 +143,10 @@
   <div class="field">
     <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Registreer</button>
   </div>
+  <div v-if="registered" style="color:#090">
+    <h3>Registratie wordt gevalideerd</h3>
+    <p>De administrator zal je registratie bevestigen. Dit kan even duren. Naar de toekomst toe zullen we ervoor zorgen dat je een e-mail krijgt als je registratie voltooid is. Dit gebeurt nog niet.</p>
+  </div>
 {!! Form::close() !!}
 
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
