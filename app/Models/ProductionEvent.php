@@ -19,7 +19,7 @@ class ProductionEvent extends Base
         [
             'relationship' => 'P33',
             'config' => [
-                'key' => 'technique',
+                'key' => 'productionTechnique',
                 'name' => 'productionTechnique',
                 'cidoc_type' => 'E29',
                 'plural' => false,
