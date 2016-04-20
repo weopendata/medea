@@ -81,10 +81,16 @@ class UserRepository extends BaseRepository
         if ($label->getNodes('token', $token)->count() > 0) {
             $user = $label->getNodes('token', $token)->current();
 
-            $user->setProperty('verified', true);
-            $user->setProperty('token', '');
-            $user->save();
+            if (!empty($user)) {
+                $user->setProperty('verified', true);
+                $user->setProperty('token', '');
+                $user->save();
+
+                return $user;
+            }
         }
+
+        return null;
     }
 
     /**

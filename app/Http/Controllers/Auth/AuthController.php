@@ -50,13 +50,11 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $users = new UserRepository();
-
         if (!empty($request->input('email'))) {
             $email = $request->input('email');
             $password = $request->input('password');
 
-            $user_node = $users->getUser($email);
+            $user_node = $this->users->getUser($email);
 
             // Create the Person model
             $user = new Person();
@@ -113,12 +111,17 @@ class AuthController extends Controller
      * @param  string $token
      * @return mixed
      */
-    public function confirmEmail($token)
+    public function confirmEmail($token, AppMailer $mailer)
     {
-        $this->users->confirmUser($token);
+        $user = $this->users->confirmUser($token);
 
-        // Send an email to the user that his email has been confirmed
+        if (!empty($user)) {
+            $person = new Person();
+            $person->setNode($user);
 
+            // Send an email to the user that his email has been confirmed
+            $mailer->sendRegistrationConfirmation($person);
+        }
 
         //TODO send message with "ok"?
         return redirect('/');

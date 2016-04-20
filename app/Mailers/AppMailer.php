@@ -120,7 +120,7 @@ class AppMailer
         $this->view = 'auth.emails.registrationconfirmation';
         $this->data = compact('user');
         $this->subject = 'Uw registratie werd goedgekeurd!';
-        $this->deliver;
+        $this->deliver();
     }
 
     /**
@@ -141,8 +141,6 @@ class AppMailer
         ->setFrom("no-reply@medea.weopendata.com")
         ->setSubject($this->subject)
         ->setHtml($html);
-
-        \Log::info($email);
 
         $sendgrid->send($email);
     }
