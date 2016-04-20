@@ -10,7 +10,7 @@
         </form>
       </div>
       <div class="pct60 wide field" style="line-height:37px;">
-        <div class="ui dropdown button simple" v-if="saved&&saved.length&&!advanced">
+        <div v-if="!$root.user.isGuest" class="ui dropdown button simple" v-if="saved&&saved.length&&!advanced">
           <span class="text">Bewaarde filters</span>
           <div class="menu">
             <div class="item" v-for="filter in saved" v-text="filter.name" @click="restore(filter)"></div>
