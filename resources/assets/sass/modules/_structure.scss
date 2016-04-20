@@ -4,7 +4,6 @@ body {
 nav {
 	margin-bottom: 2rem;
 }
-
 .mycontainer {
 	margin: 0 auto;
 	max-width: 50rem;
@@ -12,16 +11,20 @@ nav {
 .ui.container-723 {
 	max-width: 723px!important;
 }
-
 @media only screen and (min-width: 992px) {
 	.mycontainer {
 		max-width: 60rem;
 	}
 }
-
 .row {
 	margin: -1rem;
 }
 .col {
 	padding: 1rem;
+}
+.ui.form .pct40.wide.field {
+	width: 40% !important;
+}
+.ui.form .pct60.wide.field {
+	width: 60% !important;
 }
