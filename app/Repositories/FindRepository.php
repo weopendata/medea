@@ -130,8 +130,8 @@ class FindRepository extends BaseRepository
         $email = @$filters['myfinds'];
 
         // Non personal find statement
-        $initial_statement = "(find:E10)-[P12]-(object:E22)-[P2]-(validation:objectValidationStatus)";
-        $where_statements[] = "validation.value = '$validation_status'";
+        $initial_statement = "(find:E10)-[P12]-(object:E22)-[P2]-(validation)";
+        $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
         $with_statement = "find";
 
         $order_statement = 'find.id DESC';
@@ -180,7 +180,7 @@ class FindRepository extends BaseRepository
         WITH $with_statement
         ORDER BY $order_statement
         WHERE $where_statement
-        RETURN distinct find
+        RETURN distinct find, count(distinct find)
         SKIP $offset
         LIMIT $limit";
 
@@ -189,12 +189,17 @@ class FindRepository extends BaseRepository
 
         $data = [];
 
+        \Log::info($query);
+
+        $count = 0;
+
         foreach ($results as $result) {
+            $count = $result['count(distinct find)'];
             $find = new FindEvent();
             $find->setNode($result->current());
             $data[] = $find->getValues();
         }
 
-        return $data;
+        return ['data' => $data, 'count' => $count];
     }
 }

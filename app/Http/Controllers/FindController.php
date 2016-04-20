@@ -13,6 +13,7 @@ use App\Repositories\ListValueRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
 use Illuminate\Support\MessageBag;
+use App\Helpers\Pager;
 
 class FindController extends Controller
 {
@@ -54,9 +55,15 @@ class FindController extends Controller
             }
         }
 
-        $validated_status = $request->input('validated', 'gevalideerd');
+        $validated_status = $request->input('status', 'gevalideerd');
 
-        $finds = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+        $finds = $result['data'];
+        $count = $result['count'];
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
+
+
 
         return view('pages.finds-list', [
             'finds' => $finds,
