@@ -123,6 +123,7 @@ class AuthController extends Controller
             $mailer->sendRegistrationConfirmation($person);
         }
 
+        //TODO send email to user that was confirmed
         //TODO send message with "ok"?
         return redirect('/');
     }

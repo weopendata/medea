@@ -2,6 +2,26 @@
   <div class="ui form" @change="change">
     <div class="equal width fields">
       <div class="field">
+        <form class="ui action input" @submit.prevent="change">
+          <input type="text" v-model="model.query" placeholder="Zoeken...">
+          <button class="ui icon button" :class="{green:model.query}">
+            <i class="search icon"></i>
+          </button>
+        </form>
+      </div>
+      <div class="field" style="line-height:37px;">
+        <button v-if="!$root.user.isGuest" class="ui button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
+        <a @click.prevent="advanced=true" v-if="!advanced">Geavanceerd zoeken</a>
+        <span class="finds-order" v-if="advanced">
+          Sorteren op:
+          <a @click.prevent="sortBy('findDate')" :class="{active:model.order=='findDate', reverse:model.order=='-findDate'}">Datum</a>
+          <a @click.prevent="sortBy('production')" :class="{active:model.order=='production', reverse:model.order=='-production'}">Cultuur</a>
+          <a @click.prevent="sortBy('dimensions')" :class="{active:model.order=='dimensions', reverse:model.order=='-dimensions'}">Grootte</a>
+        </span>
+      </div>
+    </div>
+    <div class="equal width fields" v-if="advanced">
+      <div class="field">
         <select class="ui search fluid dropdown category" v-model="model.category">
           <option value="*">Alle categorieën</option>
           <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
@@ -25,11 +45,19 @@
           <option v-for="opt in fields.object.technique" :value="opt" v-text="opt"></option>
         </select>
       </div>
-      <div class="field" v-if="!$root.user.isGuest">
-        <button class="ui fluid button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
-      </div>
       <div class="field">
         <button class="ui fluid blue button" @click.prevent="$parent.showmap=true"><i class="marker icon"></i> Map</button>
+      </div>
+    </div>
+    <div class="fields" v-if="advanced&&$root.user.validator">
+      <div class="four wide field">
+        <select class="ui search fluid dropdown category" v-model="model.status">
+          <option value="in bewerking">in bewerking</option>
+          <option value="gevalideerd">gevalideerd</option>
+          <option value="revisie nodig">revisie nodig</option>
+          <option value="onder embargo" v-if="$root.user.admin">embargo</option>
+          <option value="verwijderd" v-if="$root.user.admin">afgekeurd</option>
+        </select>
       </div>
     </div>
   </div>
@@ -46,7 +74,7 @@ export default {
   data () {
     return {
       fields: window.fields,
-      query: ''
+      advanced: false
     }
   },
   methods: {
@@ -57,7 +85,6 @@ export default {
     }
   },
   ready () {
-
     $('.ui.dropdown').dropdown()
   },
   methods: {
@@ -65,8 +92,21 @@ export default {
       this.model.myfinds = this.model.myfinds ? false : 'yes';
       this.change()
     },
+    sortBy (type) {
+      if (this.model.order == type) {
+        this.model.order = '-' + type
+      } else if (this.model.order == '-' + type) {
+        this.model.order = false
+      } else {
+        this.model.order = type
+      }
+      this.change()
+    },
     change () {
       var model = this.model
+      if (model.status == 'gevalideerd') {
+        delete model.status
+      }
       var query = Object.keys(this.model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
       }).filter(Boolean).join('&');

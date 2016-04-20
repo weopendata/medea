@@ -32,17 +32,24 @@ class FindController extends Controller
     {
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
+        $order = $request->input('order', null);
+        $myfinds = $request->input('myfinds', null);
+        $status = $request->input('status', 'gevalideerd');
+        $query = $request->input('query', null);
 
         $finds = $this->finds->get($limit, $offset);
 
         return view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
-                'myfinds' => 'yes',
+                'query' => $query,
+                'order' => $order,
+                'myfinds' => $myfinds,
                 'category' => '*',
                 'culture' => '*',
                 'technique' => '*',
                 'material' => '*',
+                'status' => $status,
             ],
             'fields' => $this->list_values->getFindTemplate(),
         ]);

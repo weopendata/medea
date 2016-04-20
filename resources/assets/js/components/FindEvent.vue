@@ -13,10 +13,6 @@
         <object-features :find="find"></object-features>
       </div>
       <div class="extra">
-        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="find.object.validationCount<8&&find.object.classificationCount<2">
-          <i class="check icon"></i>
-          Valideer
-        </a>
         <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!find.object.classificationCount&&find.object.objectValidationStatus !== 'in bewerking'">
           <i class="tag icon"></i>
           Classificeren
@@ -26,7 +22,6 @@
           {{find.object.classificationCount}} classificaties bekijken
         </a>
         <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
-          <i class="thumbs up icon"></i>
           Valideren
         </a>
         <button class="ui blue button" @click="mapFocus" v-if="hasLocation">

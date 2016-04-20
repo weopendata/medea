@@ -5,7 +5,7 @@
       <label for="description">Opmerkingen bij validatie</label>
       <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
     </div>
-    <photo-validation :model="photos"></photo-validation>
+    <photo-validation :model="remarks" :index="index" v-for="(index, remarks) in imgRemarks"></photo-validation>
     <p>
       <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
         <i class="thumbs up icon"></i> Valideren
@@ -38,12 +38,12 @@ export default {
   data () {
     return {
       remarks: '',
-      photos: []
+      imgRemarks: {}
     }
   },
   computed: {
     valid () {
-      return !this.remarks && !this.photos.length
+      return !this.remarks && !this.imgRemarks.length
     }
   },
   methods: {
@@ -58,12 +58,22 @@ export default {
       alert('Er trad een fout op')
     },
     post (status) {
+      var f = ''
+      for (var i in this.imgRemarks) {
+        f += this.imgRemarks[i] ? '\n\nFoto ' + (parseInt(i)+1) + '\n * ' + this.imgRemarks[i].join('\n * ') : ''
+      }
+      this.remarks = (this.remarks + f).trim()
       var data = {
         objectValidationStatus: status,
-        remarks: (this.remarks + (this.photos.length ? '\n\n# Feedback op foto\'s\n* ' + this.photos.join('\n* ') : '')).trim()
+        remarks: this.remarks
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
+    }
+  },
+  events: {
+    imgRemark (index) {
+      this.$set('imgRemarks[' + index + ']', [])
     }
   },
   components: {

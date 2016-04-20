@@ -39,13 +39,15 @@
       <input v-model="user.lastName" type="text">
     </div>
   </div>
-  <div class="field">
+  <div class="field" :class="{error:errors.email}">
     <label for="email">Email</label>
     <input v-model="user.email" type="email">
+    <div v-for="msg in errors.email" v-text="msg" class="input"></div>
   </div>
-  <div class="field">
+  <div class="field" :class="{error:errors.password}">
     <label for="pw" @click="show.password=!show.password">Wachtwoord <a href="#" @click.prevent style="color:#999;font-weight:normal" v-text="show.password?'wordt getoond':'tonen'">tonen</a></label>
     <input v-model="user.password" :type="show.password?'text':'password'">
+    <div v-for="msg in errors.password" v-text="msg" class="input"></div>
   </div>
   <h3>Rollen</h3>
   <div class="field">
@@ -142,6 +144,10 @@
   </div>
   <div class="field">
     <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Registreer</button>
+  </div>
+  <div v-if="registered" style="color:#090">
+    <h3>Registratie wordt gevalideerd</h3>
+    <p>De administrator zal je registratie bevestigen. Dit kan even duren. Naar de toekomst toe zullen we ervoor zorgen dat je een e-mail krijgt als je registratie voltooid is. Dit gebeurt nog niet.</p>
   </div>
 {!! Form::close() !!}
 

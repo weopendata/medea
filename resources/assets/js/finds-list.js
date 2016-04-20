@@ -48,16 +48,16 @@ new Vue({
   },
   methods: {
     relevant (find) {
-      console.log('rel', find)
+      //console.log('rel', find)
       return find.object.objectValidationStatus == 'gevalideerd'
 //      || find.user.email == this.user.email
       || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
     },
     fetch (query) {
-      query = query || ''
-      this.$http.get('/api/finds?' + query).then(function (res) {
+      query = query ? '/finds?' + query : '/finds'
+      this.$http.get('/api' + query).then(function (res) {
         this.finds = res.data
-        window.history.pushState({}, document.title, '?' + query)
+        window.history.pushState({}, document.title, query)
       }, function () {
         console.error('could not fetch findevents')
       });

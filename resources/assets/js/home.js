@@ -39,13 +39,14 @@ new Vue({
         jjjj: null,
         nnnnn: null,
       },
+      errors: {},
       submitAction: 'register',
       registered: false
     }
   },
   computed: {
     submittable () {
-      return this.user.firstName && this.user.lastName && this.user.email && this.user.password
+      return !this.registered && this.user.firstName && this.user.lastName && this.user.email && this.user.password
     }
   },
   methods: {
@@ -64,6 +65,10 @@ new Vue({
     },
     submitSuccess () {
       this.registered = true
+      this.errors = {}
+    },
+    submitError (res) {
+      this.errors = res.data
     }
   },
   ready () {
