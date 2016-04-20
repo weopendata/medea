@@ -1,7 +1,7 @@
 <template>
   <div class="ui form" @change="change">
-    <div class="equal width fields">
-      <div class="field">
+    <div class="fields">
+      <div class="pct40 wide field">
         <form class="ui action input" @submit.prevent="change">
           <input type="text" v-model="model.query" placeholder="Zoeken...">
           <button class="ui icon button" :class="{green:model.query}">
@@ -9,8 +9,14 @@
           </button>
         </form>
       </div>
-      <div class="field" style="line-height:37px;">
-        <button v-if="!$root.user.isGuest" class="ui button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
+      <div class="pct60 wide field" style="line-height:37px;">
+        <div class="ui dropdown button simple" v-if="saved&&saved.length&&!advanced">
+          <span class="text">Bewaarde filters</span>
+          <div class="menu">
+            <div class="item" v-for="filter in saved" v-text="filter.name" @click="restore(filter)"></div>
+          </div>
+        </div> &nbsp;
+        <button v-if="!$root.user.isGuest" class="ui button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button> &nbsp;
         <a @click.prevent="advanced=true" v-if="!advanced">Geavanceerd zoeken</a>
         <span class="finds-order" v-if="advanced">
           Sorteren op:
@@ -70,7 +76,7 @@ import transition from 'semantic-ui-css/components/transition.min.js';
 import dropdown from 'semantic-ui-css/components/dropdown.min.js';
 
 export default {
-  props: ['model'],
+  props: ['model', 'saved'],
   data () {
     return {
       fields: window.fields,
@@ -88,6 +94,9 @@ export default {
     $('.ui.dropdown').dropdown()
   },
   methods: {
+    restore (filter) {
+      console.warn('Restoring save filter:', filter)
+    },
     toggleMyfinds () {
       this.model.myfinds = this.model.myfinds ? false : 'yes';
       this.change()
@@ -114,6 +123,11 @@ export default {
         this.query = query
         this.$root.fetch(query)
       }
+    }
+  },
+  watch: {
+    advanced () {
+      $('select.ui.dropdown').dropdown()
     }
   },
   components: {
