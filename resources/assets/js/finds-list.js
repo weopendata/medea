@@ -62,6 +62,9 @@ new Vue({
       if (model.name) {
         delete model.name
       }
+      if (model.myfinds && this.user.isGuest) {
+        delete model.myfinds
+      }
       var query = Object.keys(model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
       }).filter(Boolean).join('&');

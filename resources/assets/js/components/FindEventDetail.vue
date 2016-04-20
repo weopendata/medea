@@ -70,8 +70,8 @@ export default {
         return {
           src: img.identifier,
           msrc: img.resized,
-          w: img.w || 1600,
-          h: img.h || 900
+          w: img.width || 1600,
+          h: img.height || 900
         }
       })
       var gallery = new window.PhotoSwipe(pswpElement, window.PhotoSwipeUI_Default, items, options);
