@@ -65,12 +65,12 @@ class AppMailer
         $this->to = $user->email;
         $this->view = 'auth.emails.password';
         $this->data = compact('user');
-        $this->subject = 'Reset your password';
+        $this->subject = 'Reset je wachtwoord';
         $this->deliver();
     }
 
     /**
-     * Deliver the email confirmation.
+     * Deliver the email confirmation. (not used atm)
      *
      * @param  Person $user
      * @return void
@@ -80,7 +80,7 @@ class AppMailer
         $this->to = $user->email;
         $this->view = 'auth.emails.confirm';
         $this->data = compact('user');
-        $this->subject = 'Complete your registration';
+        $this->subject = 'Voltooi je registratie.';
         $this->deliver();
     }
 
@@ -109,6 +109,21 @@ class AppMailer
     }
 
     /**
+     * Send a confirmation email of the acceptance of the user account to that user
+     *
+     * @param Person $user
+     * @return void
+     */
+    public function sendRegistrationConfirmation(Person $user)
+    {
+        $this->to = $user->email;
+        $this->view = 'auth.emails.registrationconfirmation';
+        $this->data = compact('user');
+        $this->subject = 'Uw registratie werd goedgekeurd!';
+        $this->deliver;
+    }
+
+    /**
      * Deliver the email.
      *
      * @return void
@@ -126,6 +141,8 @@ class AppMailer
         ->setFrom("no-reply@medea.weopendata.com")
         ->setSubject($this->subject)
         ->setHtml($html);
+
+        \Log::info($email);
 
         $sendgrid->send($email);
     }

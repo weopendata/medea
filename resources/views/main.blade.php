@@ -32,7 +32,7 @@
     <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
     <div class="right menu">
       <a href="/notifications" class=" item {{ (Request::is('/notifications') ? 'active' : '') }}"><i class="ui alarm icon"></i> Notificaties</a>
-      <a href="/settings" class=" item {{ (Request::is('settings') ? 'active' : '') }}">{{Auth::user()->name}}</a>
+      <a href="/settings" class=" item {{ (Request::is('settings') ? 'active' : '') }}">{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}</a>
     </div>
     @endif
   </div>
@@ -64,7 +64,7 @@ try {
 } catch (e) {
   window.alert('Something wrong with user profile');
 }
-medeaUser.name = '{{ Auth::user()->name }}';
+medeaUser.name = '{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}';
 medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
