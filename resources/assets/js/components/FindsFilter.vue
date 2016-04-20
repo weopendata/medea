@@ -1,8 +1,8 @@
 <template>
-  <div class="ui form" @change="change">
+  <div class="ui form" @change="$root.fetch()">
     <div class="fields">
       <div class="pct40 wide field">
-        <form class="ui action input" @submit.prevent="change">
+        <form class="ui action input" @submit.prevent="$root.fetch()">
           <input type="text" v-model="model.query" placeholder="Zoeken...">
           <button class="ui icon button" :class="{green:model.query}">
             <i class="search icon"></i>
@@ -51,9 +51,6 @@
           <option v-for="opt in fields.object.technique" :value="opt" v-text="opt"></option>
         </select>
       </div>
-      <div class="field">
-        <button class="ui fluid blue button" @click.prevent="$parent.showmap=true"><i class="marker icon"></i> Map</button>
-      </div>
     </div>
     <div class="fields" v-if="advanced&&$root.user.validator">
       <div class="four wide field">
@@ -97,11 +94,11 @@ export default {
     restore (filter) {
       console.warn('Restoring save filter:', filter)
       this.model = filter
-      this.change()
+      this.$root.fetch()
     },
     toggleMyfinds () {
       this.model.myfinds = this.model.myfinds ? false : 'yes';
-      this.change()
+      this.$root.fetch()
     },
     sortBy (type) {
       if (this.model.order == type) {
@@ -111,23 +108,7 @@ export default {
       } else {
         this.model.order = type
       }
-      this.change()
-    },
-    change () {
-      var model = this.model
-      if (model.status == 'gevalideerd') {
-        delete model.status
-      }
-      if (model.name) {
-        delete model.name
-      }
-      var query = Object.keys(this.model).map(function(key, index) {
-        return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
-      }).filter(Boolean).join('&');
-      if (this.query !== query) {
-        this.query = query
-        this.$root.fetch(query)
-      }
+      this.$root.fetch()
     }
   },
   watch: {

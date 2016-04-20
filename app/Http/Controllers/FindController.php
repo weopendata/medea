@@ -83,6 +83,7 @@ class FindController extends Controller
                 'technique' => $request->input('technique', '*'),
                 'material' => $request->input('material', '*'),
                 'status' => $validated_status,
+                'showmap' => $request->input('showmap', null)
             ],
             'fields' => $this->list_values->getFindTemplate(),
         ])
