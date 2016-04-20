@@ -81,7 +81,7 @@
         Lengtegraad
         <span style="float:right;font-weight: normal;">
           <u>Web Mercator</u> &nbsp;
-          <a style="color:#999;" href="{{ url('help/lambert') }}">Lambert</a>
+          <span style="color:#999;" title="Lambert coordinaten worden niet ondersteund">Lambert</span>
         </span>
       </label>
       <input type="number" v-model="find.findSpot.location.lng" placeholder="lng">
