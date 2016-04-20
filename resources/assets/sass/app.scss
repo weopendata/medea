@@ -138,6 +138,10 @@ dd {
 .step.muted {
 	h3 {
 		opacity: .3;
+		cursor: pointer;
+		&:hover {
+			opacity: 1;
+		}
 	}
 	.field,
 	.fields,
@@ -147,6 +151,11 @@ dd {
 }
 .step.active {
 	margin-bottom: 3rem;
+}
+.step.ready {
+	h3 {
+		color: #090;
+	}
 }
 
 /* FindsList > FindsFilter */

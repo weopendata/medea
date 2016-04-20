@@ -121,6 +121,7 @@ new Vue({
         diameter: false,
         gewicht: false
       },
+      ready: [],
       step: 1,
       submitAction: '/finds',
       user: window.medeaUser
@@ -245,15 +246,13 @@ new Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.$set('find.object.productionEvent', {
-        classification: {
-          type: '',
-          culture: '',
-          nation: '',
-          dating: '',
-          references: [''],
-          description: '',
-        }
+      this.$set('find.object.productionEvent.classification', {
+        type: '',
+        culture: '',
+        nation: '',
+        dating: '',
+        references: [''],
+        description: '',
       })
     },
     formdata () {

@@ -10,8 +10,7 @@
 '@submit.prevent' => 'submit',
 )) !!}
 
-<step number="1" :current="step">
-  <h3>Algemene vondstgegevens</h3>
+<step number="1" title="Algemene vondstgegevens">
   <div class="fields">
     <div class="required field">
       <label>Datum</label>
@@ -92,8 +91,7 @@
   </p>
 </step>
 
-<step number="2" :current="step" :class="{active:step==2, completed:step2valid}">
-  <h3>Afbeeldingen</h3>
+<step number="2" title="Afbeeldingen" :class="{completed:step2valid}">
   <div class="field cleared">
     <div :is="'photo-upload'" :images.sync="find.object.images">
       <label>Foto's</label>
@@ -105,8 +103,7 @@
   </p>
 </step>
 
-<step number="3" :current="step">
-  <h3>Gestructureerde beschrijving</h3>
+<step number="3" title="Gestructureerde beschrijving">
   <div class="two fields">
     <div class="required field">
       <label>Categorie</label>
@@ -171,8 +168,7 @@
   </p>
 </step>
 
-<step number="4" :current="step">
-  <h3>Dimensies</h3>
+<step number="4" title="Dimensies">
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
     <div class="field" v-if="show.lengte">
       <label>Lengte</label>
@@ -213,27 +209,33 @@
     <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies tonen</button>
   </div>
   <p>
-    <button class="ui button" v-bind:class="{green:step2valid}" :disabled="!step2valid" @click.prevent="toStep(5)">Ga naar stap 5</button>
+    <button class="ui green button" @click.prevent="toStep(5)">Volgende stap</button>
   </p>
 </step>
 
-<step number="5" :current="step">
-  <h3>Classificatie</h3>
+<step number="5" title="Classificatie">
   <div class="field">
-    <div v-if="find.object.productionEvent">
-      <add-classification-form v-if="find.object.productionEvent.classification" :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+    <div v-if="find.object.productionEvent.classification">
+      <add-classification-form :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+      <p>
+        <button class="ui green button" @click.prevent="toStep(6)">Volgende stap</button>
+      </p>
     </div>
     <div v-else>
       <p>
         Jouw vondstfiche zal voorgelegd worden aan vondstexperten om te classificeren.
       </p>
       <p>
-        <button v-if="!show.cls" @click.prevent="pushCls" class="ui blue button" type="submit">Zelf classificeren</button>
+        <button @click.prevent="pushCls" class="ui blue button" type="submit">Zelf classificeren</button>
+      </p>
+      <p>
+        <button class="ui green button" @click.prevent="toStep(6)">Overslaan</button>
       </p>
     </div>
   </div>
+</step>
 
-  <h3>Klaar met vondstfiche</h3>
+<step number="6" title="Klaar met vondstfiche">
   <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="find.toValidate">
@@ -252,12 +254,6 @@
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.
     </p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
-    <h3>Alvast een voorbeeld van hoe de vondstfiche eruit zal zien:</h3>
-    <div class="ui very relaxed items">
-      <find-event :find="find" :user="user"></find-event>
-    </div>
   </div>
 </step>
 
