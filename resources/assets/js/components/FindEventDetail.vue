@@ -2,7 +2,10 @@
   <article>
     <div class="fe-header">
       <div class="fe-imglist">
-        <img :src="src.identifier || src" v-for="src in find.object.images">
+        <div class="img" v-for="src in find.object.images">
+          <img :src="src.identifier || src">
+          <span class="fe-img-remark" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'" @click="imgRemark($index)">Opmerking toevoegen</span>
+        </div>
       </div>
       <h1>
         #{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.productionEvent.productionTechnique.type}}
@@ -16,13 +19,16 @@
         <div class="twelve wide column" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           <validation-form :obj="find.object.identifier"></validation-form>
         </div>
-        <div class="twelve wide column" v-else>
+        <div class="twelve wide column" v-if="find.object.objectValidationStatus == 'gevalideerd'">
           <classification v-for="cls in find.object.productionEvent.classification" :cls="cls" :obj="find.object.identifier"></classification>
           <div class="ui orange message" v-if="!find.object.productionEvent&&!find.object.productionEvent.classification&&!find.object.productionEvent.classification.length">
             <div class="ui header">Deze vondst is niet geclassificeerd</div>
             <p v-if="user.expert">Voeg jij een classificatie toe?</p>
           </div>
           <add-classification :object="find.object" v-if="user.expert"></add-classification>
+        </div>
+        <div class="twelve wide column" v-if="!user.validator&&find.object.objectValidationStatus !== 'gevalideerd'">
+          Security error #20984
         </div>
       </div>
     </section>
@@ -45,6 +51,11 @@ export default {
         validation: false
       }
     }
+  },
+  methods: {
+    imgRemark (index) {
+      this.$broadcast('imgRemark', index)
+    } 
   },
   components: {
     AddClassification,

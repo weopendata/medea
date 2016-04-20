@@ -1,10 +1,9 @@
 <template>
   <div>
-    <div v-if="!show">
-      <button class="ui button" @click.prevent="show=1">Feedback op foto's toevoegen</button>
-      <br>
+    <div class="field">
+      <label>Opmerkingen bij foto {{num}}</label>
     </div>
-    <div class="fields" v-show="show">
+    <div class="fields">
       <div class="four wide field">
         <div class="ui checkbox">
           <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="meetschaal">
@@ -30,7 +29,7 @@
         </div>
       </div>
     </div>
-    <div class="fields" v-show="show">
+    <div class="fields">
       <div class="four wide field">
       </div>
       <div class="four wide field">
@@ -58,13 +57,14 @@
 <script>
 export default {
   props: {
+    'index': true,
     'model': {
       default: []
     }
   },
-  data () {
-    return {
-      show: false
+  computed: {
+    num () {
+      return parseInt(this.index) + 1
     }
   },
   ready () {

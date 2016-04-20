@@ -61,16 +61,30 @@
 	align-items: center;
 	justify-content: center;
 	overflow-y: auto;
-	>img {
+	.img {
 		margin-right: 1.5rem;
-		height: 400px;
 		&:last-child {
 			margin-right: 0;
 		}
+	}
+	img {
+		display: block;
+		height: 400px;
 	}
 }
 .fe-imglist-feedback {
 	width: 400px;
 	flex-basis: 50vw;
 	flex-shrink: 0;
+}
+
+/* Image remarks */
+
+.fe-img-remark {
+	display: block;
+	line-height: 3rem;
+	cursor: pointer;
+	&:hover {
+		background-color: black
+	}
 }
