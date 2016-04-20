@@ -3,13 +3,15 @@
     <div class="fe-header">
       <div class="fe-imglist">
         <div class="img" v-for="src in find.object.images">
-          <img :src="src.identifier || src">
+          <photoswipe-thumb :src="src" :index="$index"></photoswipe-thumb>
           <span class="fe-img-remark" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'" @click="imgRemark($index)">Opmerking toevoegen</span>
         </div>
       </div>
-      <h1>
-        #{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.productionEvent.productionTechnique.type}}
-      </h1>
+      <div class="fe-header-fixed">
+        <h1>
+          #{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.productionEvent.productionTechnique.type}}
+        </h1>
+      </div>
     </div>
     <section class="ui container fe-summary">
       <div class="ui two columns doubling grid">
@@ -42,6 +44,7 @@ import AddClassification from './AddClassification';
 import Classification from './Classification';
 import ObjectFeatures from './ObjectFeatures';
 import ValidationForm from './ValidationForm';
+import PhotoswipeThumb from './PhotoswipeThumb';
 
 export default {
   props: ['user', 'find'],
@@ -55,13 +58,32 @@ export default {
   methods: {
     imgRemark (index) {
       this.$broadcast('imgRemark', index)
-    } 
+    }
+  },
+  events: {
+    initPhotoswipe (options) {
+      if (!window.PhotoSwipe) {
+        return console.warn('PhotoSwipe missing')
+      }
+      var pswpElement = document.querySelector('.pswp');
+      var items = this.find.object.images.map(img => {
+        return {
+          src: img.identifier,
+          msrc: img.resized,
+          w: img.w || 1600,
+          h: img.h || 900
+        }
+      })
+      var gallery = new window.PhotoSwipe(pswpElement, window.PhotoSwipeUI_Default, items, options);
+      gallery.init();
+    }
   },
   components: {
     AddClassification,
     Classification,
     ObjectFeatures,
     ValidationForm,
+    PhotoswipeThumb,
   }
 }
 </script>

@@ -42,30 +42,37 @@
 /* simple image carousel */
 
 .fe-header {
+	position: relative;
 	margin-top: -30px;
 	margin-bottom: 2rem;
-	padding: 68px 0 1rem;
 	text-align: center;
 	background: #666;
 	color: white;
+}
+.fe-header-fixed {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 1.5rem;
+	pointer-events: none;
 	>h1 {
+		display: inline;
 		font-weight: normal;
-		margin: 1rem 0;
+		pointer-events: auto;
 	}
 }
 
 /* simple image carousel */
 
 .fe-imglist {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	display: block;
+	padding: 3rem 1.5rem 5rem;
 	overflow-y: auto;
+	text-align: center;
+	white-space: nowrap;
 	.img {
-		margin-right: 1.5rem;
-		&:last-child {
-			margin-right: 0;
-		}
+		display: inline-block;
+		margin: 0 1.5rem;
 	}
 	img {
 		display: block;
