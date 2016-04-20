@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\FindEvent;
 use App\Repositories\FindRepository;
@@ -72,7 +71,6 @@ class FindController extends Controller
         }
 
         $link_header = rtrim($link_header, ';');
-        \Log::info($link_header);
 
         return response()->view('pages.finds-list', [
             'finds' => $finds,
@@ -197,20 +195,6 @@ class FindController extends Controller
     {
         $this->finds->delete($id);
         return response()->json(['success' => true]);
-    }
-
-    private function buildQueryString(Request $request)
-    {
-        $request_params = $request->all();
-        $request_params = array_except($request_params, array('limit', 'offset'));
-        $query_string = '';
-
-        if (!empty($request_params)) {
-            $query_string = http_build_query($request_params);
-            $query_string = '&' . $query_string;
-        }
-
-        return ltrim($query_string, '&');
     }
 
     /**
