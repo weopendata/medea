@@ -63,22 +63,32 @@ class FindController extends Controller
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
+        $link_header = '';
 
+        $query_string = $this->buildQueryString($request);
 
-        return view('pages.finds-list', [
+        foreach ($pages as $rel => $page_info) {
+            $link_header .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . $query_string .';rel=' . $rel . ';';
+        }
+
+        $link_header = rtrim($link_header, ';');
+        \Log::info($link_header);
+
+        return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
                 'query' => '',
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
-                'category' => '*',
-                'culture' => '*',
-                'technique' => '*',
-                'material' => '*',
+                'category' => $request->input('category', '*'),
+                'culture' => $request->input('culture', '*'),
+                'technique' => $request->input('technique', '*'),
+                'material' => $request->input('material', '*'),
                 'status' => $validated_status,
             ],
             'fields' => $this->list_values->getFindTemplate(),
-        ]);
+        ])
+        ->header('Link', $link_header);
     }
 
     /**
@@ -187,6 +197,20 @@ class FindController extends Controller
     {
         $this->finds->delete($id);
         return response()->json(['success' => true]);
+    }
+
+    private function buildQueryString(Request $request)
+    {
+        $request_params = $request->all();
+        $request_params = array_except($request_params, array('limit', 'offset'));
+        $query_string = '';
+
+        if (!empty($request_params)) {
+            $query_string = http_build_query($request_params);
+            $query_string = '&' . $query_string;
+        }
+
+        return ltrim($query_string, '&');
     }
 
     /**

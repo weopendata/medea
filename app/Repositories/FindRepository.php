@@ -24,28 +24,6 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * Get all the bare nodes of a find
-     *
-     * @param integer $limit
-     * @param integer $offset
-     *
-     * @return array
-     */
-    public function getAll($limit = 500, $offset = 0)
-    {
-        $client = $this->getClient();
-
-        $finds = [];
-
-        $find_label = $client->makeLabel($this->label);
-
-
-        $find_nodes = $find_label->getNodes();
-
-        return $find_nodes;
-    }
-
-    /**
      * Get all of the finds for a person
      *
      * @param Person  $person The Person object
@@ -180,24 +158,34 @@ class FindRepository extends BaseRepository
         WITH $with_statement
         ORDER BY $order_statement
         WHERE $where_statement
-        RETURN distinct find, count(distinct find)
+        RETURN distinct find
         SKIP $offset
         LIMIT $limit";
+
+        $count_query = "MATCH $initial_statement, $match_statement
+        WITH $with_statement
+        ORDER BY $order_statement
+        WHERE $where_statement
+        RETURN count(distinct find)";
 
         $cypher_query = new Query($client, $query);
         $results = $cypher_query->getResultSet();
 
+        $cypher_query = new Query($client, $count_query);
+        $count_results = $cypher_query->getResultSet();
+
         $data = [];
-
-        \Log::info($query);
-
         $count = 0;
 
         foreach ($results as $result) {
-            $count = $result['count(distinct find)'];
             $find = new FindEvent();
             $find->setNode($result->current());
             $data[] = $find->getValues();
+        }
+
+        if (!empty($count_results)) {
+            $row = $count_results->current();
+            $count = $row['count(distinct find)'];
         }
 
         return ['data' => $data, 'count' => $count];
