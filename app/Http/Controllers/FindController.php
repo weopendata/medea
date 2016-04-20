@@ -42,14 +42,14 @@ class FindController extends Controller
 
         $order = $request->input('order', null);
 
-        $order_flow = 'DESC';
+        $order_flow = 'ASC';
         $order_by = 'findDate';
 
         if (!empty($order)) {
             $first_char = substr($order, 0);
 
-            if ($first_char == '+') {
-                $order_flow = 'ASC';
+            if ($first_char == '-') {
+                $order_flow = 'DESC';
                 $order_by = substr($order, 1, strlen($order));
             }
         }

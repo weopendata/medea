@@ -115,7 +115,7 @@ class FindRepository extends BaseRepository
      *
      * @return
      */
-    public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'DESC', $validation_status = 'gevalideerd')
+    public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'ASC', $validation_status = 'gevalideerd')
     {
         // We expect that all filters are object filters (e.g. category, culture, technique, material)
         // We'll have to build our query based on the filters that are configured,
