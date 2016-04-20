@@ -22,7 +22,7 @@ class FindEvent extends Base
         ],
         'P29' => [
             'key' => 'person',
-            'model_name' => 'Person',
+            'model_name' => 'person',
             'cascade_delete' => false,
             'link_only' => true,
             'reverse_relationhip' => 'P29'
