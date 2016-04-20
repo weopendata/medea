@@ -1,7 +1,7 @@
 <template>
   <div class="photo-upload">
     <div class="photo-upload-cover">
-      Klik hier om foto's toe te voegen of sleep foto's in dit veld
+      <i class="ui upload icon"></i> Klik hier om foto's toe te voegen of sleep foto's in dit veld
     </div>
     <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
     <div class="photo-upload-img" v-for="(i, image) in images">

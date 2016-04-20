@@ -92,6 +92,14 @@
 </step>
 
 <step number="2" title="Afbeeldingen" :class="{completed:step2valid}">
+  <p>
+    Afbeeldingen zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
+  </p>
+  <ul>
+    <li>Zorg ervoor dat een meetschaal in zicht is. Gebruik hiervoor een lat of <a href="#linknaarmeetpapier">meetpapier</a></li>
+    <li>Let erop dat de belichting van overal komt</li>
+    <li>De resolutie van de foto's is best hoger dan 1600x900</li>
+  </ul>
   <div class="field cleared">
     <div :is="'photo-upload'" :images.sync="find.object.images">
       <label>Foto's</label>
