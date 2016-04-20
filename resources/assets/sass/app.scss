@@ -148,3 +148,26 @@ dd {
 .step.active {
 	margin-bottom: 3rem;
 }
+
+/* FindsList > FindsFilter */
+
+.finds-order {
+	user-select: none;
+	a {
+		padding: 5px 8px;
+		cursor: pointer;
+		&:hover {
+			background-color: #eee;
+		}
+	}
+	.active::after {
+		content: "\25bc";
+		font-weight: bold;
+		margin-left: 2px;
+	}
+	.reverse::after {
+		content: "\25b2";
+		font-weight: bold;
+		margin-left: 2px;
+	}
+}

@@ -32,6 +32,12 @@
         <button class="ui fluid blue button" @click.prevent="$parent.showmap=true"><i class="marker icon"></i> Map</button>
       </div>
     </div>
+    <div class="finds-order">
+      Sorteren op:
+      <a @click.prevent="sortBy('findDate')" :class="{active:model.order=='findDate', reverse:model.order=='-findDate'}">Datum</a>
+      <a @click.prevent="sortBy('production')" :class="{active:model.order=='production', reverse:model.order=='-production'}">Cultuur</a>
+      <a @click.prevent="sortBy('dimensions')" :class="{active:model.order=='dimensions', reverse:model.order=='-dimensions'}">Grootte</a>
+    </div>
   </div>
 </template>
 
@@ -63,6 +69,16 @@ export default {
   methods: {
     toggleMyfinds () {
       this.model.myfinds = this.model.myfinds ? false : 'yes';
+      this.change()
+    },
+    sortBy (type) {
+      if (this.model.order == type) {
+        this.model.order = '-' + type
+      } else if (this.model.order == '-' + type) {
+        this.model.order = false
+      } else {
+        this.model.order = type
+      }
       this.change()
     },
     change () {
