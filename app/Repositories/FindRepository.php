@@ -110,7 +110,7 @@ class FindRepository extends BaseRepository
         // Non personal find statement
         $initial_statement = "(find:E10)-[P12]-(object:E22)-[P2]-(validation)";
         $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
-        $with_statement = "find";
+        $with_statement = "find, validation";
 
         $order_statement = 'find.id DESC';
 
@@ -145,8 +145,9 @@ class FindRepository extends BaseRepository
         }
 
         if (!empty($email)) {
-            $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)";
-            $where_statements[] = "person.email = '$email'";
+            $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[P2]-(validation)";
+            $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+            $with_statement = "find, validation";
         }
 
         $client = $this->getClient();
@@ -167,6 +168,8 @@ class FindRepository extends BaseRepository
         ORDER BY $order_statement
         WHERE $where_statement
         RETURN count(distinct find)";
+
+        \Log::info($query);
 
         $cypher_query = new Query($client, $query);
         $results = $cypher_query->getResultSet();
