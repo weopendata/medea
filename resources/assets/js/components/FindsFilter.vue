@@ -10,13 +10,14 @@
         </form>
       </div>
       <div class="field" style="line-height:37px;">
+        <button v-if="!$root.user.isGuest" class="ui button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
         <a @click.prevent="advanced=true" v-if="!advanced">Geavanceerd zoeken</a>
-        <div class="finds-order" v-if="advanced">
+        <span class="finds-order" v-if="advanced">
           Sorteren op:
           <a @click.prevent="sortBy('findDate')" :class="{active:model.order=='findDate', reverse:model.order=='-findDate'}">Datum</a>
           <a @click.prevent="sortBy('production')" :class="{active:model.order=='production', reverse:model.order=='-production'}">Cultuur</a>
           <a @click.prevent="sortBy('dimensions')" :class="{active:model.order=='dimensions', reverse:model.order=='-dimensions'}">Grootte</a>
-        </div>
+        </span>
       </div>
     </div>
     <div class="equal width fields" v-if="advanced">
@@ -44,11 +45,19 @@
           <option v-for="opt in fields.object.technique" :value="opt" v-text="opt"></option>
         </select>
       </div>
-      <div class="field" v-if="!$root.user.isGuest">
-        <button class="ui fluid button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button>
-      </div>
       <div class="field">
         <button class="ui fluid blue button" @click.prevent="$parent.showmap=true"><i class="marker icon"></i> Map</button>
+      </div>
+    </div>
+    <div class="fields" v-if="advanced&&$root.user.validator">
+      <div class="four wide field">
+        <select class="ui search fluid dropdown category" v-model="model.status">
+          <option value="in bewerking">in bewerking</option>
+          <option value="gevalideerd">gevalideerd</option>
+          <option value="revisie nodig">revisie nodig</option>
+          <option value="onder embargo" v-if="$root.user.admin">embargo</option>
+          <option value="verwijderd" v-if="$root.user.admin">afgekeurd</option>
+        </select>
       </div>
     </div>
   </div>
@@ -76,7 +85,6 @@ export default {
     }
   },
   ready () {
-
     $('.ui.dropdown').dropdown()
   },
   methods: {
@@ -96,6 +104,9 @@ export default {
     },
     change () {
       var model = this.model
+      if (model.status == 'gevalideerd') {
+        delete model.status
+      }
       var query = Object.keys(this.model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
       }).filter(Boolean).join('&');
