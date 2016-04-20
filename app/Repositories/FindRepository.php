@@ -108,7 +108,7 @@ class FindRepository extends BaseRepository
         $email = @$filters['myfinds'];
 
         // Non personal find statement
-        $initial_statement = "(find:E10)-[P12]-(object:E22)-[P2]-(validation)";
+        $initial_statement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
         $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
         $with_statement = "find, validation";
 
@@ -130,7 +130,7 @@ class FindRepository extends BaseRepository
         }
 
         if (!empty($technique)) {
-            $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[P2]-(type:E55)";
+            $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[techniqueType:P2]-(type:E55)";
             $where_statements[] = "type.value = '$technique'";
         }
 
@@ -140,12 +140,12 @@ class FindRepository extends BaseRepository
         }
 
         if (!empty($category)) {
-            $match_statements[] = "(object:E22)-[P2]-(category:E55)";
+            $match_statements[] = "(object:E22)-[categoryType:P2]-(category:E55)";
             $where_statements[] = "category.value = '$category'";
         }
 
         if (!empty($email)) {
-            $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[P2]-(validation)";
+            $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
             $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
             $with_statement = "find, validation";
         }
