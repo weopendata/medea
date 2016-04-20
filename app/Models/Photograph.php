@@ -26,6 +26,12 @@ class Photograph extends Base
     protected $properties = [
         [
             'name' => 'resized',
+        ],
+        [
+            'name' => 'width'
+        ],
+        [
+            'name' => 'height'
         ]
     ];
 

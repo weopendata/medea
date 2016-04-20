@@ -127,11 +127,13 @@ class FindController extends Controller
         // Check for images, they need special processing before the Neo4j writing is initiated
         if (!empty($input['object']['images'])) {
             foreach ($input['object']['images'] as $image) {
-                list($name, $name_small) = $this->processImage($image);
+                list($name, $name_small, $width, $height) = $this->processImage($image);
 
                 $images[] = [
                     'name' => $request->root() . '/uploads/' . $name,
-                    'resized' => $request->root() . '/uploads/' . $name_small
+                    'resized' => $request->root() . '/uploads/' . $name_small,
+                    'width' => $width,
+                    'height' => $height
                 ];
             }
         }
@@ -181,7 +183,6 @@ class FindController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
         return response()->json(['success' => true]);
     }
 
@@ -213,6 +214,8 @@ class FindController extends Controller
         $image_name_small = 'small_' . $image_config['name'];
 
         $image->save($public_path . $image_name);
+        $width = $image->width();
+        $height = $image->height();
 
         // Resize the image and save it under a different name
         $image->resize(640, 480, function ($constraint) {
@@ -220,6 +223,6 @@ class FindController extends Controller
             $constraint->upsize();
         })->save($public_path . $image_name_small);
 
-        return [$image_name, $image_name_small];
+        return [$image_name, $image_name_small, $width, $height];
     }
 }
