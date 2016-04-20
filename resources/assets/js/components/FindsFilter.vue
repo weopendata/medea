@@ -96,6 +96,8 @@ export default {
   methods: {
     restore (filter) {
       console.warn('Restoring save filter:', filter)
+      this.model = filter
+      this.change()
     },
     toggleMyfinds () {
       this.model.myfinds = this.model.myfinds ? false : 'yes';
@@ -115,6 +117,9 @@ export default {
       var model = this.model
       if (model.status == 'gevalideerd') {
         delete model.status
+      }
+      if (model.name) {
+        delete model.name
       }
       var query = Object.keys(this.model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;

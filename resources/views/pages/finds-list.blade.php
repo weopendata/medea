@@ -5,7 +5,7 @@
 @section('content')
 <div v-if="!showmap" transition="fromleft">
   <div class="ui container">
-    <finds-filter :model.sync="filterState" :saved="[{name:'Some filter'}, {name:'Other filter'}]"></finds-filter>
+    <finds-filter :model.sync="filterState" :saved="[{name:'ijzer only', material: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
     <finds-list :finds="finds | filterBy relevant" :user="user"></finds-list>
   </div>
 </div>
