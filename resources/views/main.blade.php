@@ -19,25 +19,33 @@
     <title>@yield('title') - MEDEA</title>
 </head>
 
-<body :class="{showmap:showmap}">
+<body>
 
-@section('nav')
-<nav class="ui container">
-  <div class="ui secondary green pointing menu">
-    <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
-    <a href="/finds" class="item {{ (Request::is('/finds') ? 'active' : '') }}">Vondsten</a>
-    @if (Auth::guest())
-    <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
-    @else
-    <a href="/finds/create" class="item {{ (Request::is('/finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
-    <div class="right menu">
-      <a href="/notifications" class=" item {{ (Request::is('/notifications') ? 'active' : '') }}"><i class="ui alarm icon"></i> Notificaties</a>
-      <a href="/settings" class=" item {{ (Request::is('settings') ? 'active' : '') }}">{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}</a>
+@if (Request::is('finds'))
+<div class="nav-push"></div>
+<div class="fixed-top">
+@endif
+  <nav class="ui container">
+    <div class="ui secondary green pointing menu">
+      <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
+      @section('showmap')
+      <a href="/finds" class="item {{ (Request::is('finds') && !Request::has('showmap') ? 'active' : '') }}">Vondsten</a>
+      <a href="/finds?showmap=true" class="item {{ (Request::has('showmap') ? 'active' : '') }}">Kaart</a>
+      @show
+      @if (Auth::guest())
+      <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
+      @else
+      <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
+      <div class="right menu">
+        <a href="/notifications" class=" item {{ (Request::is('notifications') ? 'active' : '') }}"><i class="ui alarm icon"></i> Notificaties</a>
+        <a href="/settings" class=" item {{ (Request::is('settings') ? 'active' : '') }}">{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}</a>
+      </div>
+      @endif
     </div>
-    @endif
-  </div>
-</nav>
-@show
+  </nav>
+@if (Request::is('finds'))
+</div>
+@endif
 
 @yield('content')
 

@@ -2,6 +2,7 @@ import Vue from 'vue/dist/vue.min.js';
 import VueResource from 'vue-resource/dist/vue-resource.min.js';
 import FindsList from './components/FindsList';
 import FindsFilter from './components/FindsFilter';
+import MapControls from './components/MapControls';
 import {load, Map, Marker, Circle} from 'vue-google-maps';
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js';
 import DevBar from './components/DevBar';
@@ -14,6 +15,7 @@ new Vue({
     DevBar,
     FindsFilter,
     FindsList,
+    MapControls,
     Map,
     Marker,
     Circle
@@ -32,7 +34,6 @@ new Vue({
         fillOpacity: 0.3,
         strokeWeight: 0 
       },
-      showmap: false,
       loaded: false
     }
   },
@@ -41,7 +42,7 @@ new Vue({
     if (!this.finds || !this.finds.length) {
       this.fetch()
     }
-    if (this.showmap && !this.loaded) {
+    if (this.filterState.showmap && !this.loaded) {
       load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
       this.loaded = true
     }
@@ -53,14 +54,32 @@ new Vue({
 //      || find.user.email == this.user.email
       || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
     },
-    fetch (query) {
+    fetch (cause) {
+      var model = this.filterState
+      if (model.status == 'gevalideerd') {
+        delete model.status
+      }
+      if (model.name) {
+        delete model.name
+      }
+      var query = Object.keys(model).map(function(key, index) {
+        return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
+      }).filter(Boolean).join('&');
       query = query ? '/finds?' + query : '/finds'
+      window.history.pushState({}, document.title, query)
+      if (cause == 'showmap' || this.query == query) {
+        return
+      }
+      this.query = query
       this.$http.get('/api' + query).then(function (res) {
         this.finds = res.data
-        window.history.pushState({}, document.title, query)
       }, function () {
         console.error('could not fetch findevents')
       });
+    },
+    mapshow (value) {
+      this.filterState.showmap = value
+      this.fetch('showmap')
     }
   },
   events: {
@@ -69,7 +88,7 @@ new Vue({
       this.map.zoom = accuracy ? Math.floor(25 - Math.log2(accuracy)) : 18
       // nextTick is just to be sure that the map immediately shows the correct location
       this.$nextTick(function () {
-        this.showmap = true
+        this.filterState.showmap = true
       })
     }
   },
@@ -84,7 +103,8 @@ new Vue({
     }
   },
   watch: {
-    'showmap' (shown) {
+    'filterState.showmap' (shown) {
+      console.log('filly', shown)
       if (shown && !this.loaded) {
         load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
         this.loaded = true
