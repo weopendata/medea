@@ -29,7 +29,7 @@
     <dt>Materiaal</dt>
     <dd>{{find.object.material}}</dd>
   </dl>
-  <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique">
+  <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.type&&find.object.productionEvent.productionTechnique.type.length">
     <dt>Techniek</dt>
     <dd>{{find.object.productionEvent.productionTechnique.type}}</dd>
   </dl>
