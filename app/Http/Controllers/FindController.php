@@ -34,6 +34,7 @@ class FindController extends Controller
         $offset = $request->input('offset', 0);
         $order = $request->input('order', null);
         $myfinds = $request->input('myfinds', null);
+        $query = $request->input('query', null);
 
         $finds = $this->finds->get($limit, $offset);
 
@@ -46,6 +47,7 @@ class FindController extends Controller
                 'culture' => '*',
                 'technique' => '*',
                 'material' => '*',
+                'query' => $query,
             ],
             'fields' => $this->list_values->getFindTemplate(),
         ]);

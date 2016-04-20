@@ -2,6 +2,25 @@
   <div class="ui form" @change="change">
     <div class="equal width fields">
       <div class="field">
+        <form class="ui action input" @submit.prevent="change">
+          <input type="text" v-model="model.query" placeholder="Zoeken...">
+          <button class="ui icon button" :class="{green:model.query}">
+            <i class="search icon"></i>
+          </button>
+        </form>
+      </div>
+      <div class="field" style="line-height:37px;">
+        <a @click.prevent="advanced=true" v-if="!advanced">Geavanceerd zoeken</a>
+        <div class="finds-order" v-if="advanced">
+          Sorteren op:
+          <a @click.prevent="sortBy('findDate')" :class="{active:model.order=='findDate', reverse:model.order=='-findDate'}">Datum</a>
+          <a @click.prevent="sortBy('production')" :class="{active:model.order=='production', reverse:model.order=='-production'}">Cultuur</a>
+          <a @click.prevent="sortBy('dimensions')" :class="{active:model.order=='dimensions', reverse:model.order=='-dimensions'}">Grootte</a>
+        </div>
+      </div>
+    </div>
+    <div class="equal width fields" v-if="advanced">
+      <div class="field">
         <select class="ui search fluid dropdown category" v-model="model.category">
           <option value="*">Alle categorieën</option>
           <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
@@ -32,12 +51,6 @@
         <button class="ui fluid blue button" @click.prevent="$parent.showmap=true"><i class="marker icon"></i> Map</button>
       </div>
     </div>
-    <div class="finds-order">
-      Sorteren op:
-      <a @click.prevent="sortBy('findDate')" :class="{active:model.order=='findDate', reverse:model.order=='-findDate'}">Datum</a>
-      <a @click.prevent="sortBy('production')" :class="{active:model.order=='production', reverse:model.order=='-production'}">Cultuur</a>
-      <a @click.prevent="sortBy('dimensions')" :class="{active:model.order=='dimensions', reverse:model.order=='-dimensions'}">Grootte</a>
-    </div>
   </div>
 </template>
 
@@ -52,7 +65,7 @@ export default {
   data () {
     return {
       fields: window.fields,
-      query: ''
+      advanced: false
     }
   },
   methods: {

@@ -14,19 +14,19 @@
 @import "../../../node_modules/semantic-ui-css/components/label";
 @import "../../../node_modules/semantic-ui-css/components/input";
 @import "../../../node_modules/semantic-ui-css/components/checkbox";
-
 // Fancy select
 @import "../../../node_modules/semantic-ui-css/components/dropdown";
 @import "../../../node_modules/semantic-ui-css/components/transition";
-
 @import "../../../node_modules/semantic-ui-css/components/step";
 @import "../../../node_modules/semantic-ui-css/components/message";
-
 @import "../../../node_modules/semantic-ui-css/components/icon";
 @import "../../../node_modules/semantic-ui-css/components/button";
 @import "../../../node_modules/semantic-ui-css/components/menu";
 @import "../../../node_modules/semantic-ui-css/components/item";
 @import "./modules/fe";
+
+/* FindsList */
+
 .column img {
 	max-width: 100%;
 }
@@ -34,7 +34,7 @@
 /* Base */
 
 dl {
-	margin:0 0 .5em;
+	margin: 0 0 .5em;
 }
 dt {
 	float: left;
@@ -44,13 +44,10 @@ dt {
 dd {
 	margin-left: 90px;
 }
-
-
 .ui.create-container.form {
-  margin: 0 auto;
-  max-width: 800px;
+	margin: 0 auto;
+	max-width: 800px;
 }
-
 .double-labeled>input:nth-child(2) {
 	border-radius: 0!important;
 	border-top-right-radius: 0;
@@ -116,6 +113,7 @@ dd {
 }
 
 /* This effect is based on body class */
+
 .ui.menu {
 	transition: top 0.6s;
 	position: relative;
@@ -126,6 +124,7 @@ dd {
 }
 
 /* FindsList > Empty state */
+
 .finds-empty {
 	margin: 10% auto;
 	small {
@@ -136,12 +135,13 @@ dd {
 .finds-cta {
 	margin: 5% auto;
 }
-
 .step.muted {
 	h3 {
 		opacity: .3;
 	}
-	.field, .fields, p {
+	.field,
+	.fields,
+	p {
 		display: none!important
 	}
 }
@@ -160,14 +160,17 @@ dd {
 			background-color: #eee;
 		}
 	}
+	.reverse,
+	.active {
+		font-weight: bold;
+		color: #000;
+	}
 	.active::after {
 		content: "\25bc";
-		font-weight: bold;
 		margin-left: 2px;
 	}
 	.reverse::after {
 		content: "\25b2";
-		font-weight: bold;
 		margin-left: 2px;
 	}
 }
