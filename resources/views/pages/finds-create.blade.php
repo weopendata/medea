@@ -77,7 +77,13 @@
       <input type="number" v-model="find.findSpot.location.lat" placeholder="lat">
     </div>
     <div class="field">
-      <label>Lengtegraad</label>
+      <label>
+        Lengtegraad
+        <span style="float:right;font-weight: normal;">
+          <u>Web Mercator</u> &nbsp;
+          <a style="color:#999;" href="{{ url('help/lambert') }}">Lambert</a>
+        </span>
+      </label>
       <input type="number" v-model="find.findSpot.location.lng" placeholder="lng">
     </div>
   </div>
