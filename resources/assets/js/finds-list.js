@@ -49,10 +49,14 @@ new Vue({
   },
   methods: {
     relevant (find) {
-      //console.log('rel', find)
-      return find.object.objectValidationStatus == 'gevalideerd'
-//      || find.user.email == this.user.email
-      || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
+      if (find.object.objectValidationStatus == 'in bewerking') {
+        if (!this.user.validator) {
+          console.warn('Security error, this user is not allowed to see this find')
+        }
+      } else if (find.object.objectValidationStatus != 'gevalideerd' && !this.user.admin) {
+        console.warn('Security error, this user is not allowed to see this find')
+      }
+      return true
     },
     fetch (cause) {
       var model = this.filterState
