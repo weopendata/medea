@@ -23,24 +23,6 @@ class FindRepository extends BaseRepository
         return $find;
     }
 
-    public function get($limit = 500, $offset = 0)
-    {
-        $client = $this->getClient();
-
-        $finds = [];
-
-        $find_label = $client->makeLabel($this->label);
-
-        $find_nodes = $find_label->getNodes();
-
-        foreach ($find_nodes as $find_node) {
-            // Build a structure out of a find event
-            $finds[] = $this->expandValues($find_node->getId());
-        }
-
-        return $finds;
-    }
-
     /**
      * Get all the bare nodes of a find
      *
@@ -57,7 +39,7 @@ class FindRepository extends BaseRepository
 
         $find_label = $client->makeLabel($this->label);
 
-        // TODO paging (on the level of finds)
+
         $find_nodes = $find_label->getNodes();
 
         return $find_nodes;
@@ -133,12 +115,11 @@ class FindRepository extends BaseRepository
      *
      * @return
      */
-    public function getAllWithFilter($filters)
+    public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'DESC', $validation_status = 'gevalideerd')
     {
         // We expect that all filters are object filters (e.g. category, culture, technique, material)
         // We'll have to build our query based on the filters that are configured,
         // some are filters on object relationships, some on find event, some on classifications
-
         $match_statements = [];
         $where_statements = [];
 
@@ -149,7 +130,21 @@ class FindRepository extends BaseRepository
         $email = @$filters['myfinds'];
 
         // Non personal find statement
-        $initial_statement = "(find:E10)-[P12]-(object:E22)";
+        $initial_statement = "(find:E10)-[P12]-(object:E22)-[P2]-(validation:objectValidationStatus)";
+        $where_statements[] = "validation.value = '$validation_status'";
+        $with_statement = "find";
+
+        $order_statement = 'find.id DESC';
+
+        if ($order_by == 'culture') {
+            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
+            $with_statement .= ", culture";
+            $order_statement = "culture.value $order_flow";
+        } else {
+            $match_statements[] = "(find:E10)-[P4]-(findDate:E52)";
+            $with_statement .= ", findDate";
+            $order_statement = "findDate.value $order_flow";
+        }
 
         if (!empty($material)) {
             $match_statements[] = "(object:E22)-[P45]-(material:E57)";
@@ -157,7 +152,7 @@ class FindRepository extends BaseRepository
         }
 
         if (!empty($technique)) {
-            $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E17)-[P2]-(type:E55)";
+            $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[P2]-(type:E55)";
             $where_statements[] = "type.value = '$technique'";
         }
 
@@ -176,17 +171,18 @@ class FindRepository extends BaseRepository
             $where_statements[] = "person.email = '$email'";
         }
 
-        // No filters selected
-        if (empty($match_statements)) {
-            return $this->get();
-        }
-
         $client = $this->getClient();
 
         $match_statement = implode(', ', $match_statements);
         $where_statement = implode(' AND ', $where_statements);
 
-        $query = "MATCH $initial_statement, $match_statement WHERE $where_statement return find";
+        $query = "MATCH $initial_statement, $match_statement
+        WITH $with_statement
+        ORDER BY $order_statement
+        WHERE $where_statement
+        RETURN distinct find
+        SKIP $offset
+        LIMIT $limit";
 
         $cypher_query = new Query($client, $query);
         $results = $cypher_query->getResultSet();

@@ -5,21 +5,16 @@
     <title>MEDEA registratie</title>
 </head>
 <body>
-    <h3>Beste {{} $user->firstName . ' ' . $user->lastName }}</h3>
-
-    <ul>
-        <li>
-        email: {{ $user->email }}
-        </li>
-        <li>
-        naam: {{ $user->firstName . ' ' . $user->lastName }}
-        </li>
-        <li>
-        rollen: {{ $roles }}
-        </li>
-    </ul>
+    <h3>Beste {{ $user->firstName . ' ' . $user->lastName }}</h3>
     <p>
-        Om de registratie goed te keuren <a href='{{ url("register/confirm/{$user->token}") }}'>klik hier</a>.
+        Uw registratie werd goedgekeurd! U kan nu inloggen op het <a href='{{ url("login") }}'>MEDEA platform</a>.
+    </p>
+
+    <p>
+    Vriendelijke groeten,
+    </p>
+    <p>
+    Het MEDEA team
     </p>
 </body>
 </html>

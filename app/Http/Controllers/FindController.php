@@ -30,26 +30,45 @@ class FindController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit', 20);
-        $offset = $request->input('offset', 0);
-        $order = $request->input('order', null);
-        $myfinds = $request->input('myfinds', null);
-        $status = $request->input('status', 'gevalideerd');
-        $query = $request->input('query', null);
+        $filters = $request->all();
 
-        $finds = $this->finds->get($limit, $offset);
+        // Check if personal finds are set
+        if ($request->has('myfinds') && !empty($request->user())) {
+            $filters['myfinds'] = $request->user()->email;
+        }
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $order = $request->input('order', null);
+
+        $order_flow = 'DESC';
+        $order_by = 'findDate';
+
+        if (!empty($order)) {
+            $first_char = substr($order, 0);
+
+            if ($first_char == '+') {
+                $order_flow = 'ASC';
+                $order_by = substr($order, 1, strlen($order));
+            }
+        }
+
+        $validated_status = $request->input('validated', 'gevalideerd');
+
+        $finds = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
 
         return view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
-                'query' => $query,
+                'query' => '',
                 'order' => $order,
-                'myfinds' => $myfinds,
+                'myfinds' => @$filters['myfinds'],
                 'category' => '*',
                 'culture' => '*',
                 'technique' => '*',
                 'material' => '*',
-                'status' => $status,
+                'status' => $validated_status,
             ],
             'fields' => $this->list_values->getFindTemplate(),
         ]);

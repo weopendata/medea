@@ -26,7 +26,7 @@ class FindController extends Controller
         $filters = $request->all();
 
         // Check if personal finds are set
-        if ($request->has('myfinds')) {
+        if ($request->has('myfinds') && !empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
         }
 
