@@ -58,7 +58,7 @@ class FindController extends Controller
         // Check if personal finds are set
         if ($request->has('myfinds') && !empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
-            $validated_status = '';
+            $validated_status = '*';
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
@@ -196,7 +196,55 @@ class FindController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return response()->json(['success' => true]);
+        $find_node = $this->finds->getById($id);
+
+        if (!empty($find_node)) {
+            $input = $request->json()->all();
+
+            $user = $request->user();
+
+            if (empty($user)) {
+                // Test code in order to test with PostMan requests
+                $users = new UserRepository();
+                $user_node = $users->getUser('foo@bar.com');
+                $user = new \App\Models\Person();
+                $user->setNode($user_node);
+            }
+
+            $images = [];
+
+            // Check for images, they need special processing before the Neo4j writing is initiated
+            if (!empty($input['object']['images'])) {
+                foreach ($input['object']['images'] as $image) {
+                    if (empty($image['identifier'])) {
+                        list($name, $name_small, $width, $height) = $this->processImage($image);
+
+                        $images[] = [
+                        'name' => $request->root() . '/uploads/' . $name,
+                        'resized' => $request->root() . '/uploads/' . $name_small,
+                        'width' => $width,
+                        'height' => $height
+                        ];
+                    } else {
+                        $images[] = $image;
+                    }
+
+                }
+            }
+
+            $input['object']['images'] = $images;
+            $input['person'] = ['id' => $user->id];
+
+            $find = new FindEvent();
+            $find->setNode($find_node);
+
+            $find = $find->update($input);
+
+            return response()->json(['success' => true]);
+        } else {
+            abort('404');
+        }
+
     }
 
     /**

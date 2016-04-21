@@ -9,7 +9,7 @@ class ProductionEvent extends Base
 
     protected $related_models = [
         'P41' => [
-            'key' => 'classification',
+            'key' => 'productionClassification',
             'model_name' => 'ProductionClassification',
             'cascade_delete' => true,
             'plural' => true
@@ -46,7 +46,7 @@ class ProductionEvent extends Base
         );
 
         // Make E55 productionType
-        $production_type = $this->createValueNode('type', ['E55'], $technique['type']);
+        $production_type = $this->createValueNode('type', ['E55', $this->getGeneralId()], $technique['type']);
         $production_technique->relateTo($production_type, 'P2')->save();
 
         return $production_technique;

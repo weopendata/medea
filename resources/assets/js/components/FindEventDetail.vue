@@ -17,6 +17,10 @@
       <div class="ui two columns doubling grid">
         <div class="four wide column">
           <object-features :find="find" detail="all"></object-features>
+          <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
+            <i class="pencil icon"></i>
+            Bewerken
+          </a>
         </div>
         <div class="twelve wide column" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           <validation-form :obj="find.object.identifier"></validation-form>

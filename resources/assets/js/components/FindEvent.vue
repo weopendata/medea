@@ -1,13 +1,13 @@
 <template>
   <div class="item fe">
     <a class="big image fe-image" href="/finds/{{find.identifier}}">
-      <img class="fe-img" :src="src.identifier || src" v-for="src in find.object.images">
+      <img class="fe-img" :src="src.identifier" v-for="src in find.object.images">
       <div class="fe-img fe-img-placeholder" v-if="!find.object.images">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
       <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.category}}</a>
       <div class="meta">
-        <span>Gevonden op {{find.identifier}} in de buurt van <u>{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
+        <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u>{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
       <div class="description">
         <object-features :find="find"></object-features>
@@ -28,9 +28,11 @@
           <i class="marker icon"></i>
           Op de kaart
         </button>
-        <button class="ui basic small button" @click="rm" v-if="user.admin&&find.identifier">
+        <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
+          <i class="pencil icon"></i>
+        </a>
+        <button class="ui basic small icon button" @click="rm" v-if="user.admin&&find.identifier">
           <i class="trash icon"></i>
-          Verwijderen
         </button>
       </div>
     </div>

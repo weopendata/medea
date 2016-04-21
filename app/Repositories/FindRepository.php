@@ -61,7 +61,7 @@ class FindRepository extends BaseRepository
         // Add the vote of the user
         if (!empty($user)) {
             // Get the vote of the user for the find
-            $query = "match (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) where id(person) = $user->id AND id(find) = $find_id return r";
+            $query = "MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = $user->id AND id(find) = $find_id RETURN r";
 
             $client = $this->getClient();
 
@@ -93,7 +93,7 @@ class FindRepository extends BaseRepository
      *
      * @return
      */
-    public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'ASC', $validation_status = 'gevalideerd')
+    public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'ASC', $validation_status = '*')
     {
         // We expect that all filters are object filters (e.g. category, culture, technique, material)
         // We'll have to build our query based on the filters that are configured,
@@ -109,7 +109,13 @@ class FindRepository extends BaseRepository
 
         // Non personal find statement
         $initial_statement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
-        $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+
+        if ($validation_status == '*') {
+            $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
+        } else {
+            $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+        }
+
         $with_statement = "find, validation";
 
         $order_statement = 'find.id DESC';
@@ -146,7 +152,11 @@ class FindRepository extends BaseRepository
 
         if (!empty($email)) {
             $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
-            $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+            if ($validation_status == '*') {
+                $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
+            } else {
+                $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+            }
             $with_statement = "find, validation";
         }
 

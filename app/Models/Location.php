@@ -50,9 +50,11 @@ class Location extends Base
     {
         parent::save();
 
+        $general_id = $this->getGeneralId();
+
         // Add an ID to the node
         $client = self::getClient();
-        $id_node = $this->createValueNode('identifier', ['E42', 'locationplaceNameId'], $this->node->getId());
+        $id_node = $this->createValueNode('identifier', ['E42', 'locationplaceNameId', $this->getGeneralId()], $this->node->getId());
 
         $this->node->relateTo($id_node, 'P1')->save();
     }
@@ -61,9 +63,9 @@ class Location extends Base
     {
         $client = $this->getClient();
 
-        $lat_node = $this->createValueNode('lat', ['E47', 'locationSpatialCoordinate'], $lat);
+        $lat_node = $this->createValueNode('lat', ['E47', 'locationSpatialCoordinate', $this->getGeneralId()], $lat);
 
-        $latitude_type = $this->createValueNode('latitude', ['E55', 'locationspatialCoordinateQualifier'], 'latitude');
+        $latitude_type = $this->createValueNode('latitude', ['E55', 'locationspatialCoordinateQualifier', $this->getGeneralId()], 'latitude');
 
         $lat_node->relateTo($latitude_type, 'P2')->save();
 
@@ -74,9 +76,9 @@ class Location extends Base
     {
         $client = $this->getClient();
 
-        $lng_node = $this->createValueNode('lng', ['E47', 'locationSpatialCoordinate'], $lng);
+        $lng_node = $this->createValueNode('lng', ['E47', 'locationSpatialCoordinate', $this->getGeneralId()], $lng);
 
-        $latitude_type = $this->createValueNode('longitude', ['E55', 'locationspatialCoordinateQualifier'], 'longitude');
+        $latitude_type = $this->createValueNode('longitude', ['E55', 'locationspatialCoordinateQualifier', $this->getGeneralId()], 'longitude');
 
         $lng_node->relateTo($latitude_type, 'P2')->save();
 
@@ -145,10 +147,14 @@ class Location extends Base
         $place_name_node->setProperty('name', 'locationPlaceName');
         $place_name_node->save();
 
-        $place_name_node->addLabels([self::makeLabel('E48'), self::makeLabel('locationplaceName')]);
+        $place_name_node->addLabels([
+            self::makeLabel('E48'),
+            self::makeLabel('locationplaceName'),
+            self::makeLabel($this->getGeneralId())
+            ]);
 
         // Combine E48 with it's explicit ID -> E42 identifier
-        $id_node = $this->createValueNode('identifier', ['E42', 'locationplaceNameId'], $place_name_node->getId());
+        $id_node = $this->createValueNode('identifier', ['E42', 'locationplaceNameId', $this->getGeneralId()], $place_name_node->getId());
         $place_name_node->relateTo($id_node, 'P1')->save();
 
         $optional_properties = [

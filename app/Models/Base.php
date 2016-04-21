@@ -11,7 +11,7 @@ class Base
 {
     protected $node;
 
-    protected $has_unique_id = false;
+    protected $has_unique_id = true;
 
     protected $unique_identifer = "MEDEA_UUID";
 
@@ -74,8 +74,6 @@ class Base
 
             $this->node = $client->makeNode();
 
-            // Identify all related nodes with the main node (being Object)
-            // Eases the way in which we can perform a delete (and find)
             $general_id = "MEDEA" . sha1(str_random(10) . "__" . time());
 
             $this->node->setProperty($this->unique_identifer, $general_id)->save();
@@ -94,7 +92,7 @@ class Base
 
             $this->node->save();
 
-            // Initiate model relationship cascading that are one level deep
+            // Create related models through recursion
             foreach ($this->related_models as $relationship_name => $config) {
                 // Check if the related model is required
                 if (empty($properties[$config['key']]) && @$config['required']) {
@@ -159,6 +157,167 @@ class Base
                 }
             }
         }
+    }
+
+    /**
+     * Update a model with its related nodes
+     * This functino expects a node to be already set to the model
+     *
+     * @param array $properties
+     *
+     * @return Node
+     */
+    public function update($properties)
+    {
+        if (!empty($properties)) {
+            $client = self::getClient();
+
+            $general_id = $this->getGeneralId();
+
+            // Set value properties for the node
+            foreach ($this->properties as $property_config) {
+                $property_name = $property_config['name'];
+
+                if (!empty($properties[$property_name])) {
+                    $this->node->setProperty($property_name, $properties[$property_name]);
+                } elseif (array_key_exists('default_value', $property_config)) {
+                    $this->node->setProperty($property_name, $property_config['default_value']);
+                } else {
+                    $this->node->setProperty($property_name, null);
+                }
+            }
+
+            $this->node->save();
+
+            // Create related models through recursion
+            foreach ($this->related_models as $relationship_name => $config) {
+                // Check if the related model is required
+                if (empty($properties[$config['key']]) && @$config['required']) {
+                    \App::abort(400, "The property '" . $config['key'] . "'' is required in order to create the model '" . static::$NODE_NAME ."'");
+
+                } elseif (!empty($properties[$config['key']])) {
+                    $input = $properties[$config['key']];
+
+                    // Keep track of the related models through the return identifiers
+                    // The identifiers that we find that are not in this list, we need to delete
+                    $related_identifiers = [];
+                    if (!empty($input)) {
+                        if (is_array($input) && !$this->isAssoc($input)) {
+                            foreach ($input as $entry) {
+                                // Check if an identifier is provided, if not, perform a create
+                                if (empty($entry['identifier'])) {
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name($entry);
+                                    $model->save();
+
+                                    $this->makeRelationship($model, $relationship_name);
+                                    $related_identifiers[] = $model->getNode()->getId();
+                                } else {
+                                    $related_identifiers[] = $entry['identifier'];
+
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name();
+                                    $model->setNode($client->getNode($entry['identifier']));
+                                    $model->update($entry);
+                                }
+                            }
+                        } else {
+                            if (!empty($config['link_only']) && $config['link_only']) {
+                                // Fetch the node and create the relationship
+                                $model = $this->searchNode($input['id'], $config['model_name']);
+                            } else {
+                                // Check if an identifier is provided, if not, perform a create
+                                if (empty($input['identifier'])) {
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name($input);
+                                    $model->save();
+
+                                    $this->makeRelationship($model, $relationship_name);
+                                    $related_identifiers[] = $model->getNode()->getId();
+                                } else {
+                                    $related_identifiers[] = $input['identifier'];
+
+                                    $node = $client->getNode($input['identifier']);
+
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name();
+                                    $model->setNode($node);
+                                    $model->update($input);
+                                }
+                            }
+                        }
+                    }
+
+                    $this->node->save();
+
+                    if (empty($config['link_only']) || !$config['link_only']) {
+                        // Delete all of the remaining related models that had no identifiers passed (== deleted)
+                        $related_nodes = $this->getRelatedNodes($relationship_name, lcfirst($config['model_name']));
+
+                        foreach ($related_nodes as $related_node) {
+                            $related_node = $related_node->current();
+
+                            if (!in_array($related_node->getId(), $related_identifiers)) {
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name();
+                                $model->setNode($related_node);
+                                $model->delete();
+                            }
+                        }
+                    }
+
+                } elseif (!empty($config['link_only']) && $config['link_only']) {
+                    $model_name = 'App\Models\\' . $config['model_name'];
+                    $model = new $model_name();
+                    $model->delete();
+                }
+            }
+
+            // Remove the tree of implicit nodes
+            $uuid_label = $client->makeLabel($this->getGeneralId());
+
+            $implicit_nodes = $uuid_label->getNodes();
+
+            foreach ($implicit_nodes as $implicit_node) {
+                $relationships = $implicit_node->getRelationships([]);
+
+                foreach ($relationships as $relationship) {
+                    $relationship->delete();
+                }
+
+                $implicit_node->delete();
+            }
+
+            // Create the implicit nodes
+            foreach ($this->implicit_models as $config) {
+                $relationship = $config['relationship'];
+                $model_config = $config['config'];
+
+                $input = @$properties[$model_config['key']];
+
+                if (!empty($input)) {
+                    // We can have multiple instances of an implicit node (e.g. multiple dimensions)
+                    // Check which of the cases it is by checking whether the array is associative or not
+                    if (is_array($input) && !$this->isAssoc($input)) {
+                        foreach ($input as $entry) {
+                            $related_node = $this->createImplicitNode($entry, $model_config, $general_id);
+
+                            // Make the relationship
+                            $this->node->relateTo($related_node, $relationship)->save();
+                        }
+                    } else {
+                        $related_node = $this->createImplicitNode($input, $model_config, $general_id);
+
+                        // Make the relationship
+                        $this->node->relateTo($related_node, $relationship)->save();
+                    }
+                }
+            }
+        }
+
+        $this->node->save();
+
+        return $this->node;
     }
 
     private function createImplicitNode($input, $config, $general_id)
@@ -520,15 +679,13 @@ class Base
                   WHERE id(n) = $node_id AND end.name = '$node_name'
                   RETURN distinct end";
 
-        \Log::info($query);
-
         $cypher_query = new Query($this->getClient(), $query);
+
         return $cypher_query->getResultSet();
     }
 
     /**
      * Retrieve a node's related nodes through the relationship type and the end node type
-     * Meant for nodes of models that are related through their related_model property
      *
      * @param string $rel_type
      * @param string $endnode_type
@@ -539,11 +696,12 @@ class Base
     {
         $node_id = $this->node->getId();
 
-        $query = "MATCH (start:" . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
-                  WHERE id(start) = $node_id
+        $query = "MATCH (n:" . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
+                  WHERE id(n) = $node_id
                   RETURN distinct end";
 
         $cypher_query = new Query($this->getClient(), $query);
+
         return $cypher_query->getResultSet();
     }
 

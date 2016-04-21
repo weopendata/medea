@@ -276,6 +276,11 @@ new Vue({
     }
   },
   ready () {
+    if (window.initialFind) {
+      this.map.center = this.latlng
+      this.show.map = true
+      this.marker.visible = true
+    }
     $('.ui.checkbox').checkbox()
     $('.ui.dropdown').dropdown()
   },

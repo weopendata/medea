@@ -39,7 +39,7 @@ class Photograph extends Base
     {
         $client = $this->getClient();
 
-        $identifier_node = $this->createValueNode('identifier', ['E42', 'photographId'], $photograph_name);
+        $identifier_node = $this->createValueNode('identifier', ['E42', 'photographId', $this->getGeneralId()], $photograph_name);
 
         return $identifier_node;
     }
