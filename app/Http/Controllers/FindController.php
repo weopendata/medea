@@ -168,11 +168,18 @@ class FindController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        if (Auth::check()) {
-            // Show the edit form
+        if (!Auth::check()) {
+            return redirect('/finds/' . $id);
         }
+        
+        $find = $this->finds->expandValues($id, $request->user());
+
+        return view('pages.finds-create', [
+            'fields' => $this->list_values->getFindTemplate(),
+            'find' => $find,
+        ]);
     }
 
     /**
