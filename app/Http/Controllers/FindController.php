@@ -32,11 +32,6 @@ class FindController extends Controller
     {
         $filters = $request->all();
 
-        // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
-            $filters['myfinds'] = $request->user()->email;
-        }
-
         $limit = $request->input('limit', 50);
         $offset = $request->input('offset', 0);
 
@@ -55,6 +50,16 @@ class FindController extends Controller
         }
 
         $validated_status = $request->input('status', 'gevalideerd');
+
+        if (empty($request->user())) {
+            $validated_status = 'gevalideerd';
+        }
+
+        // Check if personal finds are set
+        if ($request->has('myfinds') && !empty($request->user())) {
+            $filters['myfinds'] = $request->user()->email;
+            $validated_status = '';
+        }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
         $finds = $result['data'];
@@ -173,7 +178,7 @@ class FindController extends Controller
         if (!Auth::check()) {
             return redirect('/finds/' . $id);
         }
-        
+
         $find = $this->finds->expandValues($id, $request->user());
 
         return view('pages.finds-create', [
