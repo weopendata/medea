@@ -34,7 +34,7 @@ class FindEvent extends Base
             'relationship' => 'P4',
             'config' => [
                 'key' => 'findDate',
-                'name' => 'findPeriod',
+                'name' => 'findDate',
                 'value_node' => true,
                 'cidoc_type' => 'E52'
             ]
