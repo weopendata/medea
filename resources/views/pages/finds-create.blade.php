@@ -10,7 +10,7 @@
 '@submit.prevent' => 'submit',
 )) !!}
 
-<step number="1" title="Algemene vondstgegevens">
+<step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}">
   <div class="fields">
     <div class="required field">
       <label>Datum</label>
@@ -91,12 +91,12 @@
   </p>
 </step>
 
-<step number="2" title="Afbeeldingen" :class="{completed:step2valid}">
+<step number="2" title="Foto's" class="required" :class="{completed:step2valid}">
   <p>
-    Afbeeldingen zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
+    Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
   </p>
   <ul>
-    <li>Zorg ervoor dat een meetschaal in zicht is. Gebruik hiervoor een lat of <a href="#linknaarmeetpapier">meetpapier</a></li>
+    <li>Zorg ervoor dat een meetschaal in zicht is. Gebruik hiervoor een lat of <a href="http://www.kjarrett.com/livinginthepast/wp-content/uploads/2012/05/Scale-5cm.jpg">zoiets</a></li>
     <li>Let erop dat de belichting van overal komt</li>
     <li>De resolutie van de foto's is best hoger dan 1600x900</li>
   </ul>
@@ -106,8 +106,12 @@
       <input type="file" class="">
     </div>
   </div>
+  <p v-if="!hasImages" style="color:red">
+    Zorg voor minstens 1 foto
+  </p>
   <p>
-    <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Klaar met afbeeldingen</button>
+    <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Volgende stap</button>
+    <button class="ui button" v-if="hasImages" @click.prevent="toStep(6)">Laatste stap</button>
   </p>
 </step>
 
@@ -243,7 +247,7 @@
   </div>
 </step>
 
-<step number="6" title="Klaar met vondstfiche">
+<step number="6" title="Klaar met vondstfiche" :class="{active:submittable}">
   <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="find.toValidate">
@@ -272,6 +276,12 @@
 @endsection
 
 @section('script')
-<script type="text/javascript">window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte', 'omtrek'], mantelspeld: ['lengte', 'diameter']};</script>
+<script type="text/javascript">
+window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte', 'omtrek'], mantelspeld: ['lengte', 'diameter']};
+@if (isset($find))
+window.initialFind = {!! json_encode($find) !!};
+console.log('finds.edit:', window.initialFind)
+@endif
+</script>
 <script src="{{ asset('js/finds-create.js') }}"></script>
 @endsection

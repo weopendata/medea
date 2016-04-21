@@ -142,7 +142,7 @@ dd {
 }
 .step.muted {
 	h3 {
-		opacity: .3;
+		color: #bbb;
 		cursor: pointer;
 		&:hover {
 			opacity: 1;
@@ -158,8 +158,18 @@ dd {
 .step.active {
 	margin-bottom: 3rem;
 }
-.step.ready {
+.step.required {
+	h3::after {
+		content: '*';
+		color: red;
+		margin-left: 4px;
+	}
+}
+.step.completed {
 	h3 {
+		color: #090;
+	}
+	h3::after {
 		color: #090;
 	}
 }

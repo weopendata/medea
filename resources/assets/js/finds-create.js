@@ -14,6 +14,7 @@ import DimInput from './components/DimInput.vue';
 import FindEvent from './components/FindEvent';
 import AddClassificationForm from './components/AddClassificationForm'
 import Ajax from './mixins/Ajax';
+import extend from 'deep-extend';
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -36,6 +37,49 @@ Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
   data () {
+    var initialFind = {
+      findDate: new Date().toISOString().slice(0, 10),
+      findSpot: {
+        title: null,
+        description: '',
+        location: {
+          locationPlaceName: {
+            appellation: null,
+            type: 'TBD'
+          },
+          address: {
+            street: null,
+            number: null,
+            locality: null,
+            postalCode: null
+          },
+          accuracy: 100,
+          lat: null,
+          lng: null
+        }
+      },
+      object: {
+        objectValidationStatus: 'in bewerking',
+        description: null,
+        inscription: null,
+        category: null,
+        material: null,
+        surfaceTreatment: null,
+        period: null,
+        century: null,
+        nation: null,
+        images: [],
+        dimensions: [],
+        productionEvent: {
+          productionTechnique: {
+            type: null
+          }
+        }
+      }
+    };
+    if (window.initialFind) {
+      extend(initialFind, window.initialFind)
+    }
     return {
       map: {
         center: {lat: 50.9, lng: 4.3},
@@ -55,49 +99,7 @@ new Vue({
         clickable: true
       },
       fields: window.fields,
-      find: {
-        toValidate: true,
-        finderName: '',
-        findDate: (new Date()).toJSON().substr(0, 10),
-        "findSpot": {
-          "type": "akkerland",
-          "title": "een title van de vindplaats",
-          "description": "",
-          "location": {
-            "locationPlaceName": {
-              "appellation": "",
-              "type": "TBD"
-            },
-            "address": {
-              "street": null,
-              "number": null,
-              "locality": null,
-              "postalCode": null
-            },
-            accuracy: 100,
-            "lat": null,
-            "lng": null
-          }
-        },
-        object: {
-          description: null,
-          inscription: null,
-          category: null,
-          material: null,
-          technique: null,
-          surfaceTreatment: null,
-          period: null,
-          century: null,
-          bibliography: 'http://paperonacientgreek.com',
-          images: [],
-          dimensions: [],
-          productionEvent: {
-            productionTechnique: {
-              type: null
-            }
-          }
-        }
-      },
+      find: initialFind,
       dimensionText: '',
       dims: {
         lengte: {unit: 'cm' },
@@ -123,7 +125,7 @@ new Vue({
       },
       ready: [],
       step: 1,
-      submitAction: '/finds',
+      submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
       user: window.medeaUser
     }
   },
@@ -256,20 +258,21 @@ new Vue({
       })
     },
     formdata () {
-      this.find.object.dimensions = []
+      var dimensions = []
       for (let type in this.dims) {
         if (this.dims[type].value) {
-          this.find.object.dimensions.push({
+          dimensions.push({
             type: type,
             value: this.dims[type].value,
             unit: this.dims[type].unit
           })
         }
       }
+      this.find.object.dimensions = dimensions
       return this.find
     },
     submitSuccess () {
-      window.location.href = '/finds'
+      window.location.href = this.submitAction
     }
   },
   ready () {
