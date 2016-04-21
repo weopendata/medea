@@ -28,9 +28,11 @@
           <i class="marker icon"></i>
           Op de kaart
         </button>
-        <button class="ui basic small button" @click="rm" v-if="user.admin&&find.identifier">
+        <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
+          <i class="pencil icon"></i>
+        </a>
+        <button class="ui basic small icon button" @click="rm" v-if="user.admin&&find.identifier">
           <i class="trash icon"></i>
-          Verwijderen
         </button>
       </div>
     </div>
