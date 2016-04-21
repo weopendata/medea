@@ -516,9 +516,11 @@ class Base
     {
         $node_id = $this->node->getId();
 
-        $query = "MATCH (start:" . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
-                  WHERE id(start) = $node_id AND end.name = '$node_name'
+        $query = "MATCH (n:" . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
+                  WHERE id(n) = $node_id AND end.name = '$node_name'
                   RETURN distinct end";
+
+        \Log::info($query);
 
         $cypher_query = new Query($this->getClient(), $query);
         return $cypher_query->getResultSet();

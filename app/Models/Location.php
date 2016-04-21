@@ -61,7 +61,7 @@ class Location extends Base
     {
         $client = $this->getClient();
 
-        $lat_node = $this->createValueNode('lat', ['47', 'locationSpatialCoordinate'], $lat);
+        $lat_node = $this->createValueNode('lat', ['E47', 'locationSpatialCoordinate'], $lat);
 
         $latitude_type = $this->createValueNode('latitude', ['E55', 'locationspatialCoordinateQualifier'], 'latitude');
 
@@ -74,7 +74,7 @@ class Location extends Base
     {
         $client = $this->getClient();
 
-        $lng_node = $this->createValueNode('lng', ['47', 'locationSpatialCoordinate'], $lng);
+        $lng_node = $this->createValueNode('lng', ['E47', 'locationSpatialCoordinate'], $lng);
 
         $latitude_type = $this->createValueNode('longitude', ['E55', 'locationspatialCoordinateQualifier'], 'longitude');
 

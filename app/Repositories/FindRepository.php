@@ -169,8 +169,6 @@ class FindRepository extends BaseRepository
         WHERE $where_statement
         RETURN count(distinct find)";
 
-        \Log::info($query);
-
         $cypher_query = new Query($client, $query);
         $results = $cypher_query->getResultSet();
 

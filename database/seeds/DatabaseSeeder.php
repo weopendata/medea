@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Everyman\Neo4j\Client;
+use App\Repositories\UserRepository;
 
 class DatabaseSeeder extends Seeder
 {
@@ -28,21 +29,27 @@ class DatabaseSeeder extends Seeder
         $nodes = $label->getNodes("email", "foo@bar.com");
 
         if ($nodes->count() == 0) {
-            $person_label = $client->makeLabel('Person');
-            $cidoc_label = $client->makeLabel('E21');
-            $person = $client->makeNode();
+            $users = new UserRepository();
 
-            // TODO Create the admin user through an env configuration
-            $person->setProperty('name', 'medea-admin');
-            $person->setProperty('email', 'foo@bar.com');
-            $person->setProperty('verified', true);
+            $admin = [
+                'firstName' => 'Medea',
+                'lastName' => 'Admin',
+                'password' => 'foobar',
+                'email' => 'foo@bar.com',
+                'description' => 'Dit is de generieke admin user van het MEDEA platform.',
+                'personType' => [
+                    'detectorist',
+                    'validator',
+                    'administrator',
+                    'registrator',
+                    'onderzoeker',
+                    'vondstexpert'
+                ],
+                'showContactInfo' => 'never',
+                'passContactInfoToAgency' => false
+            ];
 
-            $password = Hash::make('admin');
-            $person->setProperty('password', $password);
-            $person->save();
-
-            // Set the type
-            $person->addLabels([$person_label, $cidoc_label]);
+            $person = $users->store($admin);
 
             $this->command->info("An admin user was created.");
         } else {
