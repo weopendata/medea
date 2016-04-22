@@ -130,7 +130,7 @@
       <label>Materiaal</label>
       <select class="ui dropdown" v-model="find.object.objectMaterial">
         <option selected>onbekend</option>
-        @foreach ($fields['object']['objectMaterial'] as $material)
+        @foreach ($fields['object']['material'] as $material)
         <option value="{{$material}}">{{$material}}</option>
         @endforeach
       </select>
