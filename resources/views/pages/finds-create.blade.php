@@ -168,7 +168,7 @@
   </div>
   <div class="field">
     <label>Opschrift</label>
-    <input type="text" v-model="find.object.inscription" placeholder="-- geen opschrift --">
+    <input type="text" v-model="inscription" placeholder="-- geen opschrift --">
   </div>
   <dating-picker :model="find.object"></dating-picker>
   <div class="field">
@@ -262,6 +262,7 @@
     <p>
       <button v-if="!toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
       <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+      <button class="ui button" type="button" @click.prevent="formdata">Toon post data</button>
     </p>
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.

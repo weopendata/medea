@@ -61,7 +61,6 @@ new Vue({
       object: {
         objectValidationStatus: 'in bewerking',
         description: null,
-        inscription: null,
         category: null,
         objectMaterial: null,
         surfaceTreatment: null,
@@ -105,6 +104,7 @@ new Vue({
       find: initialFind,
       // Mapped to model
       toValidate: 'in bewerking',
+      inscription: null,
       dims: {
         lengte: {unit: 'cm' },
         breedte: {unit: 'cm' },
@@ -264,7 +264,16 @@ new Vue({
         description: '',
       })
     },
+    import () {
+      // Inverse of formdata()
+      // Dimensions
+      // Inscription
+      if (this.find.object.objectInscription) {
+        this.$set('inscription', this.find.object.objectInscription.objectInscriptionNote)
+      }
+    },
     formdata () {
+      // Dimensions
       var dimensions = []
       for (let type in this.dims) {
         if (this.dims[type].value) {
@@ -276,6 +285,15 @@ new Vue({
         }
       }
       this.find.object.dimensions = dimensions
+
+      // Inscription
+      if (this.inscription) {
+        this.find.object.objectInscription = {
+          objectInscriptionNote: this.inscription
+        }
+      }
+
+      // Validation status
       this.find.object.objectValidationStatus = this.toValidate ? 'in bewerking' : 'revisie nodig'
       return this.find
     },
@@ -288,6 +306,7 @@ new Vue({
       this.map.center = this.latlng
       this.show.map = true
       this.marker.visible = true
+      this.import()
     }
     $('.ui.checkbox').checkbox()
     $('.ui.dropdown').dropdown()

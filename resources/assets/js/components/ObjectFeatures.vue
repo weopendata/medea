@@ -17,9 +17,9 @@
     <dt>Beschrijving</dt>
     <dd>{{find.object.description}}</dd>
   </dl>
-  <dl v-if="find.object.inscription">  
+  <dl v-if="find.object.objectInscription&&find.object.objectInscription.objectInscriptionNote">  
     <dt>Opschrift</dt>
-    <dd>{{find.object.inscription}}</dd>
+    <dd>{{find.object.objectInscription.objectInscriptionNote}}</dd>
   </dl>
   <dl v-if="find.object.dimensions && find.object.dimensions.length">
     <dt>Dimensies</dt>
