@@ -107,7 +107,7 @@ new Vue({
       // Model
       find: initialFind,
       // Mapped to model
-      toValidate: 'in bewerking',
+      toValidate: true,
       inscription: null,
       dims: {
         lengte: {unit: 'cm' },
@@ -271,6 +271,12 @@ new Vue({
     import () {
       // Inverse of formdata()
       // Dimensions
+      for (var i = 0; i < this.find.object.dimensions.length; i++) {
+        this.dims[this.find.object.dimensions[i].type] = {
+          value: this.find.object.dimensions[i].value,
+          unit: this.find.object.dimensions[i].unit
+        }
+      }
       // Inscription
       if (this.find.object.objectInscription) {
         this.$set('inscription', this.find.object.objectInscription.objectInscriptionNote)
