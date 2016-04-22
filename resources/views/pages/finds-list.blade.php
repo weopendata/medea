@@ -18,7 +18,7 @@
 <div v-else transition="fromright" class="mapview">
   <map :center.sync="map.center" :zoom.sync="map.zoom">
     <marker v-for="f in finds | markable" :position.sync="f.position"></marker>
-    <circle v-for="f in finds | markable" :center.sync="f.position" :radius="f.accuracy" :options="markerOptions"></circle>
+    <circle v-for="f in finds | markable" :center.sync="f.position" :radius.sync="f.accuracy" :options="markerOptions"></circle>
   </map>
   <map-controls :showmap.sync="filterState.showmap"></map-controls>
 </div>

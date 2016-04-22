@@ -227,8 +227,8 @@
 
 <step number="5" title="Classificatie">
   <div class="field">
-    <div v-if="find.object.productionEvent.productionClassification">
-      <add-classification-form :cls.sync="find.object.productionEvent.productionClassification"></add-classification-form>
+    <div v-if="find.object.productionEvent.productionClassification.length">
+      <add-classification-form :cls.sync="cls" v-for="cls in find.object.productionEvent.productionClassification"></add-classification-form>
       <p>
         <button class="ui green button" @click.prevent="toStep(6)">Volgende stap</button>
       </p>
@@ -263,7 +263,7 @@
       <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
       <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
     </p>
-    <p v-if="toValidate&&!submittable" style="color:red">
+    <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.
     </p>
   </div>

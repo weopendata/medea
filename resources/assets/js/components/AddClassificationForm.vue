@@ -16,7 +16,7 @@
     </div>
     <div class="field">
       <label for="description">Opmerkingen</label>
-      <textarea id="description" v-model="cls.description" rows="3" :rows="descriptionLen"></textarea>
+      <textarea-growing id="description" :model.sync="cls.description"></textarea-growing>
     </div>
     <datalist id="cultures">
       <option value="Bronstijd">
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import TextareaGrowing from './TextareaGrowing';
+
 export default {
   props: ['cls'],
   attached () {
@@ -69,18 +71,12 @@ export default {
       this.$set('cls.references', [''])
     }
   },
-  computed: {
-    descriptionLen () {
-      return 3 + Math.floor(this.cls.description.length / 50)
-    }
-  },
   watch: {
     'cls.references' (v) {
       var empties = 0;
       for (var i = 0; i < v.length; i++) {
         empties += v[i].length ? 0 : 1
       }
-      console.log(empties, v, v.length, this.cls.references)
       if(!empties) {
         this.$nextTick(function () {
           this.cls.references.push('')
@@ -96,6 +92,9 @@ export default {
         })
       }
     }
+  },
+  components: {
+    TextareaGrowing
   }
 }
 </script>

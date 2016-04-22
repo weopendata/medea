@@ -1,25 +1,16 @@
 <template>
-  <div class="classification">
-    <div class="two fields">
-      <div class="field">
-        <label>Cultuur: </label>
-        <span>{{cls.culture}}</span>
-      </div>
-      <div class="field">
-        <label>Natie: </label>
-        <span>{{cls.nation}}</span>
-      </div>
+  <div class="cls">
+    <div class="cls-buttons">
+      <button class="ui small icon button" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
+      <button class="ui small icon button" :class="{red:me==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
+      <button class="ui small button" @click.stop="rm" v-if="$root.user.admin">Delete</button>
     </div>
-    <div class="field">
-      <label for="description">Opmerkingen</label>
-      <textarea rows="3">{{cls.description}}</textarea>
-    </div>
-    <div>
-      <div class="ui small icon buttons">
-        <button class="ui button" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
-        <button class="ui button" :class="{red:me==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
+    <div class="cls-content">
+      <div v-if="cls.culture || cls.nation">
+        <span class="cls-labeled" v-if="cls.culture">Cultuur <b>{{cls.culture}}</b></span>
+        <span class="cls-labeled" v-if="cls.nation">Natie <b>{{cls.nation}}</b></span>
       </div>
-      <button class="ui small basic red button" @click.stop="rm" v-if="$root.user.admin">Delete</button>
+      <p class="cls-p" v-if="cls.description" v-text="cls.description"></p>
     </div>
   </div>
 </template>
@@ -66,7 +57,44 @@ export default {
 </script>
 
 <style>
-.classification {
-  margin-bottom: 2rem;
+.cls {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ccc;
+  padding: 1rem 0;
+  overflow: auto;
+}
+.cls-content  {
+  margin-left: 100px;
+  font-size: 16px;
+}
+.cls-buttons {
+  float:left;
+  width: 70px;
+}
+.cls-buttons .button>.icon{
+  margin-left: 5px!important;
+}
+.cls-buttons .button {
+  background: none;
+}
+.cls-labeled {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  padding: 2px 2px 2px 1rem;
+  color: #666;
+  line-height: 2rem;
+  background-color: #ddd;
+}
+.cls-labeled b {
+  display: inline-block;
+  margin-left: 1rem;
+  padding: 0 1rem;
+  color: black;
+  background-color: white;
+}
+.cls-p {
+  padding: 5px 0;
+  white-space: pre-wrap;
 }
 </style>

@@ -70,6 +70,7 @@ new Vue({
         photograph: [],
         dimensions: [],
         productionEvent: {
+          productionClassification: [],
           productionTechnique: {
             type: null
           }
@@ -164,7 +165,7 @@ new Vue({
       return this.map.zoom < 21 - Math.log2(this.accuracy)
     },
     submittable () {
-      return this.step1valid && this.step2valid
+      return !this.toValidate || (this.step1valid && this.step2valid)
     },
     step1valid () {
       return this.hasFindDetails
@@ -258,7 +259,7 @@ new Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.$set('find.object.productionEvent.productionClassification', {
+      this.find.object.productionEvent.productionClassification.push({
         type: '',
         culture: '',
         nation: '',
