@@ -70,6 +70,13 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
+        ],[
+            'relationship' => 'P128',
+            'config' => [
+                'key' => 'objectInscription',
+                'name' => 'objectInscription',
+                'cidoc_type' => 'E34'
+            ]
         ]
     ];
 
@@ -107,6 +114,29 @@ class Object extends Base
         $dimension_node->relateTo($dimension_unit, 'P91')->save();
 
         return $dimension_node;
+    }
+
+    /**
+     * Create an objectInscription
+     */
+    public function createObjectInscription($inscription)
+    {
+        $client = self::getClient();
+
+        $general_id = $this->getGeneralId();
+
+        // Make an E34
+        $inscription_node = $client->makeNode();
+        $inscription_node->setProperty('name', 'objectInscription');
+        $inscription_node->save();
+
+        $inscription_node->addLabels([self::makeLabel('E34'), self::makeLabel('objectInscription'), self::makeLabel($general_id)]);
+
+        // Make an E62 string
+        $inscription_note_node = $this->createValueNode('objectInscriptionNote', ['E62', $general_id, 'objectInscriptionNote'], $inscription['objectInscriptionNote']);
+        $inscription_node->relateTo($inscription_note_node, 'P3')->save();
+
+        return $inscription_node;
     }
 
     /**
