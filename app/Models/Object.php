@@ -17,7 +17,7 @@ class Object extends Base
             'required' => false
         ],
         'P62' => [
-            'key' => 'images',
+            'key' => 'photograph',
             'model_name' => 'Photograph',
             'cascade_delete' => true,
             'required' => false,
@@ -38,7 +38,7 @@ class Object extends Base
         [
             'relationship' => 'P3',
             'config' => [
-                'key' => 'description',
+                'key' => 'objectDescription',
                 'name' => 'objectDescription',
                 'value_node' => true,
                 'cidoc_type' => 'E62'

@@ -4,7 +4,7 @@
       <i class="ui upload icon"></i> Klik hier om foto's toe te voegen of sleep foto's in dit veld
     </div>
     <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
-    <div class="photo-upload-img" v-for="(i, image) in images">
+    <div class="photo-upload-img" v-for="(i, image) in photograph">
       <img :src="image.identifier">
     </div>
   </div>
@@ -13,7 +13,7 @@
 <script>
 export default {
   props: {
-    images: {
+    photograph: {
       default: []
     }
   },
@@ -26,7 +26,7 @@ export default {
       console.log('dra')
       container.removeClass('dragging');
     })
-    
+
   },
   methods: {
     onFileChange(e) {
@@ -49,7 +49,7 @@ export default {
       }
 
       reader.onload = (e) => {
-        vm.images.push({
+        vm.photograph.push({
           name: file.name,
           size: file.size,
           identifier: e.target.result
@@ -58,7 +58,7 @@ export default {
       reader.readAsDataURL(file);
     },
     removeImage: function (e) {
-      this.images = [];
+      this.photograph = [];
     }
   }
 }

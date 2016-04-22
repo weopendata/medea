@@ -68,7 +68,7 @@ new Vue({
         period: null,
         century: null,
         nation: null,
-        images: [],
+        photograph: [],
         dimensions: [],
         productionEvent: {
           productionTechnique: {
@@ -173,7 +173,7 @@ new Vue({
       return this.hasImages // && this.find.object.description && this.hasDimensions
     },
     hasImages () {
-      return this.find.object.images.length
+      return this.find.object.photograph.length
     },
     hasDimensions () {
       return this.dims.lengte.value || this.dims.breedte.value || this.dims.diepte.value || this.dims.omtrek.value || this.dims.diameter.value || this.dims.gewicht.value
@@ -248,7 +248,7 @@ new Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.$set('find.object.productionEvent.classification', {
+      this.$set('find.object.productionEvent.productionClassification', {
         type: '',
         culture: '',
         nation: '',

@@ -131,8 +131,8 @@ class FindController extends Controller
         $images = [];
 
         // Check for images, they need special processing before the Neo4j writing is initiated
-        if (!empty($input['object']['images'])) {
-            foreach ($input['object']['images'] as $image) {
+        if (!empty($input['object']['photograph'])) {
+            foreach ($input['object']['photograph'] as $image) {
                 list($name, $name_small, $width, $height) = $this->processImage($image);
 
                 $images[] = [
@@ -144,7 +144,7 @@ class FindController extends Controller
             }
         }
 
-        $input['object']['images'] = $images;
+        $input['object']['photograph'] = $images;
         $input['person'] = ['id' => $user->id];
         $input['object']['objectValidationStatus'] = 'in bewerking';
 

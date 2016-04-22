@@ -2,7 +2,7 @@
   <article>
     <div class="fe-header">
       <div class="fe-imglist">
-        <div class="img" v-for="src in find.object.images">
+        <div class="img" v-for="src in find.object.photograph">
           <photoswipe-thumb :src="src" :index="$index"></photoswipe-thumb>
           <span class="fe-img-remark" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'" @click="imgRemark($index)">Opmerking toevoegen</span>
         </div>
@@ -70,7 +70,7 @@ export default {
         return console.warn('PhotoSwipe missing')
       }
       var pswpElement = document.querySelector('.pswp');
-      var items = this.find.object.images.map(img => {
+      var items = this.find.object.photograph.map(img => {
         return {
           src: img.identifier,
           msrc: img.resized,
