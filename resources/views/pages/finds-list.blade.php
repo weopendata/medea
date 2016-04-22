@@ -11,7 +11,7 @@
 <div v-if="!filterState.showmap" class="listview" transition="fromleft">
   <div class="ui container">
     <finds-filter :model.sync="filterState" :saved="[{name:'Valideren', status: 'in bewerking'}, {name:'ijzer only', material: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
-    <finds-list :finds="finds | filterBy relevant" :user="user"></finds-list>
+    <finds-list :finds="finds | filterBy relevant" :user="user" :paging="paging"></finds-list>
 		<dev-bar :user="user"></dev-bar>
   </div>
 </div>
@@ -29,6 +29,7 @@
 window.initialFinds = {!! json_encode($finds) !!};
 window.filterState = {!! json_encode($filterState) !!};
 window.fields = {!! json_encode($fields) !!};
+window.link = {!! json_encode($link) !!};
 </script>
 <script src="{{ asset('js/finds-list.js') }}"></script>
 @endsection

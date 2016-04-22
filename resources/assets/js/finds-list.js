@@ -7,6 +7,8 @@ import {load, Map, Marker, Circle} from 'vue-google-maps';
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js';
 import DevBar from './components/DevBar';
 
+import parseLink from 'parse-link-header';
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -22,6 +24,7 @@ new Vue({
   },
   data () {
     return {
+      paging: window.link ? parseLink(window.link) : { next: {}, last: {}, prev: {}, first: {} },
       finds: window.initialFinds || [],
       filterState: window.filterState || {myfinds: false},
       user: window.medeaUser,
@@ -78,11 +81,13 @@ new Vue({
         return
       }
       this.query = query
-      this.$http.get('/api' + query).then(function (res) {
-        this.finds = res.data
-      }, function () {
+      this.$http.get('/api' + query).then(this.fetchSuccess, function () {
         console.error('could not fetch findevents')
       });
+    },
+    fetchSuccess (res) {
+      this.paging = parseLink(res.headers('link'))
+      this.finds = res.data
     },
     mapshow (value) {
       this.filterState.showmap = value

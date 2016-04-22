@@ -1,9 +1,10 @@
 <template>
   <div class="ui very relaxed items">
     <find-event v-for="f in finds" :find="f" :user="user"></find-event>
-    <div v-if="finds.length>20">
-      <button class="ui button">Vorige</button>
-      <button class="ui blue button">Volgende</button>
+    <div class="paging">
+      <a :href="paging.previous&&paging.previous.url||'#'" class="ui button" :class="{blue:paging.previous}">Vorige</a>
+      <a :href="paging.next&&paging.next.url||'#'" class="ui button" :class="{blue:paging.next}">Volgende</a>
+      <a :href="paging.last&&paging.last.url||'#'" class="ui button" :class="{blue:paging.last}">Laatste</a>
     </div>
     <div v-if="!finds.length" class="finds-empty">
       <h1>
@@ -23,7 +24,7 @@
 import FindEvent from './FindEvent';
 
 export default {
-  props: ['user', 'finds'],
+  props: ['user', 'finds', 'paging'],
   components: {
     FindEvent
   }
