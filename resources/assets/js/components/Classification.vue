@@ -2,11 +2,11 @@
   <div class="classification">
     <div class="two fields">
       <div class="field">
-        <label>Cultuur</label>
+        <label>Cultuur: </label>
         <span>{{cls.culture}}</span>
       </div>
       <div class="field">
-        <label>Natie</label>
+        <label>Natie: </label>
         <span>{{cls.nation}}</span>
       </div>
     </div>
