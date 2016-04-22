@@ -190,7 +190,8 @@ class FindRepository extends BaseRepository
 
         foreach ($results as $result) {
             $find = new FindEvent();
-            $find->setNode($result->current());
+            $node = $result->current();
+            $find->setNode($node);
             $data[] = $find->getValues();
         }
 

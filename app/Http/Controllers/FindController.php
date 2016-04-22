@@ -135,10 +135,9 @@ class FindController extends Controller
             foreach ($input['object']['photograph'] as $image) {
                 list($name, $name_small, $width, $height) = $this->processImage($image);
 
-                $public_path = public_path('uploads/');
                 $images[] = [
-                    'src' => $public_path . $name,
-                    'resized' => $public_path . $name_small,
+                    'src' => $request->root() . '/uploads/' . $name,
+                    'resized' => $request->root() . '/uploads/' . $name_small,
                     'width' => $width,
                     'height' => $height
                 ];
@@ -222,11 +221,9 @@ class FindController extends Controller
                     if (empty($image['identifier'])) {
                         list($name, $name_small, $width, $height) = $this->processImage($image);
 
-                        $public_path = public_path('uploads/');
-
                         $images[] = [
-                        'src' => $public_path . $name,
-                        'resized' => $public_path . $name_small,
+                        'src' => $request->root() . '/uploads/' . $name,
+                        'resized' => $request->root() . '/uploads/' . $name_small,
                         'width' => $width,
                         'height' => $height
                         ];

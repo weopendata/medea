@@ -61,7 +61,7 @@
     </div>
   </div>
   <p v-if="!show.roles">
-    <a href="#" @click.prevent="show.roles=1">Toon andere rollen: vondstexpert, onderzoeker &amp; registrator</a>    
+    <a href="#" @click.prevent="show.roles=1">Toon andere rollen: vondstexpert, onderzoeker &amp; registrator</a>
   </p>
   <div class="field" v-show="show.roles">
     <div class="ui checkbox">
@@ -148,7 +148,7 @@
   </div>
   <div v-if="registered" style="color:#090">
     <h3>Registratie wordt gevalideerd</h3>
-    <p>De administrator zal je registratie bevestigen. Dit kan even duren. Naar de toekomst toe zullen we ervoor zorgen dat je een e-mail krijgt als je registratie voltooid is. Dit gebeurt nog niet.</p>
+    <p>De administrator zal je registratie bevestigen. Dit kan even duren. In volgende iteraties van het platform kan dit automatisch gebeuren.</p>
   </div>
 {!! Form::close() !!}
 

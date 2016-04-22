@@ -13,6 +13,11 @@ Deleting data in Neo4j isn't as trivial as in a RDBMS systems, rather you have n
     FOREACH (rel IN r| DELETE rel)
     DELETE e
 
+In order to clean out your Neo4j database from any MEDEA related nodes:
+
+    MATCH (n:MEDEA_NODE)
+    DETACH DELETE n
+
 Then delete the nodes with label E10:
 
     MATCH n

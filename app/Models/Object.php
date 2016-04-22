@@ -77,6 +77,14 @@ class Object extends Base
                 'name' => 'objectInscription',
                 'cidoc_type' => 'E34'
             ]
+        ],
+        [
+            'relationship' => 'P108',
+            'config' => [
+                'key' => 'treatmentEvent',
+                'name' => 'treatmentEvent',
+                'cidoc_type' => 'E11'
+            ]
         ]
     ];
 
@@ -137,6 +145,39 @@ class Object extends Base
         $inscription_node->relateTo($inscription_note_node, 'P3')->save();
 
         return $inscription_node;
+    }
+
+    /**
+     * Create a treatmentEvent
+     */
+    public function createTreatmentEvent($treatment)
+    {
+        $client = self::getClient();
+
+        $general_id = $this->getGeneralId();
+
+        // Make a treatmentEvent
+        $treatment_node = $client->makeNode();
+        $treatment_node->setProperty('name', 'treatmentEvent');
+        $treatment_node->save();
+
+        $treatment_node->addLabels([self::makeLabel('E11'), self::makeLabel('treatmentEvent'), self::makeLabel($general_id)]);
+
+        // Make an E29 Design or procedure
+        $modification_node = $client->makeNode();
+        $modification_node->setProperty('name', 'modificationTechnique');
+        $modification_node->save();
+
+        $modification_node->addLabels([self::makeLabel('E29'), self::makeLabel('modificationTechnique'), self::makeLabel($general_id)]);
+
+        $treatment_node->relateTo($modification_node, 'P33')->save();
+
+        // Make a type (modification type)
+        $modification_type_node = $this->createValueNode('modificationTechniqueType', ['E55', $general_id, 'modificationTechniqueType'], $treatment['modificationTechnique']['modificationTechniqueType']);
+
+        $modification_node->relateTo($modification_type_node, 'P2')->save();
+
+        return $treatment_node;
     }
 
     /**
