@@ -13,13 +13,13 @@
         <object-features :find="find"></object-features>
       </div>
       <div class="extra">
-        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!find.object.classificationCount&&find.object.objectValidationStatus !== 'in bewerking'">
+        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus !== 'in bewerking'">
           <i class="tag icon"></i>
           Classificeren
         </a>
-        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="find.object.classificationCount">
+        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="classificationCount">
           <i class="tag icon"></i>
-          {{find.object.classificationCount}} classificaties bekijken
+          {{classificationCount}} classificaties bekijken
         </a>
         <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           Valideren
@@ -48,6 +48,9 @@ export default {
     ObjectFeatures
   },
   computed: {
+    classificationCount () {
+      return this.find.object.productionEvent && this.find.object.productionEvent.productionClassification && this.find.object.productionEvent.productionClassification.length
+    },
     hasLocation () {
       return this.find.findSpot.location && this.find.findSpot.location.lat
     }
