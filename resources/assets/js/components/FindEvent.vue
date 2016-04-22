@@ -1,7 +1,7 @@
 <template>
   <div class="item fe">
     <a class="big image fe-image" href="/finds/{{find.identifier}}">
-      <img class="fe-img" :src="src.identifier" v-for="src in find.object.photograph">
+      <img class="fe-img" :src="image.resized" v-for="image in find.object.photograph">
       <div class="fe-img fe-img-placeholder" v-if="!find.object.photograph">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">

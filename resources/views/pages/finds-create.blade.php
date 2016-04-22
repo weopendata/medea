@@ -101,9 +101,9 @@
     <li>De resolutie van de foto's is best hoger dan 1600x900</li>
   </ul>
   <div class="field cleared">
-    <div :is="'photo-upload'" :images.sync="find.object.images">
+    <div :is="'photo-upload'" :photograph.sync="find.object.photograph">
       <label>Foto's</label>
-      <input type="file" class="">
+      <input type="file">
     </div>
   </div>
   <p v-if="!hasImages" style="color:red">
@@ -266,6 +266,7 @@
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.
     </p>
+    <pre v-text="find|json"></pre>
   </div>
 </step>
 

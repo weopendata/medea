@@ -4,7 +4,7 @@
       <i class="ui upload icon"></i> Klik hier om foto's toe te voegen of sleep foto's in dit veld
     </div>
     <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
-    <div class="photo-upload-img" v-for="(i, image) in photograph">
+    <div class="photo-upload-img" v-for="image in photograph">
       <img :src="image.identifier">
     </div>
   </div>
@@ -12,11 +12,7 @@
 
 <script>
 export default {
-  props: {
-    photograph: {
-      default: []
-    }
-  },
+  props: ['photograph'],
   attached () {
     var container = $(this.$el)
     $('.photo-upload-inp', container).on('dragenter dragover', function () {
