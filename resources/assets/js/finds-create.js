@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue from 'vue/dist/vue.min.js';
 import VueResource from 'vue-resource/dist/vue-resource.min.js';
 import DevBar from './components/DevBar';
 import Step from './components/Step';
