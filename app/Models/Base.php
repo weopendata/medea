@@ -169,9 +169,6 @@ class Base
      */
     public function update($properties)
     {
-        \Log::info($properties);
-        \Log::info(static::$NODE_NAME);
-
         if (!empty($properties)) {
             $client = self::getClient();
 
