@@ -1,11 +1,14 @@
 <template>
   <div class="photo-upload">
-    <div class="photo-upload-cover">
-      <i class="ui upload icon"></i> Klik hier om foto's toe te voegen of sleep foto's in dit veld
-    </div>
-    <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
     <div class="photo-upload-img" v-for="image in photograph">
-      <img :src="image.identifier">
+      <img :src="image.resized || image.identifier">
+    </div>
+    <div class="photo-upload-cover">
+      <div>
+        <i class="ui upload big large icon"></i>
+        <br>Klik hier om foto's toe te voegen of&nbsp;sleep&nbsp;foto's in dit veld
+      </div>
+      <input class="photo-upload-inp" type="file" accept="image/*" multiple @change="onFileChange">
     </div>
   </div>
 </template>
@@ -66,40 +69,42 @@ export default {
     overflow: auto;
   }
   .photo-upload-cover {
-    position: absolute;
-    z-index: 2;
-    top:0;
-    left:0;
-    right:0;
-    height: 60px;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     align-items:center;
     justify-content: center;
+    float: left;
+    margin: 0 1rem 1rem 0;
+    border: 5px dotted #ccc;
+    border-radius: 4px;
+    padding: 0 1rem;
+    height: 160px;
+    max-width: 240px;
+    text-align: center;
     pointer-events: none;
     background: #fff;
-    border-radius: 4px;
-    border: 5px dotted #ccc;
     .dragging & {
       background: #FFD700;
       border-color: transparent;
     }
   }
   .photo-upload-inp {
-    padding:10px;
-    width:100%;
-    height:60px;
-    line-height:1em;
-    text-align: center;
-    outline: none;
+    position: absolute;
+    z-index: 2;
+    top:0;
+    left:0;
+    right:0;
+    bottom: 0;
+    opacity: 0;
+    pointer-events: auto;
   }
   .photo-upload-img {
-    margin: .5rem 0;
+    margin: 0 1rem 1rem 0;
     float: left;
-    min-width: 100px;
-    margin-right: 1rem;
+    min-width: 10px;
     >img {
       display: block;
-      height: 100px;
+      max-height: 160px;
     }
   }
 </style>

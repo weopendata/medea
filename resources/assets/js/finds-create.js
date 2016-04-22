@@ -303,9 +303,11 @@ new Vue({
   },
   ready () {
     if (window.initialFind) {
-      this.map.center = this.latlng
-      this.show.map = true
-      this.marker.visible = true
+      if (this.latlng.lat) {
+        this.map.center = this.latlng
+        this.show.map = true
+        this.marker.visible = true
+      }
       this.import()
     }
     $('.ui.checkbox').checkbox()
