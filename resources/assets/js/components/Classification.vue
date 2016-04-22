@@ -71,11 +71,11 @@ export default {
   float:left;
   width: 70px;
 }
-.cls-buttons .button>.icon{
-  margin-left: 5px!important;
-}
 .cls-buttons .button {
   background: none;
+}
+.cls-buttons .button>.icon{
+  margin-left: 5px!important;
 }
 .cls-labeled {
   display: inline-block;

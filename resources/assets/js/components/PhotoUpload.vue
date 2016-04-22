@@ -1,7 +1,7 @@
 <template>
   <div class="photo-upload">
     <div class="photo-upload-img" v-for="image in photograph">
-      <img :src="image.resized || image.identifier">
+      <img :src="image.src">
     </div>
     <div class="photo-upload-cover">
       <div>
@@ -51,7 +51,7 @@ export default {
         vm.photograph.push({
           name: file.name,
           size: file.size,
-          identifier: e.target.result
+          src: e.target.result
         });
       };
       reader.readAsDataURL(file);

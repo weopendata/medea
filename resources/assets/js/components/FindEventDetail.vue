@@ -2,8 +2,8 @@
   <article>
     <div class="fe-header">
       <div class="fe-imglist">
-        <div class="img" v-for="src in find.object.photograph">
-          <photoswipe-thumb :src="src" :index="$index"></photoswipe-thumb>
+        <div class="img" v-for="image in find.object.photograph">
+          <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
           <span class="fe-img-remark" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'" @click="imgRemark($index)">Opmerking toevoegen</span>
         </div>
       </div>
@@ -86,7 +86,7 @@ export default {
       var pswpElement = document.querySelector('.pswp');
       var items = this.find.object.photograph.map(img => {
         return {
-          src: img.identifier,
+          src: img.src,
           msrc: img.resized,
           w: img.width || 1600,
           h: img.height || 900

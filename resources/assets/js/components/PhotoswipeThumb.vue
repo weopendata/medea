@@ -1,10 +1,10 @@
 <template>
-  <img :src="src.resized" @click="trigger(index)">
+  <img :src="image.resized" @click="trigger(index)">
 </template>
 
 <script>
 export default {
-  props: ['src', 'index'],
+  props: ['image', 'index'],
   methods: {
     trigger () {
       if (!window.PhotoSwipe) {
