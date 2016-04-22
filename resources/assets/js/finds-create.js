@@ -81,6 +81,7 @@ new Vue({
       extend(initialFind, window.initialFind)
     }
     return {
+      // Location picker
       map: {
         center: {lat: 50.9, lng: 4.3},
         zoom: 8
@@ -98,9 +99,12 @@ new Vue({
         draggable: true,
         clickable: true
       },
+      // Dropdowns
       fields: window.fields,
+      // Model
       find: initialFind,
-      dimensionText: '',
+      // Mapped to model
+      toValidate: 'in bewerking',
       dims: {
         lengte: {unit: 'cm' },
         breedte: {unit: 'cm' },
@@ -109,6 +113,7 @@ new Vue({
         diameter: {unit: 'cm' },
         gewicht: {unit: 'g'}
       },
+      // Interface state
       show: {
         map: false,
         spotdescription: false,
@@ -123,9 +128,11 @@ new Vue({
         diameter: false,
         gewicht: false
       },
+      // Form state
       ready: [],
       step: 1,
       submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
+      // App state
       user: window.medeaUser
     }
   },
@@ -269,6 +276,7 @@ new Vue({
         }
       }
       this.find.object.dimensions = dimensions
+      this.find.object.objectValidationStatus = this.toValidate ? 'in bewerking' : 'revisie nodig'
       return this.find
     },
     submitSuccess () {

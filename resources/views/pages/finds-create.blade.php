@@ -227,8 +227,8 @@
 
 <step number="5" title="Classificatie">
   <div class="field">
-    <div v-if="find.object.productionEvent.classification">
-      <add-classification-form :cls.sync="find.object.productionEvent.classification"></add-classification-form>
+    <div v-if="find.object.productionEvent.productionClassification">
+      <add-classification-form :cls.sync="find.object.productionEvent.productionClassification"></add-classification-form>
       <p>
         <button class="ui green button" @click.prevent="toStep(6)">Volgende stap</button>
       </p>
@@ -250,7 +250,7 @@
 <step number="6" title="Klaar met vondstfiche" :class="{active:submittable}">
   <div class="field">
     <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="find.toValidate">
+      <input type="checkbox" tabindex="0" class="hidden" v-model="toValidate">
       <label>
         <b>Vondstfiche laten valideren</b>
         <br>Na validatie wordt de vondst zichtbaar voor andere bezoekers en kunnen vondstexperten informatie toevoegen.
@@ -260,8 +260,8 @@
   </div>
   <div class="field">
     <p>
-      <button v-if="!find.toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
-      <button v-if="find.toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+      <button v-if="!toValidate" class="ui button" type="submit" :class="{orange:submittable}" :disabled="!submittable">Voorlopig bewaren</button>
+      <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
     </p>
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.

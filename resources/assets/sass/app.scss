@@ -123,9 +123,17 @@ dd {
 	.ui.menu {
 		background: white;
 	}
+	nav {
+		margin-bottom: 0;
+	}
 }
 .nav-push {
-	height: 60px;
+	height: 40px;
+}
+.listview {
+	padding-top: 20px;
+	height: calc(100% - 40px);
+	overflow: auto;
 }
 
 /* FindsList > Empty state */

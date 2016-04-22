@@ -20,13 +20,14 @@
       </p>
     </div>
   </div>
-
+  <a href="/login" style="float:right" class="ui basic small button btn-login">Login</a>
 {!! Form::open(array(
 'action' => 'Auth\AuthController@register',
 'novalidate' => '',
 'class' => 'ui register-container form',
 '@submit.prevent' => 'submit',
 )) !!}
+  <a href="/login" style="float:right" class="ui basic small button">Login</a>
   <h2 id="register">Registreren</h2>
   <h3>Contactgegevens</h3>
   <div class="two fields">

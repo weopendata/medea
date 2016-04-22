@@ -8,20 +8,20 @@
 @endsection
 
 @section('content')
-<div v-if="!filterState.showmap" transition="fromleft">
+<div v-if="!filterState.showmap" class="listview" transition="fromleft">
   <div class="ui container">
-    <finds-filter :model.sync="filterState" :saved="[{name:'ijzer only', material: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
+    <finds-filter :model.sync="filterState" :saved="[{name:'Valideren', status: 'in bewerking'}, {name:'ijzer only', material: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
     <finds-list :finds="finds | filterBy relevant" :user="user"></finds-list>
+		<dev-bar :user="user"></dev-bar>
   </div>
 </div>
-<div v-else transition="fromright">
-  <map :center.sync="map.center" :zoom.sync="map.zoom" style="display:block;height:100vh;">
+<div v-else transition="fromright" class="mapview">
+  <map :center.sync="map.center" :zoom.sync="map.zoom">
     <marker v-for="f in finds | markable" :position.sync="f.position"></marker>
     <circle v-for="f in finds | markable" :center.sync="f.position" :radius="f.accuracy" :options="markerOptions"></circle>
   </map>
   <map-controls :showmap.sync="filterState.showmap"></map-controls>
 </div>
-<dev-bar :user="user"></dev-bar>
 @endsection
 
 @section('script')
