@@ -25,9 +25,9 @@
     <dt>Dimensies</dt>
     <dd v-for="dim in find.object.dimensions">{{dim.type}}: {{dim.value}}{{dim.unit}}</dd>
   </dl>
-  <dl v-if="find.object.material">
+  <dl v-if="find.object.objectMaterial">
     <dt>Materiaal</dt>
-    <dd>{{find.object.material}}</dd>
+    <dd>{{find.object.objectMaterial}}</dd>
   </dl>
   <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.type&&find.object.productionEvent.productionTechnique.type.length">
     <dt>Techniek</dt>
