@@ -76,8 +76,11 @@ new Vue({
         }
       }
     };
+    console.log(' default date:', initialFind.findDate)
     if (window.initialFind) {
+      console.log('   saved date:', window.initialFind.findDate)
       extend(initialFind, window.initialFind)
+      console.log('reactive date:', initialFind.findDate)
     }
     return {
       // Location picker
