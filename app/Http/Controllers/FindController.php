@@ -135,9 +135,10 @@ class FindController extends Controller
             foreach ($input['object']['photograph'] as $image) {
                 list($name, $name_small, $width, $height) = $this->processImage($image);
 
+                $public_path = public_path('uploads/');
                 $images[] = [
-                    'name' => $request->root() . '/uploads/' . $name,
-                    'resized' => $request->root() . '/uploads/' . $name_small,
+                    'src' => $public_path . $name,
+                    'resized' => $public_path . $name_small,
                     'width' => $width,
                     'height' => $height
                 ];
@@ -214,14 +215,16 @@ class FindController extends Controller
             $images = [];
 
             // Check for images, they need special processing before the Neo4j writing is initiated
-            if (!empty($input['object']['images'])) {
-                foreach ($input['object']['images'] as $image) {
+            if (!empty($input['object']['photograph'])) {
+                foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {
                         list($name, $name_small, $width, $height) = $this->processImage($image);
 
+                        $public_path = public_path('uploads/');
+
                         $images[] = [
-                        'name' => $request->root() . '/uploads/' . $name,
-                        'resized' => $request->root() . '/uploads/' . $name_small,
+                        'src' => $public_path . $name,
+                        'resized' => $public_path . $name_small,
                         'width' => $width,
                         'height' => $height
                         ];
@@ -232,7 +235,7 @@ class FindController extends Controller
                 }
             }
 
-            $input['object']['images'] = $images;
+            $input['object']['photograph'] = $images;
             $input['person'] = ['id' => $user->id];
 
             $find = new FindEvent();
@@ -267,7 +270,7 @@ class FindController extends Controller
      */
     private function processImage($image_config)
     {
-        $image = \Image::make($image_config['identifier']);
+        $image = \Image::make($image_config['src']);
 
         $public_path = public_path('uploads/');
 

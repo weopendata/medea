@@ -169,6 +169,9 @@ class Base
      */
     public function update($properties)
     {
+        \Log::info($properties);
+        \Log::info(static::$NODE_NAME);
+
         if (!empty($properties)) {
             $client = self::getClient();
 
@@ -216,6 +219,7 @@ class Base
                                     $related_identifiers[] = $entry['identifier'];
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
+                                    \Log::info("updating for node: " . $config['model_name']);
                                     $model = new $model_name();
                                     $model->setNode($client->getNode($entry['identifier']));
                                     $model->update($entry);
@@ -240,6 +244,7 @@ class Base
                                     $node = $client->getNode($input['identifier']);
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
+                                    \Log::info("updating for node: " . $config['model_name']);
                                     $model = new $model_name();
                                     $model->setNode($node);
                                     $model->update($input);
