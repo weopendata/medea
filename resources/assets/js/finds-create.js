@@ -63,7 +63,7 @@ new Vue({
         description: null,
         inscription: null,
         category: null,
-        material: null,
+        objectMaterial: null,
         surfaceTreatment: null,
         period: null,
         century: null,
@@ -223,7 +223,7 @@ new Vue({
           lng: results[0].geometry.location.lng()
         }
         var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
-        dist = parseFloat((dist / 4).toPrecision(1)).toFixed() 
+        dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
         self.map.zoom = Math.floor(24 - Math.log2(dist))
         self.find.findSpot.location.accuracy = dist
         self.show.map = true
@@ -296,7 +296,7 @@ new Vue({
     'user': {
       deep: true,
       handler (user) {
-        localStorage.debugUser = JSON.stringify(user) 
+        localStorage.debugUser = JSON.stringify(user)
       }
     }
   },

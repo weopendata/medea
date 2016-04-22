@@ -5,7 +5,7 @@
       <div class="fe-img fe-img-placeholder" v-if="!find.object.images">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
-      <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.category}}</a>
+      <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}} {{find.object.category}}</a>
       <div class="meta">
         <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u>{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>

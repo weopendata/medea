@@ -64,7 +64,7 @@
       Aanduiden op kaart
     </button>
   </div>
-  <div class="field" v-if="show.map&&step==1">  
+  <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
       <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :draggable.sync="true" :options="marker.options"></circle>
@@ -128,9 +128,9 @@
     </div>
     <div class="field">
       <label>Materiaal</label>
-      <select class="ui dropdown" v-model="find.object.material">
+      <select class="ui dropdown" v-model="find.object.objectMaterial">
         <option selected>onbekend</option>
-        @foreach ($fields['object']['material'] as $material)
+        @foreach ($fields['object']['objectMaterial'] as $material)
         <option value="{{$material}}">{{$material}}</option>
         @endforeach
       </select>

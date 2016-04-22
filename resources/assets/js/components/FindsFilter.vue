@@ -40,9 +40,9 @@
         </select>
       </div>
       <div class="four wide field">
-        <select class="ui search fluid dropdown category" v-model="model.material">
+        <select class="ui search fluid dropdown category" v-model="model.objectMaterial">
           <option value="*">Alle materialen</option>
-          <option v-for="opt in fields.object.material" :value="opt" v-text="opt"></option>
+          <option v-for="opt in fields.object.objectMaterial" :value="opt" v-text="opt"></option>
         </select>
       </div>
       <div class="four wide field">

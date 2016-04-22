@@ -315,6 +315,14 @@ class Base
             }
         }
 
+        if ($this->has_unique_id) {
+            // Add an ID to the node
+            $id_name = lcfirst(static::$NODE_NAME) . 'Id';
+            $id_node = $id_node = $this->createValueNode('identifier', ['E42', $id_name, $this->getGeneralId()], $this->node->getId());
+
+            $this->node->relateTo($id_node, 'P1')->save();
+        }
+
         $this->node->save();
 
         return $this->node;
@@ -356,7 +364,7 @@ class Base
         if ($this->has_unique_id) {
             // Add an ID to the node
             $id_name = lcfirst(static::$NODE_NAME) . 'Id';
-            $id_node = $id_node = $this->createValueNode('identifier', ['E42', $id_name], $this->node->getId());
+            $id_node = $id_node = $this->createValueNode('identifier', ['E42', $id_name, $this->getGeneralId()], $this->node->getId());
 
             $this->node->relateTo($id_node, 'P1')->save();
         }
@@ -600,6 +608,9 @@ class Base
                 $data[$property['name']] = $val;
             }
         }
+
+        // Add the identifier
+        $data['identifier'] = $this->node->getId();
 
         return $data;
     }

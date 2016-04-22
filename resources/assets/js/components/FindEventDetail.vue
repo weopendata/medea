@@ -9,7 +9,7 @@
       </div>
       <div class="fe-header-fixed">
         <h1>
-          #{{find.identifier}} {{find.object.category}} {{find.object.material}} {{find.object.productionEvent.productionTechnique.type}}
+          #{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}} {{find.object.productionEvent.productionTechnique.type}}
         </h1>
       </div>
     </div>

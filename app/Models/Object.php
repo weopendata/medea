@@ -47,7 +47,7 @@ class Object extends Base
         [
             'relationship' => 'P45',
             'config' => [
-                'key' => 'material',
+                'key' => 'objectMaterial',
                 'name' => 'objectMaterial',
                 'value_node' => true,
                 'cidoc_type' => 'E57'

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "bootstrap-sass": "^3.0.0",
+    "deep-extend": "^0.4.1",
     "laravel-elixir": "^4.0.0",
     "less-loader": "^2.2.2",
     "semantic-ui-css": "^2.1.8",
