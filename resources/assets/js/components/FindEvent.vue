@@ -5,7 +5,7 @@
       <div class="fe-img fe-img-placeholder" v-if="!find.object.photograph">Afbeelding niet beschikbaar</div>
     </a>
     <div class="content">
-      <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}} {{find.object.category}}</a>
+      <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}}  {{find.object.productionEvent.productionTechnique.type}}</a>
       <div class="meta">
         <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
@@ -13,13 +13,17 @@
         <object-features :find="find"></object-features>
       </div>
       <div class="extra">
-        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus !== 'in bewerking'">
+        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
           Classificeren
         </a>
         <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="classificationCount">
           <i class="tag icon"></i>
           {{classificationCount}} classificaties bekijken
+        </a>
+        <a class="ui green button" href="/finds/{{find.identifier}}/edit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
+          <i class="pencil icon"></i>
+          Bewerken
         </a>
         <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           Valideren

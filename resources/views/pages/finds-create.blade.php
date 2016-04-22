@@ -3,11 +3,14 @@
 @section('title', 'Vondst toevoegen')
 
 @section('content')
+<style type="text/css">.loading,[v-cloak]{display:none!important}.loading[v-cloak]{display:block!important}</style>
+<p v-cloak class="ui container container-723 loading">Deze pagina wordt geladen...</p>
 {!! Form::open(array(
 'files' => true,
 'novalidate' => '',
 'class' => 'ui container container-723 form',
 '@submit.prevent' => 'submit',
+'v-cloak' => 'true',
 )) !!}
 
 <step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}">
@@ -265,6 +268,9 @@
     </p>
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.
+    </p>
+    <p v-if="submitting" style="color:#090">
+      Vondstfiche wordt bewaard.
     </p>
   </div>
 </step>

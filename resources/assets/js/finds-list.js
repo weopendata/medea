@@ -24,7 +24,7 @@ new Vue({
   },
   data () {
     return {
-      paging: window.link ? parseLink(window.link) : { next: {}, last: {}, prev: {}, first: {} },
+      paging: window.link ? parseLink(window.link) : {},
       finds: window.initialFinds || [],
       filterState: window.filterState || {myfinds: false},
       user: window.medeaUser,

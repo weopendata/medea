@@ -147,7 +147,9 @@ class FindController extends Controller
 
         $input['object']['photograph'] = $images;
         $input['person'] = ['id' => $user->id];
-        $input['object']['objectValidationStatus'] = 'in bewerking';
+        if (!in_array($input['object']['objectValidationStatus'], ['in bewerking', 'revisie nodig'])) {
+            $input['object']['objectValidationStatus'] = 'in bewerking';
+        }
 
         // Make find
         $find = $this->finds->store($input);
