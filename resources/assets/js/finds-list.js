@@ -87,6 +87,10 @@ new Vue({
     mapshow (value) {
       this.filterState.showmap = value
       this.fetch('showmap')
+    },
+    showCity (value) {
+      this.filterState.showmap = value
+      this.fetch('showmap')
     }
   },
   events: {
@@ -111,7 +115,6 @@ new Vue({
   },
   watch: {
     'filterState.showmap' (shown) {
-      console.log('filly', shown)
       if (shown && !this.loaded) {
         load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
         this.loaded = true

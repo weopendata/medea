@@ -3,7 +3,7 @@
 	align-items: center;
 	padding: 10% 0 20%;
 	min-height: 100vh;
-	background: url(../assets/img/bg_medea.jpg) no-repeat center center;
+	background: url(../assets/img/bg_medea.jpg) no-repeat 75% 90%;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -26,4 +26,9 @@
 	max-width: 500px;
 	margin: 10% auto;
 	padding: 0 1rem;
+}
+.btn-login {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
 }

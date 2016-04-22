@@ -4,8 +4,8 @@
 	width: 400px;
 	max-height: 250px;
 	white-space: nowrap;
-	overflow-x: visible;
-	overflow-y: auto;
+	overflow-x: auto;
+	overflow-y: hidden;
 }
 .ui.items > .item > .image.fe-image > img,
 .fe-img {

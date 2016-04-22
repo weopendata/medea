@@ -27,7 +27,9 @@
 @endif
   <nav class="ui container">
     <div class="ui secondary green pointing menu">
+      @if (Auth::guest())
       <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
+      @endif
       @section('showmap')
       <a href="/finds" class="item {{ (Request::is('finds') && !Request::has('showmap') ? 'active' : '') }}">Vondsten</a>
       <a href="/finds?showmap=true" class="item {{ (Request::has('showmap') ? 'active' : '') }}">Kaart</a>
