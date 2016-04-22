@@ -22,19 +22,33 @@
             Bewerken
           </a>
         </div>
-        <div class="twelve wide column" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
-          <validation-form :obj="find.object.identifier"></validation-form>
-        </div>
-        <div class="twelve wide column" v-if="find.object.objectValidationStatus == 'gevalideerd'">
-          <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
-          <div class="ui orange message" v-if="!find.object.productionEvent&&!find.object.productionEvent.productionClassification&&!find.object.productionEvent.productionClassification.length">
-            <div class="ui header">Deze vondst is niet geclassificeerd</div>
-            <p v-if="user.expert">Voeg jij een classificatie toe?</p>
+        <div class="twelve wide column">
+          <div v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
+            <validation-form :obj="find.object.identifier"></validation-form>
           </div>
-          <add-classification :object="find.object" v-if="user.expert"></add-classification>
-        </div>
-        <div class="twelve wide column" v-if="!user.validator&&find.object.objectValidationStatus !== 'gevalideerd'">
-          Security error #20984
+          <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
+            <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
+            <div class="ui orange message" v-if="!find.object.productionEvent&&!find.object.productionEvent.productionClassification&&!find.object.productionEvent.productionClassification.length">
+              <div class="ui header">Deze vondst is niet geclassificeerd</div>
+              <p v-if="user.expert">Voeg jij een classificatie toe?</p>
+            </div>
+            <add-classification :object="find.object" v-if="user.expert"></add-classification>
+          </div>
+          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'gevalideerd' && (user.email!==find.person.email)">
+            Security error #20984
+          </h1>
+          <div v-if="find.object.objectValidationStatus == 'embargo'">Deze vondst is onder embargo</div>
+          <div v-if="(user.email==find.person.email)">
+            <div v-if="find.object.objectValidationStatus == 'in bewerking'">Je vondstfiche wordt gevalideerd</div>
+            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">Ofwel is dit een draft, ofwel is er feedback die wijzigingen aan deze vondstfiche gebieden.</div>
+          </div>
+          <div v-else>
+            <div v-if="find.object.objectValidationStatus == 'in bewerking'">Deze vondstfiche wordt gevalideerd</div>
+            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">Deze vondstfiche is in revisie</div>
+          </div>
+          <div v-if="find.object.objectValidationStatus == 'afgekeurd'">
+            Deze vondstfiche is niet geschikt voor MEDEA.
+          </div>
         </div>
       </div>
     </section>

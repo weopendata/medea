@@ -28,8 +28,7 @@ elixir(function(mix) {
 					{ test: /\.vue$/, loader: 'vue' },
 					{ test: /\.scss$/, loaders: ['style', 'css', 'sass', 'scss'] },
 					{ test: /\.js$/, loader: 'babel-loader', include:  [
-						path.resolve(__dirname, 'resources/assets'),
-						path.resolve(__dirname, 'node_modules/vue-google-maps')
+						path.resolve(__dirname, 'resources/assets')
 					]}
 				],
 			},

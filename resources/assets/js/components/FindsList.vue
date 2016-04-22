@@ -2,9 +2,9 @@
   <div class="ui very relaxed items">
     <find-event v-for="f in finds" :find="f" :user="user"></find-event>
     <div class="paging">
-      <a :href="paging.previous&&paging.previous.url||'#'" class="ui button" :class="{blue:paging.previous}">Vorige</a>
-      <a :href="paging.next&&paging.next.url||'#'" class="ui button" :class="{blue:paging.next}">Volgende</a>
-      <a :href="paging.last&&paging.last.url||'#'" class="ui button" :class="{blue:paging.last}">Laatste</a>
+      <a v-if="paging.previous" :href="paging.previous.url||'#'" class="ui blue button">Vorige</a>
+      <a v-if="paging.next" :href="paging.next.url||'#'" class="ui blue button">Volgende</a>
+      <a v-if="paging.last" :href="paging.last.url||'#'" class="ui blue button">Laatste</a>
     </div>
     <div v-if="!finds.length" class="finds-empty">
       <h1>
