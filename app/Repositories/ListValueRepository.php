@@ -52,7 +52,7 @@ class ListValueRepository
         $properties = [
             'object' => [
                 'technique' => 'ProductionTechniqueTypeAuthorityList',
-                'material' => 'MaterialAuthorityList',
+                'objectMaterial' => 'MaterialAuthorityList',
                 'dimension_type' => 'DimensionTypeAuthorityList',
                 'dimension_unit' => 'DimensionUnitAuthorityList',
                 'inscription' => 'InscriptionTypeAuthorityList',
