@@ -1,0 +1,34 @@
+.hero {
+	display: flex;
+	align-items: center;
+	padding: 10% 0 20%;
+	min-height: 100vh;
+	background: url(../assets/img/bg_medea.jpg) no-repeat 75% 90%;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	.lead {
+		font-size: 1.6em;
+		max-width: 33em;
+	}
+	@media only screen and (min-width: 1170px) {
+		.lead {
+			font-size: 2em;
+			max-width: 28em;
+		}
+	}
+	.ui.button {
+		margin-bottom: 1em;
+	}
+}
+.ui.register-container.form {
+	max-width: 500px;
+	margin: 10% auto;
+	padding: 0 1rem;
+}
+.btn-login {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+}

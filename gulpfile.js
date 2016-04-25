@@ -1,4 +1,7 @@
+var path = require('path');
 var elixir = require('laravel-elixir');
+require('laravel-elixir-webpack-ex');
+require('laravel-elixir-livereload');
 
 /*
  |--------------------------------------------------------------------------
@@ -12,6 +15,28 @@ var elixir = require('laravel-elixir');
  */
 
 elixir(function(mix) {
-    mix.sass('app.scss');
-    mix.browserify('app.js');
+	mix.sass('app.scss', 'public/css')
+	mix.webpack([
+			'finds-list.js',
+			'finds-detail.js',
+			'finds-create.js',
+			'home.js',
+		], {
+			module: {
+				loaders: [
+					{ test: /\.css$/, loader: 'style!css' },
+					{ test: /\.vue$/, loader: 'vue' },
+					{ test: /\.scss$/, loaders: ['style', 'css', 'sass', 'scss'] },
+					{ test: /\.js$/, loader: 'babel-loader', include:  [
+						path.resolve(__dirname, 'resources/assets')
+					]}
+				],
+			},
+			resolve: {
+				extensions: ['', '.js', '.vue']
+			},
+		},
+		'./public/js', 'resources/assets/js'
+	)
+	mix.livereload()
 });

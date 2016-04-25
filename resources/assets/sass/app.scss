@@ -1,2 +1,209 @@
-// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "../../../node_modules/semantic-ui-css/components/reset";
+@import "../../../node_modules/semantic-ui-css/components/site";
 
+/* Layout */
+
+@import "../../../node_modules/semantic-ui-css/components/grid";
+@import "../../../node_modules/semantic-ui-css/components/container";
+@import "./modules/structure";
+@import "./modules/home";
+
+/* Components */
+
+@import "../../../node_modules/semantic-ui-css/components/form";
+@import "../../../node_modules/semantic-ui-css/components/label";
+@import "../../../node_modules/semantic-ui-css/components/input";
+@import "../../../node_modules/semantic-ui-css/components/checkbox";
+// Fancy select
+@import "../../../node_modules/semantic-ui-css/components/dropdown";
+@import "../../../node_modules/semantic-ui-css/components/transition";
+@import "../../../node_modules/semantic-ui-css/components/step";
+@import "../../../node_modules/semantic-ui-css/components/message";
+@import "../../../node_modules/semantic-ui-css/components/icon";
+@import "../../../node_modules/semantic-ui-css/components/button";
+@import "../../../node_modules/semantic-ui-css/components/menu";
+@import "../../../node_modules/semantic-ui-css/components/item";
+@import "./modules/fe";
+
+/* FindsList */
+
+.column img {
+	max-width: 100%;
+}
+
+/* Base */
+
+dl {
+	margin: 0 0 .5em;
+}
+dt {
+	float: left;
+	margin-right: 1rem;
+	opacity: .7;
+}
+dd {
+	margin-left: 90px;
+}
+.ui.create-container.form {
+	margin: 0 auto;
+	max-width: 800px;
+}
+.double-labeled>input:nth-child(2) {
+	border-radius: 0!important;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-left-color: transparent;
+	border-right-color: transparent;
+}
+.double-labeled>.label:nth-child(3) {
+	border-radius: 0!important;
+}
+.double-labeled>input:last-child {
+	border-top-left-radius: 0!important;
+	border-bottom-left-radius: 0!important;
+	border-left-color: transparent;
+}
+
+/* Map */
+
+.map-controls {
+	position: absolute;
+	left: 10px;
+	z-index: 123245;
+	top: 60px;
+	max-width: 20em;
+}
+.map-modal {
+	background: white;
+	padding: .5rem 1rem;
+}
+.vue-map-size {
+	display: block;
+	height: 300px;
+	@media (min-height: 450px) {
+		height: 350px;
+	}
+	@media (min-height: 500px) {
+		height: 400px;
+	}
+}
+
+/* Vue transitioning */
+
+.fromleft-transition {
+	transition: transform .5s ease;
+	transform: translateX(0);
+}
+.fromleft-enter,
+.fromleft-leave {
+	transform: translateX(-100%);
+}
+.fromright-transition {
+	transition: transform .5s ease;
+	transform: translateX(0);
+	position: fixed;
+	top: 38px;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+}
+.fromright-enter,
+.fromright-leave {
+	transform: translateX(100%);
+}
+
+/* This effect is based on body class */
+
+.fixed-top {
+	position: fixed;
+	z-index: 2;
+	top: 0;
+	left: 0;
+	right: 0;
+	.ui.menu {
+		background: white;
+	}
+	nav {
+		margin-bottom: 0;
+	}
+}
+.nav-push {
+	height: 40px;
+}
+.listview {
+	padding-top: 20px;
+	height: calc(100% - 40px);
+	overflow: auto;
+}
+
+/* FindsList > Empty state */
+
+.finds-empty {
+	margin: 10% auto;
+	small {
+		display: block;
+		opacity: .4;
+	}
+}
+.finds-cta {
+	margin: 5% auto;
+}
+.step.muted {
+	h3 {
+		color: #bbb;
+		cursor: pointer;
+		&:hover {
+			opacity: 1;
+		}
+	}
+	.field,
+	.fields,
+	ul,
+	p {
+		display: none!important
+	}
+}
+.step.active {
+	margin-bottom: 3rem;
+}
+.step.required {
+	h3::after {
+		content: '*';
+		color: red;
+		margin-left: 4px;
+	}
+}
+.step.completed {
+	h3 {
+		color: #090;
+	}
+	h3::after {
+		color: #090;
+	}
+}
+
+/* FindsList > FindsFilter */
+
+.finds-order {
+	user-select: none;
+	a {
+		padding: 5px 8px;
+		cursor: pointer;
+		&:hover {
+			background-color: #eee;
+		}
+	}
+	.reverse,
+	.active {
+		font-weight: bold;
+		color: #000;
+	}
+	.active::after {
+		content: "\25bc";
+		margin-left: 2px;
+	}
+	.reverse::after {
+		content: "\25b2";
+		margin-left: 2px;
+	}
+}
