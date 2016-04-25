@@ -199,11 +199,11 @@ dd {
 		color: #000;
 	}
 	.active::after {
-		content: "\25bc";
+		content: "\25b2";
 		margin-left: 2px;
 	}
 	.reverse::after {
-		content: "\25b2";
+		content: "\25bc";
 		margin-left: 2px;
 	}
 }
