@@ -109,7 +109,7 @@ class AppMailer
     }
 
     /**
-     * Send a confirmation email of the acceptance of the user account to that user
+     * Send a confirmation of registration email
      *
      * @param Person $user
      * @return void
@@ -120,6 +120,21 @@ class AppMailer
         $this->view = 'auth.emails.registrationconfirmation';
         $this->data = compact('user');
         $this->subject = 'Uw registratie werd goedgekeurd!';
+        $this->deliver();
+    }
+
+    /**
+     * Send a denial of registration email of the acceptance of the user account to that user
+     *
+     * @param Person $user
+     * @return void
+     */
+    public function sendRegistrationDenial(Person $user)
+    {
+        $this->to = $user->email;
+        $this->view = 'auth.emails.registrationdenial';
+        $this->data = compact('user');
+        $this->subject = 'Uw registratie werd niet goedgekeurd';
         $this->deliver();
     }
 

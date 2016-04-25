@@ -24,7 +24,8 @@
 
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
-    Route::get('register/confirm/{token}', 'Auth\AuthController@confirmEmail');
+    Route::get('register/confirm/{token}', 'Auth\AuthController@confirmRegistration');
+    Route::get('register/deny/{token}', 'Auth\AuthController@denyRegistration');
 
     Route::get('/', 'HomeController@index');
     Route::resource('finds', 'FindController');

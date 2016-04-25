@@ -21,5 +21,8 @@
     <p>
         Om de registratie goed te keuren <a href='{{ url("register/confirm/{$user->token}") }}'>klik hier</a>.
     </p>
+    <p>
+        Om de registratie af te keuren <a href='{{ url("register/deny/{$user->token}") }}'>klik hier</a>.
+    </p>
 </body>
 </html>

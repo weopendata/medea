@@ -94,6 +94,33 @@ class UserRepository extends BaseRepository
     }
 
     /**
+     * Deny and delete a user with a certain token
+     *
+     * @param string $token
+     *
+     * @return Node
+     */
+    public function denyUser($token)
+    {
+        // Label (= type) is already configured for Person
+        $label = $this->getLabel();
+
+        if ($label->getNodes('token', $token)->count() > 0) {
+            $user = $label->getNodes('token', $token)->current();
+
+            if (!empty($user)) {
+                $person = new Person();
+                $person->setNode($user);
+                $person->delete();
+
+                return $user;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Make a vote connection between a user and a classification
      *
      * @param Node    $classification
