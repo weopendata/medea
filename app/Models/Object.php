@@ -177,8 +177,6 @@ class Object extends Base
 
         $modification_node->relateTo($modification_type_node, 'P2')->save();
 
-        var_dump($treatment_node);
-
         return $treatment_node;
     }
 
