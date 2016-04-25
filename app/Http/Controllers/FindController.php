@@ -69,7 +69,10 @@ class FindController extends Controller
 
         $link_header = '';
 
+
         $query_string = $this->buildQueryString($request);
+
+        \Log::info($query_string);
 
         foreach ($pages as $rel => $page_info) {
             $link_header .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . $query_string .';rel=' . $rel . ';';

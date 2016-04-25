@@ -101,7 +101,7 @@ class FindRepository extends BaseRepository
         $match_statements = [];
         $where_statements = [];
 
-        $material = @$filters['material'];
+        $material = @$filters['objectMaterial'];
         $technique = @$filters['technique'];
         $category = @$filters['category'];
         $culture = @$filters['culture'];
