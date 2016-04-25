@@ -46,7 +46,7 @@ class FindController extends Controller
         $order_by = 'findDate';
 
         if (!empty($order)) {
-            $first_char = substr($order, 0);
+            $first_char = substr($order, 0, 1);
 
             if ($first_char == '-') {
                 $order_flow = 'DESC';
