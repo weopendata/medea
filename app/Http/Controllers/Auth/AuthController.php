@@ -106,12 +106,12 @@ class AuthController extends Controller
     }
 
     /**
-     * Confirm a user's email address.
+     * Confirm a user's registration
      *
      * @param  string $token
      * @return mixed
      */
-    public function confirmEmail($token, AppMailer $mailer)
+    public function confirmRegistration($token, AppMailer $mailer)
     {
         $user = $this->users->confirmUser($token);
 
@@ -123,8 +123,27 @@ class AuthController extends Controller
             $mailer->sendRegistrationConfirmation($person);
         }
 
-        //TODO send email to user that was confirmed
-        //TODO send message with "ok"?
+        return redirect('/');
+    }
+
+    /**
+     * Deny a user's registration
+     *
+     * @param  string $token
+     * @return mixed
+     */
+    public function denyRegistration($token, AppMailer $mailer)
+    {
+        $user = $this->users->denyUser($token);
+
+        if (!empty($user)) {
+            $person = new Person();
+            $person->setNode($user);
+
+            // Send an email to the user that his email has been confirmed
+            $mailer->sendRegistrationDenial($person);
+        }
+
         return redirect('/');
     }
 

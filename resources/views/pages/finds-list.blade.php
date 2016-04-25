@@ -10,7 +10,7 @@
 @section('content')
 <div v-if="!filterState.showmap" class="listview" transition="fromleft">
   <div class="ui container">
-    <finds-filter :model.sync="filterState" :saved="[{name:'Valideren', status: 'in bewerking'}, {name:'ijzer only', material: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
+    <finds-filter :model.sync="filterState" :saved="[{name:'Valideren', status: 'in bewerking'}, {name:'ijzer only', objectMaterial: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
     <finds-list :finds="finds | filterBy relevant" :user="user" :paging="paging"></finds-list>
 		<dev-bar :user="user"></dev-bar>
   </div>
