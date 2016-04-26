@@ -486,7 +486,7 @@ class Base
 
         // Ask all of the values of the related models
         foreach ($this->related_models as $relationship => $config) {
-            $model_name = 'App\Models\\' . $config['model_name'];
+            $model_name = 'App\Models\\' . ucfirst($config['model_name']);
             $related_nodes = $this->getRelatedNodes(
                 $relationship,
                 $model_name::$NODE_TYPE
