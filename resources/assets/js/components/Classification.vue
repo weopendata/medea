@@ -6,8 +6,8 @@
       <button class="ui small button" @click.stop="rm" v-if="$root.user.admin">Delete</button>
     </div>
     <div class="cls-content">
-      <div v-if="cls.culture || cls.nation">
-        <span class="cls-labeled" v-if="cls.culture">Cultuur <b>{{cls.culture}}</b></span>
+      <div v-if="cls.period || cls.nation">
+        <span class="cls-labeled" v-if="cls.period">Periode <b>{{cls.period}}</b></span>
         <span class="cls-labeled" v-if="cls.nation">Natie <b>{{cls.nation}}</b></span>
       </div>
       <p class="cls-p" v-if="cls.description" v-text="cls.description"></p>

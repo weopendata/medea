@@ -17,7 +17,7 @@
           <i class="tag icon"></i>
           Classificeren
         </a>
-        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="classificationCount">
+        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
           {{classificationCount}} classificaties bekijken
         </a>

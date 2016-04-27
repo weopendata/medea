@@ -261,7 +261,7 @@ new Vue({
     pushCls () {
       this.find.object.productionEvent.productionClassification.push({
         type: '',
-        culture: '',
+        period: '',
         nation: '',
         dating: '',
         references: [''],

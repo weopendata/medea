@@ -32,9 +32,9 @@
         </select>
       </div>
       <div class="four wide field">
-        <select class="ui search fluid dropdown category" v-model="model.culture">
-          <option value="*">Alle culturen</option>
-          <option v-for="opt in fields.classification.culture" :value="opt" v-text="opt"></option>
+        <select class="ui search fluid dropdown category" v-model="model.period">
+          <option value="*">Alle perioden</option>
+          <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
         </select>
       </div>
       <div class="four wide field">

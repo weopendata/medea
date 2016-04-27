@@ -114,7 +114,7 @@ class ListValueSeeder extends Seeder
         ];
     }
 
-    public function getProductionClassificationCultureAuthorityList()
+    public function getProductionClassificationPeriodAuthorityList()
     {
         return [
             "Bronstijd",

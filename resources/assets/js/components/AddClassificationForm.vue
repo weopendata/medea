@@ -2,8 +2,8 @@
   <div>
     <div class="two fields">
       <div class="field">
-        <label>Cultuur</label>
-        <input type="text" v-model="cls.culture" placeholder="" id="street" list="cultures">
+        <label>Periode</label>
+        <input type="text" v-model="cls.period" placeholder="" id="street" list="periods">
       </div>
       <div class="field">
         <label>Natie</label>
@@ -18,7 +18,7 @@
       <label for="description">Opmerkingen</label>
       <textarea-growing id="description" :model.sync="cls.description"></textarea-growing>
     </div>
-    <datalist id="cultures">
+    <datalist id="periods">
       <option value="Bronstijd">
       <option value="Paleolithische cultuur">
       <option value="Cycladische beschaving">
@@ -61,7 +61,7 @@ export default {
     if (!this.cls) {
       this.$set('cls', {
         type: '',
-        culture: '',
+        period: '',
         nation: '',
         dating: '',
         references: [''],

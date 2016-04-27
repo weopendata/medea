@@ -36,7 +36,7 @@ class ListValueRepository
          * find spot type
 
          classification:
-         * culture
+         * period
          * rulernation
          * date (century wise)
          * type
@@ -68,8 +68,8 @@ class ListValueRepository
             ],
 
             'classification' => [
-                'culture' => 'ProductionClassificationCultureAuthorityList',
-                'classification' => 'ProductionClassificationTypeAuthorityList',
+                'period' => 'ProductionClassificationPeriodAuthorityList',
+                'type' => 'ProductionClassificationTypeAuthorityList',
             ],
 
             'collection' => [

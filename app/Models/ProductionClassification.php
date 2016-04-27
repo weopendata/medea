@@ -10,6 +10,13 @@ class ProductionClassification extends Base
     protected $has_unique_id = true;
 
     protected $related_models = [
+        'P108' => [
+            'key' => 'publication',
+            'model_name' => 'Publication',
+            'cascade_delete' => true,
+            'required' => false,
+            'plural' => true
+        ],
     ];
 
     protected $implicit_models = [
@@ -34,8 +41,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P42',
             'config' => [
-                'key' => 'culture',
-                'name' => 'culture',
+                'key' => 'period',
+                'name' => 'period',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]

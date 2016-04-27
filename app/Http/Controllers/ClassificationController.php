@@ -133,4 +133,15 @@ class ClassificationController extends Controller
 
         return [];
     }
+
+    public function destroy($id, $classification_id)
+    {
+        $deleted = $this->classifications->delete($classification_id);
+
+        if ($deleted) {
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['error' => 'The classifcation was not deleted, probably because it did not exist.']);
+        }
+    }
 }

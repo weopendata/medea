@@ -22,6 +22,15 @@ class UserRepository extends BaseRepository
     {
         $client = $this->getClient();
 
+        // For test iterations only, we automatically verify users that only have a detectorist role
+        $properties['verified'] = true;
+
+        foreach ($properties['personType'] as $person_type) {
+            if ($person_type != 'detectorist') {
+                unset($properties['verified']);
+            }
+        }
+
         $person = new Person($properties);
         $person->save();
 

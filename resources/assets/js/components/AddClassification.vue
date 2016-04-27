@@ -18,7 +18,7 @@ export default {
     return {
       cls: {
         type: '',
-        culture: '',
+        period: '',
         nation: '',
         dating: '',
         description: '',
@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     submittable () {
-      return this.cls.culture || this.cls.nation || this.cls.description
+      return this.cls.period || this.cls.nation || this.cls.description
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'
