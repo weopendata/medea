@@ -85,6 +85,15 @@ class Object extends Base
                 'name' => 'treatmentEvent',
                 'cidoc_type' => 'E11'
             ]
+        ],
+        [
+            'relationship' => 'P42',
+            'config' => [
+                'key' => 'period',
+                'name' => 'period',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
         ]
     ];
 
