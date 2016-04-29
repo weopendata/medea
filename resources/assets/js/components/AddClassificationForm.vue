@@ -29,7 +29,7 @@
     </div>
     <div class="field">
       <label for="description">Referenties</label>
-      <input type="text" v-model="ref" placeholder="Vul een verwijzing in naar een publicatie (bibliografische referentie, URL, DOI, ...)" v-for="ref in cls.publication" track-by="$index">
+      <input type="text" v-model="pub.title" placeholder="Vul een verwijzing in naar een publicatie (bibliografische referentie, URL, DOI, ...)" v-for="pub in cls.publication" @input="pubCheck" track-by="$index">
     </div>
     <div class="field">
       <label for="description">Opmerkingen</label>
@@ -58,26 +58,20 @@ export default {
       types: ['2.1', '2.2', '2.3']
     }
   },
-  attached () {
-    if (!this.cls.publication) {
-      this.$set('cls.publication', [''])
-    }
-    $('select.ui.dropdown').dropdown()
-  },
-  watch: {
-    'cls.publication' (v) {
+  methods: {
+    pubCheck () {
       var empties = 0;
-      for (var i = 0; i < v.length; i++) {
-        empties += v[i].length ? 0 : 1
+      for (var i = 0; i < this.cls.publication.length; i++) {
+        empties += this.cls.publication[i].title.length ? 0 : 1
       }
       if(!empties) {
         this.$nextTick(function () {
-          this.cls.publication.push('')
+          this.cls.publication.push({title: ''})
         })
       } else if (empties > 1) {
         this.$nextTick(function () {
           for (var i = 0; i < this.cls.publication.length; i++) {
-            if (!this.cls.publication[i].length) {
+            if (!this.cls.publication[i].title.length) {
               this.cls.publication.splice(i, 1)
               break
             }
@@ -85,6 +79,12 @@ export default {
         })
       }
     }
+  },
+  attached () {
+    if (!this.cls.publication) {
+      this.$set('cls.publication', [{title: ''}])
+    }
+    $('select.ui.dropdown').dropdown()
   },
   components: {
     InputDate,

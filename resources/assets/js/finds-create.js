@@ -268,7 +268,7 @@ new Vue({
         startDate: '',
         endDate: '',
         ruler: '',
-        publication: [''],
+        publication: [{title: ''}],
         description: '',
       })
     },

@@ -12,7 +12,9 @@
   <div class="ui container">
     <finds-filter :model.sync="filterState" :saved="[{name:'Valideren', status: 'in bewerking'}, {name:'ijzer only', objectMaterial: 'ijzer'}, {name:'All my finds', myfinds: true}]"></finds-filter>
     <finds-list :finds="finds | filterBy relevant" :user="user" :paging="paging"></finds-list>
+    @if (env('APP_DEBUG', false))
 		<dev-bar :user="user"></dev-bar>
+    @endif
   </div>
 </div>
 <div v-else transition="fromright" class="mapview">
