@@ -72,7 +72,7 @@
       </label>
     </div>
   </div>
-  <div class="field" v-show="show.roles">
+  <div class="field expanding" v-show="show.roles" :class="{muted:!roles.expert}" :disabled="!roles.expert">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
       <label>

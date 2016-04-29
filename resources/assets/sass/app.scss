@@ -158,6 +158,7 @@ dd {
 	}
 	.field,
 	.fields,
+	h4,
 	ul,
 	p {
 		display: none!important
@@ -166,12 +167,11 @@ dd {
 .step.active {
 	margin-bottom: 3rem;
 }
-.step.required {
-	h3::after {
-		content: '*';
-		color: red;
-		margin-left: 4px;
-	}
+.step.required h3::after,
+h4.required::after  {
+	content: '*';
+	color: red;
+	margin-left: 4px;
 }
 .step.completed {
 	h3 {

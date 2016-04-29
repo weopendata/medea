@@ -14,17 +14,31 @@
 )) !!}
 
 <step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}">
-  <div class="fields">
+  <div class="field" style="max-width: 16em">
+    <div class="required field" v-if="user.registrator&&debugging">
+      <label>Vinder</label>
+      <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder">
+    </div>
     <div class="required field">
-      <label>Datum</label>
+      <label>Categorie</label>
+      <select class="ui search dropdown category" v-model="find.object.category">
+        <option>onbekend</option>
+        <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
+      </select>
+    </div>
+    <div class="required field">
+      <label>Datering per periode</label>
+      <select class="ui search dropdown category" v-model="find.object.period">
+        <option>onbekend</option>
+        <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
+      </select>
+    </div>
+    <div class="required fluid field">
+      <label>Datum van de vondst</label>
       <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
     </div>
-    <div class="required field" v-if="user.isdRegistrar">
-      <label>Vinder</label>
-      <input type="text" v-model="find.finderName" value="John Dfoe" placeholder="Naam van de vinder" :disabled="!user.registrator">
-    </div>
   </div>
-  <div class="field" v-if="!show.spotdescription||!show.place||!show.address">
+  <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)">
     <label>Vondstlocatie verfijnen</label>
     <button v-if="!show.spotdescription" @click.prevent="show.spotdescription=1" class="ui button">Beschrijving</button>
     <button v-if="!show.place" @click.prevent="show.place=1" class="ui button">Plaatsnaam</button>
@@ -118,17 +132,8 @@
   </p>
 </step>
 
-<step number="3" title="Gestructureerde beschrijving">
+<step number="3" title="Gestructureerde beschrijving" class="required" :class="{completed:step3valid}">
   <div class="two fields">
-    <div class="required field">
-      <label>Categorie</label>
-      <select class="ui dropdown" v-model="find.object.category">
-        <option selected>onbekend</option>
-        @foreach ($fields['object']['category'] as $category)
-        <option value="{{$category}}">{{$category}}</option>
-        @endforeach
-      </select>
-    </div>
     <div class="field">
       <label>Materiaal</label>
       <select class="ui dropdown" v-model="find.object.objectMaterial">
@@ -139,7 +144,10 @@
       </select>
     </div>
   </div>
-  <div class="two fields">
+  <div class="field">
+    <button v-if="!show.technique" @click.prevent="show.technique=1" class="ui button">Techniek, behandeling, opschrift</button>
+  </div>
+  <div class="two fields" v-show="show.technique">
     <div class="field">
       <label>Techniek</label>
       <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.type">
@@ -169,21 +177,12 @@
       </select>
     </div>
   </div>
-  <div class="field">
+  <div class="field" v-show="show.technique">
     <label>Opschrift</label>
     <input type="text" v-model="inscription" placeholder="-- geen opschrift --">
   </div>
-  <dating-picker :model="find.object"></dating-picker>
-  <div class="field">
-    <label>Opmerkingen bij het object</label>
-    <input type="text" v-model="find.object.description">
-  </div>
-  <p>
-    <button class="ui green button" @click.prevent="toStep(4)">Volgende stap</button>
-  </p>
-</step>
 
-<step number="4" title="Dimensies">
+  <h4 class="required">Dimensies</h4>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
     <div class="field" v-if="show.lengte">
       <label>Lengte</label>
@@ -194,7 +193,7 @@
       <dim-input :dim="dims.breedte"></dim-input>
     </div>
     <div class="field" v-if="show.diepte">
-      <label>Diepte</label>
+      <label>Hoogte/dikte</label>
       <dim-input :dim="dims.diepte"></dim-input>
     </div>
     <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte">
@@ -221,7 +220,7 @@
     </div>
   </div>
   <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
-    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies tonen</button>
+    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Meer dimensies toevoegen</button>
   </div>
   <p>
     <button class="ui green button" @click.prevent="toStep(5)">Volgende stap</button>
@@ -250,7 +249,11 @@
   </div>
 </step>
 
-<step number="6" title="Klaar met vondstfiche" :class="{active:submittable}">
+<step number="6" title="Klaar met vondstfiche">
+  <div class="field">
+    <label>Opmerkingen bij het object</label>
+    <input type="text" v-model="find.object.description">
+  </div>
   <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="toValidate">
@@ -261,11 +264,14 @@
       </label>
     </div>
   </div>
+</step>
+
+<div v-if="submittable||step==6">
   <div class="field">
-    <p>
-      <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
-      <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
-    </p>
+    <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
+    <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+  </div>
+  <div class="field">
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.
     </p>
@@ -273,7 +279,7 @@
       Vondstfiche wordt bewaard.
     </p>
   </div>
-</step>
+</div>
 
 {!! Form::close() !!}
 <p>&nbsp;</p>
@@ -284,6 +290,7 @@
 @section('script')
 <script type="text/javascript">
 window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte', 'omtrek'], mantelspeld: ['lengte', 'diameter']};
+window.fields = {!! json_encode($fields) !!};
 @if (isset($find))
 window.initialFind = {!! json_encode($find) !!};
 console.log('finds.edit:', window.initialFind)

@@ -64,9 +64,10 @@ new Vue({
         category: null,
         objectMaterial: null,
         surfaceTreatment: null,
-        period: null,
+        period: 'onbekend',
         century: null,
         nation: null,
+        ruler: null,
         photograph: [],
         dimensions: [],
         productionEvent: {
@@ -77,11 +78,8 @@ new Vue({
         }
       }
     };
-    console.log(' default date:', initialFind.findDate)
     if (window.initialFind) {
-      console.log('   saved date:', window.initialFind.findDate)
       extend(initialFind, window.initialFind)
-      console.log('reactive date:', initialFind.findDate)
     }
     return {
       // Location picker
@@ -125,6 +123,7 @@ new Vue({
         address: false,
         locality: false,
         co: false,
+        technique: false,
         lengte: false,
         breedte: false,
         diepte: false,
@@ -181,10 +180,14 @@ new Vue({
     },
 
     step2valid () {
-      return this.hasImages // && this.find.object.description && this.hasDimensions
+      return this.hasImages
     },
     hasImages () {
       return this.find.object.photograph.length
+    },
+
+    step3valid () {
+      return this.hasDimensions
     },
     hasDimensions () {
       return this.dims.lengte.value || this.dims.breedte.value || this.dims.diepte.value || this.dims.omtrek.value || this.dims.diameter.value || this.dims.gewicht.value
@@ -262,9 +265,10 @@ new Vue({
       this.find.object.productionEvent.productionClassification.push({
         type: '',
         period: '',
-        nation: '',
-        dating: '',
-        references: [''],
+        startDate: '',
+        endDate: '',
+        ruler: '',
+        publication: [''],
         description: '',
       })
     },

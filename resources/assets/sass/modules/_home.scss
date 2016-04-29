@@ -32,3 +32,14 @@
 	top: 1rem;
 	right: 1rem;
 }
+.field.expanding {
+	opacity: 1;
+	max-height: 40px;
+	transition: max-height .5s, opacity .5s, margin .5s;
+	transition-timing-function: linear;
+}
+.field.muted {
+	opacity: 0;
+	max-height: 0;
+	margin: 0!important;
+}

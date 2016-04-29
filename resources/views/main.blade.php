@@ -63,7 +63,7 @@ try {
   for (var i = 0; i < medeaUser.roles.length; i++) {
     medeaUser[medeaUser.roles[i]] = true
   }
-  if (medeaUser.email == 'foo@bar.com') {
+  if (medeaUser.admin) {
     medeaUser.validator = true;
     medeaUser.detectorist = true;
     medeaUser.onderzoeker = true;

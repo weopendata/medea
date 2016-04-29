@@ -8,9 +8,7 @@
         </div>
       </div>
       <div class="fe-header-fixed">
-        <h1>
-          #{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}} {{find.object.productionEvent.productionTechnique.type}}
-        </h1>
+        <h1>#{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}}</h1>
       </div>
     </div>
     <section class="ui container fe-summary">
