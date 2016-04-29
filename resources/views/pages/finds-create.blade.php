@@ -130,21 +130,21 @@
     <div class="field">
       <label>Materiaal</label>
       <select class="ui dropdown" v-model="find.object.objectMaterial">
-        <option selected>onbekend</option>
+        <option>onbekend</option>
         @foreach ($fields['object']['objectMaterial'] as $material)
         <option value="{{$material}}">{{$material}}</option>
         @endforeach
       </select>
     </div>
   </div>
-  <div class="field">
-    <button v-if="!show.technique" @click.prevent="show.technique=1" class="ui button">Techniek, behandeling, opschrift</button>
+  <div class="field" v-if="!show.technique">
+    <button @click.prevent="show.technique=1" class="ui button">Techniek, behandeling, opschrift</button>
   </div>
   <div class="two fields" v-show="show.technique">
     <div class="field">
       <label>Techniek</label>
       <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.type">
-        <option value="" selected>onbekend</option>
+        <option value="">onbekend</option>
         <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
         <option value="{{$technique}}">{{$technique}}</option>
@@ -153,8 +153,8 @@
     </div>
     <div class="field">
       <label>Oppervlaktebehandeling</label>
-      <select class="ui dropdown" v-model="find.object.surfaceTreatment">
-        <option selected>onbekend</option>
+      <select class="ui dropdown" v-model="find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
+        <option>onbekend</option>
         <option>meerdere</option>
         <option>email (cloissoné)</option>
         <option>niello</option>
@@ -245,7 +245,7 @@
 <step number="5" title="Klaar met vondstfiche">
   <div class="field">
     <label>Opmerkingen bij het object</label>
-    <input type="text" v-model="find.object.description">
+    <input type="text" v-model="find.object.objectDescription">
   </div>
   <div class="field">
     <div class="ui checkbox">

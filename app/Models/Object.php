@@ -165,6 +165,10 @@ class Object extends Base
 
         $general_id = $this->getGeneralId();
 
+        if (!$treatment['modificationTechnique']['modificationTechniqueType']) {
+            return;
+        }
+
         // Make a treatmentEvent
         $treatment_node = $client->makeNode();
         $treatment_node->setProperty('name', 'treatmentEvent');

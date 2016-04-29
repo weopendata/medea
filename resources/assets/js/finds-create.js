@@ -59,10 +59,15 @@ new Vue({
       },
       object: {
         objectValidationStatus: 'in bewerking',
-        description: null,
+        objectDescription: null,
         category: null,
         objectMaterial: null,
         surfaceTreatment: null,
+        treatmentEvent: {
+          modificationTechnique: {
+            modificationTechniqueType: null
+          }
+        },
         period: 'onbekend',
         photograph: [],
         dimensions: [],
