@@ -34,7 +34,7 @@
       </select>
     </div>
     <div class="required fluid field">
-      <label>Datum van de vondst</label>
+      <label>Vondstdatum</label>
       <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
     </div>
   </div>
@@ -80,7 +80,7 @@
   <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
-      <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :draggable.sync="true" :options="marker.options"></circle>
+      <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
     </map>
   </div>
   <div class="two fields" v-if="show.co||show.map">
@@ -213,7 +213,7 @@
     </div>
   </div>
   <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
-    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Meer dimensies toevoegen</button>
+    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
   </div>
   <p>
     <button class="ui green button" @click.prevent="toStep(4)">Volgende stap</button>

@@ -52,7 +52,7 @@ new Vue({
             locality: null,
             postalCode: null
           },
-          accuracy: 100,
+          accuracy: 1,
           lat: null,
           lng: null
         }
@@ -120,9 +120,9 @@ new Vue({
         locality: false,
         co: false,
         technique: false,
-        lengte: false,
-        breedte: false,
-        diepte: false,
+        lengte: true,
+        breedte: true,
+        diepte: true,
         omtrek: false,
         diameter: false,
         gewicht: false
@@ -138,11 +138,11 @@ new Vue({
   computed: {
     latlng: {
       get: function () {
-        return {lat: this.find.findSpot.location.lat, lng: this.find.findSpot.location.lng}
+        return {lat: parseFloat(this.find.findSpot.location.lat), lng: parseFloat(this.find.findSpot.location.lng)}
       },
       set: function ({lat, lng}) {
-        this.find.findSpot.location.lat = lat
-        this.find.findSpot.location.lng = lng
+        this.find.findSpot.location.lat = parseFloat(lat)
+        this.find.findSpot.location.lng = parseFloat(lng)
       }
     },
     accuracy: {

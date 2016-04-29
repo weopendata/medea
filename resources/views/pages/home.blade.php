@@ -72,15 +72,6 @@
       </label>
     </div>
   </div>
-  <div class="field expanding" v-show="show.roles" :class="{muted:!roles.expert}" :disabled="!roles.expert">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
-      <label>
-        <b>Onderzoeker</b>
-        <br>krijgt toegang tot gevoelige vondstgegevens.
-      </label>
-    </div>
-  </div>
   <div class="field" v-show="show.roles">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
@@ -101,13 +92,19 @@
   </div>
   <div class="required field" v-if="roles.expert">
     <label for="expertise">Expertise</label>
-    <textarea-growing  id="expertise" :model.sync="user.expertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
+    <textarea-growing style="min-height: 60px" id="expertise" :model.sync="user.expertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
+  </div>
+  <div class="field" v-show="roles.expert">
+    <div class="ui checkbox">
+      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
+      <label>Ik heb als onderzoeker toegang tot de CAI en wil ook op MEDEA volledige toegang krijgen tot exacte vondstlocaties</label>
+    </div>
   </div>
   <div class="required field" v-if="roles.onderzoeker">
     <label for="research">Onderzoek</label>
     <textarea-growing id="research" :model.sync="user.research" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
   </div>
-  <div class="required field" v-if="roles.detectorist||roles.registrator">
+  <div class="field" v-if="roles.detectorist||roles.registrator">
     <label for="bio">Biografie</label>
     <textarea-growing id="bio" :model.sync="user.bio" placeholder="Schrijf een korte biografie."></textarea-growing>
   </div>
@@ -129,7 +126,7 @@
     <div class="field">
       <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="user.showContactInfo">
-        <label>Vermeld mijn contactgegevens op vondstfiche</label>
+        <label>Vermeld mijn naam op publiek toegankelijke vondstfiches</label>
       </div>
     </div>
     <div class="field">

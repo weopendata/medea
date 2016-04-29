@@ -14,7 +14,7 @@
     </div>
     <div class="finds-cta">
       <p>
-        <a href="" class="ui large button" v-if="!user.isGuest"><i class="ui alarm icon"></i> Notificaties voor deze zoekopdracht</a>
+        <a href="" class="ui large button" v-if="!user.isGuest"><i class="ui alarm icon"></i> Zoekopdracht bewaren</a>
       </p>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="photo-upload">
     <div class="photo-upload-img" v-for="image in photograph">
-      <img :src="image.src">
+      <img :src="image.src" @click="rm($index)">
     </div>
     <div class="photo-upload-cover">
       <div>
@@ -56,8 +56,10 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    removeImage: function (e) {
-      this.photograph = [];
+    rm: function (index) {
+      if (confirm('Deze foto verwijderen?')) {
+        this.photograph.splice(index, 1)
+      }
     }
   }
 }
