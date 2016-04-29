@@ -32,7 +32,7 @@
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.admin"> Adm
+        <input type="checkbox" v-model="user.administrator"> Adm
       </label>
     </div>
   </div>

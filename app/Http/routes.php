@@ -29,7 +29,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::get('/', 'HomeController@index');
     Route::resource('finds', 'FindController');
-    Route::get('api/finds', 'Api\FindController@index');
+    Route::resource('api/finds', 'Api\FindController');
 
     Route::post('objects/{id}/validation', 'ObjectController@validation');
     Route::resource('objects/{id}/classifications', 'ClassificationController');

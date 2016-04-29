@@ -63,13 +63,13 @@ try {
   for (var i = 0; i < medeaUser.roles.length; i++) {
     medeaUser[medeaUser.roles[i]] = true
   }
-  if (medeaUser.admin) {
+  if (medeaUser.administrator) {
     medeaUser.validator = true;
     medeaUser.detectorist = true;
     medeaUser.onderzoeker = true;
     medeaUser.expert = true;
     medeaUser.registrator = true;
-    medeaUser.admin = true;
+    medeaUser.administrator = true;
   }
 } catch (e) {
   window.alert('Something wrong with user profile');

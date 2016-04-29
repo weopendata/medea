@@ -56,7 +56,7 @@ new Vue({
         if (!this.user.validator) {
           console.warn('Security error, this user is not allowed to see this find')
         }
-      } else if (find.object.objectValidationStatus != 'gevalideerd' && !this.user.admin) {
+      } else if (find.object.objectValidationStatus != 'gevalideerd' && !this.user.administrator) {
         console.warn('Security error, this user is not allowed to see this find')
       }
       return true

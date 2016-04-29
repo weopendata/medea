@@ -56,8 +56,8 @@
           <option value="in bewerking">in bewerking</option>
           <option value="gevalideerd">gevalideerd</option>
           <option value="revisie nodig">revisie nodig</option>
-          <option value="onder embargo" v-if="$root.user.admin">embargo</option>
-          <option value="verwijderd" v-if="$root.user.admin">afgekeurd</option>
+          <option value="onder embargo" v-if="$root.user.administrator">embargo</option>
+          <option value="verwijderd" v-if="$root.user.administrator">afgekeurd</option>
         </select>
       </div>
     </div>

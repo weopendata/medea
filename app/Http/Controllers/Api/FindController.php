@@ -72,4 +72,17 @@ class FindController extends Controller
 
         return response()->json($finds)->header('Link', $link_header);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id, Request $request)
+    {
+        $find = $this->finds->expandValues($id, $request->user());
+
+        return response()->json($find);
+    }
 }

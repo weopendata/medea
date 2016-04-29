@@ -3,9 +3,9 @@
     <div class="cls-buttons">
       <button class="ui small icon button" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
       <button class="ui small icon button" :class="{red:me==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
-      <button class="ui small button" @click.stop="rm" v-if="$root.user.admin">Delete</button>
     </div>
     <div class="cls-content">
+      <button class="ui small basic red icon button" @click.prevent.stop="rm" v-if="$root.user.administrator" style="float:right"><i class="trash icon"></i></button>
       <div v-if="cls.period || cls.nation">
         <span class="cls-labeled" v-if="cls.period">Periode <b>{{cls.period}}</b></span>
         <span class="cls-labeled" v-if="cls.nation">Natie <b>{{cls.nation}}</b></span>
@@ -49,7 +49,7 @@ export default {
       })
     },
     rm () {
-      this.$http.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1))
+      this.$http.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1)).then(this.$root.fetch)
     }
   },
   watch: {
