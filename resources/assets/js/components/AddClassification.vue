@@ -20,14 +20,16 @@ export default {
         type: '',
         period: '',
         nation: '',
-        dating: '',
+        startDate: '',
+        endDate: '',
+        publication: [{publicationTitle: ''}],
         description: '',
       }
     }
   },
   computed: {
     submittable () {
-      return this.cls.period || this.cls.nation || this.cls.description
+      return this.cls.type || this.cls.period || this.cls.nation || this.cls.description
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'

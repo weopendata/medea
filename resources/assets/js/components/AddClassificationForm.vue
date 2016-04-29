@@ -14,22 +14,22 @@
       </div>
       <div class="field">
         <label>Heerser</label>
-        <input type="text" v-model="cls.ruler" placeholder="(Alleen voor munten)" list="rulers">
+        <input type="text" v-model="cls.nation" placeholder="(Alleen voor munten)" list="nations">
       </div>
     </div>
     <div class="two fields">
       <div class="field">
-        <label>Vanaf</label>
+        <label>Datering vanaf</label>
         <input-date :model.sync="cls.startDate">
       </div>
       <div class="field">
-        <label>Tot</label>
+        <label>Datering tot</label>
         <input-date :model.sync="cls.endDate">
       </div>
     </div>
     <div class="field">
       <label for="description">Referenties</label>
-      <input type="text" v-model="pub.title" placeholder="Vul een verwijzing in naar een publicatie (bibliografische referentie, URL, DOI, ...)" v-for="pub in cls.publication" @input="pubCheck" track-by="$index">
+      <input type="text" v-model="pub.publicationTitle" placeholder="Vul een verwijzing in naar een publicatie (bibliografische referentie, URL, DOI, ...)" v-for="pub in cls.publication" @input="pubCheck" track-by="$index">
     </div>
     <div class="field">
       <label for="description">Opmerkingen</label>
@@ -38,7 +38,7 @@
     <datalist id="types">
       <option v-for="opt in fields.type" :value="opt"></option>
     </datalist>
-    <datalist id="rulers">
+    <datalist id="nations">
       <option value="Napoleon">
       <option value="Caesar">
       <option value="Cleopatra">
@@ -62,16 +62,16 @@ export default {
     pubCheck () {
       var empties = 0;
       for (var i = 0; i < this.cls.publication.length; i++) {
-        empties += this.cls.publication[i].title.length ? 0 : 1
+        empties += this.cls.publication[i].publicationTitle && this.cls.publication[i].publicationTitle.length ? 0 : 1
       }
       if(!empties) {
         this.$nextTick(function () {
-          this.cls.publication.push({title: ''})
+          this.cls.publication.push({publicationTitle: ''})
         })
       } else if (empties > 1) {
         this.$nextTick(function () {
           for (var i = 0; i < this.cls.publication.length; i++) {
-            if (!this.cls.publication[i].title.length) {
+            if (!this.cls.publication[i].publicationTitle.length) {
               this.cls.publication.splice(i, 1)
               break
             }
@@ -82,7 +82,7 @@ export default {
   },
   attached () {
     if (!this.cls.publication) {
-      this.$set('cls.publication', [{title: ''}])
+      this.$set('cls.publication', [{publicationTitle: ''}])
     }
     $('select.ui.dropdown').dropdown()
   },

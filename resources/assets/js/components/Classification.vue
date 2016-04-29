@@ -9,8 +9,14 @@
       <div v-if="cls.period || cls.nation">
         <span class="cls-labeled" v-if="cls.period">Periode <b>{{cls.period}}</b></span>
         <span class="cls-labeled" v-if="cls.nation">Natie <b>{{cls.nation}}</b></span>
+        <span class="cls-labeled" v-if="cls.type">Type <b>{{cls.type}}</b></span>
+        <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
       </div>
       <p class="cls-p" v-if="cls.description" v-text="cls.description"></p>
+      <div v-for="pub in cls.publication">
+        <i class="bookmark icon" v-if="cls.publication&&cls.publication.length"></i>
+        {{pub.publicationTitle}}
+      </div>
     </div>
   </div>
 </template>

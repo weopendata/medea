@@ -168,7 +168,10 @@ class FindController extends Controller
     {
         $find = $this->finds->expandValues($id, $request->user());
 
-        return view('pages.finds-detail', ['find' => $find]);
+        return view('pages.finds-detail', [
+            'fields' => $this->list_values->getFindTemplate(),
+            'find' => $find
+        ]);
     }
 
     /**

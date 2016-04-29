@@ -9,7 +9,6 @@ import transition from 'semantic-ui-css/components/transition.min.js';
 import {load, Map, Marker, Circle} from 'vue-google-maps';
 
 import PhotoUpload from './components/PhotoUpload';
-import DatingPicker from './components/DatingPicker';
 import DimInput from './components/DimInput.vue';
 import FindEvent from './components/FindEvent';
 import AddClassificationForm from './components/AddClassificationForm'
@@ -65,9 +64,6 @@ new Vue({
         objectMaterial: null,
         surfaceTreatment: null,
         period: 'onbekend',
-        century: null,
-        nation: null,
-        ruler: null,
         photograph: [],
         dimensions: [],
         productionEvent: {
@@ -265,11 +261,11 @@ new Vue({
       this.find.object.productionEvent.productionClassification.push({
         type: '',
         period: '',
+        nation: '',
         startDate: '',
         endDate: '',
-        ruler: '',
-        publication: [{title: ''}],
-        description: '',
+        publication: [{publicationTitle: ''}],
+        description: ''
       })
     },
     import () {
@@ -352,7 +348,6 @@ new Vue({
     Marker,
     Circle,
     PhotoUpload,
-    DatingPicker,
     DimInput,
     FindEvent,
     AddClassificationForm

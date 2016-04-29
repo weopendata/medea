@@ -59,7 +59,10 @@
 @endsection
 
 @section('script')
-<script type="text/javascript">var initialFind = {!! json_encode($find) !!};</script>
+<script type="text/javascript">
+var initialFind = {!! json_encode($find) !!};
+window.fields = {!! json_encode($fields) !!};
+</script>
 <script src="{{ asset('js/finds-detail.js') }}"></script>
 <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendor.min.css') }}">
