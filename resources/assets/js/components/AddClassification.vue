@@ -40,11 +40,20 @@ export default {
       return this.cls
     },
     submitSuccess ({data}) {
-      window.location.reload()
+      this.$root.fetch()
+      this.cls = {
+        type: '',
+        period: '',
+        nation: '',
+        startDate: '',
+        endDate: '',
+        publication: [{publicationTitle: ''}],
+        description: '',
+      }
     },
     submitError ({data}) {
       console.warn(data)
-      window.location.reload()
+      this.$root.fetch()
     }
   },
   mixins: [Ajax],
