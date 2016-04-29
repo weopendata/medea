@@ -156,8 +156,7 @@
       <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="user.showContactInfo">
         <label>
-          <b>Mijn contactgegevens vermelden op vondstfiches</b>
-          <br>Dit wordt toegepast op al je vondstfiches
+          <b>Vermeld mijn naam op publiek toegankelijke vondstfiches</b>
         </label>
       </div>
     </div>

@@ -95,7 +95,7 @@ class FindRepository extends BaseRepository
      */
     public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'ASC', $validation_status = '*')
     {
-        // We expect that all filters are object filters (e.g. category, culture, technique, material)
+        // We expect that all filters are object filters (e.g. category, period, technique, material)
         // We'll have to build our query based on the filters that are configured,
         // some are filters on object relationships, some on find event, some on classifications
         $match_statements = [];
@@ -104,7 +104,7 @@ class FindRepository extends BaseRepository
         $material = @$filters['objectMaterial'];
         $technique = @$filters['technique'];
         $category = @$filters['category'];
-        $culture = @$filters['culture'];
+        $period = @$filters['period'];
         $email = @$filters['myfinds'];
 
         // Non personal find statement
@@ -120,10 +120,10 @@ class FindRepository extends BaseRepository
 
         $order_statement = 'find.id DESC';
 
-        if ($order_by == 'culture') {
-            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
-            $with_statement .= ", culture";
-            $order_statement = "culture.value $order_flow";
+        if ($order_by == 'period') {
+            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
+            $with_statement .= ", period";
+            $order_statement = "period.value $order_flow";
         } else {
             $match_statements[] = "(find:E10)-[P4]-(findDate:E52)";
             $with_statement .= ", findDate";
@@ -140,9 +140,9 @@ class FindRepository extends BaseRepository
             $where_statements[] = "type.value = '$technique'";
         }
 
-        if (!empty($culture)) {
-            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(culture:E55)";
-            $where_statements[] = "culture.value = '$culture'";
+        if (!empty($period)) {
+            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
+            $where_statements[] = "period.value = '$period'";
         }
 
         if (!empty($category)) {

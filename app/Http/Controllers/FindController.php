@@ -85,9 +85,9 @@ class FindController extends Controller
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
-                'culture' => $request->input('culture', '*'),
+                'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
-                'material' => $request->input('material', '*'),
+                'objectMaterial' => $request->input('objectMaterial', '*'),
                 'status' => $validated_status,
                 'showmap' => $request->input('showmap', null)
             ],

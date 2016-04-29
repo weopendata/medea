@@ -34,7 +34,7 @@
       </select>
     </div>
     <div class="required fluid field">
-      <label>Datum van de vondst</label>
+      <label>Vondstdatum</label>
       <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
     </div>
   </div>
@@ -71,10 +71,6 @@
       <label v-text="show.address||show.map?'Stad/gemeente':'Straat en/of gemeente/stad'">Stad/gemeente</label>
       <input type="text" v-model="find.findSpot.location.address.locality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
-    <div class="eight wide field" v-if="show.map">
-      <label>Nauwkeurigheid (meter)</label>
-      <input type="number" v-model="find.findSpot.location.accuracy" min="0" :step="accuracyStep">
-    </div>
   </div>
   <div class="field">
     <button v-if="!show.map" @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locality}">
@@ -84,23 +80,21 @@
   <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
-      <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :draggable.sync="true" :options="marker.options"></circle>
+      <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
     </map>
   </div>
   <div class="two fields" v-if="show.co||show.map">
     <div class="field">
       <label>Breedtegraad</label>
-      <input type="number" v-model="find.findSpot.location.lat" placeholder="lat">
+      <input type="number" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
     </div>
     <div class="field">
-      <label>
-        Lengtegraad
-        <span style="float:right;font-weight: normal;">
-          <u>Web Mercator</u> &nbsp;
-          <span style="color:#999;" title="Lambert coordinaten worden niet ondersteund">Lambert</span>
-        </span>
-      </label>
-      <input type="number" v-model="find.findSpot.location.lng" placeholder="lng">
+      <label>Lengtegraad</label>
+      <input type="number" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
+    </div>
+    <div class="field" v-if="show.map">
+      <label>Nauwkeurigheid (meter)</label>
+      <input type="number" v-model="find.findSpot.location.accuracy" min="0" :step="accuracyStep">
     </div>
   </div>
   <p>
@@ -113,7 +107,7 @@
     Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
   </p>
   <ul>
-    <li>Zorg ervoor dat een meetschaal in zicht is. Gebruik hiervoor een lat of <a href="http://www.kjarrett.com/livinginthepast/wp-content/uploads/2012/05/Scale-5cm.jpg">zoiets</a></li>
+    <li>Zorg ervoor dat een meetschaal in zicht is. Gebruik hiervoor een lat of <a href="http://www.kjarrett.com/livinginthepast/wp-content/uploads/2012/05/Scale-5cm.jpg" target="_blank">zoiets</a></li>
     <li>Let erop dat de belichting van overal komt</li>
     <li>De resolutie van de foto's is best hoger dan 1600x900</li>
   </ul>
@@ -128,7 +122,6 @@
   </p>
   <p>
     <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Volgende stap</button>
-    <button class="ui button" v-if="hasImages" @click.prevent="toStep(6)">Laatste stap</button>
   </p>
 </step>
 
@@ -220,19 +213,19 @@
     </div>
   </div>
   <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
-    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Meer dimensies toevoegen</button>
+    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
   </div>
   <p>
-    <button class="ui green button" @click.prevent="toStep(5)">Volgende stap</button>
+    <button class="ui green button" @click.prevent="toStep(4)">Volgende stap</button>
   </p>
 </step>
 
-<step number="5" title="Classificatie">
+<step number="4" title="Classificatie">
   <div class="field">
     <div v-if="find.object.productionEvent.productionClassification.length">
       <add-classification-form :cls.sync="cls" v-for="cls in find.object.productionEvent.productionClassification"></add-classification-form>
       <p>
-        <button class="ui green button" @click.prevent="toStep(6)">Volgende stap</button>
+        <button class="ui green button" @click.prevent="toStep(5)">Volgende stap</button>
       </p>
     </div>
     <div v-else>
@@ -243,13 +236,13 @@
         <button @click.prevent="pushCls" class="ui blue button" type="submit">Zelf classificeren</button>
       </p>
       <p>
-        <button class="ui green button" @click.prevent="toStep(6)">Overslaan</button>
+        <button class="ui green button" @click.prevent="toStep(5)">Overslaan</button>
       </p>
     </div>
   </div>
 </step>
 
-<step number="6" title="Klaar met vondstfiche">
+<step number="5" title="Klaar met vondstfiche">
   <div class="field">
     <label>Opmerkingen bij het object</label>
     <input type="text" v-model="find.object.description">
@@ -266,7 +259,7 @@
   </div>
 </step>
 
-<div v-if="submittable||step==6">
+<div v-if="submittable||step==5">
   <div class="field">
     <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
     <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>

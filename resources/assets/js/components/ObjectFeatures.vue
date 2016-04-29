@@ -21,7 +21,7 @@
     <dt>Opschrift</dt>
     <dd>{{find.object.objectInscription.objectInscriptionNote}}</dd>
   </dl>
-  <dl v-if="find.object.dimensions && find.object.dimensions.length">
+  <dl v-if="find.object.dimensions && find.object.dimensions.length && detail=='all'">
     <dt>Dimensies</dt>
     <dd v-for="dim in find.object.dimensions">{{dim.type}}: {{dim.value}}{{dim.unit}}</dd>
   </dl>
@@ -33,9 +33,17 @@
     <dt>Techniek</dt>
     <dd>{{find.object.productionEvent.productionTechnique.type}}</dd>
   </dl>
+  <dl v-if="find.object.surfaceTreatment">
+    <dt>Behandeling</dt>
+    <dd>{{find.object.surfaceTreatment}}</dd>
+  </dl>
   <dl v-if="find.object.category">
     <dt>Categorie</dt>
     <dd>{{find.object.category}}</dd>
+  </dl>
+  <dl v-if="find.object.period">
+    <dt>Categorie</dt>
+    <dd>{{find.object.period}}</dd>
   </dl>
 </template>
 

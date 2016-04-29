@@ -20,12 +20,12 @@
     "deep-extend": "^0.4.1",
     "laravel-elixir": "^6.0.0-1",
     "less-loader": "^2.2.2",
+    "lodash": "^3.10.1",
     "parse-link-header": "^0.4.1",
     "semantic-ui-css": "^2.1.8",
     "vue": "^1.0.15",
     "vue-datetime-picker": "^0.1.1",
-    "vue-google-maps": "^0.1.16",
-    "vue-resource": "^0.7.0",
-    "lodash": "^3.10.1"
+    "vue-google-maps": "^0.1.15",
+    "vue-resource": "^0.7.0"
   }
 }
