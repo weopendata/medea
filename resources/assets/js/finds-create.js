@@ -160,7 +160,7 @@ new Vue({
       return this.map.zoom < 21 - Math.log2(this.accuracy)
     },
     submittable () {
-      return !this.toValidate || (this.step1valid && this.step2valid)
+      return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)
     },
     step1valid () {
       return this.hasFindDetails
@@ -232,10 +232,11 @@ new Vue({
           lat: results[0].geometry.location.lat(),
           lng: results[0].geometry.location.lng()
         }
-        var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
-        dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
-        self.map.zoom = Math.floor(24 - Math.log2(dist))
-        self.find.findSpot.location.accuracy = dist
+        // Calculate approximate accuracy
+        // var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
+        // dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
+        // self.map.zoom = Math.floor(24 - Math.log2(dist))
+        // self.find.findSpot.location.accuracy = dist
         self.show.map = true
         if (location.street) {
           self.show.address = true
@@ -245,18 +246,18 @@ new Vue({
         })
       })
     },
-    haversineDistance (p1, p2) {
-      var rad = function(x) {
-        return x * Math.PI / 180;
-      }
-      var R = 6378137; // Earth’s mean radius in meter
-      var dLat = rad(p2.lat() - p1.lat());
-      var dLong = rad(p2.lng() - p1.lng());
-      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c;
-      return d; // returns the distance in meter
-    },
+    // haversineDistance (p1, p2) {
+    //   var rad = function(x) {
+    //     return x * Math.PI / 180;
+    //   }
+    //   var R = 6378137; // Earth’s mean radius in meter
+    //   var dLat = rad(p2.lat() - p1.lat());
+    //   var dLong = rad(p2.lng() - p1.lng());
+    //   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+    //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    //   var d = R * c;
+    //   return d; // returns the distance in meter
+    // },
     pushCls () {
       this.find.object.productionEvent.productionClassification.push({
         type: '',
