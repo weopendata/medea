@@ -66,6 +66,12 @@ class ProductionClassification extends Base
         [
             'name' => 'disagree',
             'default_value' => 0
+        ],
+        [
+            'name' => 'startDate'
+        ],
+        [
+            'name' => 'endDate'
         ]
     ];
 }
