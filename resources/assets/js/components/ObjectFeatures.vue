@@ -33,16 +33,16 @@
     <dt>Techniek</dt>
     <dd>{{find.object.productionEvent.productionTechnique.type}}</dd>
   </dl>
-  <dl v-if="find.object.surfaceTreatment">
+  <dl v-if="find.object.treatmentEvent&&find.object.treatmentEvent.modificationTechnique&&find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
     <dt>Behandeling</dt>
-    <dd>{{find.object.surfaceTreatment}}</dd>
+    <dd>{{find.object.treatmentEvent.modificationTechnique.modificationTechniqueType}}</dd>
   </dl>
   <dl v-if="find.object.category">
     <dt>Categorie</dt>
     <dd>{{find.object.category}}</dd>
   </dl>
   <dl v-if="find.object.period">
-    <dt>Categorie</dt>
+    <dt>Periode</dt>
     <dd>{{find.object.period}}</dd>
   </dl>
 </template>

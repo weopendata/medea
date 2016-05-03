@@ -59,10 +59,15 @@ new Vue({
       },
       object: {
         objectValidationStatus: 'in bewerking',
-        description: null,
+        objectDescription: null,
         category: null,
         objectMaterial: null,
         surfaceTreatment: null,
+        treatmentEvent: {
+          modificationTechnique: {
+            modificationTechniqueType: null
+          }
+        },
         period: 'onbekend',
         photograph: [],
         dimensions: [],
@@ -326,11 +331,10 @@ new Vue({
   },
   watch: {
     'find.object.category' (val) {
-      if (val in window.categoryMap) {
-        var dims = window.categoryMap[val]
-        for (var i = 0; i < dims.length; i++) {
-          this.show[dims[i]] = true;
-        }
+      if (val == 'munt' || val == 'rekenpenning') {
+        this.show.diameter = true
+        this.show.lengte = false
+        this.show.breedte = false
       }
     },
     'user': {
