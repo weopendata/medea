@@ -48,7 +48,14 @@ class FindRepository extends BaseRepository
             $find_event->setNode($find_node);
 
             // Get the entire data that's behind the find
-            $finds[] = $find_event->getValues();
+            $find = $find_event->getValues();
+
+            if (!empty($find['findSpot']['location']['lat'])) {
+                $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
+                $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+            }
+
+            $finds[] = $finds;
         }
 
         return $finds;
@@ -81,6 +88,11 @@ class FindRepository extends BaseRepository
                     }
                 }
             }
+        }
+
+        if (!empty($find['findSpot']['location']['lat'])) {
+            $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
+            $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
         }
 
         return $find;
@@ -192,7 +204,14 @@ class FindRepository extends BaseRepository
             $find = new FindEvent();
             $node = $result->current();
             $find->setNode($node);
-            $data[] = $find->getValues();
+            $find = $find->getValues();
+
+            if (!empty($find['findSpot']['location']['lat'])) {
+                $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
+                $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+            }
+
+            $data[] = $find;
         }
 
         if (!empty($count_results)) {
