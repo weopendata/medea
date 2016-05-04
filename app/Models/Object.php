@@ -165,7 +165,7 @@ class Object extends Base
 
         $general_id = $this->getGeneralId();
 
-        if (!$treatment['modificationTechnique']['modificationTechniqueType']) {
+        if (!empty($treatment['modificationTechnique']['modificationTechniqueType'])) {
             return;
         }
 
