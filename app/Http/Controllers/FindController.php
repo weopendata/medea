@@ -78,6 +78,28 @@ class FindController extends Controller
 
         $link_header = rtrim($link_header, ';');
 
+        // If a user is a researcher or personal finds have been set, return the exact
+        // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
+        if (empty($filters['myfinds'])) {
+            $adjusted_finds = [];
+
+            $user = $request->user();
+
+            foreach ($finds as $find) {
+                if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+                    && !in_array('onderzoeker', $user->getRoles())) {
+                    if (!empty($find['findSpot']['location']['lat'])) {
+                        $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
+                        $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+                    }
+                }
+
+                $adjusted_finds[] = $find;
+            }
+
+            $finds = $adjusted_finds;
+        }
+
         return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
@@ -168,6 +190,17 @@ class FindController extends Controller
     {
         $find = $this->finds->expandValues($id, $request->user());
 
+        $user = $request->user();
+
+        // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
+        if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && !in_array('onderzoeker', $user->getRoles())) {
+            if (!empty($find['findSpot']['location']['lat'])) {
+                $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
+                $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+            }
+        }
+
         return view('pages.finds-detail', [
             'fields' => $this->list_values->getFindTemplate(),
             'find' => $find
@@ -251,7 +284,6 @@ class FindController extends Controller
         } else {
             abort('404');
         }
-
     }
 
     /**
