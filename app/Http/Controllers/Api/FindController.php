@@ -37,7 +37,7 @@ class FindController extends Controller
             $validated_status = '*';
         }
 
-        $limit = $request->input('limit', 50);
+        $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
         $order = $request->input('order', null);
@@ -69,6 +69,8 @@ class FindController extends Controller
         }
 
         $link_header = rtrim($link_header, ';');
+
+        //dd($link_header);
 
         return response()->json($finds)->header('Link', $link_header);
     }

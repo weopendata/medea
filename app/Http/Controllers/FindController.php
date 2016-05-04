@@ -114,8 +114,8 @@ class FindController extends Controller
                 'showmap' => $request->input('showmap', null)
             ],
             'fields' => $this->list_values->getFindTemplate(),
-            'link' => $link_header,
-        ]);
+            'link' => $link_header
+        ])->header('Link', $link_header);
     }
 
     /**
