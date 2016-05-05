@@ -79,16 +79,6 @@ export default {
     }
   },
   methods: {
-    relevant (find) {
-      console.log('rel')
-      return find.object.objectValidationStatus == 'gevalideerd'
-      || (this.user.validator && find.object.objectValidationStatus == 'in bewerking')
-    }
-  },
-  ready () {
-    $('.ui.dropdown').dropdown()
-  },
-  methods: {
     restore (filter) {
       console.warn('Restoring save filter:', filter)
       this.model = filter
@@ -108,6 +98,9 @@ export default {
       }
       this.$root.fetch()
     }
+  },
+  ready () {
+    $('.ui.dropdown').dropdown()
   },
   watch: {
     advanced () {
