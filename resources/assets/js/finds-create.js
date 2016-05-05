@@ -231,6 +231,12 @@ new Vue({
         self.find.findSpot.location.address.locality = location.locality
         self.find.findSpot.location.address.postalCode = location.postalCode
 
+        // Center map
+        self.map.center = {
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng()
+        }
+
         // Calculate approximate accuracy
         var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
         dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
