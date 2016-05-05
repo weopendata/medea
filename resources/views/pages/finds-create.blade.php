@@ -68,7 +68,7 @@
       <input type="text" v-model="find.findSpot.location.address.postalCode">
     </div>
     <div class="six wide required field" v-bind:class="{six:show.address,eight:!show.address}">
-      <label v-text="show.address||show.map?'Stad/gemeente':'Straat en/of gemeente/stad'">Stad/gemeente</label>
+      <label v-text="show.address||show.map?'Stad/Gemeente':'Straat en/of Gemeente/stad'">Stad/Gemeente</label>
       <input type="text" v-model="find.findSpot.location.address.locality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
     <div class="eight wide field">
