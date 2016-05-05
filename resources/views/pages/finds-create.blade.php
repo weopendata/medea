@@ -96,7 +96,7 @@
     </div>
     <div class="four wide field" v-if="show.map">
       <label>Nauwkeurigheid (meter)</label>
-      <input type="number" v-model="find.findSpot.location.accuracy" min="0" :step="accuracyStep">
+      <input type="number" v-model="find.findSpot.location.accuracy" min="1" :step="accuracyStep">
     </div>
     <div class="five wide field" v-if="show.map">
       <label>&nbsp;</label>

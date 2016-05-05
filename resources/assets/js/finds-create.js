@@ -157,7 +157,7 @@ new Vue({
         return parseInt(this.find.findSpot.location.accuracy)
       },
       set: function (num) {
-        this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 10
+        this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 1
       }
     },
     accuracyStep () {
