@@ -95,6 +95,8 @@ class FindController extends Controller
                     if (!empty($find['findSpot']['location']['lat'])) {
                         $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
                         $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+                        $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
+                        $find['findSpot']['location']['accuracy'] = max(1000, $accuracy);
                     }
                 }
 
