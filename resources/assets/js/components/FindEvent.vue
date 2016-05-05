@@ -73,7 +73,7 @@ export default {
         return alert('LatLng is missing, this will never happen')
       }
       accuracy = accuracy == 'city' ? 7000 : 0
-      this.$dispatch('mapFocus', {lat:this.find.findSpot.location.lat, lng:this.find.findSpot.location.lng}, accuracy || this.find.findSpot.location.accuracy || 1000)
+      this.$dispatch('mapFocus', {lat:this.find.findSpot.location.lat, lng:this.find.findSpot.location.lng}, accuracy || this.find.findSpot.location.accuracy || 1)
     }
   }
 }

@@ -157,7 +157,7 @@ new Vue({
         return parseInt(this.find.findSpot.location.accuracy)
       },
       set: function (num) {
-        this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 10
+        this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 1
       }
     },
     accuracyStep () {
@@ -230,6 +230,12 @@ new Vue({
         self.find.findSpot.location.address.number = location.number
         self.find.findSpot.location.address.locality = location.locality
         self.find.findSpot.location.address.postalCode = location.postalCode
+
+        // Center map
+        self.map.center = {
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng()
+        }
 
         // Calculate approximate accuracy
         var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())

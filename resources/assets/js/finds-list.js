@@ -113,7 +113,7 @@ new Vue({
       return finds
         .filter(f => f.findSpot && f.findSpot.location && f.findSpot.location.lat)
         .map(f => ({
-          accuracy: f.findSpot.location.accuracy || 2000,
+          accuracy: f.findSpot.location.accuracy || 1,
           position: {lat: f.findSpot.location.lat, lng: f.findSpot.location.lng}
         }))
     }
