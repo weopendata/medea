@@ -145,14 +145,18 @@ class Base
                         foreach ($input as $entry) {
                             $related_node = $this->createImplicitNode($entry, $model_config, $general_id);
 
-                            // Make the relationship
-                            $this->node->relateTo($related_node, $relationship)->save();
+                            if (!empty($related_node)) {
+                                // Make the relationship
+                                $this->node->relateTo($related_node, $relationship)->save();
+                            }
                         }
                     } else {
                         $related_node = $this->createImplicitNode($input, $model_config, $general_id);
 
-                        // Make the relationship
-                        $this->node->relateTo($related_node, $relationship)->save();
+                        if (!empty($related_node)) {
+                            // Make the relationship
+                            $this->node->relateTo($related_node, $relationship)->save();
+                        }
                     }
                 }
             }
