@@ -27,6 +27,8 @@ var getCities = function (results) {
         location.locality = results[x].address_components[y].long_name;
       } else if (type === "postal_code") {
         location.postalCode = results[x].address_components[y].long_name;
+      } else if (type === "street_number") {
+        location.number = results[x].address_components[y].long_name;
       }
   }
   return location
@@ -146,8 +148,8 @@ new Vue({
         return {lat: parseFloat(this.find.findSpot.location.lat), lng: parseFloat(this.find.findSpot.location.lng)}
       },
       set: function ({lat, lng}) {
-        this.find.findSpot.location.lat = parseFloat(lat)
-        this.find.findSpot.location.lng = parseFloat(lng)
+        this.find.findSpot.location.lat = parseFloat(lat.toFixed(6))
+        this.find.findSpot.location.lng = parseFloat(lng.toFixed(6))
       }
     },
     accuracy: {
@@ -209,13 +211,39 @@ new Vue({
     changeMarker (event) {
       console.log(event, 'dragged')
     },
+    reverseGeocode () {
+      var google = window.google
+      var self = this
+      var a = this.find.findSpot.location.address
+      this.geocoder = this.geocoder || new google.maps.Geocoder()
+      this.geocoder.geocode({
+        location: this.latlng,
+        region: 'be'
+      }, function (results, status) {
+        console.log(results)
+        if (status !== google.maps.GeocoderStatus.OK) {
+          return console.warn('reverse geocoding: failed', status)
+        } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
+          return console.warn('reverse geocoding: no results', status)
+        }
+        var location = getCities(results)
+        self.find.findSpot.location.address.street = location.street
+        self.find.findSpot.location.address.number = location.number
+        self.find.findSpot.location.address.locality = location.locality
+        self.find.findSpot.location.address.postalCode = location.postalCode
+        if (location.street) {
+          self.show.address = true
+        }
+      })
+    },
     showOnMap () {
       var google = window.google
       var self = this
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
-        address: (a.street ? a.street + ' , ': '') + a.locality + ' , Belgium'
+        address: (a.street ? a.street + (a.number || '') + ' , ': '') + (a.zip || '') + a.locality,
+        region: 'be'
       }, function (results, status) {
         console.log(results)
         if (status !== google.maps.GeocoderStatus.OK) {
@@ -238,9 +266,9 @@ new Vue({
           lng: results[0].geometry.location.lng()
         }
         // Calculate approximate accuracy
-        // var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
-        // dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
-        // self.map.zoom = Math.floor(24 - Math.log2(dist))
+        var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
+        dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
+        self.map.zoom = Math.floor(24 - Math.log2(dist))
         // self.find.findSpot.location.accuracy = dist
         self.show.map = true
         if (location.street) {
@@ -251,18 +279,18 @@ new Vue({
         })
       })
     },
-    // haversineDistance (p1, p2) {
-    //   var rad = function(x) {
-    //     return x * Math.PI / 180;
-    //   }
-    //   var R = 6378137; // Earth’s mean radius in meter
-    //   var dLat = rad(p2.lat() - p1.lat());
-    //   var dLong = rad(p2.lng() - p1.lng());
-    //   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
-    //   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    //   var d = R * c;
-    //   return d; // returns the distance in meter
-    // },
+    haversineDistance (p1, p2) {
+      var rad = function(x) {
+        return x * Math.PI / 180;
+      }
+      var R = 6378137; // Earth’s mean radius in meter
+      var dLat = rad(p2.lat() - p1.lat());
+      var dLong = rad(p2.lng() - p1.lng());
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c;
+      return d; // returns the distance in meter
+    },
     pushCls () {
       this.find.object.productionEvent.productionClassification.push({
         type: '',

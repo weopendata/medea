@@ -38,11 +38,11 @@
       <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
     </div>
   </div>
-  <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)">
+  <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)" id="location-picker">
     <label>Vondstlocatie verfijnen</label>
-    <button v-if="!show.spotdescription" @click.prevent="show.spotdescription=1" class="ui button">Beschrijving</button>
-    <button v-if="!show.place" @click.prevent="show.place=1" class="ui button">Plaatsnaam</button>
-    <button v-if="!show.address" @click.prevent="show.address=1" class="ui button">Adres</button>
+    <button type="button" v-if="!show.spotdescription" @click.prevent="show.spotdescription=1" class="ui button">Beschrijving</button>
+    <button type="button" v-if="!show.place" @click.prevent="show.place=1" class="ui button">Plaatsnaam</button>
+    <button type="button" v-if="!show.address" @click.prevent="show.address=1" class="ui button">Adres</button>
   </div>
   <div class="field" v-if="show.spotdescription">
     <label>Beschrijving van de vindplaats</label>
@@ -55,14 +55,14 @@
   <div class="fields" v-if="show.address">
     <div class="six wide field">
       <label>Straat</label>
-      <input type="text" v-model="find.findSpot.location.address.street" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" id="street">
+      <input type="text" v-model="find.findSpot.location.address.street" id="street">
     </div>
     <div class="two wide field">
       <label>Nummer</label>
-      <input type="number" v-model="find.findSpot.location.address.number" placeholder="">
+      <input type="number" v-model="find.findSpot.location.address.number">
     </div>
   </div>
-  <div class="fields" id="location-picker">
+  <div class="fields">
     <div class="two wide field" v-if="show.address">
       <label>Postcode</label>
       <input type="text" v-model="find.findSpot.location.address.postalCode">
@@ -71,11 +71,13 @@
       <label v-text="show.address||show.map?'Stad/gemeente':'Straat en/of gemeente/stad'">Stad/gemeente</label>
       <input type="text" v-model="find.findSpot.location.address.locality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
-  </div>
-  <div class="field">
-    <button v-if="!show.map" @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locality}">
-      Aanduiden op kaart
-    </button>
+    <div class="eight wide field">
+      <label>&nbsp;</label>
+      <button v-if="show.map" @click.prevent="showOnMap" class="ui button">Omzetten naar coördinaten</button>
+      <button v-else @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locality}">
+        Aanduiden op kaart
+      </button>
+    </div>
   </div>
   <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
@@ -83,18 +85,22 @@
       <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
     </map>
   </div>
-  <div class="two fields" v-if="show.co||show.map">
-    <div class="field">
+  <div class="fields" v-if="show.co||show.map">
+    <div class="three wide field">
       <label>Breedtegraad</label>
       <input type="number" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
     </div>
-    <div class="field">
+    <div class="three wide field">
       <label>Lengtegraad</label>
       <input type="number" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
     </div>
-    <div class="field" v-if="show.map">
+    <div class="four wide field" v-if="show.map">
       <label>Nauwkeurigheid (meter)</label>
       <input type="number" v-model="find.findSpot.location.accuracy" min="0" :step="accuracyStep">
+    </div>
+    <div class="five wide field" v-if="show.map">
+      <label>&nbsp;</label>
+      <button v-if="show.map" @click.prevent="reverseGeocode" class="ui button">Omzetten naar adres</button>
     </div>
   </div>
   <p>
