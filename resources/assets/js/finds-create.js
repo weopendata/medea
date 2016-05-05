@@ -220,7 +220,6 @@ new Vue({
         location: this.latlng,
         region: 'be'
       }, function (results, status) {
-        console.log(results)
         if (status !== google.maps.GeocoderStatus.OK) {
           return console.warn('reverse geocoding: failed', status)
         } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
@@ -231,6 +230,13 @@ new Vue({
         self.find.findSpot.location.address.number = location.number
         self.find.findSpot.location.address.locality = location.locality
         self.find.findSpot.location.address.postalCode = location.postalCode
+
+        // Calculate approximate accuracy
+        var dist = self.haversineDistance(results[0].geometry.viewport.getSouthWest(), results[0].geometry.viewport.getNorthEast())
+        dist = parseFloat((dist / 4).toPrecision(1)).toFixed()
+        self.map.zoom = Math.floor(24 - Math.log2(dist))
+
+        // Show address
         if (location.street) {
           self.show.address = true
         }
@@ -245,7 +251,6 @@ new Vue({
         address: (a.street ? a.street + (a.number || '') + ' , ': '') + (a.zip || '') + a.locality,
         region: 'be'
       }, function (results, status) {
-        console.log(results)
         if (status !== google.maps.GeocoderStatus.OK) {
           self.show.map = true
           return console.warn('geocoding failed', status)
@@ -255,7 +260,6 @@ new Vue({
           return console.warn('no results', status)
         }
         var location = getCities(results)
-        console.log(location, results)
         self.find.findSpot.location.address.street = location.street
         self.find.findSpot.location.address.locality = location.locality
         self.find.findSpot.location.address.postalCode = location.postalCode
@@ -271,6 +275,8 @@ new Vue({
         self.map.zoom = Math.floor(24 - Math.log2(dist))
         // self.find.findSpot.location.accuracy = dist
         self.show.map = true
+
+        // Show address
         if (location.street) {
           self.show.address = true
         }
