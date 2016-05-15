@@ -111,11 +111,24 @@
 <step number="2" title="Foto's" class="required" :class="{completed:step2valid}">
   <p>
     Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
+
   </p>
   <ul>
-    <li>Zorg ervoor dat een meetschaal in zicht is. Gebruik hiervoor een lat of <a href="http://www.kjarrett.com/livinginthepast/wp-content/uploads/2012/05/Scale-5cm.jpg" target="_blank">zoiets</a></li>
-    <li>Let erop dat de belichting van overal komt</li>
-    <li>De resolutie van de foto's is best hoger dan 1600x900</li>
+  <li>
+    Plaats je object op een egale achtergrond die goed contrasteert met kleur van object (bij voorkeur wit).
+Zorg voor goede belichting, die de details van het object duidelijk zichtbaar maakt. Vermijd scherpe schaduwen. Belicht eventueel van verschillende kanten, of gebruik een wit blad om licht te reflecteren. Daglicht (geen direct zonlicht) levert vaak goede resultaten op.
+  </li>
+  <li>
+Zorg dat er steeds een schaallat op de foto staat. Als je geen schaallat bij de hand hebt, download dan <a href="http://static1.squarespace.com/static/50edd649e4b0829d0c5030a0/t/55f48a78e4b0a0b78958f884/1442089592936/Scales.pdf">dit pdf-bestand</a>, druk het af (let op dat de afdrukgrootte ingesteld staat op 100%!), kleef eventueel op dun karton, en knip de benodigde schaallatjes uit.
+  </li>
+  <li>
+Zorg dat je foto goed is scherpgesteld. Gebruik eventueel de ‘macro’-stand van je fototoestel.
+Plaats het object centraal en voldoende groot op de foto. Snijd je foto eventueel bij na het nemen om overtollige witruimte te verwijderen.
+  </li>
+  <li>
+Zorg dat je foto een voldoende resolutie heeft. (best hoger dan 1600x900)
+Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van andere invalshoeken of details wanneer dat nodig is om het object goed te documenteren.
+  </li>
   </ul>
   <div class="field cleared">
     <div :is="'photo-upload'" :photograph.sync="find.object.photograph">

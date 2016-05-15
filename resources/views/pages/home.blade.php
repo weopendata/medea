@@ -77,7 +77,7 @@
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
       <label>
         <b>Registrator</b>
-        <br>kan alle vondstgegevens beheren.
+        <br>beheert de vondsten van een bestaande collectie of project.
       </label>
     </div>
   </div>
