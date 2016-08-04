@@ -152,9 +152,9 @@ class FindController extends Controller
 
         if (empty($user)) {
             // Test code in order to test with PostMan requests
-            $user_node = $users->getUser('foo@bar.com');
+            $userNode = $users->getUser('foo@bar.com');
             $user = new \App\Models\Person();
-            $user->setNode($user_node);
+            $user->setNode($userNode);
         }
 
         $images = [];
@@ -179,6 +179,8 @@ class FindController extends Controller
         if (!in_array($input['object']['objectValidationStatus'], ['in bewerking', 'revisie nodig'])) {
             $input['object']['objectValidationStatus'] = 'in bewerking';
         }
+
+        \Log::info($input['person']);
 
         // Make find
         $find = $this->finds->store($input);

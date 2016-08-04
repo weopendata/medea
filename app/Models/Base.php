@@ -669,16 +669,16 @@ class Base
      * this is necessary for example when the base node doesn't need
      * to instantiate new nodes, but rather needs to link with existing ones
      *
-     * @param integer $node_id
+     * @param integer $nodeId
      * @param string  $model
      *
      * @return null|Node
      */
-    private function searchNode($node_id, $model)
+    private function searchNode($nodeId, $model)
     {
         $client = self::getClient();
 
-        $node = $client->getNode($node_id);
+        $node = $client->getNode($nodeId);
 
         if (empty($node)) {
             return [];
@@ -688,10 +688,12 @@ class Base
             // We can use the model name as a label because
             // the models that we fetch are all related models
             // meaning they have cidoc labels and model name labels
-            if ($label->getName() == $model) {
+            if (mb_strtolower($label->getName()) == mb_strtolower($model)) {
                  $modelName = 'App\Models\\' . $model;
                  $model = new $modelName();
                  $model->setNode($node);
+
+                 \Log::info($modelName);
 
                  return $model;
             }

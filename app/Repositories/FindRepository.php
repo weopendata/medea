@@ -56,18 +56,22 @@ class FindRepository extends BaseRepository
         return $finds;
     }
 
-    public function expandValues($find_id, $user = null)
+    public function expandValues($findId, $user = null)
     {
-        $find = parent::expandValues($find_id);
+        $find = parent::expandValues($findId);
 
         // Add the vote of the user
         if (!empty($user)) {
             // Get the vote of the user for the find
-            $query = "MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = $user->id AND id(find) = $find_id RETURN r";
+            $query = "MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = {userId} AND id(find) = {findId} RETURN r";
+
+            $variables = [];
+            $variables['userId'] = $user->id;
+            $variables['findId'] = $findId;
 
             $client = $this->getClient();
 
-            $cypher_query = new Query($client, $query);
+            $cypher_query = new Query($client, $query, $variables);
             $results = $cypher_query->getResultSet();
 
             if ($results->count() > 0) {
@@ -174,6 +178,8 @@ class FindRepository extends BaseRepository
         ORDER BY $orderStatement
         WHERE $whereStatement
         RETURN count(distinct find)";
+
+        \Log::info($query);
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
         $data = $this->parseResults($cypherQuery);
