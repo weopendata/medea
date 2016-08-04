@@ -35,13 +35,16 @@ class FindRepository extends BaseRepository
     public function getForPerson($person, $limit = 20, $offset = 0)
     {
         // Get all of the related finds
-        $person_node = $person->getNode();
+        $personNode = $person->getNode();
 
-        $find_relations = $person_node->getRelationships(['P29'], Relationship::DirectionOut);
+        $relationships = $personNode->getRelationships(['P29'], Relationship::DirectionOut);
+
+        // Apply paging by taking a slice of the relationships array
+        $relationships = array_slice($relationships, $offset, $limit);
 
         $finds = [];
 
-        foreach ($find_relations as $relation) {
+        foreach ($relationships as $relation) {
             $find_node = $relation->getEndNode();
 
             $findEvent = new FindEvent();
@@ -178,8 +181,6 @@ class FindRepository extends BaseRepository
         ORDER BY $orderStatement
         WHERE $whereStatement
         RETURN count(distinct find)";
-
-        \Log::info($query);
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
         $data = $this->parseResults($cypherQuery);
