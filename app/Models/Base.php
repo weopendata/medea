@@ -171,7 +171,7 @@ class Base
                     // Check which of the cases it is by checking whether the array is associative or not
                     if (is_array($input) && !$this->isAssoc($input)) {
                         foreach ($input as $entry) {
-                            $related_node = $this->createImplicitNode($entry, $model_config, $generalId);
+                            $related_node = $this->createImplicitNode($entry, $model_config);
 
                             if (!empty($related_node)) {
                                 // Make the relationship
@@ -179,7 +179,7 @@ class Base
                             }
                         }
                     } else {
-                        $related_node = $this->createImplicitNode($input, $model_config, $generalId);
+                        $related_node = $this->createImplicitNode($input, $model_config);
 
                         if (!empty($related_node)) {
                             // Make the relationship
@@ -203,8 +203,6 @@ class Base
     {
         if (!empty($properties)) {
             $client = self::getClient();
-
-            $generalId = $this->getGeneralId();
 
             // Set value properties for the node
             foreach ($this->properties as $property_config) {
@@ -333,13 +331,13 @@ class Base
                     // Check which of the cases it is by checking whether the array is associative or not
                     if (is_array($input) && !$this->isAssoc($input)) {
                         foreach ($input as $entry) {
-                            $related_node = $this->createImplicitNode($entry, $model_config, $generalId);
+                            $related_node = $this->createImplicitNode($entry, $model_config);
 
                             // Make the relationship
                             $this->node->relateTo($related_node, $relationship)->save();
                         }
                     } else {
-                        $related_node = $this->createImplicitNode($input, $model_config, $generalId);
+                        $related_node = $this->createImplicitNode($input, $model_config);
 
                         // Make the relationship
                         $this->node->relateTo($related_node, $relationship)->save();
@@ -385,7 +383,7 @@ class Base
         $this->node->relateTo($idNode, 'P1')->save();
     }
 
-    private function createImplicitNode($input, $config, $generalId)
+    private function createImplicitNode($input, $config)
     {
         // If the variable value_node is set, this means a simple creation of a node is
         // viable and can be automated. If not the specific create function will be called

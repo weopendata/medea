@@ -44,13 +44,13 @@ class FindRepository extends BaseRepository
         foreach ($find_relations as $relation) {
             $find_node = $relation->getEndNode();
 
-            $find_event = new FindEvent();
-            $find_event->setNode($find_node);
+            $findEvent = new FindEvent();
+            $findEvent->setNode($find_node);
 
             // Get the entire data that's behind the find
-            $find = $find_event->getValues();
+            $find = $findEvent->getValues();
 
-            $finds[] = $finds;
+            $finds[] = $find;
         }
 
         return $finds;
@@ -90,105 +90,144 @@ class FindRepository extends BaseRepository
 
     /**
      * Return FindEvents that are filtered
+     * We expect that all filters are object filters (e.g. category, period, technique, material)
+     * We'll have to build our query based on the filters that are configured,
+     * some are filters on object relationships, some on find event, some on classifications
      *
      * @param array $filters
      *
      * @return
      */
-    public function getAllWithFilter($filters, $limit = 50, $offset = 0, $order_by = 'findDate', $order_flow = 'ASC', $validation_status = '*')
-    {
-        // We expect that all filters are object filters (e.g. category, period, technique, material)
-        // We'll have to build our query based on the filters that are configured,
-        // some are filters on object relationships, some on find event, some on classifications
-        $match_statements = [];
-        $where_statements = [];
+    public function getAllWithFilter(
+        $filters,
+        $limit = 50,
+        $offset = 0,
+        $orderBy = 'findDate',
+        $orderFlow = 'ASC',
+        $validationStatus = '*'
+    ) {
+        $matchStatements = [];
+        $whereStatements = [];
 
-        $material = @$filters['objectMaterial'];
-        $technique = @$filters['technique'];
-        $category = @$filters['category'];
-        $period = @$filters['period'];
+        $filterProperties = $this->getFilterProperties();
+
         $email = @$filters['myfinds'];
 
+        $variables = [];
+
         // Non personal find statement
-        $initial_statement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
+        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
 
-        if ($validation_status == '*') {
-            $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
+        if ($validationStatus == '*') {
+            $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
         } else {
-            $where_statements[] = "validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+            $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
+            $variables['validationStatus'] = $validationStatus;
         }
 
-        $with_statement = "find, validation";
+        $withStatement = "find, validation";
 
-        $order_statement = 'find.id DESC';
+        $orderStatement = 'find.id DESC';
 
-        if ($order_by == 'period') {
-            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
-            $with_statement .= ", period";
-            $order_statement = "period.value $order_flow";
+        if ($orderBy == 'period') {
+            $matchStatements[] = "(object:E22)-[P42]-(period:E55)";//"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
+            $withStatement .= ", period";
+            $orderStatement = "period.value $orderFlow";
         } else {
-            $match_statements[] = "(find:E10)-[P4]-(findDate:E52)";
-            $with_statement .= ", findDate";
-            $order_statement = "findDate.value $order_flow";
+            $matchStatements[] = "(find:E10)-[P4]-(findDate:E52)";
+            $withStatement .= ", findDate";
+            $orderStatement = "findDate.value $orderFlow";
         }
 
-        if (!empty($material)) {
-            $match_statements[] = "(object:E22)-[P45]-(material:E57)";
-            $where_statements[] = "material.value = '$material'";
-        }
-
-        if (!empty($technique)) {
-            $match_statements[] = "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[techniqueType:P2]-(type:E55)";
-            $where_statements[] = "type.value = '$technique'";
-        }
-
-        if (!empty($period)) {
-            $match_statements[] = "(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
-            $where_statements[] = "period.value = '$period'";
-        }
-
-        if (!empty($category)) {
-            $match_statements[] = "(object:E22)-[categoryType:P2]-(category:E55)";
-            $where_statements[] = "category.value = '$category'";
+        foreach ($filterProperties as $property => $config) {
+            if (!empty($filters[$property])) {
+                $matchStatements[] = $config['match'];
+                $whereStatements[] = $config['where'];
+                $variables[$config['nodeName']] = $filters[$property];
+            }
         }
 
         if (!empty($email)) {
-            $initial_statement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
-            if ($validation_status == '*') {
-                $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
+            $initialStatement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
+            if ($validationStatus == '*') {
+                $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
             } else {
-                $where_statements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = '$validation_status'";
+                $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
+                $variables['validationStatus'] = $validationStatus;
             }
-            $with_statement = "find, validation";
+            $withStatement = "find, validation";
         }
 
-        $client = $this->getClient();
+        $matchstatement = implode(', ', $matchStatements);
+        $whereStatement = implode(' AND ', $whereStatements);
 
-        $match_statement = implode(', ', $match_statements);
-        $where_statement = implode(' AND ', $where_statements);
-
-        $query = "MATCH $initial_statement, $match_statement
-        WITH $with_statement
-        ORDER BY $order_statement
-        WHERE $where_statement
+        $query = "MATCH $initialStatement, $matchstatement
+        WITH $withStatement
+        ORDER BY $orderStatement
+        WHERE $whereStatement
         RETURN distinct find
         SKIP $offset
         LIMIT $limit";
 
-        $count_query = "MATCH $initial_statement, $match_statement
-        WITH $with_statement
-        ORDER BY $order_statement
-        WHERE $where_statement
+        $countquery = "MATCH $initialStatement, $matchstatement
+        WITH $withStatement
+        ORDER BY $orderStatement
+        WHERE $whereStatement
         RETURN count(distinct find)";
 
-        $cypher_query = new Query($client, $query);
-        $results = $cypher_query->getResultSet();
+        $cypherQuery = new Query($this->getClient(), $query, $variables);
+        $data = $this->parseResults($cypherQuery);
 
-        $cypher_query = new Query($client, $count_query);
-        $count_results = $cypher_query->getResultSet();
+        $cypherQuery = new Query($this->getClient(), $countquery, $variables);
+        $count_results = $cypherQuery->getResultSet();
 
-        $data = [];
         $count = 0;
+
+        if (!empty($count_results)) {
+            $row = $count_results->current();
+            $count = $row['count(distinct find)'];
+        }
+
+        return ['data' => $data, 'count' => $count];
+    }
+
+    /**
+     * Return the supported filters for findEvents
+     * with the accompanying match and where statements
+     *
+     * @return array
+     */
+    public function getFilterProperties()
+    {
+        return [
+            'objectMaterial' => [
+                'match' => "(object:E22)-[P45]-(material:E57)",
+                'where' => "material.value = {material}",
+                'nodeName' => 'material',
+            ],
+            'technique' => [
+                'match' => "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[techniqueType:P2]-(type:E55)",
+                'where' => "type.value = {technique}",
+                'nodeName' => 'technique',
+            ],
+            'category' => [
+                'match' => "(object:E22)-[categoryType:P2]-(category:E55)",
+                'where' => "category.value = {category}",
+                'nodeName' => 'category',
+            ],
+            'period' => [
+                'match' => "(object:E22)-[P42]-(period:E55)",
+                //"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)",
+                'where' => "period.value = {period}",
+                'nodeName' => 'period',
+            ],
+        ];
+    }
+
+    private function parseResults($cypherQuery)
+    {
+        $results = $cypherQuery->getResultSet();
+        $data = [];
 
         foreach ($results as $result) {
             $find = new FindEvent();
@@ -199,12 +238,7 @@ class FindRepository extends BaseRepository
             $data[] = $find;
         }
 
-        if (!empty($count_results)) {
-            $row = $count_results->current();
-            $count = $row['count(distinct find)'];
-        }
-
-        return ['data' => $data, 'count' => $count];
+        return $data;
     }
 
     /**
