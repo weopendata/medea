@@ -7,7 +7,7 @@ class ProductionEvent extends Base
     public static $NODE_TYPE = 'E12';
     public static $NODE_NAME = 'productionEvent';
 
-    protected $related_models = [
+    protected $relatedModels = [
         'P41' => [
             'key' => 'productionClassification',
             'model_name' => 'ProductionClassification',
@@ -16,7 +16,7 @@ class ProductionEvent extends Base
         ]
     ];
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P33',
             'config' => [

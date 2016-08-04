@@ -7,12 +7,12 @@ class Publication extends Base
     public static $NODE_TYPE = 'E31';
     public static $NODE_NAME = 'publication';
 
-    protected $has_unique_id = true;
+    protected $hasUniqueId = true;
 
-    protected $related_models = [
+    protected $relatedModels = [
     ];
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P102',
             'config' => [

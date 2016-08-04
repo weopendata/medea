@@ -65,14 +65,21 @@ class DataManagement extends Command
     {
         $count = 0;
 
-        foreach ($this->finds->getAll(0, 500) as $find_node) {
+        $findNodes = $this->finds->getAll();
+
+        $bar = $this->output->createProgressBar(count($findNodes));
+
+        foreach ($findNodes as $findNode) {
             $find = new FindEvent();
-            $find->setNode($find_node);
+            $find->setNode($findNode);
 
             $find->delete();
+
+            $bar->advance();
             $count++;
         }
 
+        $this->info("");
         $this->info("Removed $count FindEvent nodes.");
     }
 }

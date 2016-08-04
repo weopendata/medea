@@ -206,4 +206,23 @@ class FindRepository extends BaseRepository
 
         return ['data' => $data, 'count' => $count];
     }
+
+    /**
+     * Get all the bare nodes of a findEvent
+     *
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array
+     */
+    public function getAll()
+    {
+        $client = $this->getClient();
+
+        $findLabel = $client->makeLabel($this->label);
+
+        $findNodes = $findLabel->getNodes();
+
+        return $findNodes;
+    }
 }

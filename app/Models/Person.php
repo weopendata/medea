@@ -11,9 +11,9 @@ class Person extends Base implements Authenticatable
     public static $NODE_TYPE = 'E21';
     public static $NODE_NAME = 'person';
 
-    protected $has_unique_id = true;
+    protected $hasUniqueId = true;
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P131',
             'config' => [

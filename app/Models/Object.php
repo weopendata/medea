@@ -7,25 +7,27 @@ class Object extends Base
     public static $NODE_TYPE = 'E22';
     public static $NODE_NAME = 'object';
 
-    protected $has_unique_id = true;
+    protected $hasUniqueId = true;
 
-    protected $related_models = [
+    protected $relatedModels = [
         'P108' => [
             'key' => 'productionEvent',
             'model_name' => 'ProductionEvent',
             'cascade_delete' => true,
-            'required' => false
+            'required' => false,
+            'reverse_relationship' => 'P108'
         ],
         'P62' => [
             'key' => 'photograph',
             'model_name' => 'Photograph',
             'cascade_delete' => true,
             'required' => false,
-            'plural' => true
+            'plural' => true,
+            'reverse_relationship' => 'P62'
         ],
     ];
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P43',
             'config' => [
@@ -108,29 +110,29 @@ class Object extends Base
     {
         $client = self::getClient();
 
-        $general_id = $this->getGeneralId();
+        $generalId = $this->getGeneralId();
 
         // Make E54 Dimension
-        $dimension_node = $client->makeNode();
-        $dimension_node->setProperty('name', 'dimensions');
-        $dimension_node->save();
+        $dimensionNode = $client->makeNode();
+        $dimensionNode->setProperty('name', 'dimensions');
+        $dimensionNode->save();
 
         // Set the proper labels to the objectDimensionType
-        $dimension_node->addLabels([self::makeLabel('E54'), self::makeLabel('objectDimension'), self::makeLabel($general_id)]);
+        $dimensionNode->addLabels([self::makeLabel('E54'), self::makeLabel('objectDimension'), self::makeLabel($generalId)]);
 
         // Make E55 Type objectDimensionType
-        $dimension_type = $this->createValueNode('type', ['E55', $general_id], $dimension['type']);
-        $dimension_node->relateTo($dimension_type, 'P2')->save();
+        $dimension_type = $this->createValueNode('type', ['E55', $generalId], $dimension['type']);
+        $dimensionNode->relateTo($dimension_type, 'P2')->save();
 
         // Make E60 Number
-        $dimension_value = $this->createValueNode('value', ['E60', $general_id], $dimension['value']);
-        $dimension_node->relateTo($dimension_value, 'P90')->save();
+        $dimension_value = $this->createValueNode('value', ['E60', $generalId], $dimension['value']);
+        $dimensionNode->relateTo($dimension_value, 'P90')->save();
 
         // Make E58 Measurement Unit
-        $dimension_unit = $this->createValueNode('unit', ['E58', $general_id], $dimension['unit']);
-        $dimension_node->relateTo($dimension_unit, 'P91')->save();
+        $dimension_unit = $this->createValueNode('unit', ['E58', $generalId], $dimension['unit']);
+        $dimensionNode->relateTo($dimension_unit, 'P91')->save();
 
-        return $dimension_node;
+        return $dimensionNode;
     }
 
     /**
@@ -140,20 +142,20 @@ class Object extends Base
     {
         $client = self::getClient();
 
-        $general_id = $this->getGeneralId();
+        $generalId = $this->getGeneralId();
 
         // Make an E34
-        $inscription_node = $client->makeNode();
-        $inscription_node->setProperty('name', 'objectInscription');
-        $inscription_node->save();
+        $inscriptionNode = $client->makeNode();
+        $inscriptionNode->setProperty('name', 'objectInscription');
+        $inscriptionNode->save();
 
-        $inscription_node->addLabels([self::makeLabel('E34'), self::makeLabel('objectInscription'), self::makeLabel($general_id)]);
+        $inscriptionNode->addLabels([self::makeLabel('E34'), self::makeLabel('objectInscription'), self::makeLabel($generalId)]);
 
         // Make an E62 string
-        $inscription_note_node = $this->createValueNode('objectInscriptionNote', ['E62', $general_id, 'objectInscriptionNote'], $inscription['objectInscriptionNote']);
-        $inscription_node->relateTo($inscription_note_node, 'P3')->save();
+        $noteNode = $this->createValueNode('objectInscriptionNote', ['E62', $generalId, 'objectInscriptionNote'], $inscription['objectInscriptionNote']);
+        $inscriptionNode->relateTo($noteNode, 'P3')->save();
 
-        return $inscription_node;
+        return $inscriptionNode;
     }
 
     /**
@@ -163,34 +165,38 @@ class Object extends Base
     {
         $client = self::getClient();
 
-        $general_id = $this->getGeneralId();
+        $generalId = $this->getGeneralId();
 
         if (empty($treatment['modificationTechnique']['modificationTechniqueType'])) {
             return;
         }
 
         // Make a treatmentEvent
-        $treatment_node = $client->makeNode();
-        $treatment_node->setProperty('name', 'treatmentEvent');
-        $treatment_node->save();
+        $treatmentNode = $client->makeNode();
+        $treatmentNode->setProperty('name', 'treatmentEvent');
+        $treatmentNode->save();
 
-        $treatment_node->addLabels([self::makeLabel('E11'), self::makeLabel('treatmentEvent'), self::makeLabel($general_id)]);
+        $treatmentNode->addLabels([self::makeLabel('E11'), self::makeLabel('treatmentEvent'), self::makeLabel($generalId)]);
 
         // Make an E29 Design or procedure
-        $modification_node = $client->makeNode();
-        $modification_node->setProperty('name', 'modificationTechnique');
-        $modification_node->save();
+        $modificationNode = $client->makeNode();
+        $modificationNode->setProperty('name', 'modificationTechnique');
+        $modificationNode->save();
 
-        $modification_node->addLabels([self::makeLabel('E29'), self::makeLabel('modificationTechnique'), self::makeLabel($general_id)]);
+        $modificationNode->addLabels([
+            self::makeLabel('E29'),
+            self::makeLabel('modificationTechnique'),
+            self::makeLabel($generalId)
+        ]);
 
-        $treatment_node->relateTo($modification_node, 'P33')->save();
+        $treatmentNode->relateTo($modificationNode, 'P33')->save();
 
         // Make a type (modification type)
-        $modification_type_node = $this->createValueNode('modificationTechniqueType', ['E55', $general_id, 'modificationTechniqueType'], $treatment['modificationTechnique']['modificationTechniqueType']);
+        $typeNode = $this->createValueNode('modificationTechniqueType', ['E55', $generalId, 'modificationTechniqueType'], $treatment['modificationTechnique']['modificationTechniqueType']);
 
-        $modification_node->relateTo($modification_type_node, 'P2')->save();
+        $modificationNode->relateTo($typeNode, 'P2')->save();
 
-        return $treatment_node;
+        return $treatmentNode;
     }
 
     /**

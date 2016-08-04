@@ -7,17 +7,18 @@ class FindSpot extends Base
     public static $NODE_TYPE = 'E27';
     public static $NODE_NAME = 'findSpot';
 
-    protected $has_unique_id = true;
+    protected $hasUniqueId = true;
 
-    protected $related_models = [
+    protected $relatedModels = [
         'P53' => [
             'key' => 'location',
             'model_name' => 'Location',
-            'cascade_delete' => true
+            'cascade_delete' => true,
+            'reverse_relationship' => 'P53'
         ]
     ];
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P2',
             'config' => [

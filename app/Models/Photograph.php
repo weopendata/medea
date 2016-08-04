@@ -7,10 +7,10 @@ class Photograph extends Base
     public static $NODE_TYPE = 'E38';
     public static $NODE_NAME = 'photograph';
 
-    protected $related_models = [
+    protected $relatedModels = [
     ];
 
-    protected $implicit_models = [
+    protected $implicitMoodels = [
     ];
 
     protected $properties = [

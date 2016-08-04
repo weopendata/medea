@@ -7,19 +7,20 @@ class ProductionClassification extends Base
     public static $NODE_TYPE = 'E17';
     public static $NODE_NAME = 'productionClassification';
 
-    protected $has_unique_id = true;
+    protected $hasUniqueId = true;
 
-    protected $related_models = [
+    protected $relatedModels = [
         'P108' => [
             'key' => 'publication',
             'model_name' => 'Publication',
             'cascade_delete' => true,
             'required' => false,
-            'plural' => true
+            'plural' => true,
+            'reverse_relationship' => 'P67'
         ],
     ];
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P2',
             'config' => [

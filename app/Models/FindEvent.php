@@ -7,29 +7,31 @@ class FindEvent extends Base
     public static $NODE_TYPE = 'E10';
     public static $NODE_NAME = 'findEvent';
 
-    protected $has_unique_id = true;
+    protected $hasUniqueId = true;
 
-    protected $related_models = [
+    protected $relatedModels = [
         'P12' => [
             'key' => 'object',
             'model_name' => 'Object',
-            'cascade_delete' => true
+            'cascade_delete' => true,
+            'reverse_relationship' => 'P12'
         ],
         'P7' => [
             'key' => 'findSpot',
             'model_name' => 'FindSpot',
-            'cascade_delete' => true
+            'cascade_delete' => true,
+            'reverse_relationship' => 'P7'
         ],
         'P29' => [
             'key' => 'person',
-            'model_name' => 'person',
+            'model_name' => 'Person',
             'cascade_delete' => false,
             'link_only' => true,
-            'reverse_relationhip' => 'P29'
+            'reverse_relationship' => 'P29'
         ]
     ];
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P4',
             'config' => [

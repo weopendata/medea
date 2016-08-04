@@ -7,7 +7,7 @@ class Location extends Base
     public static $NODE_TYPE = 'E53';
     public static $NODE_NAME = 'location';
 
-    protected $implicit_models = [
+    protected $implicitModels = [
         [
             'relationship' => 'P87',
             'config' => [
@@ -43,17 +43,14 @@ class Location extends Base
         ],
     ];
 
-    protected $related_models = [
+    protected $relatedModels = [
     ];
 
     public function save()
     {
         parent::save();
 
-        $general_id = $this->getGeneralId();
-
         // Add an ID to the node
-        $client = self::getClient();
         $id_node = $this->createValueNode('identifier', ['E42', 'locationplaceNameId', $this->getGeneralId()], $this->node->getId());
 
         $this->node->relateTo($id_node, 'P1')->save();
@@ -61,8 +58,6 @@ class Location extends Base
 
     public function createLat($lat)
     {
-        $client = $this->getClient();
-
         $lat_node = $this->createValueNode('lat', ['E47', 'locationSpatialCoordinate', $this->getGeneralId()], $lat);
 
         $latitude_type = $this->createValueNode('latitude', ['E55', 'locationspatialCoordinateQualifier', $this->getGeneralId()], 'latitude');
@@ -74,8 +69,6 @@ class Location extends Base
 
     public function createLng($lng)
     {
-        $client = $this->getClient();
-
         $lng_node = $this->createValueNode('lng', ['E47', 'locationSpatialCoordinate', $this->getGeneralId()], $lng);
 
         $latitude_type = $this->createValueNode('longitude', ['E55', 'locationspatialCoordinateQualifier', $this->getGeneralId()], 'longitude');
@@ -139,8 +132,6 @@ class Location extends Base
     public function createLocationPlaceName($spatial)
     {
         $client = self::getClient();
-
-        $general_id = $this->getGeneralId();
 
         // Make E48 Place name
         $place_name_node = $client->makeNode();
