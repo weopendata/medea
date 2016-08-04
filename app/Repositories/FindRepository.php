@@ -56,7 +56,7 @@ class FindRepository extends BaseRepository
             $finds[] = $find;
         }
 
-        return $finds;
+        return ['data' => $finds, 'count' => count($relationships)];
     }
 
     public function expandValues($findId, $user = null)
