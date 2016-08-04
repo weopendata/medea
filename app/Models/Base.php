@@ -6,6 +6,7 @@ use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Exception;
+use Carbon\Carbon;
 
 /**
  * The base class for a node in the graph
@@ -109,6 +110,12 @@ class Base
             }
 
             $this->node->save();
+
+            // Check if timestamps need to be added
+            // if so, add created_at and updated_at
+            if ($this->timestamps) {
+                $this->addTimestamps();
+            }
 
             // Create related models through recursion
             // these models need to be consistent, meaning once they are created
@@ -265,7 +272,7 @@ class Base
                                     $node = $client->getNode($input['identifier']);
 
                                     $modelName = 'App\Models\\' . $config['model_name'];
-                                    \Log::info("updating for node: " . $config['model_name']);
+
                                     $model = new $modelName();
                                     $model->setNode($node);
                                     $model->update($input);
@@ -341,17 +348,41 @@ class Base
             }
         }
 
-        if ($this->hasUniqueId) {
-            // Add an ID to the node
-            $id_name = lcfirst(static::$NODE_NAME) . 'Id';
-            $id_node = $id_node = $this->createValueNode('identifier', ['E42', $id_name, $this->getGeneralId()], $this->node->getId());
-
-            $this->node->relateTo($id_node, 'P1')->save();
-        }
-
         $this->node->save();
 
         return $this->node;
+    }
+
+    /**
+     * Add timestamps to a node in ISO8601 format
+     * if they already exist, only update the
+     * updated_at timestamp
+     *
+     * @return void
+     */
+    private function addTimestamps()
+    {
+        $timestamp = Carbon::now();
+
+        $this->node->setProperty('updated_at', $timestamp->toIso8601String())->save();
+
+        if (empty($this->node->getProperty('created_at'))) {
+            $this->node->setProperty('created_at', $timestamp->toIso8601String())->save();
+        }
+    }
+
+    /**
+     * Add a unique ID to the node
+     *
+     * @return void
+     */
+    private function addUniqueId()
+    {
+        // Add a unique id to the node
+        $idName = lcfirst(static::$NODE_NAME) . 'Id';
+        $idNode = $idNode = $this->createValueNode('identifier', ['E42', $idName, $this->getGeneralId()], $this->node->getId());
+
+        $this->node->relateTo($idNode, 'P1')->save();
     }
 
     private function createImplicitNode($input, $config, $generalId)
@@ -386,11 +417,7 @@ class Base
         $this->node->addLabels([$cidoc_label, $human_label, $medea_label]);
 
         if ($this->hasUniqueId) {
-            // Add an ID to the node
-            $id_name = lcfirst(static::$NODE_NAME) . 'Id';
-            $id_node = $id_node = $this->createValueNode('identifier', ['E42', $id_name, $this->getGeneralId()], $this->node->getId());
-
-            $this->node->relateTo($id_node, 'P1')->save();
+            $this->addUniqueId();
         }
     }
 
