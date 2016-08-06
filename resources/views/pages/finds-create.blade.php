@@ -46,7 +46,17 @@
   </div>
   <div class="field" v-if="show.spotdescription">
     <label>Beschrijving van de vindplaats</label>
-    <input type="text" v-model="find.findSpot.description" placeholder="Beschrijving van de vindplaats">
+    <input type="text" v-model="find.findSpot.findSpotDescription" placeholder="Beschrijving van de vindplaats">
+  </div>
+   <div class="two fields">
+    <div class="field">
+      <label>Type vindplaats</label>
+      <select class="ui dropdown" v-model="find.findSpot.findSpotType">
+        @foreach ($fields['find_spot']['type'] as $type)
+        <option value="{{$type}}">{{$type}}</option>
+        @endforeach
+      </select>
+    </div>
   </div>
   <div class="field" v-if="show.place">
     <label>Plaatsnaam</label>

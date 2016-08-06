@@ -41,8 +41,9 @@ new Vue({
     var initialFind = {
       findDate: new Date().toISOString().slice(0, 10),
       findSpot: {
-        title: null,
-        description: '',
+        findSpotTitle: null,
+        findSpotDescription: '',
+        findSpotType: '',
         location: {
           locationPlaceName: {
             appellation: null,

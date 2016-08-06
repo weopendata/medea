@@ -5,6 +5,7 @@ namespace App\Models;
 class FindSpot extends Base
 {
     public static $NODE_TYPE = 'E27';
+
     public static $NODE_NAME = 'findSpot';
 
     protected $hasUniqueId = true;
@@ -22,8 +23,8 @@ class FindSpot extends Base
         [
             'relationship' => 'P2',
             'config' => [
-                'key' => 'type',
-                'name' => 'Type',
+                'key' => 'findSpotType',
+                'name' => 'findSpotType',
                 'value_node' => true,
                 'cidoc_type' => 'E55',
                 'required' => false
@@ -33,8 +34,8 @@ class FindSpot extends Base
         [
             'relationship' => 'P3',
             'config' => [
-                'key' => 'description',
-                'name' => 'Note',
+                'key' => 'findSpotDescription',
+                'name' => 'findSpotDescription',
                 'value_node' => true,
                 'cidoc_type' => 'E62',
                 'required' => false
@@ -43,13 +44,13 @@ class FindSpot extends Base
         [
             'relationship' => 'P1',
             'config' => [
-                'key' => 'title',
-                'name' => 'Appellation',
+                'key' => 'findSpotTitle',
+                'name' => 'findSpotTitle',
                 'value_node' => true,
                 'cidoc_type' => 'E41',
                 'required' => false
             ]
-        ]
+        ],
     ];
 
     public function delete()

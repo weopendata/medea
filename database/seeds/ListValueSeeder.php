@@ -9,48 +9,61 @@ use Everyman\Neo4j\Client;
  */
 class ListValueSeeder extends Seeder
 {
+    private $listNames = [
+        "MaterialAuthorityList",
+        "Roles",
+        "SearchAreaTypeAuthorityList",
+        "FindSpotTypeAuthorityList",
+        "ObjectCategoryAuthorityList",
+        "ProductionClassificationPeriodAuthorityList",
+        "DimensionTypeAuthorityList",
+        "DimensionUnitAuthorityList",
+        "InscriptionTypeAuthorityList",
+        "ProductionTechniqueTypeAuthorityList",
+        "CollectionTypeAuthorityList",
+        "ProductionClassificationTypeAuthorityList",
+        "ProductionClassificationCenturyAuthorityList",
+        "ProductionClassificationRulerNationAuthorityList",
+    ];
+
     public function run()
     {
-        $functions = get_class_methods($this);
-
         $neo4j_config = \Config::get('database.connections.neo4j');
 
-        // Create an admin
+        // Create an admin user
         $client = new Everyman\Neo4j\Client($neo4j_config['host'], $neo4j_config['port']);
         $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
 
-        $labels = [$client->makeLabel('E32'), $client->makeLabel('AuthorityDocument'), $client->makeLabel('MEDEA_NODE')];
+        foreach ($this->listNames as $listName) {
+            $labels = [$client->makeLabel('E32'), $client->makeLabel('AuthorityDocument'), $client->makeLabel('MEDEA_NODE')];
 
-        foreach ($functions as $function) {
-            if (strpos($function, 'AuthorityList') !== false) {
-                // Get the name of the authority document
-                $label = str_replace('get', '', $function);
-                $name_label = $client->makeLabel($label);
-                $labels[] = $name_label;
+            $nameLabel = $client->makeLabel($listName);
+            $labels[] = $nameLabel;
 
-                // Avoid duplicates
-                $duplicates = $name_label->getNodes();
+            // Avoid duplicates
+            $duplicates = $nameLabel->getNodes();
 
-                foreach ($duplicates as $duplicate) {
-                    $relationships = $duplicate->getRelationships();
+            foreach ($duplicates as $duplicate) {
+                $relationships = $duplicate->getRelationships();
 
-                    foreach ($relationships as $rel) {
-                        $rel->delete();
-                    }
-
-                    $this->command->info("Found duplicate for $label, deleting it first in order to reseed.");
-                    $duplicate->delete();
+                foreach ($relationships as $rel) {
+                    $rel->delete();
                 }
 
-                $node = $client->makeNode();
-                $node->save();
-
-                $node->addLabels($labels);
-                $node->setProperty('values', $this->$function());
-                $node->save();
-
-                $this->command->info("Seeded node, $label");
+                $this->command->info("Found duplicate for $listName, deleting it first in order to reseed.");
+                $duplicate->delete();
             }
+
+            $node = $client->makeNode();
+            $node->save();
+
+            $node->addLabels($labels);
+            $functionName = 'get' . $listName;
+
+            $node->setProperty('values', $this->$functionName());
+            $node->save();
+
+            $this->command->info("Seeded node, $listName");
         }
     }
 
