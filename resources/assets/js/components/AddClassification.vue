@@ -17,19 +17,19 @@ export default {
   data () {
     return {
       cls: {
-        type: '',
-        period: '',
-        nation: '',
+        productionClassificationType: '',
+        productionClassificationPeriod: '',
+        productionClassificationNation: '',
         startDate: '',
         endDate: '',
         publication: [{publicationTitle: ''}],
-        description: '',
+        productionClassificationDescription: '',
       }
     }
   },
   computed: {
     submittable () {
-      return this.cls.type || this.cls.period || this.cls.nation || this.cls.description
+      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationNation || this.cls.productionClassificationDescription
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'
@@ -42,13 +42,13 @@ export default {
     submitSuccess ({data}) {
       this.$root.fetch()
       this.cls = {
-        type: '',
-        period: '',
-        nation: '',
+        productionClassificationType: '',
+        productionClassificationPeriod: '',
+        productionClassificationNation: '',
         startDate: '',
         endDate: '',
         publication: [{publicationTitle: ''}],
-        description: '',
+        productionClassificationDescription: '',
       }
     },
     submitError ({data}) {

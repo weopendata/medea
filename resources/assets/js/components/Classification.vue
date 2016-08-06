@@ -6,13 +6,13 @@
     </div>
     <div class="cls-content">
       <button class="ui small basic red icon button" @click.prevent.stop="rm" v-if="$root.user.administrator" style="float:right"><i class="trash icon"></i></button>
-      <div v-if="cls.period || cls.nation">
-        <span class="cls-labeled" v-if="cls.period">Periode <b>{{cls.period}}</b></span>
-        <span class="cls-labeled" v-if="cls.nation">Natie <b>{{cls.nation}}</b></span>
-        <span class="cls-labeled" v-if="cls.type">Type <b>{{cls.type}}</b></span>
+      <div v-if="cls.productionClassificationPeriod || cls.productionClassificationNation">
+        <span class="cls-labeled" v-if="cls.productionClassificationPeriod">Periode <b>{{cls.productionClassificationPeriod}}</b></span>
+        <span class="cls-labeled" v-if="cls.productionClassificationNation">Natie <b>{{cls.productionClassificationNation}}</b></span>
+        <span class="cls-labeled" v-if="cls.productionClassificationType">Type <b>{{cls.productionClassificationType}}</b></span>
         <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
       </div>
-      <p class="cls-p" v-if="cls.description" v-text="cls.description"></p>
+      <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <div v-for="pub in cls.publication" v-if="pub.publicationTitle">
         <i class="bookmark icon"></i>
         {{pub.publicationTitle}}

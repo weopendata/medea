@@ -7,7 +7,7 @@ class ProductionClassification extends Base
     public static $NODE_TYPE = 'E17';
     public static $NODE_NAME = 'productionClassification';
 
-    protected $hasUniqueId = true;
+    protected $hasUniqueId = false;
 
     protected $relatedModels = [
         'P108' => [
@@ -24,8 +24,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P2',
             'config' => [
-                'key' => 'type',
-                'name' => 'type',
+                'key' => 'productionClassificationType',
+                'name' => 'productionClassificationType',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
@@ -33,8 +33,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P3',
             'config' => [
-                'key' => 'description',
-                'name' => 'description',
+                'key' => 'productionClassificationDescription',
+                'name' => 'productionClassificationDescription',
                 'value_node' => true,
                 'cidoc_type' => 'E62'
             ]
@@ -42,8 +42,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P42',
             'config' => [
-                'key' => 'period',
-                'name' => 'period',
+                'key' => 'productionClassificationPeriod',
+                'name' => 'productionClassificationPeriod',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
@@ -51,8 +51,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P42',
             'config' => [
-                'key' => 'nation',
-                'name' => 'nation',
+                'key' => 'productionClassificationNation',
+                'name' => 'productionClassificationNation',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
