@@ -45,10 +45,6 @@ new Vue({
         findSpotDescription: '',
         findSpotType: '',
         location: {
-          locationPlaceName: {
-            appellation: null,
-            type: 'TBD'
-          },
           address: {
             street: null,
             number: null,
@@ -63,8 +59,8 @@ new Vue({
       object: {
         objectValidationStatus: 'in bewerking',
         objectDescription: null,
-        category: null,
-        objectMaterial: null,
+        objectCategory: null,
+        material: null,
         surfaceTreatment: null,
         treatmentEvent: {
           modificationTechnique: {
@@ -112,12 +108,12 @@ new Vue({
       toValidate: true,
       inscription: null,
       dims: {
-        lengte: {unit: 'cm' },
-        breedte: {unit: 'cm' },
-        diepte: {unit: 'cm' },
-        omtrek: {unit: 'cm' },
-        diameter: {unit: 'cm' },
-        gewicht: {unit: 'g'}
+        lengte: {dimensionUnit: 'cm' },
+        breedte: {dimensionUnit: 'cm' },
+        diepte: {dimensionUnit: 'cm' },
+        omtrek: {dimensionUnit: 'cm' },
+        diameter: {dimensionUnit: 'cm' },
+        gewicht: {dimensionUnit: 'g'}
       },
       // Interface state
       show: {
@@ -319,9 +315,9 @@ new Vue({
       // Inverse of formdata()
       // Dimensions
       for (var i = 0; i < this.find.object.dimensions.length; i++) {
-        this.dims[this.find.object.dimensions[i].type] = {
-          value: this.find.object.dimensions[i].value,
-          unit: this.find.object.dimensions[i].unit
+        this.dims[this.find.object.dimensions[i].dimensionType] = {
+          measurementValue: this.find.object.dimensions[i].measurementValue,
+          dimensionUnit: this.find.object.dimensions[i].dimensionUnit
         }
       }
       // Inscription
@@ -333,11 +329,11 @@ new Vue({
       // Dimensions
       var dimensions = []
       for (let type in this.dims) {
-        if (this.dims[type].value) {
+        if (this.dims[type].measurementValue) {
           dimensions.push({
-            type: type,
-            value: this.dims[type].value,
-            unit: this.dims[type].unit
+            dimensionType: type,
+            measurementValue: this.dims[type].measurementValue,
+            dimensionUnit: this.dims[type].dimensionUnit
           })
         }
       }

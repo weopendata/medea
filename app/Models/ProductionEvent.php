@@ -46,7 +46,7 @@ class ProductionEvent extends Base
         );
 
         // Make E55 productionType
-        $production_type = $this->createValueNode('type', ['E55', $this->getGeneralId()], $technique['type']);
+        $production_type = $this->createValueNode('productionTechniqueType', ['E55', $this->getGeneralId()], $technique['type']);
         $production_technique->relateTo($production_type, 'P2')->save();
 
         return $production_technique;

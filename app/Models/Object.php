@@ -49,8 +49,8 @@ class Object extends Base
         [
             'relationship' => 'P45',
             'config' => [
-                'key' => 'objectMaterial',
-                'name' => 'objectMaterial',
+                'key' => 'material',
+                'name' => 'material',
                 'value_node' => true,
                 'cidoc_type' => 'E57'
             ]
@@ -67,8 +67,8 @@ class Object extends Base
         [
             'relationship' => 'P2',
             'config' => [
-                'key' => 'category',
-                'name' => 'category',
+                'key' => 'objectCategory',
+                'name' => 'objectCategory',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
@@ -88,7 +88,7 @@ class Object extends Base
                 'cidoc_type' => 'E11'
             ]
         ],
-        [
+        /*[
             'relationship' => 'P42',
             'config' => [
                 'key' => 'period',
@@ -96,7 +96,7 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
-        ]
+        ]*/
     ];
 
     /**
@@ -121,16 +121,16 @@ class Object extends Base
         $dimensionNode->addLabels([self::makeLabel('E54'), self::makeLabel('objectDimension'), self::makeLabel($generalId)]);
 
         // Make E55 Type objectDimensionType
-        $dimension_type = $this->createValueNode('type', ['E55', $generalId], $dimension['type']);
-        $dimensionNode->relateTo($dimension_type, 'P2')->save();
+        $dimensionType = $this->createValueNode('dimensionType', ['E55', $generalId], $dimension['dimensionType']);
+        $dimensionNode->relateTo($dimensionType, 'P2')->save();
 
         // Make E60 Number
-        $dimension_value = $this->createValueNode('value', ['E60', $generalId], $dimension['value']);
-        $dimensionNode->relateTo($dimension_value, 'P90')->save();
+        $dimensionValue = $this->createValueNode('measurementValue', ['E60', $generalId], $dimension['measurementValue']);
+        $dimensionNode->relateTo($dimensionValue, 'P90')->save();
 
         // Make E58 Measurement Unit
-        $dimension_unit = $this->createValueNode('unit', ['E58', $generalId], $dimension['unit']);
-        $dimensionNode->relateTo($dimension_unit, 'P91')->save();
+        $dimensionUnit = $this->createValueNode('dimensionUnit', ['E58', $generalId], $dimension['dimensionUnit']);
+        $dimensionNode->relateTo($dimensionUnit, 'P91')->save();
 
         return $dimensionNode;
     }
@@ -151,9 +151,30 @@ class Object extends Base
 
         $inscriptionNode->addLabels([self::makeLabel('E34'), self::makeLabel('objectInscription'), self::makeLabel($generalId)]);
 
-        // Make an E62 string
+        // Make an E62 string (Note)
         $noteNode = $this->createValueNode('objectInscriptionNote', ['E62', $generalId, 'objectInscriptionNote'], $inscription['objectInscriptionNote']);
+
+        // Relate the created nodes to the main inscription Node
         $inscriptionNode->relateTo($noteNode, 'P3')->save();
+
+        if (!empty($inscription['objectInscriptionType'])) {
+            $typeNode = $this->createValueNode('objectInscriptionType', ['E55', $generalId, 'objectInscriptionType'], $inscription['objectInscriptionType']);
+            $inscriptionNode->relateTo($typeNode, 'P2')->save();
+        }
+
+        if (!empty($inscription['objectInscriptionLocation'])
+            && !empty($inscription['objectInscriptionLocation']['inscriptionLocationAppellation'])) {
+            $locationNode = $this->createValueNode('objectInscriptionLocation', ['E53', $generalId, 'objectInscriptionLocation'], 'objectInscriptionLocation');
+
+            $appellationNode = $this->createValueNode(
+                'inscriptionLocationAppellation',
+                ['E44', 'inscriptionLocationAppellation', $generalId],
+                $inscription['objectInscriptionLocation']['inscriptionLocationAppellation']
+            );
+
+            $locationNode->relateTo($appellationNode, 'P87')->save();
+            $inscriptionNode->relateTo($locationNode, 'P59')->save();
+        }
 
         return $inscriptionNode;
     }

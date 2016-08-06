@@ -21,7 +21,7 @@
     </div>
     <div class="required field">
       <label>Categorie</label>
-      <select class="ui search dropdown category" v-model="find.object.category">
+      <select class="ui search dropdown category" v-model="find.object.objectCategory">
         <option>onbekend</option>
         <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
       </select>
@@ -60,7 +60,7 @@
   </div>
   <div class="field" v-if="show.place">
     <label>Plaatsnaam</label>
-    <input type="text" v-model="find.findSpot.location.locationPlaceName.appellation" placeholder="">
+    <input type="text" v-model="find.findSpot.findSpotTitle" placeholder="">
   </div>
   <div class="fields" v-if="show.address">
     <div class="six wide field">
@@ -158,7 +158,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div class="two fields">
     <div class="field">
       <label>Materiaal</label>
-      <select class="ui dropdown" v-model="find.object.objectMaterial">
+      <select class="ui dropdown" v-model="find.object.material">
         <option>onbekend</option>
         @foreach ($fields['object']['objectMaterial'] as $material)
         <option value="{{$material}}">{{$material}}</option>
