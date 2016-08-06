@@ -95,6 +95,9 @@ class AuthController extends Controller
 
         // Check if the user already exists
         if (!$this->users->userExists($input['email'])) {
+            // Rework the input slightly to match the expected graph format
+            $input = $this->restructureUserInput($input);
+
             $user = $this->users->store($input);
 
             $mailer->sendRegistrationToAdmin($user);
@@ -103,6 +106,19 @@ class AuthController extends Controller
         } else {
             return response()->json(['error' => ['email' => 'Een gebruiker met dit email adres is reeds geregistreerd.']], 400);
         }
+    }
+
+    private function restructureUserInput($input)
+    {
+        $input['personContacts'] = [
+            $input['email']
+        ];
+
+        if (!empty($input['phone'])) {
+            $input['personContacts'][] = $input['phone'];
+        }
+
+        return $input;
     }
 
     /**

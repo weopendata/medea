@@ -38,6 +38,23 @@ class Person extends Base implements Authenticatable
                 'cidoc_type' => 'E55',
                 'plural' => true
             ]
+        ],
+        [
+            'relationship' => 'P76',
+            'config' => [
+                'key' => 'personContacts',
+                'name' => 'personContacts',
+                'cidoc_type' => 'E51',
+                'plural' => true
+            ]
+        ],
+        [
+            'relationship' => 'P53',
+            'config' => [
+                'key' => 'personAddress',
+                'name' => 'personAddress',
+                'cidoc_type' => 'E53'
+            ]
         ]
     ];
 
@@ -70,31 +87,96 @@ class Person extends Base implements Authenticatable
 
     public function createFirstName($first_name)
     {
-        $name_node = $this->createValueNode('value', ['E82', 'personName'], $first_name);
+        $nameNode = $this->createValueNode('value', ['E82', 'personName'], $first_name);
 
-        $name_type = $this->createValueNode('voornaam', ['E55', 'personNameType'], 'voornaam');
+        $nameType = $this->createValueNode('voornaam', ['E55', 'personNameType'], 'voornaam');
 
-        $name_node->relateTo($name_type, 'P2')->save();
+        $nameNode->relateTo($nameType, 'P2')->save();
 
-        return $name_node;
+        return $nameNode;
     }
 
     public function createLastName($last_name)
     {
-        $name_node = $this->createValueNode('value', ['E82', 'personName'], $last_name);
+        $nameNode = $this->createValueNode('value', ['E82', 'personName'], $last_name);
 
-        $name_type = $this->createValueNode('achternaam', ['E55', 'personNameType'], 'achternaam');
+        $nameType = $this->createValueNode('achternaam', ['E55', 'personNameType'], 'achternaam');
 
-        $name_node->relateTo($name_type, 'P2')->save();
+        $nameNode->relateTo($nameType, 'P2')->save();
 
-        return $name_node;
+        return $nameNode;
     }
 
     public function createPersonType($type)
     {
-        $person_type = $this->createValueNode('personType', ['E55', 'personType'], $type);
+        $personType = $this->createValueNode('personType', ['E55', 'personType'], $type);
 
-        return $person_type;
+        return $personType;
+    }
+
+    public function createPersonContacts($contact)
+    {
+        $contactsNode = $this->createValueNode('personContacts', ['E51', 'personContacts'], $contact);
+
+        if (strripos($contact, '@')) {
+            $contactType = $this->createValueNode('email', ['E55', 'personContactType'], 'email');
+        } else {
+            $contactType = $this->createValueNode('phone', ['E55', 'personContactType'], 'phone');
+        }
+
+        $contactsNode->relateTo($contactType, 'p2')->save();
+
+        return $contactsNode;
+    }
+
+    public function createPersonAddress($address)
+    {
+        $addressProperties = [
+            [
+                'key' => 'street',
+                'name' => 'personAddressStreet',
+                'node_type' => 'E45'
+            ],
+            [
+                'key' => 'number',
+                'name' => 'personAddressNumber',
+                'node_type' => 'E45'
+            ],
+            [
+                'key' => 'postalCode',
+                'name' => 'personAddressPostalCode',
+                'node_type' => 'E45'
+            ],
+            [
+                'key' => 'locality',
+                'name' => 'personAddressLocality',
+                'node_type' => 'E45'
+            ]
+        ];
+
+        $client = $this->getClient();
+
+        $addressNode = $client->makeNode();
+        $addressNode->setProperty('name', 'address');
+        $addressNode->save();
+
+        $addressNode->addLabels([
+            self::makeLabel('E53'), self::makeLabel('address'), self::makeLabel($this->getGeneralId())
+        ]);
+
+        foreach ($addressProperties as $addressProperty) {
+            if (!empty($address[$addressProperty['key']])) {
+                $node = $this->createValueNode(
+                    $addressProperty['key'],
+                    [$addressProperty['key'], $addressProperty['node_type']],
+                    $address[$addressProperty['key']]
+                );
+
+                $addressNode->relateTo($node, 'P87')->save();
+            }
+        }
+
+        return $addressNode;
     }
 
     /**

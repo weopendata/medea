@@ -40,6 +40,12 @@
       <input v-model="user.lastName" type="text">
     </div>
   </div>
+  <div class="fields" :class="{error:errors.phone}>
+    <div class="field">
+      <label for="phone">Telefoon</label>
+      <input v-model="user.phone" type="text">
+    </div>
+  </div>
   <div class="field" :class="{error:errors.email}">
     <label for="email">Email</label>
     <input v-model="user.email" type="email">

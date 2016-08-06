@@ -52,12 +52,15 @@ new Vue({
   methods: {
     formdata () {
       var data = this.user
+
       data.personType = []
+
       for (let type in this.roles) {
         if (this.roles[type]) {
           data.personType.push(type)
         }
       }
+
       if (this.oeerk.jjjj) {
         data.oeerk = 'OE/ERK/Metaaldetectorist/' + this.oeerk.jjjj + '/' + this.oeerk.nnnnn
       }
