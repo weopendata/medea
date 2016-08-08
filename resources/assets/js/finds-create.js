@@ -3,8 +3,6 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js';
 import DevBar from './components/DevBar';
 import Step from './components/Step';
 import checkbox from 'semantic-ui-css/components/checkbox.min.js';
-import dropdown from 'semantic-ui-css/components/dropdown.min.js';
-import transition from 'semantic-ui-css/components/transition.min.js';
 
 import {load, Map, Marker, Circle} from 'vue-google-maps';
 

@@ -28,6 +28,12 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('register/deny/{token}', 'Auth\AuthController@denyRegistration');
 
     Route::get('/', 'HomeController@index');
+    Route::get('about', 'HomeController@about');
+    Route::get('contact', 'HomeController@contact');
+    Route::get('disclaimer', 'HomeController@disclaimer');
+    Route::get('help', 'HomeController@help');
+    Route::get('users', 'HomeController@users');
+    Route::get('voorwaarden', 'HomeController@voorwaarden');
     Route::resource('finds', 'FindController');
     Route::resource('api/finds', 'Api\FindController');
 

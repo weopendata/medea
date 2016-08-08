@@ -27,22 +27,42 @@
 @endif
   <nav class="ui container">
     <div class="ui secondary green pointing menu">
+      <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
+      <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
+      <a href="/users" class="item {{ Request::is('users') ? 'active' : '' }}">Leden</a>
       @if (Auth::guest())
-      <a href="/" class="item {{ (Request::is('/') ? 'active' : '') }}"><i class="home icon"></i></a>
-      @endif
-      @section('showmap')
-      <a href="/finds" class="item {{ (Request::is('finds') && !Request::has('showmap') ? 'active' : '') }}">Vondsten</a>
-      <a href="/finds?showmap=true" class="item {{ (Request::has('showmap') ? 'active' : '') }}">Kaart</a>
-      @show
-      @if (Auth::guest())
-      <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
       @else
       <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
-      <div class="right menu">
-        <a href="/notifications" class=" item {{ (Request::is('notifications') ? 'active' : '') }}"><i class="ui alarm icon"></i> Notificaties</a>
-        <a href="/settings" class=" item {{ (Request::is('settings') ? 'active' : '') }}">{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}</a>
-      </div>
       @endif
+
+      <div class="right menu">
+        <a href="/about" class="item {{ Request::is('about') ? 'active' : '' }}">Over MEDEA</a>
+        <a href="/help" class="item {{ Request::is('help') ? 'active' : '' }}">Handleiding</a>
+        @if (Auth::guest())
+        <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
+        @else
+        <div class="ui top right pointing dropdown link item">
+          <span class="text">Notifications</span>
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="item">Vondst #424389 werd gepubliceerd</div>
+            <div class="item">Vondst #379407 werd gepubliceerd</div>
+          </div>
+        </div>
+        <div class="ui top right pointing dropdown link item">
+          <span class="text">{{ Auth::user()->firstName }}</span>
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <div class="header">Profiel</div>
+            <a href="/profile" class="item">Profiel bekijken</a>
+            <a href="/settings" class="item">Profiel aanpassen</a>
+            <div class="divider"></div>
+            <a href="/settings" class="item">Instellingen</a>
+            <a href="/logout" class="item">Afmelden</a>
+          </div>
+        </div>
+        @endif
+      </div>
     </div>
   </nav>
 @if (Request::is('finds'))
@@ -77,6 +97,11 @@ try {
 medeaUser.name = '{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}';
 medeaUser.email = '{{ Auth::user()->email }}';
 @endif
+</script>
+<script src="/js/vendor.min.js"></script>
+<script type="text/javascript">
+  
+    $('.ui.dropdown').dropdown()
 </script>
 @yield('script')
 
