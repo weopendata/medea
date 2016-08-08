@@ -5,6 +5,7 @@ namespace App\Models;
 class ProductionClassification extends Base
 {
     public static $NODE_TYPE = 'E17';
+
     public static $NODE_NAME = 'productionClassification';
 
     protected $hasUniqueId = false;
@@ -73,6 +74,9 @@ class ProductionClassification extends Base
         ],
         [
             'name' => 'endDate'
+        ],
+        [
+            'name' => 'feedback'
         ]
     ];
 }
