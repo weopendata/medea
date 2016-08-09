@@ -32,6 +32,37 @@ var getCities = function (results) {
   return location
 }
 
+function fromDimensions (dimensions) {
+  var dims = {
+    lengte: {unit: 'mm' },
+    breedte: {unit: 'mm' },
+    diepte: {unit: 'mm' },
+    omtrek: {unit: 'mm' },
+    diameter: {unit: 'mm' },
+    gewicht: {unit: 'g'}
+  }
+  for (var i = dimensions.length - 1; i >= 0; i--) {
+    dims[dimensions[i].dimensionType].value = dimensions[i].measurementValue
+    dims[dimensions[i].dimensionType].unit = dimensions[i].dimensionUnit
+    console.log(dims)
+  }
+  return dims
+}
+
+function toDimensions (dims) {
+  var dimensions = []
+  for (let type in dims) {
+    if (dims[type].value) {
+      dimensions.push({
+        dimensionType: type,
+        measurementValue: dims[type].value,
+        dimensionUnit: dims[type].unit
+      })
+    }
+  }
+  return dimensions
+}
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -71,7 +102,7 @@ new Vue({
         productionEvent: {
           productionClassification: [],
           productionTechnique: {
-            type: null
+            productionTechniqueType: null
           }
         }
       }
@@ -105,14 +136,7 @@ new Vue({
       // Mapped to model
       toValidate: true,
       inscription: null,
-      dims: {
-        lengte: {dimensionUnit: 'cm' },
-        breedte: {dimensionUnit: 'cm' },
-        diepte: {dimensionUnit: 'cm' },
-        omtrek: {dimensionUnit: 'cm' },
-        diameter: {dimensionUnit: 'cm' },
-        gewicht: {dimensionUnit: 'g'}
-      },
+      dims: fromDimensions(initialFind.object.dimensions),
       // Interface state
       show: {
         map: false,
@@ -310,14 +334,6 @@ new Vue({
       })
     },
     import () {
-      // Inverse of formdata()
-      // Dimensions
-      for (var i = 0; i < this.find.object.dimensions.length; i++) {
-        this.dims[this.find.object.dimensions[i].dimensionType] = {
-          measurementValue: this.find.object.dimensions[i].measurementValue,
-          dimensionUnit: this.find.object.dimensions[i].dimensionUnit
-        }
-      }
       // Inscription
       if (this.find.object.objectInscription) {
         this.$set('inscription', this.find.object.objectInscription.objectInscriptionNote)
@@ -325,17 +341,7 @@ new Vue({
     },
     formdata () {
       // Dimensions
-      var dimensions = []
-      for (let type in this.dims) {
-        if (this.dims[type].measurementValue) {
-          dimensions.push({
-            dimensionType: type,
-            measurementValue: this.dims[type].measurementValue,
-            dimensionUnit: this.dims[type].dimensionUnit
-          })
-        }
-      }
-      this.find.object.dimensions = dimensions
+      this.find.object.dimensions = toDimensions(this.dims)
 
       // Inscription
       if (this.inscription) {
@@ -343,6 +349,7 @@ new Vue({
           objectInscriptionNote: this.inscription
         }
       }
+      console.log(JSON.parse(JSON.stringify(this.find)))
 
       // Validation status
       this.find.object.objectValidationStatus = this.toValidate ? 'in bewerking' : 'revisie nodig'
