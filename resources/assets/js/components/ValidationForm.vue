@@ -26,6 +26,7 @@
         <p>Dit is geen archeologische vondst
       </div>
     </div>
+    <pre v-text="validation|json"></pre>
   </div>
 </template>
 
@@ -34,7 +35,7 @@ import PhotoValidation from './PhotoValidation';
 import TextareaGrowing from './TextareaGrowing';
 
 export default {
-  props: ['obj'],
+  props: ['obj', 'validation'],
   data () {
     return {
       remarks: '',
@@ -65,6 +66,7 @@ export default {
       this.remarks = (this.remarks + f).trim()
       var data = {
         objectValidationStatus: status,
+        feedback: this.validation,
         remarks: this.remarks
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))

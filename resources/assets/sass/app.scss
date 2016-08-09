@@ -11,6 +11,7 @@
 /* Components */
 
 @import "../../../node_modules/semantic-ui-css/components/table";
+@import "../../../node_modules/semantic-ui-css/components/popup";
 @import "../../../node_modules/semantic-ui-css/components/form";
 @import "../../../node_modules/semantic-ui-css/components/label";
 @import "../../../node_modules/semantic-ui-css/components/input";
@@ -40,7 +41,7 @@ dl {
 dt {
 	float: left;
 	margin-right: 1rem;
-	opacity: .7;
+	color: #999;
 }
 dd {
 	margin-left: 90px;

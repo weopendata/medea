@@ -57,8 +57,8 @@ new Vue({
       object: {
         objectValidationStatus: 'in bewerking',
         objectDescription: null,
-        objectCategory: null,
-        material: null,
+        objectCategory: 'onbekend',
+        objectMaterial: null,
         surfaceTreatment: null,
         treatmentEvent: {
           modificationTechnique: {
@@ -361,11 +361,11 @@ new Vue({
       }
       this.import()
     }
-    $('.ui.checkbox').checkbox()
-    $('.ui.dropdown').dropdown()
+    $('.ui.checkbox').dropdown()
+    $('.step .ui.dropdown').dropdown()
   },
   watch: {
-    'find.object.category' (val) {
+    'find.object.objectCategory' (val) {
       if (val == 'munt' || val == 'rekenpenning') {
         this.show.diameter = true
         this.show.lengte = false

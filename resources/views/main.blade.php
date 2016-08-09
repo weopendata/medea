@@ -100,8 +100,7 @@ medeaUser.email = '{{ Auth::user()->email }}';
 </script>
 <script src="/js/vendor.min.js"></script>
 <script type="text/javascript">
-  
-    $('.ui.dropdown').dropdown()
+$('nav .ui.dropdown').dropdown()
 </script>
 @yield('script')
 
