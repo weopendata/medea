@@ -1,25 +1,29 @@
 <template>
   <article>
-    <div class="ui container fe-fiche"> 
-      <h1>#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
-      <div class="ui two columns stackable grid">
-        <div class="column" :class="{'fe-validating':validating}">
-          <object-features :find="find" detail="all" :feedback="feedback" :validating="validating"></object-features>
-          <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
-            <i class="pencil icon"></i>
-            Bewerken
-          </a>
-        </div>
-        <div class="column">
-          <div class="fe-header">
-            <div class="fe-imglist">
-              <div class="img" v-for="image in find.object.photograph">
-                <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
-                <span class="fe-img-remark" v-if="validating" @click="imgRemark($index)">Opmerking toevoegen</span>
+    <div class="fe-fiche"> 
+      <div class="card-textual">
+        <h1>#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
+        <div class="ui two columns doubling grid">
+          <div class="column" :class="{'fe-validating':validating}">
+            <object-features :find="find" detail="all" :feedback="feedback" :validating="validating"></object-features>
+          </div>
+          <div class="column" :class="{'fe-validating':validating}">
+            <div class="fe-header">
+              <div class="fe-imglist">
+                <div class="img" v-for="image in find.object.photograph">
+                  <dt-check v-if="validating" :prop="image.identifier" @click="imgRemark($index)"></dt-check>
+                  <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <div class="card-bar" v-if="(user.email==find.person.email)||user.validator">
+        <a class="btn" href="/finds/{{find.identifier}}/edit">
+          <i class="pencil icon"></i>
+          Bewerken
+        </a>
       </div>
     </div>
     <br>
@@ -55,13 +59,14 @@
 </template>
 
 <script>
-import checkbox from 'semantic-ui-css/components/checkbox.min.js';
+import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
-import AddClassification from './AddClassification';
-import Classification from './Classification';
-import ObjectFeatures from './ObjectFeatures';
-import ValidationForm from './ValidationForm';
-import PhotoswipeThumb from './PhotoswipeThumb';
+import AddClassification from './AddClassification'
+import Classification from './Classification'
+import DtCheck from './DtCheck'
+import ObjectFeatures from './ObjectFeatures'
+import PhotoswipeThumb from './PhotoswipeThumb'
+import ValidationForm from './ValidationForm'
 
 export default {
   props: ['user', 'find'],
@@ -104,9 +109,10 @@ export default {
   components: {
     AddClassification,
     Classification,
+    DtCheck,
     ObjectFeatures,
-    ValidationForm,
     PhotoswipeThumb,
+    ValidationForm,
   }
 }
 </script>

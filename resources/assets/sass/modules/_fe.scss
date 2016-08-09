@@ -43,17 +43,25 @@
 
 .fe-header {}
 .fe-header-fixed {}
-.fe-fiche {}
+.fe-fiche {
+	padding: 16px 0 0;
+	max-width: 900px;
+	margin: 0 auto 2em;
+	background: white;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+}
 
 /* simple image carousel */
 
 .fe-imglist {
 	.img {
-		display: inline-block;
+		position: relative;
+		display: block;
+		margin-bottom: 2em;
 	}
 	img {
 		display: block;
-		height: 150px;
+		max-height: 150px;
 		width: auto;
 	}
 }
@@ -76,7 +84,6 @@ dl {
 	position: absolute;
 	right: 100%;
 	padding: 6px;
-	top: -3px;
 	line-height: 2px;
 	background: #FBBD08;
 	border-radius: 2px;
@@ -84,6 +91,9 @@ dl {
 	cursor: pointer;
 	>input {
 		cursor: pointer;
+	}
+	dl & {
+		margin-top: -3px;
 	}
 }
 .fe-invalid {
