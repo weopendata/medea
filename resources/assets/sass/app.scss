@@ -227,32 +227,38 @@ h4.required::after {
 .btn {
 	cursor: pointer;
 	display: inline-block;
-  padding: 0 16px;
-  height: 36px;
-  line-height: 36px;
+	padding: 0 16px;
+	height: 36px;
+	line-height: 36px;
 	outline: none;
 	border: none;
+	border-radius: 2px;
 	vertical-align: baseline;
 	background: none;
-	color: rgba(0, 0, 0, 0.6);
+	color: rgba(0, 0, 0, .6);
 	font-family: Roboto, 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 	text-transform: uppercase;
 	font-weight: bold;
 	text-align: center;
 	text-decoration: none;
-	border-radius: 2px;
 	box-shadow: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
 	user-select: none;
 	&:hover {
 		background: #ddd;
 		color: black;
 	}
 }
-
+.card {
+	max-width: 900px;
+	margin: 0 auto 2em;
+	background: white;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+	@media (max-width: 920px) {
+		margin: 0 10px 2em;
+	}
+}
 .card-bar {
+	text-align: right;
 	padding: 8px 0;
 }
 .card-bar:last-child {
@@ -260,4 +266,13 @@ h4.required::after {
 }
 .card-textual {
 	padding: 0 24px;
+}
+.card-title {
+	line-height: 48px;
+	font-size: 24px;
+	font-weight: 300;
+}
+
+.wrapper-white {
+	background: white;
 }

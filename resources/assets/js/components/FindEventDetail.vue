@@ -1,8 +1,8 @@
 <template>
   <article>
-    <div class="fe-fiche"> 
+    <div class="card fe-card"> 
       <div class="card-textual">
-        <h1>#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
+        <h1 class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
             <object-features :find="find" detail="all" :feedback="feedback" :validating="validating"></object-features>
@@ -27,9 +27,12 @@
       </div>
     </div>
     <br>
-    <div class="ui container">
+    <div class="wrapper-white">
+      <p>&nbsp;</p>
+      <div class="ui container">
           <div v-if="validating">
             <validation-form :obj="find.object.identifier" :feedback="feedback"></validation-form>
+            <p>&nbsp;</p>
           </div>
           <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
             <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
@@ -38,22 +41,46 @@
               <p v-if="user.expert">Voeg jij een classificatie toe?</p>
             </div>
             <add-classification :object="find.object" v-if="user.expert"></add-classification>
+            <p>&nbsp;</p>
           </div>
           <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'gevalideerd' && (user.email!==find.person.email)">
             Security error #20984
+            <p>&nbsp;</p>
           </h1>
-          <div v-if="find.object.objectValidationStatus == 'embargo'">Deze vondst is onder embargo</div>
+          <div v-if="find.object.objectValidationStatus == 'embargo'">
+            Deze vondst is onder embargo.
+            <p>&nbsp;</p>
+          </div>
           <div v-if="(user.email==find.person.email)">
-            <div v-if="find.object.objectValidationStatus == 'in bewerking'">Je vondstfiche wordt gevalideerd</div>
-            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">Ofwel is dit een draft, ofwel is er feedback die wijzigingen aan deze vondstfiche gebieden.</div>
+            <div v-if="find.object.objectValidationStatus == 'in bewerking'">
+              Je vondstfiche wordt gevalideerd.
+              <p>&nbsp;</p>
+            </div>
+            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">
+              Ofwel is dit een draft, ofwel is er feedback die wijzigingen aan deze vondstfiche gebieden.
+              <p>&nbsp;</p>
+            </div>
           </div>
           <div v-else>
-            <div v-if="find.object.objectValidationStatus == 'in bewerking'">Deze vondstfiche wordt gevalideerd</div>
-            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">Deze vondstfiche is in revisie</div>
+            <div v-if="find.object.objectValidationStatus == 'in bewerking'">
+              Deze vondstfiche wordt gevalideerd.
+              <p>&nbsp;</p>
+            </div>
+            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">
+              Deze vondstfiche is in revisie.
+              <p>&nbsp;</p>
+            </div>
           </div>
           <div v-if="find.object.objectValidationStatus == 'afgekeurd'">
             Deze vondstfiche is niet geschikt voor MEDEA.
           </div> 
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+      </div>
     </div>
   </article>
 </template>
