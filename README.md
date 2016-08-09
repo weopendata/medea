@@ -3,6 +3,15 @@ The MEDEA project is a project for find experts, researchers and detectorists to
 
 ## Development documentation
 
+### Migration
+
+For objects that are not involved in the graph vocabulary we use a MySQL database.
+In order to perform the migration an extra option is necessary because the default database connection is Neo4J.
+
+The command that will perform the correct MySQL migration is:
+
+    php artisan migrate --database='mysqsl'
+
 ### Usefull commands while developing
 
 During development, data will get injected that will have to be deleted at a certain point in time due to testing, data injection, dummy data etc.

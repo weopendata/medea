@@ -36,6 +36,8 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('voorwaarden', 'HomeController@voorwaarden');
     Route::resource('finds', 'FindController');
     Route::resource('api/finds', 'Api\FindController');
+    Route::get('api/notifications', 'Api\NotificationController@index');
+    Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
 
     Route::post('objects/{id}/validation', 'ObjectController@validation');
     Route::resource('objects/{id}/classifications', 'ClassificationController');

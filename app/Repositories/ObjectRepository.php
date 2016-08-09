@@ -68,11 +68,63 @@ class ObjectRepository extends BaseRepository
 
         $client = $this->getClient();
 
-        $cypher_query = new Query($client, $query);
-        $result = $cypher_query->getResultSet();
+        $cypherQuery = new Query($client, $query);
+        $result = $cypherQuery->getResultSet();
 
         if (!empty($result->current())) {
             return $result->current()->current();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the related user id for a given object
+     *
+     * @param  integer $objectId The id of the object
+     *
+     * @return integer
+     */
+    public function getRelatedUserId($objectId)
+    {
+        $queryString = "MATCH (n:object)-[P12]-(find:findEvent)-[P29]-(person:person)
+                WHERE id(n) = $objectId
+                return person";
+
+        $query = new Query($this->getClient(), $queryString);
+
+        $results = $query->getResultSet();
+
+        if (!empty($results->current())) {
+            $person = $results->current()->current();
+
+            return $person->getId();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the related findEvent id for a given object
+     *
+     * @param  integer $objectId The id of the object
+     *
+     * @return integer
+     */
+    public function getRelatedFindEventId($objectId)
+    {
+        $queryString = "MATCH (n:object)-[P12]-(find:findEvent)
+                WHERE id(n) = $objectId
+                return find";
+
+        $query = new Query($this->getClient(), $queryString);
+
+        $results = $query->getResultSet();
+
+        if (!empty($results->current())) {
+            $find = $results->current()->current();
+
+            return $find->getId();
         } else {
             return null;
         }
