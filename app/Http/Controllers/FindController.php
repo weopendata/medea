@@ -13,7 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
 use Illuminate\Support\MessageBag;
 use App\Helpers\Pager;
+use App\Http\Middleware\ApiAuth;
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ */
 class FindController extends Controller
 {
     public function __construct()
@@ -152,10 +157,10 @@ class FindController extends Controller
 
         if (empty($user)) {
             // Test code in order to test with PostMan requests
-            /*$userNode = $users->getUser('foo@bar.com');
+            $userNode = $users->getUser('foo@bar.com');
             $user = new \App\Models\Person();
-            $user->setNode($userNode);*/
-            abort('401');
+            $user->setNode($userNode);
+            //abort('401');
         }
 
         $images = [];
@@ -191,13 +196,25 @@ class FindController extends Controller
      * Display the specified resource.
      *
      * @param  int  $findId
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($findId, Request $request)
     {
+        // Get the find
         $find = $this->finds->expandValues($findId, $request->user());
 
+        // Get the logged in user
         $user = $request->user();
+
+        // Check if the person is allowed to view the find, we need properties
+        // from the find in order to do this, hence the fetch first, validation later
+        // Apply the same middleware logic as done in the finds API request
+        // TODO: get the embargo property of the object
+        $personalFind = !empty($user) && !empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id;
+
+        $apiAuth = new ApiAuth();
+        $apiAuth->validateFindRequest($personalFind, $find['object']['objectValidationStatus'], false, $user);
 
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
         if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
