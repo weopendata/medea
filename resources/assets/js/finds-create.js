@@ -63,6 +63,15 @@ function toDimensions (dims) {
   return dimensions
 }
 
+function fromInscription (ins) {
+  return ins && ins.objectInscriptionNote
+}
+function toInscription (ins) {
+  return ins && {
+    objectInscriptionNote: ins
+  }
+}
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -86,6 +95,7 @@ new Vue({
         }
       },
       object: {
+        feedback: null,
         objectValidationStatus: 'in bewerking',
         objectDescription: null,
         objectCategory: 'onbekend',
@@ -135,7 +145,7 @@ new Vue({
       find: initialFind,
       // Mapped to model
       toValidate: true,
-      inscription: null,
+      inscription: fromInscription(initialFind.object.objectInscription),
       dims: fromDimensions(initialFind.object.dimensions),
       // Interface state
       show: {
@@ -155,7 +165,7 @@ new Vue({
       },
       // Form state
       ready: [],
-      step: 1,
+      step: window.initialFind.identifier ? 0 : 1,
       submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
       // App state
       user: window.medeaUser
@@ -178,6 +188,20 @@ new Vue({
       set: function (num) {
         this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 1
       }
+    },
+    f () {
+      return this.validation.feedback
+    },
+    validation () {
+      return this.validationList[0] || {
+        feedback: {}
+      }
+    },
+    validationList () {
+      return JSON.parse(this.find.object.feedback).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+    },
+    hasFeedback () {
+      return Object.keys(this.f).length > 0
     },
     accuracyStep () {
       return Math.max(1, Math.pow(10, Math.floor(Math.log10(this.find.findSpot.location.accuracy) - 1)))
@@ -216,9 +240,14 @@ new Vue({
     }
   },
   methods: {
-    toStep (i) {
+    toStep (i, show) {
       this.formdata()
       this.step = i
+      this.show[show] = true
+      var elem = document.getElementById('step' + i)
+      if (elem) {
+        this.$nextTick(() => elem.scrollIntoView())
+      }
     },
     setMarker (event) {
       this.marker.visible = true
@@ -333,26 +362,15 @@ new Vue({
         description: ''
       })
     },
-    import () {
-      // Inscription
-      if (this.find.object.objectInscription) {
-        this.$set('inscription', this.find.object.objectInscription.objectInscriptionNote)
-      }
-    },
     formdata () {
       // Dimensions
       this.find.object.dimensions = toDimensions(this.dims)
-
-      // Inscription
-      if (this.inscription) {
-        this.find.object.objectInscription = {
-          objectInscriptionNote: this.inscription
-        }
-      }
-      console.log(JSON.parse(JSON.stringify(this.find)))
+      this.find.object.objectInscription = toInscription(this.inscription)
 
       // Validation status
       this.find.object.objectValidationStatus = this.toValidate ? 'in bewerking' : 'revisie nodig'
+
+      console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
     submitSuccess () {
@@ -366,7 +384,6 @@ new Vue({
         this.show.map = true
         this.marker.visible = true
       }
-      this.import()
     }
     $('.ui.checkbox').dropdown()
     $('.step .ui.dropdown').dropdown()

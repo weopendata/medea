@@ -13,27 +13,52 @@
 'v-cloak' => 'true',
 )) !!}
 
+<div class="ui visible warning message" v-if="validation.remarks">
+  <div class="header">
+    Opmerking van de validator:
+  </div>
+  @{{validation.remarks}}
+</div>
+
+<div class="ui visible warning message" v-if="hasFeedback">
+  <div class="header">
+    Te reviseren gegevens:
+  </div>
+  <ul>
+    <li class="li-feedback" v-if="f.objectCategory" @click="toStep(1)">Categorie</li>
+    <li class="li-feedback" v-if="f.period" @click="toStep(1)">Datering per periode</li>
+    <li class="li-feedback" v-if="f.findDate" @click="toStep(1)">Vondstdatum</li>
+    <li class="li-feedback" v-if="f.location" @click="toStep(1)">Locatie</li>
+    <li class="li-feedback" v-if="f.objectMaterial" @click="toStep(3)">Materiaal</li>
+    <li class="li-feedback" v-if="f.productionTechniqueType" @click="toStep(3, 'technique')">Techniek</li>
+    <li class="li-feedback" v-if="f.modificationTechniqueType" @click="toStep(3, 'technique')">Oppervlaktebehandeling</li>
+    <li class="li-feedback" v-if="f.objectInscriptionNote" @click="toStep(3, 'technique')">Opschrift</li>
+    <li class="li-feedback" v-if="f.dimensions" @click="toStep(3, true)">Dimensies</li>
+    <li class="li-feedback" v-if="f.description">Beschrijving?</li>
+  </ul>
+</div>
+
 <step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}">
   <div class="field" style="max-width: 16em">
     <div class="required field" v-if="user.registrator&&debugging">
       <label>Vinder</label>
       <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder">
     </div>
-    <div class="required field">
+    <div class="required field" :class="{error:validation.feedback.objectCategory}">
       <label>Categorie</label>
       <select class="ui search dropdown category" v-model="find.object.objectCategory">
         <option>onbekend</option>
         <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
       </select>
     </div>
-    <div class="required field">
+    <div class="required field" :class="{error:validation.feedback.period}">
       <label>Datering per periode</label>
       <select class="ui search dropdown category" v-model="find.object.period">
         <option>onbekend</option>
         <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
       </select>
     </div>
-    <div class="required fluid field">
+    <div class="required fluid field" :class="{error:validation.feedback.findDate}">
       <label>Vondstdatum</label>
       <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
     </div>
@@ -156,7 +181,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 
 <step number="3" title="Gestructureerde beschrijving" class="required" :class="{completed:step3valid}">
   <div class="two fields">
-    <div class="field">
+    <div class="field" :class="{error:validation.feedback.objectMaterial}">
       <label>Materiaal</label>
       <select class="ui dropdown" v-model="find.object.objectMaterial">
         <option>onbekend</option>
@@ -170,7 +195,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <button @click.prevent="show.technique=1" class="ui button">Techniek, behandeling, opschrift</button>
   </div>
   <div class="two fields" v-show="show.technique">
-    <div class="field">
+    <div class="field" :class="{error:validation.feedback.productionTechniqueType}">
       <label>Techniek</label>
       <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.productionTechniqueType">
         <option value="">onbekend</option>
@@ -180,7 +205,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
         @endforeach
       </select>
     </div>
-    <div class="field">
+    <div class="field" :class="{error:validation.feedback.modificationTechniqueType}">
       <label>Oppervlaktebehandeling</label>
       <select class="ui dropdown" v-model="find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
         <option>onbekend</option>
@@ -199,7 +224,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
       </select>
     </div>
   </div>
-  <div class="field" v-show="show.technique">
+  <div class="field" :class="{error:validation.feedback.objectInscriptionNote}" v-show="show.technique">
     <label>Opschrift</label>
     <input type="text" v-model="inscription" placeholder="-- geen opschrift --">
   </div>
@@ -304,7 +329,6 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 </div>
 
 {!! Form::close() !!}
-<pre v-text="dims|json"></pre>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

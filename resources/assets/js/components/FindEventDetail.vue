@@ -4,7 +4,7 @@
       <h1>#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
       <div class="ui two columns stackable grid">
         <div class="column" :class="{'fe-validating':validating}">
-          <object-features :find="find" detail="all" :validation="validation" :validating="validating"></object-features>
+          <object-features :find="find" detail="all" :feedback="feedback" :validating="validating"></object-features>
           <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
             <i class="pencil icon"></i>
             Bewerken
@@ -25,7 +25,7 @@
     <br>
     <div class="ui container">
           <div v-if="validating">
-            <validation-form :obj="find.object.identifier" :validation="validation"></validation-form>
+            <validation-form :obj="find.object.identifier" :feedback="feedback"></validation-form>
           </div>
           <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
             <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
@@ -67,7 +67,7 @@ export default {
   props: ['user', 'find'],
   data () {
     return {
-      validation: {},
+      feedback: {},
       show: {
         validation: false
       }
