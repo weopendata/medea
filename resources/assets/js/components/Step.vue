@@ -1,5 +1,5 @@
 <template>
-  <div class="step" :class="{active:active, muted:!active, ready:ready}">
+  <div class="step" :class="{active:active, muted:!active, ready:ready}" :id="'step'+number">
   	<h3 @click="click">{{number}}. {{title}}</h3>
     <slot>Content expected</slot>
   </div>

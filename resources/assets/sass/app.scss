@@ -150,6 +150,9 @@ dd {
 .finds-cta {
 	margin: 5% auto;
 }
+
+/* FindsCreate > step */
+
 .step.muted {
 	h3 {
 		color: #bbb;
@@ -181,6 +184,15 @@ h4.required::after  {
 	}
 	h3::after {
 		color: #090;
+	}
+}
+
+/* FindsCreate > feedback */
+
+.li-feedback {
+	cursor: pointer;
+	&:hover {
+		text-decoration: underline;
 	}
 }
 

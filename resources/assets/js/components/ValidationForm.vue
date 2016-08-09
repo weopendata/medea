@@ -2,31 +2,39 @@
   <div class="ui form" @submit.prevent="submit" :action="submitAction">
     <h3>Vondst valideren</h3>
     <div class="field">
-      <label for="description">Opmerkingen bij validatie</label>
+      <label>Is deze vonstfiche klaar voor publicatie? Duid aan wat van toepassing is.</label>
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="remove">
+        <label>Deze vondst hoort niet thuis op MEDEA</label>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
+        <label>Deze vondstfiche bevat gevoelige informatie</label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="description">Geef feedback mee aan de detectorist over de gevraagde/gedane aanpassingen:</label>
       <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
     </div>
     <photo-validation :model="remarks" :index="index" v-for="(index, remarks) in imgRemarks"></photo-validation>
-    <p>
-      <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
-        <i class="thumbs up icon"></i> Valideren
-      </button>
-    </p>
-    <p>&nbsp;</p>
-    <div class="equal width fields">
-      <div class="field">
-        <p><button @click="post('revisie nodig')" class="ui button" :class="{yellow:!valid}">Revisie</button>
-        <p>De informatie is onvolledig of mogelijk niet correct en moet herzien worden voor publicatie
-      </div>
-      <div class="field">
-        <p><button @click="post('onder embargo')" class="ui button" :class="{orange:!valid}">Embargo</button></p>
-        <p>De informatie is gevoelig en mag voorlopig niet gepubliceerd worden
-      </div>
-      <div class="field">
-        <p><button @click="post('verwijderd')" class="ui button" :class="{red:!valid}">Afwijzen</button>
-        <p>Dit is geen archeologische vondst
-      </div>
+    <div v-if="!embargo&&!remove">
+      <p v-if="valid">
+        <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
+          <i class="thumbs up icon"></i> Goedkeuren
+        </button>
+      </p>
+      <p v-else>
+        <button @click="post('onder embargo')" class="ui orange big button">Aanpassen</button>
+      </p>
     </div>
-    <pre v-text="validation|json"></pre>
+    <p v-if="embargo">
+      <button @click="post('onder embargo')" class="ui orange big button">Embargo</button>
+    </p>
+    <p v-if="remove">
+      <button @click="post('verwijderd')" class="ui red big button">Afwijzen</button>
+    </p>
   </div>
 </template>
 
@@ -35,16 +43,18 @@ import PhotoValidation from './PhotoValidation';
 import TextareaGrowing from './TextareaGrowing';
 
 export default {
-  props: ['obj', 'validation'],
+  props: ['obj', 'feedback'],
   data () {
     return {
+      embargo: false,
+      imgRemarks: {},
       remarks: '',
-      imgRemarks: {}
+      remove: false
     }
   },
   computed: {
     valid () {
-      return !this.remarks && !this.imgRemarks.length
+      return !this.remarks && !Object.keys(this.imgRemarks).length && !Object.keys(this.feedback).length
     }
   },
   methods: {
@@ -66,7 +76,8 @@ export default {
       this.remarks = (this.remarks + f).trim()
       var data = {
         objectValidationStatus: status,
-        feedback: this.validation,
+        embargo: this.embargo,
+        feedback: this.feedback,
         remarks: this.remarks
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))
@@ -77,6 +88,9 @@ export default {
     imgRemark (index) {
       this.$set('imgRemarks[' + index + ']', [])
     }
+  },
+  attached () {
+    $('.ui.checkbox', this.$el).checkbox()
   },
   components: {
     PhotoValidation,

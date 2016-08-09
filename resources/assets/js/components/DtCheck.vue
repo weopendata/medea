@@ -1,5 +1,5 @@
 <template>
-  <label class="fe-check" :class="{'fe-invalid':!$parent.validation[prop]}"><input type="checkbox" v-model="$parent.validation[prop]"></label>
+  <label class="fe-check" :class="{'fe-invalid':!$parent.feedback[prop]}"><input type="checkbox" v-model="$parent.feedback[prop]"></label>
 </template>
 
 <script>
