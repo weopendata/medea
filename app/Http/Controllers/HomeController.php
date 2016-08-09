@@ -25,6 +25,36 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        return view('pages.home');
+        return view('static.home');
+    }
+    
+    public function about(Request $request)
+    {
+        return view('static.about');
+    }
+    
+    public function contact(Request $request)
+    {
+        return view('static.contact');
+    }
+    
+    public function disclaimer(Request $request)
+    {
+        return view('static.disclaimer');
+    }
+    
+    public function help(Request $request)
+    {
+        return view('static.help');
+    }
+    
+    public function users(Request $request)
+    {
+        return view('static.users');
+    }
+    
+    public function voorwaarden(Request $request)
+    {
+        return view('static.voorwaarden');
     }
 }

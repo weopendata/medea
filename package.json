@@ -18,11 +18,11 @@
   "dependencies": {
     "bootstrap-sass": "^3.0.0",
     "deep-extend": "^0.4.1",
-    "laravel-elixir": "^6.0.0-1",
+    "laravel-elixir": "*",
     "less-loader": "^2.2.2",
     "lodash": "^3.10.1",
     "parse-link-header": "^0.4.1",
-    "semantic-ui-css": "^2.1.8",
+    "semantic-ui-css": "^2.2",
     "vue": "^1.0.15",
     "vue-datetime-picker": "^0.1.1",
     "vue-google-maps": "0.1.15",

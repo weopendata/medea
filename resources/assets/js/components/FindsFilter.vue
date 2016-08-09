@@ -67,9 +67,6 @@
 <script>
 import FindEvent from './FindEvent';
 
-import transition from 'semantic-ui-css/components/transition.min.js';
-import dropdown from 'semantic-ui-css/components/dropdown.min.js';
-
 export default {
   props: ['model', 'saved'],
   data () {

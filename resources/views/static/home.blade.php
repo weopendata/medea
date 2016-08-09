@@ -1,26 +1,28 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
-    <title>MEDEA</title>
-</head>
+@extends('main')
 
-<body :class="{registered:registered}">
+@section('title', 'Home')
+
+@section('content')
   <div class="hero">
     <div class="ui container">
       <p class="lead">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
       <p>
-        <a href="/finds" class="ui green big button"><i class="eye icon"></i> Vondsten bekijken </a>
-        <a href="#register" class="ui green big button"><i class="edit icon"></i> Doe mee </a>
+        Verken de metaalvondsten die we samen in Vlaanderen in kaart brachten
+      </p>
+      <p>
+        <div class="ui action input" style="width: 30%;">
+          <input type="text" placeholder="Search...">
+          <button class="ui blue icon button">
+            <i class="search icon"></i>
+          </button>
+        </div>
+      </p>
+      <p>
+        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Log in </a>
+        <a href="#register" class="ui green button"><i class="edit icon"></i> Word lid </a>
       </p>
     </div>
   </div>
-  <a href="/login" style="float:right" class="ui basic small button btn-login">Login</a>
 {!! Form::open(array(
 'action' => 'Auth\AuthController@register',
 'novalidate' => '',
@@ -154,7 +156,9 @@
     <p>De administrator zal je registratie bevestigen. Dit kan even duren. In volgende iteraties van het platform kan dit automatisch gebeuren.</p>
   </div>
 {!! Form::close() !!}
+@endsection
 
+@section('script')
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script src="{{ asset('js/home.js') }}"></script>
 
@@ -163,5 +167,4 @@
 document.write('<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
 </script>
 @endif
-</body>
-</html>
+@endsection

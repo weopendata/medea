@@ -2,8 +2,9 @@
 
 @section('content')
 
-<div class="ui four column centered doubling grid">
-    <div class="column">
+<div class="ui grid doubling ">
+<div class="doubling four column row">
+    <div class="centered column">
         <form class="ui form" role="form" method="POST" action="{{ url('/login') }}">
             {!! csrf_field() !!}
 
@@ -32,5 +33,6 @@
             <button class="ui button" type="submit">Submit</button>
         </form>
     </div>
+</div>
 </div>
 @endsection

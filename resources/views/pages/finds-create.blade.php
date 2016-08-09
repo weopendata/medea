@@ -158,7 +158,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div class="two fields">
     <div class="field">
       <label>Materiaal</label>
-      <select class="ui dropdown" v-model="find.object.material">
+      <select class="ui dropdown" v-model="find.object.objectMaterial">
         <option>onbekend</option>
         @foreach ($fields['object']['objectMaterial'] as $material)
         <option value="{{$material}}">{{$material}}</option>

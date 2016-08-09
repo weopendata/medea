@@ -41,49 +41,23 @@
 
 /* simple image carousel */
 
-.fe-header {
-	position: relative;
-	margin-top: -30px;
-	margin-bottom: 2rem;
-	text-align: center;
-	background: #666;
-	color: white;
-}
-.fe-header-fixed {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 1.5rem;
-	pointer-events: none;
-	>h1 {
-		display: inline;
-		font-weight: normal;
-		pointer-events: auto;
-	}
-}
+.fe-header {}
+.fe-header-fixed {}
+.fe-fiche {}
 
 /* simple image carousel */
 
 .fe-imglist {
-	display: block;
-	padding: 3rem 1.5rem 5rem;
-	overflow-y: auto;
-	text-align: center;
-	white-space: nowrap;
 	.img {
 		display: inline-block;
-		margin: 0 1.5rem;
 	}
 	img {
 		display: block;
-		height: 400px;
+		height: 150px;
+		width: auto;
 	}
 }
-.fe-imglist-feedback {
-	width: 400px;
-	flex-basis: 50vw;
-	flex-shrink: 0;
-}
+.fe-imglist-feedback {}
 
 /* Image remarks */
 
@@ -91,7 +65,62 @@
 	display: block;
 	line-height: 3rem;
 	cursor: pointer;
-	&:hover {
-		background-color: black
+}
+
+/* Validation of finds */
+
+dl {
+	position: relative;
+}
+.fe-check {
+	position: absolute;
+	right: 100%;
+	padding: 6px;
+	top: -3px;
+	line-height: 2px;
+	background: #FBBD08;
+	border-radius: 2px;
+	margin-right: 1em;
+	cursor: pointer;
+	>input {
+		cursor: pointer;
+	}
+}
+.fe-invalid {
+	background: #21BA45;
+}
+.tooltip-show[data-tooltip]:before {
+	-webkit-transform: rotate(45deg) scale(1)!important;
+	-ms-transform: rotate(45deg) scale(1)!important;
+	transform: rotate(45deg) scale(1)!important;
+	opacity: 1;
+}
+.tooltip-show[data-tooltip]:after {
+	transform: scale(1) !important;
+	left: 0;
+	bottom: 100%;
+	margin-bottom: 0.5em;
+}
+.tooltip-show[data-tooltip]:before,
+.tooltip-show[data-tooltip]:after {
+	visibility: visible;
+	pointer-events: auto;
+}
+[data-green][data-position~="top"][data-tooltip]:before {
+	background: #21BA45;
+	box-shadow: none;
+}
+[data-tooltip][data-green]:after {
+	background: #21BA45;
+	color: #FFFFFF;
+	border: none;
+	box-shadow: none;
+}
+.fe-validating {
+	padding-left: 52px!important;
+}
+@media only screen and (max-width: 767px) {
+	.ui.container > .ui.stackable.grid > .fe-validating {
+		padding-left:38px!important;
 	}
 }

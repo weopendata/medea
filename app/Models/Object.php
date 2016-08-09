@@ -49,8 +49,8 @@ class Object extends Base
         [
             'relationship' => 'P45',
             'config' => [
-                'key' => 'material',
-                'name' => 'material',
+                'key' => 'objectMaterial',
+                'name' => 'objectMaterial',
                 'value_node' => true,
                 'cidoc_type' => 'E57'
             ]
@@ -88,7 +88,7 @@ class Object extends Base
                 'cidoc_type' => 'E11'
             ]
         ],
-        /*[
+        [
             'relationship' => 'P42',
             'config' => [
                 'key' => 'period',
@@ -96,7 +96,7 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
-        ]*/
+        ]
     ];
 
     protected $properties = [

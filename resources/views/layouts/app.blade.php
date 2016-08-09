@@ -48,6 +48,8 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url('/home') }}">Home</a></li>
+                    <li><a href="{{ url('/finds') }}">Vondsten</a></li>
+                    <li><a href="{{ url('/about') }}">Over MEDEA</a></li>
                 </ul>
 
                 <!-- Right Side Of Navbar -->

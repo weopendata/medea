@@ -1,28 +1,31 @@
 <template>
   <article>
-    <div class="fe-header">
-      <div class="fe-imglist">
-        <div class="img" v-for="image in find.object.photograph">
-          <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
-          <span class="fe-img-remark" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'" @click="imgRemark($index)">Opmerking toevoegen</span>
-        </div>
-      </div>
-      <div class="fe-header-fixed">
-        <h1>#{{find.identifier}} {{find.object.category}} {{find.object.objectMaterial}}</h1>
-      </div>
-    </div>
-    <section class="ui container fe-summary">
-      <div class="ui two columns doubling grid">
-        <div class="four wide column">
-          <object-features :find="find" detail="all"></object-features>
+    <div class="ui container fe-fiche"> 
+      <h1>#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
+      <div class="ui two columns stackable grid">
+        <div class="column" :class="{'fe-validating':validating}">
+          <object-features :find="find" detail="all" :validation="validation" :validating="validating"></object-features>
           <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
             <i class="pencil icon"></i>
             Bewerken
           </a>
         </div>
-        <div class="twelve wide column">
-          <div v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
-            <validation-form :obj="find.object.identifier"></validation-form>
+        <div class="column">
+          <div class="fe-header">
+            <div class="fe-imglist">
+              <div class="img" v-for="image in find.object.photograph">
+                <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
+                <span class="fe-img-remark" v-if="validating" @click="imgRemark($index)">Opmerking toevoegen</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="ui container">
+          <div v-if="validating">
+            <validation-form :obj="find.object.identifier" :validation="validation"></validation-form>
           </div>
           <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
             <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
@@ -46,10 +49,8 @@
           </div>
           <div v-if="find.object.objectValidationStatus == 'afgekeurd'">
             Deze vondstfiche is niet geschikt voor MEDEA.
-          </div>
-        </div>
-      </div>
-    </section>
+          </div> 
+    </div>
   </article>
 </template>
 
@@ -66,9 +67,15 @@ export default {
   props: ['user', 'find'],
   data () {
     return {
+      validation: {},
       show: {
         validation: false
       }
+    }
+  },
+  computed: {
+    validating () {
+      return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
     }
   },
   methods: {

@@ -3,8 +3,6 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js';
 import DevBar from './components/DevBar';
 import Step from './components/Step';
 import checkbox from 'semantic-ui-css/components/checkbox.min.js';
-import dropdown from 'semantic-ui-css/components/dropdown.min.js';
-import transition from 'semantic-ui-css/components/transition.min.js';
 
 import {load, Map, Marker, Circle} from 'vue-google-maps';
 
@@ -59,8 +57,8 @@ new Vue({
       object: {
         objectValidationStatus: 'in bewerking',
         objectDescription: null,
-        objectCategory: null,
-        material: null,
+        objectCategory: 'onbekend',
+        objectMaterial: null,
         surfaceTreatment: null,
         treatmentEvent: {
           modificationTechnique: {
@@ -363,11 +361,11 @@ new Vue({
       }
       this.import()
     }
-    $('.ui.checkbox').checkbox()
-    $('.ui.dropdown').dropdown()
+    $('.ui.checkbox').dropdown()
+    $('.step .ui.dropdown').dropdown()
   },
   watch: {
-    'find.object.category' (val) {
+    'find.object.objectCategory' (val) {
       if (val == 'munt' || val == 'rekenpenning') {
         this.show.diameter = true
         this.show.lengte = false
