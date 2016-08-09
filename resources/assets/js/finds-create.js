@@ -165,7 +165,7 @@ new Vue({
       },
       // Form state
       ready: [],
-      step: window.initialFind.identifier ? 0 : 1,
+      step: initialFind.identifier ? 0 : 1,
       submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
       // App state
       user: window.medeaUser
