@@ -1,34 +1,38 @@
 <template>
   <div class="ui form" @submit.prevent="submit" :action="submitAction">
     <h3>Vondst valideren</h3>
-    <div class="field">
-      <label>Is deze vonstfiche klaar voor publicatie? Duid aan wat van toepassing is.</label>
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="remove">
-        <label>Deze vondst hoort niet thuis op MEDEA</label>
+    <div class="ui two columns doubling grid">
+      <div class="column">
+        <div class="field">
+          <label>Is deze vonstfiche klaar voor publicatie? Duid aan wat van toepassing is.</label>
+          <div class="ui checkbox">
+            <input type="checkbox" tabindex="0" class="hidden" v-model="remove">
+            <label>Deze vondst hoort niet thuis op MEDEA</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
+            <label>Deze vondstfiche bevat gevoelige informatie</label>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
-        <label>Deze vondstfiche bevat gevoelige informatie</label>
+      <div class="column">
+        <div class="field">
+          <label for="description">Geef feedback mee aan de detectorist over de gevraagde/gedane aanpassingen:</label>
+          <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <label for="description">Geef feedback mee aan de detectorist over de gevraagde/gedane aanpassingen:</label>
-      <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
     </div>
     <photo-validation :model="remarks" :index="index" v-for="(index, remarks) in imgRemarks"></photo-validation>
-    <div v-if="!embargo&&!remove">
-      <p v-if="valid">
-        <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
-          <i class="thumbs up icon"></i> Goedkeuren
-        </button>
-      </p>
-      <p v-else>
-        <button @click="post('onder embargo')" class="ui orange big button">Aanpassen</button>
-      </p>
-    </div>
+    <p v-if="!embargo&&!remove&&valid">
+      <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
+        <i class="thumbs up icon"></i> Goedkeuren
+      </button>
+    </p>
+    <p v-if="!embargo&&!remove&&!valid">
+      <button @click="post('onder embargo')" class="ui orange big button">Aanpassen</button>
+    </p>
     <p v-if="embargo">
       <button @click="post('onder embargo')" class="ui orange big button">Embargo</button>
     </p>

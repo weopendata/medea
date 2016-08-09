@@ -43,12 +43,8 @@
 
 .fe-header {}
 .fe-header-fixed {}
-.fe-fiche {
+.fe-card {
 	padding: 16px 0 0;
-	max-width: 900px;
-	margin: 0 auto 2em;
-	background: white;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
 }
 
 /* simple image carousel */
@@ -61,7 +57,8 @@
 	}
 	img {
 		display: block;
-		max-height: 150px;
+		max-height: 300px;
+		max-width: 100%;
 		width: auto;
 	}
 }
@@ -83,20 +80,23 @@ dl {
 .fe-check {
 	position: absolute;
 	right: 100%;
-	padding: 6px;
-	line-height: 2px;
-	background: #FBBD08;
+	line-height: 24px;
+	height: 24px;
+	width: 24px;
+	text-align: center;
+	color: white;
+	background: #F2711C;
 	border-radius: 2px;
 	margin-right: 1em;
 	cursor: pointer;
-	>input {
-		cursor: pointer;
+	>.icon {
+		margin: 0;
 	}
 	dl & {
 		margin-top: -3px;
 	}
 }
-.fe-invalid {
+.fe-valid {
 	background: #21BA45;
 }
 .tooltip-show[data-tooltip]:before {
