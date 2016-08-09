@@ -99,6 +99,12 @@ class Object extends Base
         ]*/
     ];
 
+    protected $properties = [
+        [
+            'name' => 'feedback',
+        ]
+    ];
+
     /**
      * Dimension is not a main entity, so we create it in this object only
      *

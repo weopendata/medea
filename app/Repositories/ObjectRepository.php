@@ -28,18 +28,18 @@ class ObjectRepository extends BaseRepository
     /**
      * Add a classification to an object
      *
-     * @param $id             integer The id of the object
+     * @param $objectId             integer The id of the object
      * @param $classification array   The configuration of the classification
      *
      * @return Node
      */
-    public function addClassification($id, $classification)
+    public function addClassification($objectId, $classification)
     {
-        $object = $this->getById($id);
+        $object = $this->getById($objectId);
 
         if (!empty($object)) {
-            $production_classification = new ProductionClassification($classification);
-            $production_classification->save();
+            $prodClassification = new ProductionClassification($classification);
+            $prodClassification->save();
 
             // Check if a productionEvent already exists
             $production_event_rel = $object->getFirstRelationship(['P108']);
@@ -51,7 +51,7 @@ class ObjectRepository extends BaseRepository
             } else {
                 $production_event = $production_event_rel->getEndNode();
 
-                $production_event->relateTo($production_classification->getNode(), 'P41')->save();
+                $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
             }
 
             return $object;
@@ -60,11 +60,11 @@ class ObjectRepository extends BaseRepository
         return null;
     }
 
-    public function getClassification($id, $classification_id)
+    public function getClassification($objectId, $classification_id)
     {
         // To make this more neat, we'll use a specific Cypher query to bypass the
         // productionEvent link that lies between object and classification
-        $query = "match (n)-[*2..2]-(classification) where id(n) = $id AND id(classification) = $classification_id return classification";
+        $query = "match (n)-[*2..2]-(classification) where id(n) = $objectId AND id(classification) = $classification_id return classification";
 
         $client = $this->getClient();
 
@@ -81,29 +81,45 @@ class ObjectRepository extends BaseRepository
     /**
      * Set the validation status of a certain object
      *
-     * @param $id     integer The id of the object
-     * @param $status string  The new status of the object
+     * @param integer $objectId The id of the object
+     * @param string $status The new status of the object
+     * @param array $feedback The given feedback on different properties
      *
      * @return Node
      */
-    public function setValidationStatus($id, $status)
+    public function setValidationStatus($objectId, $status, $feedback)
     {
-        $object_node = $this->getById($id);
+        $objectNode = $this->getById($objectId);
 
-        $relationships = $object_node->getRelationships(['P2'], Relationship::DirectionOut);
+        $relationships = $objectNode->getRelationships(['P2'], Relationship::DirectionOut);
 
         foreach ($relationships as $relationship) {
-            $type_node = $relationship->getEndNode();
+            $typeNode = $relationship->getEndNode();
 
             $relationship->delete();
-            $type_node->delete();
+            $typeNode->delete();
         }
 
         $object = new Object();
-        $object->setNode($object_node);
+        $object->setNode($objectNode);
 
-        $type_node = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);
+        $typeNode = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);
 
-        return $object_node->relateTo($type_node, 'P2')->save();
+        if (!empty($feedback)) {
+            // Append the feedback if feedback already exists
+            $currentFeedback = $objectNode->getProperty('feedback');
+
+            if (!empty($currentFeedback)) {
+                $currentFeedback = json_decode($currentFeedback, true);
+            } else {
+                $currentFeedback = [];
+            }
+
+            $currentFeedback[] = $feedback;
+
+            $objectNode->setProperty('feedback', json_encode($currentFeedback))->save();
+        }
+
+        return $objectNode->relateTo($typeNode, 'P2')->save();
     }
 }

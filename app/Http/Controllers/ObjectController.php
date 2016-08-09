@@ -19,12 +19,16 @@ class ObjectController extends Controller
      * We expect the body to hold the new validationstatus of the find
      *
      * @param string
+     *
+     * @return  Response
      */
-    public function validation($id, Request $request)
+    public function validation($objectId, Request $request)
     {
         $input = $request->json()->all();
 
-        $this->objects->setValidationStatus($id, $input['objectValidationStatus']);
+        $input['timestamp'] = date('c');
+
+        $this->objects->setValidationStatus($objectId, $input['objectValidationStatus'], $input);
 
         return response()->json(['success' => true]);
     }
