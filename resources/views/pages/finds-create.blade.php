@@ -172,7 +172,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div class="two fields" v-show="show.technique">
     <div class="field">
       <label>Techniek</label>
-      <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.type">
+      <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.productionTechniqueType">
         <option value="">onbekend</option>
         <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
@@ -298,12 +298,13 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
       Niet alle verplichte velden zijn ingevuld.
     </p>
     <p v-if="submitting" style="color:#090">
-      Vondstfiche wordt bewaard.
+      Vondstfiche wordt bewaard. Even geduld.
     </p>
   </div>
 </div>
 
 {!! Form::close() !!}
+<pre v-text="dims|json"></pre>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>

@@ -29,17 +29,17 @@
   <dl v-if="find.object.dimensions && find.object.dimensions.length && detail=='all'">
     <dt-check v-if="validating" prop="find.object.dimensions"></dt-check>
     <dt>Dimensies</dt>
-    <dd v-for="dim in find.object.dimensions">{{dim.type}}: {{dim.value}}{{dim.unit}}</dd>
+    <dd v-for="dim in find.object.dimensions">{{dim.dimensionType}}: {{dim.measurementValue}}{{dim.dimensionUnit}}</dd>
   </dl>
   <dl v-if="find.object.objectMaterial">
     <dt-check v-if="validating" prop="find.object.objectMaterial"></dt-check>
     <dt>Materiaal</dt>
     <dd>{{find.object.objectMaterial}}</dd>
   </dl>
-  <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.type&&find.object.productionEvent.productionTechnique.type.length">
-    <dt-check v-if="validating" prop="find.object.objectMaterial"></dt-check>
+  <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
+    <dt-check v-if="validating" prop="find.object.productionEvent.productionTechnique.productionTechniqueType"></dt-check>
     <dt>Techniek</dt>
-    <dd>{{find.object.productionEvent.productionTechnique.type}}</dd>
+    <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueType}}</dd>
   </dl>
   <dl v-if="find.object.treatmentEvent&&find.object.treatmentEvent.modificationTechnique&&find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
     <dt-check v-if="validating" prop="find.object.treatmentEvent.modificationTechnique.modificationTechniqueType"></dt-check>
