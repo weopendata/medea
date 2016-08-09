@@ -62,13 +62,13 @@ class FindController extends Controller
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+
         $finds = $result['data'];
         $count = $result['count'];
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
         $linkHeader = '';
-
 
         $query_string = $this->buildQueryString($request);
 
@@ -152,9 +152,10 @@ class FindController extends Controller
 
         if (empty($user)) {
             // Test code in order to test with PostMan requests
-            $userNode = $users->getUser('foo@bar.com');
+            /*$userNode = $users->getUser('foo@bar.com');
             $user = new \App\Models\Person();
-            $user->setNode($userNode);
+            $user->setNode($userNode);*/
+            abort('401');
         }
 
         $images = [];
@@ -180,8 +181,6 @@ class FindController extends Controller
             $input['object']['objectValidationStatus'] = 'in bewerking';
         }
 
-        \Log::info($input['person']);
-
         // Make find
         $find = $this->finds->store($input);
 
@@ -191,12 +190,12 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show($findId, Request $request)
     {
-        $find = $this->finds->expandValues($id, $request->user());
+        $find = $this->finds->expandValues($findId, $request->user());
 
         $user = $request->user();
 
@@ -218,16 +217,16 @@ class FindController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Request $request)
+    public function edit($findId, Request $request)
     {
         if (!Auth::check()) {
-            return redirect('/finds/' . $id);
+            return redirect('/finds/' . $findId);
         }
 
-        $find = $this->finds->expandValues($id, $request->user());
+        $find = $this->finds->expandValues($findId, $request->user());
 
         return view('pages.finds-create', [
             'fields' => $this->list_values->getFindTemplate(),
@@ -239,12 +238,12 @@ class FindController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $findId)
     {
-        $find_node = $this->finds->getById($id);
+        $find_node = $this->finds->getById($findId);
 
         if (!empty($find_node)) {
             $input = $request->json()->all();
@@ -253,10 +252,11 @@ class FindController extends Controller
 
             if (empty($user)) {
                 // Test code in order to test with PostMan requests
-                $users = new UserRepository();
+                /*$users = new UserRepository();
                 $user_node = $users->getUser('foo@bar.com');
                 $user = new \App\Models\Person();
-                $user->setNode($user_node);
+                $user->setNode($user_node);*/
+                abort('401');
             }
 
             $images = [];
@@ -297,12 +297,19 @@ class FindController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($findId, Request $request)
     {
-        $this->finds->delete($id);
+        $user = $request->user();
+
+        if (empty($user)) {
+            abort('401');
+        }
+
+        $this->finds->delete($findId);
+
         return response()->json(['success' => true]);
     }
 

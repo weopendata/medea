@@ -32,18 +32,31 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('contact', 'HomeController@contact');
     Route::get('disclaimer', 'HomeController@disclaimer');
     Route::get('help', 'HomeController@help');
-    Route::get('users', 'HomeController@users');
+
     Route::get('voorwaarden', 'HomeController@voorwaarden');
+
     Route::resource('finds', 'FindController');
-    Route::resource('api/finds', 'Api\FindController');
-    Route::get('api/notifications', 'Api\NotificationController@index');
-    Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
 
-    Route::post('objects/{id}/validation', 'ObjectController@validation');
-    Route::resource('objects/{id}/classifications', 'ClassificationController');
-    Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
-    Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+    Route::group(['middleware' => 'ApiAuth'], function () {
+        Route::resource('api/finds', 'Api\FindController');
+    });
 
-    Route::delete('users/{id}', 'UserController@delete');
-    Route::get('settings', 'UserController@showSettings');
+    Route::group(['middleware' => 'auth'], function () {
+        Route::get('users', 'HomeController@users');
+        Route::get('api/notifications', 'Api\NotificationController@index');
+        Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
+
+        Route::group(['middleware' => 'roles:validator|detectorist'], function () {
+            Route::post('objects/{id}/validation', 'ObjectController@validation');
+        });
+
+        Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {
+            Route::resource('objects/{id}/classifications', 'ClassificationController');
+            Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
+            Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+        });
+
+        Route::delete('users/{id}', 'UserController@delete');
+        Route::get('settings', 'UserController@showSettings');
+    });
 });
