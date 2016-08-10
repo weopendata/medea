@@ -38,10 +38,14 @@ class UserController extends Controller
             abort(404);
         }
 
-        dd($user->hasPublicProfile());
+        // The person to view the profile of
+        $person = new Person();
+        $person->setNode($user);
+
+        dd($person->hasPublicProfile());
 
         return view('users.show', [
-            'profile' => \Auth::user()->getPublicProfile()
+            'profile' => $person->getPublicProfile()
         ]);
     }
 
