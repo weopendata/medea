@@ -27,8 +27,9 @@
 }
 .ui.register-container.form {
 	max-width: 500px;
-	margin: 10% auto;
-	padding: 0 1rem;
+	margin: 0 auto;
+	padding: 10% 1rem;
+	min-height: 100vh;
 }
 .field.expanding {
 	opacity: 1;

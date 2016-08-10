@@ -21,17 +21,15 @@
 
 <body>
 
-@if (Request::is('findsnope'))
-<div class="nav-push"></div>
-<div class="fixed-top">
+@if (Request::is('/'))
+<div class="nav-home">
 @endif
   <nav class="ui container">
     <div class="ui secondary green pointing menu">
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
+      @if (!Auth::guest())
       <a href="/users" class="item {{ Request::is('users') ? 'active' : '' }}">Leden</a>
-      @if (Auth::guest())
-      @else
       <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
       @endif
 
@@ -65,7 +63,7 @@
       </div>
     </div>
   </nav>
-@if (Request::is('finds'))
+@if (Request::is('/'))
 </div>
 @endif
 

@@ -130,8 +130,12 @@ dd {
 		margin-bottom: 0;
 	}
 }
-.nav-push {
-	height: 40px;
+.nav-home {
+	height: 0;
+	.ui.green.menu .active.item {
+		border-color: black !important;
+		color: black !important;
+	}
 }
 .listview {
 	padding-top: 20px;
