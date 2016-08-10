@@ -42,8 +42,12 @@ class UserController extends Controller
         $person = new Person();
         $person->setNode($user);
 
-        if (!$person->hasPublicProfile()) {
+        if (!$person->hasPublicProfile() && empty($request->user())) {
             abort(403);
+        } elseif (!empty($request->user()) && $request->user()->hasRole('administrator')) {
+            return view('users.show', [
+                'profile' => $person->getPublicProfile()
+            ]);
         }
 
         $allowedRoles = [];
