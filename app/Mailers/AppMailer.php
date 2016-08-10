@@ -28,7 +28,7 @@ class AppMailer
      *
      * @var string
      */
-    protected $to;
+    protected $recipient;
 
     /**
      * The view for the email.
@@ -145,18 +145,22 @@ class AppMailer
      */
     public function deliver()
     {
-        $sendgrid = new SendGrid(env('SEND_GRID_API_KEY'));
-        $email = new Email();
-
         $html = view($this->view)
                     ->with($this->data)
                     ->render();
 
-        $email->addTo($this->to)
-        ->setFrom("no-reply@medea.weopendata.com")
-        ->setSubject($this->subject)
-        ->setHtml($html);
+        if (env('APP_ENV') != 'production') {
+            \Log::info($html);
+        } else {
+            $sendgrid = new SendGrid(env('SEND_GRID_API_KEY'));
+            $email = new Email();
 
-        $sendgrid->send($email);
+            $email->addTo($this->to)
+            ->setFrom("no-reply@medea.weopendata.com")
+            ->setSubject($this->subject)
+            ->setHtml($html);
+
+            $sendgrid->send($email);
+        }
     }
 }

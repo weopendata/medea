@@ -7,7 +7,7 @@ use Closure;
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
-class ApiAuth
+class FindApi
 {
     /**
      * Handle an incoming request.
@@ -38,7 +38,7 @@ class ApiAuth
 
     private function userHasRoleIn($userRoles, $comparingRoles)
     {
-        return array_intersect($userRoles, $comparingRoles) > 0;
+        return count(array_intersect($userRoles, $comparingRoles)) > 0;
     }
 
     /**

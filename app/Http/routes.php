@@ -37,7 +37,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::resource('finds', 'FindController');
 
-    Route::group(['middleware' => 'ApiAuth'], function () {
+    Route::group(['middleware' => 'findapi'], function () {
         Route::resource('api/finds', 'Api\FindController');
     });
 

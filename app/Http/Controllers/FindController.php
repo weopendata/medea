@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
 use Illuminate\Support\MessageBag;
 use App\Helpers\Pager;
-use App\Http\Middleware\ApiAuth;
+use App\Http\Middleware\FindApi;
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -204,6 +204,10 @@ class FindController extends Controller
         // Get the find
         $find = $this->finds->expandValues($findId, $request->user());
 
+        if (empty($find)) {
+            abort(404);
+        }
+
         // Get the logged in user
         $user = $request->user();
 
@@ -211,10 +215,11 @@ class FindController extends Controller
         // from the find in order to do this, hence the fetch first, validation later
         // Apply the same middleware logic as done in the finds API request
         // TODO: get the embargo property of the object
-        $personalFind = !empty($user) && !empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id;
+        $personalFind = !empty($user) && !empty($find['person']['identifier']) && $find['person']['identifier'] == $user->id;
+        $embargo = $find['object']['embargo'];
 
-        $apiAuth = new ApiAuth();
-        $apiAuth->validateFindRequest($personalFind, $find['object']['objectValidationStatus'], false, $user);
+        $auth = new FindApi();
+        $auth->validateFindRequest($personalFind, $find['object']['objectValidationStatus'], $embargo, $user);
 
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
         if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
