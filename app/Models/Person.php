@@ -73,13 +73,16 @@ class Person extends Base implements Authenticatable
             'name' => 'lastName'
         ],
         [
-            'name' => 'profileAccessLevel'
+            'name' => 'profileAccessLevel',
+            'default_value' => 0
         ],
         [
-            'name' => 'showNameOnPublicFinds'
+            'name' => 'showNameOnPublicFinds',
+            'default_value' => false
         ],
         [
-            'name' => 'passContactInfoToAgency'
+            'name' => 'passContactInfoToAgency',
+            'default_value' => false,
         ],
         [
             'name' => 'bio'
