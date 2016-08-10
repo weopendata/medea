@@ -31,8 +31,11 @@ class UserController extends Controller
 
     public function show($userId, Request $request)
     {
+        if (empty(\Auth::user())) {
+            abort(404);
+        }
         return view('users.show', [
-            'profile' => $this->users->getById(\Auth::user()->id)
+            'profile' => \Auth::user()
         ]);
     }
 

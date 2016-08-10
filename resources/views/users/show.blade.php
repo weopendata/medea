@@ -4,5 +4,5 @@
 
 @section('content')
 <div class="ui container">
-qsd {{$profile->getProperties() + ' ' + $profile->lastName}}
+qsd {{ json_encode($profile)}}
 @endsection

@@ -11,11 +11,9 @@ new Vue({
   el: 'body',
   data () {
     return {
-      users: window.users,
+      users: window.users.sort((a, b) => b.id - a.id),
       user: window.medeaUser
     }
-  },
-  ready () {
   },
   components: {
     TrUser
