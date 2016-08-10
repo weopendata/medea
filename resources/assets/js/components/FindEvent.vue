@@ -1,43 +1,39 @@
 <template>
-  <div class="item fe">
-    <a class="big image fe-image" href="/finds/{{find.identifier}}">
-      <img class="fe-img" :src="image.resized" v-for="image in find.object.photograph">
-      <div class="fe-img fe-img-placeholder" v-if="!find.object.photograph">Afbeelding niet beschikbaar</div>
-    </a>
-    <div class="content">
-      <a class="header" href="/finds/{{find.identifier}}">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.objectMaterial}}</a>
-      <div class="meta">
+  <div class="card">
+    <div class="card-img">
+      <a :href="uri" class="card-img-abs" style="background-image:url({{cardCover}})"></a>
+    </div>
+    <div class="card-content">
+      <div class="card-textual">
+        <a :href="uri" class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</a>
         <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
-      <div class="description">
-        <object-features :find="find"></object-features>
-      </div>
-      <div class="extra">
-        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
+      <div class="card-bar card-border-top" v-if="(user.email==find.person.email)||user.validator">
+        <a class="btn" :href="uri" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
           Classificeren
         </a>
-        <a class="ui blue button" href="/finds/{{find.identifier}}" v-if="classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
           {{classificationCount}} classificaties bekijken
         </a>
-        <a class="ui green button" href="/finds/{{find.identifier}}/edit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
+        <a class="btn" :href="uriEdit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
           <i class="pencil icon"></i>
           Bewerken
         </a>
-        <a class="ui green button" href="/finds/{{find.identifier}}" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
+        <a class="btn" :href="uri" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           Valideren
         </a>
-        <button class="ui blue button" @click="mapFocus" v-if="hasLocation">
+        <button class="btn" @click="mapFocus" v-if="hasLocation">
           <i class="marker icon"></i>
           Op de kaart
         </button>
-        <a class="ui basic small icon black button" href="/finds/{{find.identifier}}/edit" v-if="(user.email==find.person.email)||user.validator">
-          <i class="pencil icon"></i>
-        </a>
-        <button class="ui basic small icon button" @click="rm" v-if="user.administrator&&find.identifier">
+        <button class="btn btn-icon pull-right" @click="rm" v-if="user.administrator&&find.identifier">
           <i class="trash icon"></i>
         </button>
+        <a class="btn btn-icon pull-right" :href="uriEdit" v-if="(user.email==find.person.email)||user.validator">
+          <i class="pencil icon"></i>
+        </a>
       </div>
     </div>
   </div>
@@ -57,15 +53,23 @@ export default {
     },
     hasLocation () {
       return this.find.findSpot.location && this.find.findSpot.location.lat
+    },
+    cardCover () {
+      return this.find.object.photograph && this.find.object.photograph[0] && encodeURI(this.find.object.photograph[0].resized)
+    },
+    uri () {
+      return '/finds/' + this.find.identifier
+    },
+    uriEdit () {
+      return this.uri + '/edit'
     }
   },
   methods: {
     rm () {
-      this.find.object.objectValidationStatus = 'verwijderd'
-      var $root = this.$root
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
-        $root.fetch()
+        this.$root.fetch()
+        this.find.object.objectValidationStatus = 'verwijderd'
       });
     },
     mapFocus (accuracy) {

@@ -167,6 +167,7 @@ new Vue({
       ready: [],
       step: initialFind.identifier ? 0 : 1,
       submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
+      redirectTo: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds?myfinds=yes',
       // App state
       user: window.medeaUser
     }
@@ -374,7 +375,7 @@ new Vue({
       return this.find
     },
     submitSuccess () {
-      window.location.href = this.submitAction
+      window.location.href = this.redirectTo
     }
   },
   ready () {

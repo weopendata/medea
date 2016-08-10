@@ -25,6 +25,7 @@
 @import "../../../node_modules/semantic-ui-css/components/button";
 @import "../../../node_modules/semantic-ui-css/components/menu";
 @import "../../../node_modules/semantic-ui-css/components/item";
+@import "./modules/material";
 @import "./modules/fe";
 
 /* FindsList */
@@ -103,11 +104,11 @@ dd {
 .fromright-transition {
 	transition: transform .5s ease;
 	transform: translateX(0);
-	position: fixed;
-	top: 38px;
-	bottom: 0;
+	position: absolute;
+	top: 0;
 	left: 0;
 	width: 100%;
+	height: 60vh;
 }
 .fromright-enter,
 .fromright-leave {
@@ -137,9 +138,27 @@ dd {
 	height: calc(100% - 40px);
 	overflow: auto;
 }
+@media (min-width: 768px) {
+	.list-left {
+		float: left;
+		width: 25%;
+		padding-right: 16px;
+	}
+	.list-right {
+		position: relative;
+		float: right;
+		width: 75%;
+		padding-left: 16px;
+	}
+}
+.mapview {
+	margin-top: 1.5em;
+	height: 50vh;
+}
 
 /* FindsList > Empty state */
 
+.status-lg,
 .finds-empty {
 	margin: 10% auto;
 	small {
@@ -248,31 +267,23 @@ h4.required::after {
 		color: black;
 	}
 }
-.card {
-	max-width: 900px;
-	margin: 0 auto 2em;
-	background: white;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
-	@media (max-width: 920px) {
-		margin: 0 10px 2em;
-	}
+.btn-icon {
+	padding: 0;
+	width: 36px;
 }
-.card-bar {
-	text-align: right;
-	padding: 8px 0;
-}
-.card-bar:last-child {
-	padding: 8px;
-}
-.card-textual {
-	padding: 0 24px;
-}
-.card-title {
-	line-height: 48px;
-	font-size: 24px;
-	font-weight: 300;
-}
-
 .wrapper-white {
 	background: white;
+}
+
+/* Utils */
+
+.text-right {
+	text-align: right;
+}
+.pull-right {
+	float: right;
+}
+
+.facet-a {
+	display: block;
 }

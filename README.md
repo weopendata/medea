@@ -10,7 +10,7 @@ In order to perform the migration an extra option is necessary because the defau
 
 The command that will perform the correct MySQL migration is:
 
-    php artisan migrate --database='mysqsl'
+    php artisan migrate --database='mysql'
 
 ### Usefull commands while developing
 

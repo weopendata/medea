@@ -1,6 +1,6 @@
 <template>
   <article>
-    <div class="card fe-card"> 
+    <div class="card card-center fe-card">
       <div class="card-textual">
         <h1 class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
         <div class="ui two columns doubling grid">
@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      <div class="card-bar" v-if="(user.email==find.person.email)||user.validator">
+      <div class="card-bar text-right" v-if="(user.email==find.person.email)||user.validator">
         <a class="btn" href="/finds/{{find.identifier}}/edit">
           <i class="pencil icon"></i>
           Bewerken
@@ -27,7 +27,7 @@
       </div>
     </div>
     <br>
-    <div class="wrapper-white">
+    <div class="wrapper-white-disabled">
       <p>&nbsp;</p>
       <div class="ui container">
           <div v-if="validating">
@@ -52,10 +52,11 @@
             <p>&nbsp;</p>
           </div>
           <div v-if="(user.email==find.person.email)">
-            <div v-if="find.object.objectValidationStatus == 'in bewerking'">
+            <h1 v-if="find.object.objectValidationStatus == 'in bewerking'" class="status-lg">
               Je vondstfiche wordt gevalideerd.
+              <small>Je krijgt een notificatie wanneer de validator de vonstfiche beoordeeld heeft.</small>
               <p>&nbsp;</p>
-            </div>
+            </h1>
             <div v-if="find.object.objectValidationStatus == 'revisie nodig'">
               Ofwel is dit een draft, ofwel is er feedback die wijzigingen aan deze vondstfiche gebieden.
               <p>&nbsp;</p>
@@ -73,13 +74,7 @@
           </div>
           <div v-if="find.object.objectValidationStatus == 'afgekeurd'">
             Deze vondstfiche is niet geschikt voor MEDEA.
-          </div> 
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
+          </div>
       </div>
     </div>
   </article>

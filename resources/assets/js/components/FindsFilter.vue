@@ -1,57 +1,39 @@
 <template>
   <div class="ui form" @change="$root.fetch()">
-    <div class="fields">
-      <div class="pct40 wide field">
+      <div class="field">
         <form class="ui action input" @submit.prevent="$root.fetch()">
-          <input type="text" v-model="model.query" placeholder="Zoeken...">
+          <input type="text" v-model="model.query" placeholder="Zoeken..." style="width:100px">
           <button class="ui icon button" :class="{green:model.query}">
             <i class="search icon"></i>
           </button>
         </form>
       </div>
-      <div class="pct60 wide field" style="line-height:37px;">
-        <div v-if="!$root.user.isGuest" class="ui dropdown button simple" v-if="saved&&saved.length&&!advanced">
-          <span class="text">Bewaarde filters</span>
-          <div class="menu">
-            <div class="item" v-for="filter in saved" v-text="filter.name" @click="restore(filter)"></div>
-          </div>
-        </div> &nbsp;
-        <button v-if="!$root.user.isGuest" class="ui button" :class="{green:model.myfinds}" @click.prevent="toggleMyfinds">Mijn vondsten</button> &nbsp;
-        <a @click.prevent="advanced=true" v-if="!advanced">Geavanceerd zoeken</a>
-        <span class="finds-order" v-if="advanced">
-          Sorteren op:
-          <a @click.prevent="sortBy('findDate')" :class="{active:model.order=='findDate', reverse:model.order=='-findDate'}">Datum</a>
-        </span>
-      </div>
-    </div>
-    <div class="fields" v-if="advanced">
-      <div class="four wide field">
+      <a href="#" @click.prevent="restore(filter)" v-for="filter in saved" v-text="filter.name" class="facet-a"></a>
+      <div class="field">
         <select class="ui search fluid dropdown category" v-model="model.category">
           <option value="*">Alle categorieën</option>
           <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
         </select>
       </div>
-      <div class="four wide field">
+      <div class="field">
         <select class="ui search fluid dropdown category" v-model="model.period">
           <option value="*">Alle perioden</option>
           <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
         </select>
       </div>
-      <div class="four wide field">
+      <div class="field">
         <select class="ui search fluid dropdown category" v-model="model.objectMaterial">
           <option value="*">Alle materialen</option>
           <option v-for="opt in fields.object.objectMaterial" :value="opt" v-text="opt"></option>
         </select>
       </div>
-      <div class="four wide field">
+      <div class="field">
         <select class="ui search fluid dropdown category" v-model="model.technique">
           <option value="*">Alle technieken</option>
           <option v-for="opt in fields.object.technique" :value="opt" v-text="opt"></option>
         </select>
       </div>
-    </div>
-    <div class="fields" v-if="advanced&&$root.user.validator">
-      <div class="four wide field">
+      <div class="field" v-if="$root.user.validator">
         <select class="ui search fluid dropdown category" v-model="model.status">
           <option value="in bewerking">in bewerking</option>
           <option value="gevalideerd">gevalideerd</option>
@@ -60,7 +42,6 @@
           <option value="verwijderd" v-if="$root.user.administrator">afgekeurd</option>
         </select>
       </div>
-    </div>
   </div>
 </template>
 

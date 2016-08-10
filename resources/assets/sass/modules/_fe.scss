@@ -1,29 +1,29 @@
 /* FindEvent */
 
-.ui.items > .item > .image.fe-image {
-	width: 400px;
-	max-height: 250px;
-	white-space: nowrap;
-	overflow-x: auto;
-	overflow-y: hidden;
-}
-.ui.items > .item > .image.fe-image > img,
-.fe-img {
-	display: inline-block;
-	margin-right: 1.5rem;
-	width: auto;
-	height: 250px;
-	vertical-align: top;
-	&:last-child {
-		margin-right: 0;
-	}
-}
+// .ui.items > .item > .image.fe-image {
+// 	width: 400px;
+// 	max-height: 250px;
+// 	white-space: nowrap;
+// 	overflow-x: auto;
+// 	overflow-y: hidden;
+// }
+// .ui.items > .item > .image.fe-image > img,
+// .fe-img {
+// 	display: inline-block;
+// 	margin-right: 1.5rem;
+// 	width: auto;
+// 	height: 250px;
+// 	vertical-align: top;
+// 	&:last-child {
+// 		margin-right: 0;
+// 	}
+// }
 // Divider
-@media only screen and (min-width: 767px) {
-	.ui.items > .item > .image.fe-image {
-		border-right: 2px solid rgba(34, 36, 38, 0.15);
-	}
-}
+// @media only screen and (min-width: 767px) {
+// 	.ui.items > .item > .image.fe-image {
+// 		border-right: 2px solid rgba(34, 36, 38, 0.15);
+// 	}
+// }
 
 /* FindEvent preview */
 

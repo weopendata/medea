@@ -96,6 +96,20 @@ new Vue({
     showCity (value) {
       this.filterState.showmap = value
       this.fetch('showmap')
+    },
+    toggleMyfinds () {
+      this.filterState.myfinds = this.filterState.myfinds ? false : 'yes';
+      this.fetch()
+    },
+    sortBy (type) {
+      if (this.filterState.order == type) {
+        this.filterState.order = '-' + type
+      } else if (this.filterState.order == '-' + type) {
+        this.filterState.order = false
+      } else {
+        this.filterState.order = type
+      }
+      this.fetch()
     }
   },
   events: {

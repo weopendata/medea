@@ -21,7 +21,7 @@
 
 <body>
 
-@if (Request::is('finds'))
+@if (Request::is('findsnope'))
 <div class="nav-push"></div>
 <div class="fixed-top">
 @endif
