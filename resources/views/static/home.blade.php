@@ -33,19 +33,15 @@
   <h2 id="register">Registreren</h2>
   <h3>Contactgegevens</h3>
   <div class="two fields">
-    <div class="field">
+    <div class="field" :class="{error:errors.firstName}">
       <label for="first_name">Voornaam</label>
       <input v-model="user.firstName" type="text">
+      <div v-for="msg in errors.firstName" v-text="msg" class="input"></div>
     </div>
-    <div class="field">
+    <div class="field" :class="{error:errors.lastName}">
       <label for="last_name">Achternaam</label>
       <input v-model="user.lastName" type="text">
-    </div>
-  </div>
-  <div class="fields" :class="{error:errors.phone}>
-    <div class="field">
-      <label for="phone">Telefoon</label>
-      <input v-model="user.phone" type="text">
+      <div v-for="msg in errors.lastName" v-text="msg" class="input"></div>
     </div>
   </div>
   <div class="field" :class="{error:errors.email}">
@@ -59,42 +55,40 @@
     <div v-for="msg in errors.password" v-text="msg" class="input"></div>
   </div>
   <h3>Rollen</h3>
+  <p>Welk rol(len) wil je opnemen op het MEDEA platform?</p>
   <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.detectorist">
       <label>
         <b>Detectorist</b>
-        <br>registreert eigen vondsten.
+        <br>Je kan je eigen vonsten documenteren en publiceren.
       </label>
     </div>
   </div>
-  <p v-if="!show.roles">
-    <a href="#" @click.prevent="show.roles=1">Toon andere rollen: vondstexpert, onderzoeker &amp; registrator</a>
-  </p>
-  <div class="field" v-show="show.roles">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.expert">
-      <label>
-        <b>Vondstexpert</b>
-        <br>classificeert vondsten volgens expertise.
-      </label>
-    </div>
-  </div>
-  <div class="field" v-show="show.roles">
+  <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
       <label>
         <b>Registrator</b>
-        <br>beheert de vondsten van een bestaande collectie of project.
+        <br>Je kan vondsten van anderen documenteren en publiceren in het kader van een bestaande collectie of project.
       </label>
     </div>
   </div>
-  <div class="field" v-show="show.roles">
+  <div class="field">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.validator">
       <label>
         <b>Validator</b>
-        <br>kan vondsten valideren.
+        <br>Je gaat na of gemelde vondsten in orde zijn voor publicatie.
+      </label>
+    </div>
+  </div>
+  <div class="field">
+    <div class="ui checkbox">
+      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.expert">
+      <label>
+        <b>Vondstexpert</b>
+        <br>Je hebt expertise op basis van praktijk- en/of onderzoekservaring die je wil inzetten om vondsten te bestuderen en classificeren.
       </label>
     </div>
   </div>
@@ -148,6 +142,9 @@
     </div>
     <br>
   </div>
+  <p>
+    Door te registreren verklaar je jezelf akkoord met de <a href="/voorwaarden">gebruikersvoorwaarden</a> en het <a href="/privacy">privacy-beleid</a> van MEDEA.
+  </p>
   <div class="field">
     <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Registreer</button>
   </div>
