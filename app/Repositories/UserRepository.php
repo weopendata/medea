@@ -135,4 +135,60 @@ class UserRepository extends BaseRepository
 
         return $user_node->relateTo($classification, $vote_type)->save();
     }
+
+    /**
+     * Get all the bare nodes of a findEvent
+     *
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array
+     */
+    public function getAll()
+    {
+        $client = $this->getClient();
+
+        $findLabel = $client->makeLabel($this->label);
+
+        $findNodes = $findLabel->getNodes();
+
+        $data = [];
+        foreach ($findNodes as $findNode) {
+            $person = new Person();
+            $person->setNode($findNode);
+            $personData = $findNode->getProperties();
+            $personData['finds'] = $person->getFindCount();
+
+            $data[] = $personData;
+        }
+        return $data;
+    }
+
+    /**
+     * Get all the bare nodes of a findEvent
+     *
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array
+     */
+    public function getAllWithRoles()
+    {
+        $client = $this->getClient();
+
+        $findLabel = $client->makeLabel($this->label);
+
+        $findNodes = $findLabel->getNodes();
+
+        $data = [];
+        foreach ($findNodes as $findNode) {
+            $person = new Person();
+            $person->setNode($findNode);
+            $personData = $findNode->getProperties();
+            $personData['roles'] = $person->getRoles();
+
+            $data[] = $personData;
+        }
+        return $data;
+    }
 }

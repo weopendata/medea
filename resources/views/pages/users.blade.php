@@ -1,6 +1,6 @@
 @extends('main')
 
-@section('title', 'Contact')
+@section('title', 'Leden')
 
 @section('content')
 <div class="ui container">
@@ -11,10 +11,12 @@
 				<th>Vondsten</th>
 			</tr>
 		</thead>
+		@foreach ($users as $user)         
 		<tr>
-			<td>Iemand</td>
-			<td>3</td>
+			<td>{{ $user['firstName'] }} {{ $user['lastName'] }}</td>
+			<td>{{ $user['finds'] }}</td>
 		</tr>
+		@endforeach
 	</table>
 </div>
 @endsection

@@ -48,11 +48,6 @@ class HomeController extends Controller
         return view('static.help');
     }
     
-    public function users(Request $request)
-    {
-        return view('static.users');
-    }
-    
     public function voorwaarden(Request $request)
     {
         return view('static.voorwaarden');

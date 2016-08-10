@@ -253,6 +253,16 @@ class Person extends Base implements Authenticatable
     }
 
     /**
+     * Get the column name for the "remember me" token.
+     *
+     * @return string
+     */
+    public function getFindCount()
+    {
+        return rand(0, 20);
+    }
+
+    /**
      * Get the roles of a user
      *
      * @return array

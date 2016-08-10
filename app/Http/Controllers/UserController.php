@@ -15,6 +15,24 @@ class UserController extends Controller
         $this->users = $users;
     }
 
+    public function index(Request $request)
+    {
+        if (in_array('administrator', $request->user()->getRoles())) {
+            return view('pages.users-admin', [
+                'users' => $this->users->getAllWithRoles()
+            ]);
+        }
+
+        return view('pages.users', [
+            'users' => $this->users->getAll()
+        ]);
+    }
+
+    public function show($id, Request $request)
+    {
+        dd($id);
+    }
+
     public function delete($id, Request $request)
     {
         if ($this->users->delete($id)) {

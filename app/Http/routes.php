@@ -42,7 +42,7 @@ Route::group(['middleware' => 'web'], function () {
     });
 
     Route::group(['middleware' => 'auth'], function () {
-        Route::get('users', 'HomeController@users');
+        Route::resource('users', 'UserController');
         Route::get('api/notifications', 'Api\NotificationController@index');
         Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
 
