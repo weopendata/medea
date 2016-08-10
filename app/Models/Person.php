@@ -64,7 +64,7 @@ class Person extends Base implements Authenticatable
         ],
         [
             'name' => 'verified',
-            'default_value' => 'false'
+            'default_value' => false
         ],
         [
             'name' => 'firstName'
@@ -240,6 +240,51 @@ class Person extends Base implements Authenticatable
     {
         $this->node->setProperty($this->getRememberTokenName(), $value);
         $this->node->save();
+    }
+
+    public function update($properties)
+    {
+        return $this->patch($properties);
+    }
+
+    /**
+     * Perform a patch request, person is the
+     * only model that requires this because not all
+     * properties are passed in order to update the model
+     * (e.g. password and other privacy related data points)
+     *
+     * @param array $properties The new properties of the person
+     *
+     * @return Node
+     */
+    public function patch($properties)
+    {
+        // Apply the new data properties we expect
+        // a flat document with lastName, firstName, roles, ...
+        $fullModel = $this->getValues();
+
+        foreach ($properties as $key => $value) {
+            $fullModel[$key] = $value;
+        }
+
+        unset($fullModel['_method']);
+        unset($fullModel['id']);
+        unset($fullModel['identifier']);
+
+        // Invoke the update method
+        return parent::update($fullModel);
+    }
+
+    /**
+     * Check if a user has a certain role
+     *
+     * @param string $role
+     *
+     * @return boolean
+     */
+    public function hasRole($role)
+    {
+        return in_array($role, $this->getRoles());
     }
 
     /**

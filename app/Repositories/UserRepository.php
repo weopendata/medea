@@ -137,32 +137,49 @@ class UserRepository extends BaseRepository
     }
 
     /**
-     * Get all the bare nodes of a findEvent
+     * Get all the user nodes
      *
      * @param integer $limit
      * @param integer $offset
      *
      * @return array
      */
-    public function getAll()
+    public function getAll($limit = 50, $offset = 0)
     {
         $client = $this->getClient();
 
-        $findLabel = $client->makeLabel($this->label);
+        $personLabel = $client->makeLabel($this->label);
 
-        $findNodes = $findLabel->getNodes();
+        return $personLabel->getNodes();
+    }
 
-        $data = [];
-        foreach ($findNodes as $findNode) {
+    /**
+     * Get all users with only a specific set of data points
+     *
+     * @param array $fields
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return array
+     */
+    public function getAllWithFields($fields, $limit = 50, $offset = 0)
+    {
+        $userNodes = $this->getAll($limit, $offset);
+
+        $users = [];
+
+        foreach ($userNodes as $userNode) {
             $person = new Person();
-            $person->setNode($findNode);
-            $personData = array_only($findNode->getProperties(), ['firstName', 'lastName']);
-            $personData['id'] = $findNode->getId();
+            $person->setNode($userNode);
+
+            $personData = array_only($userNode->getProperties(), $fields);
+            $personData['id'] = $userNode->getId();
             $personData['finds'] = $person->getFindCount();
 
-            $data[] = $personData;
+            $users[] = $personData;
         }
-        return $data;
+
+        return $users;
     }
 
     /**
@@ -187,7 +204,7 @@ class UserRepository extends BaseRepository
             $person->setNode($findNode);
             $personData = array_only($findNode->getProperties(), ['firstName', 'lastName', 'verified']);
             $personData['id'] = $findNode->getId();
-            $personData['roles'] = $person->getRoles();
+            $personData['personType'] = $person->getRoles();
 
             $data[] = $personData;
         }

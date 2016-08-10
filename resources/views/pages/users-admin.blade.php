@@ -12,6 +12,7 @@
 				<th>Vondstexpert</th>
 				<th>Registrator</th>
 				<th>Validator</th>
+				<th>Onderzoeker</th>
 				<th>Administrator</th>
 			</tr>
 		</thead>

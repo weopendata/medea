@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Repositories\FindRepository;
+use App\Repositories\UserRepository;
 use App\Models\FindEvent;
+use App\Models\Person;
 
 class DataManagement extends Command
 {
@@ -27,11 +29,12 @@ class DataManagement extends Command
      *
      * @return void
      */
-    public function __construct(FindRepository $finds)
+    public function __construct(FindRepository $finds, UserRepository $users)
     {
         parent::__construct();
 
         $this->finds = $finds;
+        $this->users = $users;
     }
 
     /**
@@ -45,6 +48,7 @@ class DataManagement extends Command
 
         $this->info("Choose from the following commands: (enter the number)");
         $this->info("1. Remove all finds.");
+        $this->info("2. Remove all users.");
 
         $choice = $this->ask("Enter your choice of action: ");
         $this->executeCommand($choice);
@@ -56,9 +60,34 @@ class DataManagement extends Command
             case 1:
                 $this->removeAllFinds();
                 break;
+            case 2:
+                $this->removeAllUsers();
+                break;
             default:
                 break;
         }
+    }
+
+    private function removeAllUsers()
+    {
+        $count = 0;
+
+        $userNodes = $this->users->getAll();
+
+        $bar = $this->output->createProgressBar(count($userNodes));
+
+        foreach ($userNodes as $userNode) {
+            $person = new Person();
+            $person->setNode($userNode);
+
+            $person->delete();
+
+            $bar->advance();
+            $count++;
+        }
+
+        $this->info("");
+        $this->info("Removed $count Person nodes.");
     }
 
     private function removeAllFinds()

@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
+use App\Http\Requests\UpsertUserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
+use App\Models\Person;
 
 class UserController extends Controller
 {
@@ -24,18 +25,34 @@ class UserController extends Controller
         }
 
         return view('pages.users', [
-            'users' => $this->users->getAll()
+            'users' => $this->users->getAllWithFields(['firstName', 'lastName'])
         ]);
     }
 
-    public function show($id, Request $request)
+    public function show($userId, Request $request)
     {
-        dd($id);
+        dd($userId);
     }
 
-    public function delete($id, Request $request)
+    public function update($userId, UpsertUserRequest $request)
     {
-        if ($this->users->delete($id)) {
+        // Get the user
+        $userNode = $this->users->getById($userId);
+
+        if (!empty($userNode)) {
+            $person = new Person();
+            $person->setNode($userNode);
+            $person->update($request->input());
+
+            return response()->json(['message' => 'De gebruiker werd bijgewerkt.']);
+        }
+
+        abort(404);
+    }
+
+    public function delete($userId, Request $request)
+    {
+        if ($this->users->delete($userId)) {
             return response()->json(['message' => 'The user was deleted']);
         } else {
             return response()->json(['errors' => ['Something went wrong while deleting, make sure the user id is correct.']], 400);

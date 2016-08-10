@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
                 'lastName' => 'Admin',
                 'password' => 'foobar',
                 'email' => 'foo@bar.com',
+                'verified' => true,
                 'description' => 'Dit is de generieke admin user van het MEDEA platform.',
                 'personType' => [
                     'detectorist',
@@ -49,7 +50,7 @@ class DatabaseSeeder extends Seeder
                 'passContactInfoToAgency' => false
             ];
 
-            $person = $users->store($admin);
+            $users->store($admin);
 
             $this->command->info("An admin user was created.");
         } else {
