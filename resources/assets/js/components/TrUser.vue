@@ -1,6 +1,6 @@
 <template>
 	<tr>
-		<td>{{ user.firstName }} {{ user.lastName }}</td>
+		<td style="text-align:left"><a :href="uri">{{ user.firstName }} {{ user.lastName }}</a></td>
 		<td class="tr-toggle" :class="{on:is.detectorist}" @click="toggle('detectorist')"></td>
 		<td class="tr-toggle" :class="{on:is.vonstexpert}" @click="toggle('vonstexpert')"></td>
 		<td class="tr-toggle" :class="{on:is.registrator}" @click="toggle('registrator')"></td>
@@ -19,6 +19,9 @@ export default {
 				obj[this.user.roles[i]] = true
 			}
 			return obj
+		},
+		uri () {
+			return '/users/' + this.user.id
 		}
 	},
 	methods: {
