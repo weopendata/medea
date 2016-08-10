@@ -52,7 +52,7 @@
           <i class="dropdown icon"></i>
           <div class="menu">
             <div class="header">Profiel</div>
-            <a href="/profile" class="item">Profiel bekijken</a>
+            <a href="/users/{{ Auth::user()->id }}" class="item">Profiel bekijken</a>
             <a href="/settings" class="item">Profiel aanpassen</a>
             <div class="divider"></div>
             <a href="/settings" class="item">Instellingen</a>
