@@ -20,19 +20,24 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if (in_array('administrator', $request->user()->getRoles())) {
-            return view('pages.users-admin', [
+            return view('users.admin', [
                 'users' => $this->users->getAllWithRoles()
             ]);
         }
 
-        return view('pages.users', [
+        return view('users.index', [
             'users' => $this->users->getAllWithFields(['firstName', 'lastName'])
         ]);
     }
 
     public function show($userId, Request $request)
     {
-        dd($userId);
+        if (empty(\Auth::user())) {
+            abort(404);
+        }
+        return view('users.show', [
+            'profile' => \Auth::user()
+        ]);
     }
 
     public function update($userId, UpsertUserRequest $request)

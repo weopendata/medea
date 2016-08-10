@@ -80,7 +80,25 @@ class Person extends Base implements Authenticatable
         ],
         [
             'name' => 'passContactInfoToAgency'
+        ],
+        [
+            'name' => 'bio'
+        ],
+        [
+            'name' => 'expertise'
+        ],
+        [
+            'name' => 'detectoristNumber'
         ]
+    ];
+
+    private $fillable = [
+        'personType',
+        'lastName',
+        'firstName',
+        'bio',
+        'expertise',
+        'detectoristNumber',
     ];
 
     public function __construct($properties = [])
@@ -307,7 +325,24 @@ class Person extends Base implements Authenticatable
     }
 
     /**
-     * Get the column name for the "remember me" token.
+     * Get the public profile of a person
+     * @TODO
+     *
+     * @return array
+     */
+    public function getPublicProfile()
+    {
+        $person = [];
+
+        // Iterate over the default fillable fields
+
+        // Take the privacy setting into account
+
+        return $person;
+    }
+
+    /**
+     * Get the amount of finds for the person
      *
      * @return string
      */

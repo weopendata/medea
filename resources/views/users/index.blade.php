@@ -13,7 +13,7 @@
 		</thead>
 		@foreach ($users as $user)         
 		<tr>
-			<td>{{ $user['firstName'] }} {{ $user['lastName'] }}</td>
+			<td><a href="/users/{{ $user['id'] }}">{{ $user['firstName'] }} {{ $user['lastName'] }}</a></td>
 			<td>{{ $user['finds'] }}</td>
 		</tr>
 		@endforeach
