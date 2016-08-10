@@ -33,7 +33,8 @@ new Vue({
         research: '',
         bio: '',
         passContactInfoToAgency: false,
-        showContactInfo: false
+        showNameOnPublicFinds: false,
+        profileAccessLevel: 0
       },
       oeerk: {
         jjjj: null,

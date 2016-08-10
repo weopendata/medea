@@ -11,7 +11,7 @@
     <a href="/logout" class="ui red button" style="position:absolute;z-index:2;top:0;right:0">Afmelden</a>
 <div class="ui stackable grid two columns">
   <div class="column">
-    
+
     <h2>Contactgegevens</h2>
     <div class="two fields">
       <div class="field">
@@ -81,8 +81,7 @@
 
   </div>
   <div class="column">
-
-    <h2>Stuur mij een email...</h2>
+    <h2>Stuur mij een notificatie</h2>
     <div class="field" v-show="show.roles">
       <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
@@ -93,12 +92,6 @@
       <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
         <label>bij een nieuwe classificatie van mijn vondsten</label>
-      </div>
-    </div>
-    <div class="field" v-show="show.roles">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
-        <label>over de laatste nieuwtjes van MEDEA platform</label>
       </div>
     </div>
 
@@ -144,12 +137,9 @@
     <div class="field">
       <label>Profiel openstellen voor</label>
       <select class="ui dropdown" v-model="">
-        <option>Iedereen (publiek)</option>
-        <option>Geregistreerde gebruikers</option>
-        <option>Onderzoekers en overheid</option>
-        <option>Onderzoekers</option>
-        <option>Onderzoekers na verzoek</option>
-        <option>Alleen ik</option>
+        @foreach ($accessLevels as $index => $accessLevel)
+          <option value="{{ $index }}">{{ $accessLevel }}</option>
+        @endforeach
       </select>
     </div>
     <div class="field">

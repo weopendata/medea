@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\UpsertUserRequest;
+use App\Http\Requests\DeleteUserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Models\Person;
@@ -50,7 +51,26 @@ class UserController extends Controller
         abort(404);
     }
 
-    public function delete($userId, Request $request)
+    /**
+     * Return the profile access levels
+     * Note: there used to be an option "onderzoekers op verzoek"
+     * This seems unnecessary since people can contact other people within
+     * the application.
+     *
+     * @return array
+     */
+    public function getProfileAccessLevels()
+    {
+        return [
+            0 => "Alleen ik",
+            1 => "Onderzoekers",
+            2 => "Onderzoekers en overheid",
+            3 => "Geregistreerde gebruikers",
+            4 => "Iedereen (publiek)"
+        ];
+    }
+
+    public function delete($userId, DeleteUserRequest $request)
     {
         if ($this->users->delete($userId)) {
             return response()->json(['message' => 'The user was deleted']);
@@ -61,6 +81,10 @@ class UserController extends Controller
 
     public function showSettings(Request $request)
     {
-        return view('pages.settings');
+        if (empty(\Auth::user())) {
+            return redirect('/');
+        }
+
+        return view('pages.settings')->with('accessLevels', $this->getProfileAccessLevels());
     }
 }
