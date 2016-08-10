@@ -1,5 +1,6 @@
 <template>
 	<tr>
+		<td class="tr-toggle" :class="{on:user.verified}" @click="verify"></td>
 		<td style="text-align:left"><a :href="uri">{{ user.firstName }} {{ user.lastName }}</a></td>
 		<td class="tr-toggle" :class="{on:is.detectorist}" @click="toggle('detectorist')"></td>
 		<td class="tr-toggle" :class="{on:is.vonstexpert}" @click="toggle('vonstexpert')"></td>
@@ -32,12 +33,18 @@ export default {
 			} else {
 				this.user.roles.push(role)
 			}
-
-
 			this.$http.post('/users/' + this.user.id, {
 				_method: 'PUT',
 				id: this.user.id,
 				roles: this.user.roles
+			})
+		},
+		verify () {
+			this.user.verified = !this.user.verified
+			this.$http.post('/users/' + this.user.id, {
+				_method: 'PUT',
+				id: this.user.id,
+				verified: this.user.verified
 			})
 		}
 	}

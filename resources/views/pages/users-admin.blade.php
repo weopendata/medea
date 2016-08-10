@@ -7,6 +7,7 @@
 	<table class="ui unstackable table" style="text-align:center;min-width:600px;width:100%">
 		<thead>
 			<tr>
+				<th width="50">Actief</th>
 				<th width="200" style="text-align:left">Gebruiker</th>
 				<th>Detectorist</th>
 				<th>Vondstexpert</th>
