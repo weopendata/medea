@@ -102,6 +102,10 @@ class Object extends Base
     protected $properties = [
         [
             'name' => 'feedback',
+        ],
+        [
+            'name' => 'embargo',
+            'default_value' => false
         ]
     ];
 
