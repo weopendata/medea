@@ -62,7 +62,7 @@ new Vue({
       return true
     },
     fetch (cause) {
-      var model = this.filterState
+      var model = JSON.parse(JSON.stringify(this.filterState))
       if (model.status == 'gevalideerd') {
         delete model.status
       }

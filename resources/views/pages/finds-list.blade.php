@@ -10,7 +10,7 @@
 @section('content')
 <div class="ui container">
   <div class="list-left">
-    <finds-filter :model.sync="filterState" :saved="[{name:'Valideren', status: 'in bewerking'}, {name:'ijzer only', objectMaterial: 'ijzer'}, {name:'All my finds', myfinds: true}]" ref="filter"></finds-filter>
+    <finds-filter :model.sync="filterState" :saved="[]"></finds-filter>
   </div>
   <div class="list-right">
     <div class="card-bar">
@@ -21,9 +21,6 @@
       </span>
       <label class="pull-right">
         <input type="checkbox" v-model="filterState.showmap"> Kaart
-      </label>
-      <label class="pull-right" v-if="!$root.user.isGuest">
-        <input type="checkbox" :checked="filterState.myfinds" @change="toggleMyfinds"> Alleen mijn vondsten
       </label>
     </div>
     <div v-if="filterState.showmap" class="card mapview">

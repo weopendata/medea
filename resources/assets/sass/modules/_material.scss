@@ -5,9 +5,10 @@
 	min-height: 100px;
 	margin: 0 auto 2em;
 	background: white;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
 }
 .card-bar {
+	overflow: auto;
 	padding: 8px 0;
 }
 .card-bar:last-child {

@@ -8,7 +8,7 @@
         <a :href="uri" class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</a>
         <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
-      <div class="card-bar card-border-top" v-if="(user.email==find.person.email)||user.validator">
+      <div class="card-bar">
         <a class="btn" :href="uri" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
           Classificeren
@@ -17,17 +17,20 @@
           <i class="tag icon"></i>
           {{classificationCount}} classificaties bekijken
         </a>
-        <a class="btn" :href="uriEdit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
-          <i class="pencil icon"></i>
-          Bewerken
-        </a>
         <a class="btn" :href="uri" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           Valideren
+        </a>
+        <a class="btn" :href="uri" v-if="!user.validator&&!user.expert&&find.object.objectValidationStatus == 'gevalideerd'">
+          Bekijken
         </a>
         <button class="btn" @click="mapFocus" v-if="hasLocation">
           <i class="marker icon"></i>
           Op de kaart
         </button>
+        <a class="btn" :href="uriEdit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
+          <i class="pencil icon"></i>
+          Bewerken
+        </a>
         <button class="btn btn-icon pull-right" @click="rm" v-if="user.administrator&&find.identifier">
           <i class="trash icon"></i>
         </button>
@@ -66,6 +69,9 @@ export default {
   },
   methods: {
     rm () {
+      if (!confirm('Ben je zeker dat vondst #' + this.find.identifier + ' verwijderd mag worden?')) {
+        return
+      }
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
         this.$root.fetch()
