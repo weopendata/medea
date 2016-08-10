@@ -311,13 +311,17 @@ class Person extends Base implements Authenticatable
     /**
      * Check if a user has a certain role
      *
-     * @param string $role
+     * @param array|string $roles
      *
      * @return boolean
      */
-    public function hasRole($role)
+    public function hasRole($roles)
     {
-        return in_array($role, $this->getRoles());
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
+
+        return count(array_intersect($roles, $this->getRoles())) > 0;
     }
 
     /**
@@ -357,7 +361,7 @@ class Person extends Base implements Authenticatable
      */
     public function hasPublicProfile()
     {
-        return $this->profileAccessLevel > 0;
+        return is_numeric($this->profileAccessLevel) && $this->profileAccessLevel > 0;
     }
 
     /**

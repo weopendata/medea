@@ -35,18 +35,45 @@ class UserController extends Controller
         $user = $this->users->getById($userId);
 
         if (empty($user)) {
-            abort(404);
+            abort(403);
         }
 
         // The person to view the profile of
         $person = new Person();
         $person->setNode($user);
 
-        dd($person->hasPublicProfile());
+        if (!$person->hasPublicProfile()) {
+            abort(403);
+        }
 
-        return view('users.show', [
-            'profile' => $person->getPublicProfile()
-        ]);
+        $allowedRoles = [];
+
+        switch ($person->profileAccessLevel) {
+            case 1:
+                $allowedRoles = ['onderzoeker', 'administrator'];
+                break;
+            case 2:
+                $allowedRoles = ['onderzoeker', 'agentschap', 'administrator'];
+                break;
+            case 3:
+                $allowedRoles = [
+                    'onderzoeker',
+                    'agentschap',
+                    'administrator',
+                    'detectorist',
+                    'vondstexpert',
+                    'validator'
+                ];
+                break;
+        }
+
+        if ($person->profileAccessLevel == 4
+            || (!empty($request->user()) && $request->user()->hasRole($allowedRoles))
+        ) {
+            return view('users.show', [
+                'profile' => $person->getPublicProfile()
+            ]);
+        }
     }
 
     public function update($userId, UpsertUserRequest $request)
