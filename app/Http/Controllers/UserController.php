@@ -32,11 +32,16 @@ class UserController extends Controller
 
     public function show($userId, Request $request)
     {
-        if (empty(\Auth::user())) {
+        $user = $this->users->getById($userId);
+
+        if (empty($user)) {
             abort(404);
         }
+
+        dd($user->hasPublicProfile());
+
         return view('users.show', [
-            'profile' => \Auth::user()
+            'profile' => \Auth::user()->getPublicProfile()
         ]);
     }
 

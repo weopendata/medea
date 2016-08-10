@@ -6,6 +6,9 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Everyman\Neo4j\Relationship;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class Person extends Base implements Authenticatable
 {
     public static $NODE_TYPE = 'E21';
@@ -338,10 +341,23 @@ class Person extends Base implements Authenticatable
         $person = [];
 
         // Iterate over the default fillable fields
+        foreach ($this->fillable as $property) {
+            $person[$property] = $this->$property;
+        }
 
         // Take the privacy setting into account
 
         return $person;
+    }
+
+    /**
+     * Indicates if the user has a public profile
+     *
+     * @return boolean
+     */
+    public function hasPublicProfile()
+    {
+        return $this->profileAccessLevel > 0;
     }
 
     /**

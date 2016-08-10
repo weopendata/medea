@@ -122,48 +122,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Confirm a user's registration
-     *
-     * @param  string $token
-     * @return mixed
-     */
-    public function confirmRegistration($token, AppMailer $mailer)
-    {
-        $user = $this->users->confirmUser($token);
-
-        if (!empty($user)) {
-            $person = new Person();
-            $person->setNode($user);
-
-            // Send an email to the user that his email has been confirmed
-            $mailer->sendRegistrationConfirmation($person);
-        }
-
-        return redirect('/');
-    }
-
-    /**
-     * Deny a user's registration
-     *
-     * @param  string $token
-     * @return mixed
-     */
-    public function denyRegistration($token, AppMailer $mailer)
-    {
-        $user = $this->users->denyUser($token);
-
-        if (!empty($user)) {
-            $person = new Person();
-            $person->setNode($user);
-
-            // Send an email to the user that his email has been confirmed
-            $mailer->sendRegistrationDenial($person);
-        }
-
-        return redirect('/');
-    }
-
-    /**
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data

@@ -20,7 +20,7 @@ class Roles
     {
         // A user needs to be logged in
         if (empty($request->user())) {
-            return redirect()->guest('/');
+            return redirect()->guest('/login');
         }
 
         // Get the allowed roles for the route

@@ -24,8 +24,6 @@
 
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
-    Route::get('register/confirm/{token}', 'Auth\AuthController@confirmRegistration');
-    Route::get('register/deny/{token}', 'Auth\AuthController@denyRegistration');
 
     Route::get('/', 'HomeController@index');
     Route::get('about', 'HomeController@about');
@@ -48,6 +46,11 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::group(['middleware' => 'roles:validator|detectorist'], function () {
             Route::post('objects/{id}/validation', 'ObjectController@validation');
+        });
+
+        Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::get('register/confirm/{token}', 'Auth\RegistrationController@confirmRegistration');
+            Route::get('register/deny/{token}', 'Auth\RegistrationController@denyRegistration');
         });
 
         Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {
