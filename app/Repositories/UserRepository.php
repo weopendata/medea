@@ -156,7 +156,8 @@ class UserRepository extends BaseRepository
         foreach ($findNodes as $findNode) {
             $person = new Person();
             $person->setNode($findNode);
-            $personData = $findNode->getProperties();
+            $personData = array_only($findNode->getProperties(), ['firstName', 'lastName']);
+            $personData['id'] = $findNode->getId();
             $personData['finds'] = $person->getFindCount();
 
             $data[] = $personData;
@@ -184,7 +185,8 @@ class UserRepository extends BaseRepository
         foreach ($findNodes as $findNode) {
             $person = new Person();
             $person->setNode($findNode);
-            $personData = $findNode->getProperties();
+            $personData = array_only($findNode->getProperties(), ['firstName', 'lastName', 'verified']);
+            $personData['id'] = $findNode->getId();
             $personData['roles'] = $person->getRoles();
 
             $data[] = $personData;

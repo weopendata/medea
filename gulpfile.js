@@ -21,6 +21,7 @@ elixir(function(mix) {
 			'finds-detail.js',
 			'finds-create.js',
 			'home.js',
+			'users-admin.js',
 		], {
 			module: {
 				loaders: [

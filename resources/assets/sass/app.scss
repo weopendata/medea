@@ -284,7 +284,6 @@ h4.required::after {
 .pull-right {
 	float: right;
 }
-
 .facet-a {
 	display: block;
 	padding: 3px 5px;
@@ -314,4 +313,12 @@ h4.required::after {
 .facet-options {
 	overflow: auto;
 	max-height: 160px;
+}
+
+/* Admin - User panel*/
+
+.tr-toggle {
+	&.on {
+		background: green;
+	}
 }
