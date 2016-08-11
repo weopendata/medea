@@ -52,6 +52,8 @@ class UserController extends Controller
                 'findCount' => $person->getFindCount(),
                 'profile' => $person->getPublicProfile(),
                 'roles' => $person->getRoles(),
+                'id' => $person->id,
+                'profileAccessLevel' => $person->profileAccessLevel,
             ]);
         }
 
@@ -102,7 +104,7 @@ class UserController extends Controller
         }
     }
 
-    public function showSettings(Request $request)
+    public function mySettings(Request $request)
     {
         $user = $request->user();
 
@@ -126,6 +128,42 @@ class UserController extends Controller
         return view('pages.settings', [
             'accessLevels' => $this->getProfileAccessLevels(),
             'roles' => $user->getRoles(),
+            'user' => $fullUser,
+        ]);
+    }
+
+    public function userSettings($userId, Request $request)
+    {
+        if (empty($request->user()) || !$request->user()->hasRole('administrator')) {
+            return redirect('/');
+        }
+
+        $user = $this->users->getById($userId);
+
+        if (empty($user)) {
+            abort(404);
+        }
+
+        // The person to view the profile of
+        $person = new Person();
+        $person->setNode($user);
+
+        $fullUser = $user->getProperties();
+
+        unset($fullUser['created_at']);
+        unset($fullUser['MEDEA_UUID']);
+        unset($fullUser['password']);
+        unset($fullUser['remember_token']);
+        unset($fullUser['token']);
+        unset($fullUser['updated_at']);
+        unset($fullUser['verified']);
+
+        $fullUser['id'] = $userId;
+        $fullUser['identifier'] = $userId;
+
+        return view('pages.settings', [
+            'accessLevels' => $this->getProfileAccessLevels(),
+            'roles' => $person->getRoles(),
             'user' => $fullUser,
         ]);
     }

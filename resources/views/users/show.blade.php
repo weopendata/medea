@@ -61,6 +61,9 @@
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
+	<p style="float:right">
+		<a href="/settings/{{$id}}" class="ui blue button">Aanpassen</a>
+	</p>
 	<h3>Alleen voor administrator:</h3>
 	<pre style="padding: 1em;">{!! json_encode($profile, JSON_PRETTY_PRINT) !!}</pre>
 @endif

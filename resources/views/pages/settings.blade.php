@@ -104,7 +104,7 @@
     <div class="two fields">
       <div class="field">
         <label for="email">Email</label>
-        <input v-model="user.email" type="email" disabled>
+        <input v-model="email" type="email" disabled>
       </div>
       <div class="field">
         <label for="last_name">Telefoon</label>
