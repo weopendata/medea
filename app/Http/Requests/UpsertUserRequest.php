@@ -5,6 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Http\Request as NormalRequest;
 use App\Http\Requests\Request;
 
+/**
+ * Request that handles the update or insertion of a user
+ */
 class UpsertUserRequest extends Request
 {
     /**
@@ -16,14 +19,28 @@ class UpsertUserRequest extends Request
     {
         $user = $request->input();
 
-        // You're allowed to upsert your own profile
-        // Note: this includes roles which is bad
-        if (!empty($user) && $user['id'] == \Auth::user()->id) {
+        // You cannot update or insert an empty user
+        if (empty($user)) {
+            return false;
+        }
+
+        $forbiddenFields = ['email', 'password'];
+
+        if (count(array_intersect($user, $forbiddenFields) > 0)) {
+            return false;
+        }
+
+        // You're allowed to upsert your own profile, except for the administrator role
+        if (!user['id'] == $request->user()->id) {
+            if (!empty($user['personType']) && !$request->user()->hasRole('administrator')) {
+                return false;
+            }
+
             return true;
         }
 
-        // Only administrators are allowed to upsert users
-        return !empty(\Auth::user()) && \Auth::user()->hasRole('administrator');
+        // Only administrators are allowed to upsert other users
+        return !empty($request->user()) && $request->user()->hasRole('administrator');
     }
 
     /**
