@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Person;
+use Everyman\Neo4j\Cypher\Query;
 
 class UserRepository extends BaseRepository
 {
@@ -209,5 +210,26 @@ class UserRepository extends BaseRepository
             $data[] = $personData;
         }
         return $data;
+    }
+
+    /**
+     * Get the find count for a user
+     *
+     * @param integer $userId
+     *
+     * @return array
+     */
+    public function getFindCountForUser($userId)
+    {
+        $query = "MATCH (n:findEvent)-[P29]->(p:person) where id(p)= $userId return count(n)";
+
+        $cypherQuery = new Query($this->getClient(), $query);
+        $resultSet = $cypherQuery->getResultSet();
+
+        if ($resultSet->count() > 0) {
+            return $resultSet->current()[0];
+        }
+
+        return 0;
     }
 }

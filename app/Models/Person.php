@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Everyman\Neo4j\Relationship;
+use App\Repositories\UserRepository;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
@@ -357,6 +358,7 @@ class Person extends Base implements Authenticatable
 
     /**
      * Indicates if the user has a public profile
+     * Note: The administrator has access in any case
      *
      * @return boolean
      */
@@ -392,12 +394,16 @@ class Person extends Base implements Authenticatable
 
     /**
      * Get the amount of finds for the person
+     * Note: when a user has a lot of finds, it's
+     * better to perform the count through a query
      *
      * @return string
      */
     public function getFindCount()
     {
-        return rand(0, 20);
+        $users = new UserRepository();
+
+        return $users->getFindCountForUser($this->id);
     }
 
     /**
