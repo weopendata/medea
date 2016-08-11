@@ -121,9 +121,12 @@ class Person extends Base implements Authenticatable
 
     private $fillable = [
         'personType',
+        'email',
         'lastName',
         'firstName',
         'phone',
+        'showContactForm',
+        'showEmail',
         'function',
         'affiliation',
         'bio',

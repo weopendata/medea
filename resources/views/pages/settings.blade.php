@@ -24,6 +24,9 @@
 .last-page {
   min-height: 100vh
 }
+.cta-profile {
+  margin-top: 2rem;
+}
 @media (max-width: 479px) {
   .facet-title {
     display: none;
@@ -46,6 +49,11 @@
   .nav-settings {
     position: fixed;
     top: 70px;
+  }
+  .cta-profile {
+    float:right;
+    margin-top:60px;
+    margin-bottom:-20px;
   }
 }
 @media (min-width: 769px) {
@@ -124,6 +132,9 @@
       </div>
     </div>
 
+    <p class="cta-profile">
+      <a :href="'/users/'+user.id" class="ui blue button">Profiel bekijken</a>
+    </p>
     <h2 id="profiel">Profiel</h2>
     <div class="two fields">
       <div class="field">
@@ -160,7 +171,22 @@
       <label for="role">Biografie</label>
       <textarea id="description" name="description" rows="5" placeholder="Schrijf een korte biografie." v-model="user.bio"></textarea>
     </div>
-
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showContactForm">
+        <label>
+          <b>Toon een contactformulier op mijn profiel.</b>
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showEmail">
+        <label>
+          <b>Toon mijn emailadres op mijn profiel.</b>
+        </label>
+      </div>
+    </div>
 
     <h2 id="privacy">Privacy</h2>
     <div class="field">
