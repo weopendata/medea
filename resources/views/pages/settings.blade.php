@@ -8,11 +8,81 @@
 'class' => 'ui container form',
 '@submit.prevent' => 'submit',
 )) !!}
-    <a href="/logout" class="ui red button" style="position:absolute;z-index:2;top:0;right:0">Afmelden</a>
-<div class="ui stackable grid two columns">
-  <div class="column">
+<style type="text/css">
+.nav-settings ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  line-height: 2em;
+}
+.nav-settings p {
+  margin: 1em 0;
+}
+.nav-top>nav {
+  background: #ecf0f1;
+}
+.last-page {
+  min-height: 100vh
+}
+@media (max-width: 479px) {
+  .facet-title {
+    display: none;
+  }
+}
+@media (min-width: 480px) {
+  .container-settings {
+    margin-left: 14em;
+    max-width: 30em;
+  }
+  .container-settings h2 {
+    margin-top: 0;
+    padding-top: 60px;
+  }
+  .nav-top {
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+  }
+  .nav-settings {
+    position: fixed;
+    top: 70px;
+  }
+}
+@media (min-width: 769px) {
+  .container-settings {
+    margin-left: 14em;
+    max-width: 30em;
+  }
+  .nav-top {
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+  }
+  .nav-settings {
+    position: fixed;
+    top: 70px;
+  }
+}
+</style>
+<div class="nav-settings">
+  <h3 class="facet-title">Instellingen</h3>
+  <ul>
+    <li><a href="#contact">Contactgegevens</a></li>
+    <li><a href="#profiel">Profiel</a></li>
+    <li><a href="#privacy">Privacy</a></li>
+    <li><a href="#rollen">Rollen</a></li>
+    <li><a href="#veiligheid">Veiligheid</a></li>
+  </ul>
+  <p>
+    <button class="ui green button">Instellingen bewaren</button>
+  </p>
+  <p v-if="message">
+    @{{ message }}
+  </p>
+</div>
+<div class="container-settings">
 
-    <h2>Contactgegevens</h2>
+    <h2 id="contact">Contactgegevens</h2>
     <div class="two fields">
       <div class="field">
         <label for="first_name">Voornaam</label>
@@ -26,23 +96,35 @@
     <div class="two fields">
       <div class="field">
         <label for="email">Email</label>
-        <input v-model="user.email" type="email">
+        <input v-model="user.email" type="email" disabled>
       </div>
       <div class="field">
         <label for="last_name">Telefoon</label>
-        <input v-model="user.lastName" type="text">
+        <input v-model="user.phone" type="text">
       </div>
     </div>
-    <div class="field">
-      <label for="adr">Adres</label>
-      <input v-model="user.address" type="text">
+    <div class="fields">
+      <div class="twelve wide field">
+        <label for="first_name">Straat</label>
+        <input v-model="user.personAddress.street" type="text">
+      </div>
+      <div class="four wide field">
+        <label for="last_name">Nummer</label>
+        <input v-model="user.personAddress.number" type="text">
+      </div>
     </div>
-    <div class="field">
-      <label for="pw" @click="show.password=!show.password">Wachtwoord <a href="#" @click.prevent style="display:none;color:#999;font-weight:normal" v-text="show.password?'wordt getoond':'tonen'">tonen</a></label>
-      <input v-model="user.password" :type="show.password?'text':'password'" placeholder="Laat dit leeg om je wachtwoord te behouden">
+    <div class="fields">
+      <div class="four wide field">
+        <label for="email">Postcode</label>
+        <input v-model="user.personAddress.postalCode" type="email">
+      </div>
+      <div class="twelve wide field">
+        <label for="last_name">Gemeente</label>
+        <input v-model="user.personAddress.locality" type="text">
+      </div>
     </div>
 
-    <h2>Profiel</h2>
+    <h2 id="profiel">Profiel</h2>
     <div class="two fields">
       <div class="field">
         <label for="email">Functie</label>
@@ -59,84 +141,31 @@
         <div class="ui default label">
           OE/ERK/Metaaldetectorist/
         </div>
-        <input type="text" placeholder="jjjj" style="min-width: 0;flex-shrink: 1">
+        <input type="text" v-model="jjjj" placeholder="jjjj" style="min-width: 0;flex-shrink: 1">
         <div class="ui default label">
         /
         </div>
-        <input type="text" placeholder="00000" style="min-width: 0;flex-shrink: 1">
+        <input type="text" v-model="nnnnn" placeholder="00000" style="min-width: 0;flex-shrink: 1">
       </div>
     </div>
     <div class="field" v-if="roles.vondstexpert">
       <label for="role">Expertise</label>
-      <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
+      <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden." v-model="user.expertise"></textarea>
     </div>
     <div class="field" v-if="roles.onderzoeker">
       <label for="role">Onderzoek</label>
-      <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
+      <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over je onderzoeksproject." v-model="user.research"></textarea>
     </div>
     <div class="field" v-if="roles.detectorist||roles.registrator">
       <label for="role">Biografie</label>
-      <textarea id="description" name="description" rows="5" placeholder="Schrijf een korte biografie."></textarea>
+      <textarea id="description" name="description" rows="5" placeholder="Schrijf een korte biografie." v-model="user.bio"></textarea>
     </div>
 
-  </div>
-  <div class="column">
-    <h2>Stuur mij een notificatie</h2>
-    <div class="field" v-show="show.roles">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
-        <label>bij een wijzigingen aan mijn vondsten</label>
-      </div>
-    </div>
-    <div class="field" v-show="show.roles">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
-        <label>bij een nieuwe classificatie van mijn vondsten</label>
-      </div>
-    </div>
 
-    <h2>Rollen</h2>
-    <div class="field">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.detectorist">
-        <label>
-          <b>Detectorist</b>
-          <br>registreert eigen vondsten.
-        </label>
-      </div>
-    </div>
-    <div class="field" v-show="show.roles">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.vondstexpert">
-        <label>
-          <b>Vondstexpert</b>
-          <br>classificeert vondsten volgens expertise.
-        </label>
-      </div>
-    </div>
-    <div class="field" v-show="show.roles">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
-        <label>
-          <b>Onderzoeker</b>
-          <br>krijgt toegang tot gevoelige vondstgegevens.
-        </label>
-      </div>
-    </div>
-    <div class="field" v-show="show.roles">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
-        <label>
-          <b>Registrator</b>
-          <br>kan alle vondstgegevens beheren.
-        </label>
-      </div>
-    </div>
-
-    <h2>Privacy</h2>
+    <h2 id="privacy">Privacy</h2>
     <div class="field">
       <label>Profiel openstellen voor</label>
-      <select class="ui dropdown" v-model="">
+      <select class="ui dropdown" v-model="user.profileAccessLevel">
         @foreach ($accessLevels as $index => $accessLevel)
           <option value="{{ $index }}">{{ $accessLevel }}</option>
         @endforeach
@@ -144,7 +173,7 @@
     </div>
     <div class="field">
       <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showContactInfo">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showNameOnPublicFinds">
         <label>
           <b>Vermeld mijn naam op publiek toegankelijke vondstfiches</b>
         </label>
@@ -159,18 +188,74 @@
         </label>
       </div>
     </div>
+
+    <h2 id="email">Email notificaties</h2>
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="user.emailNotifications">
+        <label>stuur notificaties via email</label>
+      </div>
+    </div>
+
+    <h2 id="rollen">Rollen</h2>
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.detectorist">
+        <label>
+          <b>Detectorist</b>
+          <br>Je kan je eigen vonsten documenteren en publiceren.
+        </label>
+      </div>
+    </div>
+    <p>
+      Alleen de administrator kan onderstaande rollen wijzigen.
+    </p>
+    <div class="field">
+      <div class="ui checkbox disabled">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
+        <label>
+          <b>Registrator</b>
+          <br>Je kan vondsten van anderen documenteren en publiceren in het kader van een bestaande collectie of project.
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui checkbox disabled">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.validator">
+        <label>
+          <b>Validator</b>
+          <br>Je gaat na of gemelde vondsten in orde zijn voor publicatie.
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <div class="ui checkbox disabled">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.vondstexpert">
+        <label>
+          <b>Vondstexpert</b>
+          <br>Je hebt expertise op basis van praktijk- en/of onderzoekservaring die je wil inzetten om vondsten te bestuderen en classificeren.
+        </label>
+      </div>
+    </div>
+
+    <div class="last-page">
+      <h2 id="veiligheid">Veiligheid</h2>
+      <div class="field">
+        <label for="pw" @click="show.password=!show.password">Wachtwoord <a href="#" @click.prevent style="display:none;color:#999;font-weight:normal" v-text="show.password?'wordt getoond':'tonen'">tonen</a></label>
+        <input v-model="user.password" :type="show.password?'text':'password'" placeholder="Laat dit leeg om je wachtwoord te behouden">
+      </div>
+    </div>
   </div>
 </div>
 
-
 {!! Form::close() !!}
 
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<dev-bar :user="user"></dev-bar>
 @endsection
 
 @section('script')
-
+<script type="text/javascript">
+window.user = {!! json_encode($user) !!}
+window.roles = {!! json_encode($roles) !!}
+</script>
+<script src="{{ asset('js/settings.js') }}"></script>
 @endsection

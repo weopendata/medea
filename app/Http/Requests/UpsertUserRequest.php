@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request as NormalRequest;
 use App\Http\Requests\Request;
 
 class UpsertUserRequest extends Request
@@ -11,8 +12,16 @@ class UpsertUserRequest extends Request
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(NormalRequest $request)
     {
+        $user = $request->input();
+
+        // You're allowed to upsert your own profile
+        // Note: this includes roles which is bad
+        if (!empty($user) && $user['id'] == \Auth::user()->id) {
+            return true;
+        }
+
         // Only administrators are allowed to upsert users
         return !empty(\Auth::user()) && \Auth::user()->hasRole('administrator');
     }
