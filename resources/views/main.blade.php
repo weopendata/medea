@@ -85,7 +85,7 @@ try {
     medeaUser.validator = true;
     medeaUser.detectorist = true;
     medeaUser.onderzoeker = true;
-    medeaUser.expert = true;
+    medeaUser.vondstexpert = true;
     medeaUser.registrator = true;
     medeaUser.administrator = true;
   }

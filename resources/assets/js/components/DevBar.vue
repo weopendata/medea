@@ -12,7 +12,7 @@
     </div>
     <div class="item">
       <label>
-        <input type="checkbox" v-model="user.expert"> Exp
+        <input type="checkbox" v-model="user.vondstexpert"> Exp
       </label>
     </div>
     <div class="item">

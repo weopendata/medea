@@ -38,9 +38,9 @@
             <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
             <div class="ui orange message" v-if="!find.object.productionEvent&&!find.object.productionEvent.productionClassification&&!find.object.productionEvent.productionClassification.length">
               <div class="ui header">Deze vondst is niet geclassificeerd</div>
-              <p v-if="user.expert">Voeg jij een classificatie toe?</p>
+              <p v-if="user.vondstexpert">Voeg jij een classificatie toe?</p>
             </div>
-            <add-classification :object="find.object" v-if="user.expert"></add-classification>
+            <add-classification :object="find.object" v-if="user.vondstexpert"></add-classification>
             <p>&nbsp;</p>
           </div>
           <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'gevalideerd' && (user.email!==find.person.email)">

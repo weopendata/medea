@@ -85,18 +85,18 @@
   </div>
   <div class="field">
     <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.expert">
+      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.vondstexpert">
       <label>
         <b>Vondstexpert</b>
         <br>Je hebt expertise op basis van praktijk- en/of onderzoekservaring die je wil inzetten om vondsten te bestuderen en classificeren.
       </label>
     </div>
   </div>
-  <div class="required field" v-if="roles.expert">
+  <div class="required field" v-if="roles.vondstexpert">
     <label for="expertise">Expertise</label>
-    <textarea-growing style="min-height: 60px" id="expertise" :model.sync="user.expertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
+    <textarea-growing style="min-height: 60px" id="expertise" :model.sync="user.vondstexpertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
   </div>
-  <div class="field" v-show="roles.expert">
+  <div class="field" v-show="roles.vondstexpert">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
       <label>Ik heb als onderzoeker toegang tot de CAI en wil ook op MEDEA volledige toegang krijgen tot exacte vondstlocaties</label>

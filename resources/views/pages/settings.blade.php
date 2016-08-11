@@ -66,7 +66,7 @@
         <input type="text" placeholder="00000" style="min-width: 0;flex-shrink: 1">
       </div>
     </div>
-    <div class="field" v-if="roles.expert">
+    <div class="field" v-if="roles.vondstexpert">
       <label for="role">Expertise</label>
       <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
     </div>
@@ -107,7 +107,7 @@
     </div>
     <div class="field" v-show="show.roles">
       <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.expert">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.vondstexpert">
         <label>
           <b>Vondstexpert</b>
           <br>classificeert vondsten volgens expertise.

@@ -9,7 +9,7 @@
         <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
       <div class="card-bar">
-        <a class="btn" :href="uri" v-if="user.expert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
           Classificeren
         </a>
@@ -20,7 +20,7 @@
         <a class="btn" :href="uri" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           Valideren
         </a>
-        <a class="btn" :href="uri" v-if="!user.validator&&!user.expert&&find.object.objectValidationStatus == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.object.objectValidationStatus == 'gevalideerd'">
           Bekijken
         </a>
         <button class="btn" @click="mapFocus" v-if="hasLocation">

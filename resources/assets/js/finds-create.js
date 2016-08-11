@@ -1,17 +1,20 @@
-import Vue from 'vue/dist/vue.min.js';
-import VueResource from 'vue-resource/dist/vue-resource.min.js';
-import DevBar from './components/DevBar';
-import Step from './components/Step';
-import checkbox from 'semantic-ui-css/components/checkbox.min.js';
+import Vue from 'vue/dist/vue.min.js'
+import VueResource from 'vue-resource/dist/vue-resource.min.js'
 
-import {load, Map, Marker, Circle} from 'vue-google-maps';
-
-import PhotoUpload from './components/PhotoUpload';
-import DimInput from './components/DimInput.vue';
-import FindEvent from './components/FindEvent';
-import AddClassificationForm from './components/AddClassificationForm'
-import Ajax from './mixins/Ajax';
+import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 import extend from 'deep-extend';
+import {load, Map, Marker, Circle} from 'vue-google-maps'
+
+import AddClassificationForm from './components/AddClassificationForm'
+import DevBar from './components/DevBar'
+import DimInput from './components/DimInput.vue'
+import FindEvent from './components/FindEvent'
+import PhotoUpload from './components/PhotoUpload'
+import Step from './components/Step';
+
+import Ajax from './mixins/Ajax';
+
+import {EMPTY_CLS} from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -352,15 +355,7 @@ new Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.find.object.productionEvent.productionClassification.push({
-        type: '',
-        period: '',
-        nation: '',
-        startDate: '',
-        endDate: '',
-        publication: [{publicationTitle: ''}],
-        description: ''
-      })
+      this.find.object.productionEvent.productionClassification.push(EMPTY_CLS)
     },
     formdata () {
       // Dimensions

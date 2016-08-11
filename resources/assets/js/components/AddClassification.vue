@@ -11,20 +11,13 @@
 <script>
 import AddClassificationForm from './AddClassificationForm'
 import Ajax from '../mixins/Ajax'
+import {EMPTY_CLS} from '../const.js'
 
 export default {
   props: ['object'],
   data () {
     return {
-      cls: {
-        productionClassificationType: '',
-        productionClassificationPeriod: '',
-        productionClassificationNation: '',
-        startDate: '',
-        endDate: '',
-        publication: [{publicationTitle: ''}],
-        productionClassificationDescription: '',
-      }
+      cls: EMPTY_CLS
     }
   },
   computed: {
@@ -41,15 +34,7 @@ export default {
     },
     submitSuccess ({data}) {
       this.$root.fetch()
-      this.cls = {
-        productionClassificationType: '',
-        productionClassificationPeriod: '',
-        productionClassificationNation: '',
-        startDate: '',
-        endDate: '',
-        publication: [{publicationTitle: ''}],
-        productionClassificationDescription: '',
-      }
+      this.cls = EMPTY_CLS
     },
     submitError ({data}) {
       console.warn(data)

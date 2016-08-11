@@ -14,7 +14,7 @@ class UpsertUserRequest extends Request
     public function authorize()
     {
         // Only administrators are allowed to upsert users
-        return !empty(Auth::user()) && Auth::user()->hasRole('administrator');
+        return !empty(\Auth::user()) && \Auth::user()->hasRole('administrator');
     }
 
     /**
