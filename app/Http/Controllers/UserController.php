@@ -112,7 +112,7 @@ class UserController extends Controller
             return redirect('/');
         }
 
-        $fullUser = $user->getNode()->getProperties();
+        $fullUser = $user->getValues();
 
         unset($fullUser['created_at']);
         unset($fullUser['MEDEA_UUID']);

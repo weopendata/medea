@@ -218,11 +218,11 @@ class Person extends Base implements Authenticatable
         $client = $this->getClient();
 
         $addressNode = $client->makeNode();
-        $addressNode->setProperty('name', 'address');
+        $addressNode->setProperty('name', 'personAddress');
         $addressNode->save();
 
         $addressNode->addLabels([
-            self::makeLabel('E53'), self::makeLabel('address'), self::makeLabel($this->getGeneralId())
+            self::makeLabel('E53'), self::makeLabel('personAddress'), self::makeLabel($this->getGeneralId())
         ]);
 
         foreach ($addressProperties as $addressProperty) {
@@ -377,8 +377,6 @@ class Person extends Base implements Authenticatable
         foreach ($this->fillable as $property) {
             $person[$property] = $this->$property;
         }
-
-        // Take the privacy setting into account
 
         return $person;
     }
