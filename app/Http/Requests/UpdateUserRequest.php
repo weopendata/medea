@@ -33,7 +33,7 @@ class UpdateUserRequest extends Request
         }
 
         // You're allowed to upsert your own profile, except for the administrator role
-        if (!$user['id'] == $request->user()->id) {
+        if ($user['id'] == $request->user()->id) {
             if (!empty($user['personType']) && !$request->user()->hasRole('administrator')) {
                 return false;
             }
