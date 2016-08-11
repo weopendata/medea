@@ -5,10 +5,14 @@ import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 Vue.use(VueResource)
 Vue.config.debug = true
 
+var email = window.user.email
+delete window.user.email
+
 new Vue({
   el: 'body',
   data () {
     return {
+      email: email,
       medeaUser: window.medeaUser,
       message: null,
       roles: window.medeaUser,

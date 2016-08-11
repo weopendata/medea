@@ -16,34 +16,57 @@
 		Lid van MEDEA sinds {{ $profile['created_at'] }}
 	</p>
 
-	@if (!empty($profile['expertise']) || !empty($profile['bio']))
+	@if (!empty($profile['expertise']) || !empty($profile['bio']) || !empty($profile['research']))
 		<h3>Over mij</h3>
+		@if (!empty($profile['research']))
+		<p>
+			<b>Onderzoek</b>: {{ nl2br($profile['research']) }}
+		</p>
+		@endif
 		@if (!empty($profile['bio']))
 		<p>
-			{{ $profile['bio'] }}
+			<b>Bio</b>: {{ nl2br($profile['bio']) }}
 		</p>
 		@endif
 		@if (!empty($profile['expertise']))
 		<p>
-			{{ $profile['expertise'] }}
+			<b>Expertise</b>: {{ nl2br($profile['expertise']) }}
 		</p>
 		@endif
 	@endif
 
-	@if (@$person['showContactForm'])
+	@if ($profile['showContactForm'] || $profile['showEmail'])
 		<h3>Contact</h3>
-		<form class="ui form" style="max-width:25em">
-			<div class="field">
-				<textarea placeholder="Schrijf een bericht aan {{ $profile['firstName'] }}" rows="3"></textarea>
-			</div>
-		</form>
-	@elseif (@$person['showEmail'])
-		<h3>Contact</h3>
-		<p>
-			Email: <a href="mailto:{{ $profile['email'] }}">{{ $profile['email'] }}</a>
-		</p>
+		@if (@$profile['showEmail'])
+			<p>
+				Email: <a href="mailto:{{ $profile['email'] }}">{{ $profile['email'] }}</a>
+			</p>
+		@endif
+		@if (@$profile['showContactForm'])
+			<form class="ui form" style="max-width:25em">
+				<div class="field">
+					<label>Bericht aan {{ $profile['firstName'] }}</label>
+					<textarea rows="3"></textarea>
+				</div>
+				<div class="field">
+					<button type="submit" class="ui small blue button">Verzenden</button>
+				</div>
+			</form>
+		@endif
 	@endif
 </div>
+
+@if (Auth::user()->hasRole('administrator'))
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	<p style="float:right">
+		<a href="/settings/{{$id}}" class="ui blue button">Aanpassen</a>
+	</p>
+	<h3>Alleen voor administrator:</h3>
+	<pre style="padding: 1em;">{!! json_encode($profile, JSON_PRETTY_PRINT) !!}</pre>
+@endif
 @endsection
 
 
