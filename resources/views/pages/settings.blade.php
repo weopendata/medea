@@ -114,21 +114,21 @@
     <div class="fields">
       <div class="twelve wide field">
         <label for="first_name">Straat</label>
-        <input v-model="user.personAddress.street" type="text">
+        <input v-model="user.personAddress.personAddressStreet" type="text">
       </div>
       <div class="four wide field">
         <label for="last_name">Nummer</label>
-        <input v-model="user.personAddress.number" type="text">
+        <input v-model="user.personAddress.personAddressNumber" type="text">
       </div>
     </div>
     <div class="fields">
       <div class="four wide field">
         <label for="email">Postcode</label>
-        <input v-model="user.personAddress.postalCode" type="email">
+        <input v-model="user.personAddress.personAddressPostalCode" type="email">
       </div>
       <div class="twelve wide field">
         <label for="last_name">Gemeente</label>
-        <input v-model="user.personAddress.locality" type="text">
+        <input v-model="user.personAddress.personAddressLocality" type="text">
       </div>
     </div>
 
