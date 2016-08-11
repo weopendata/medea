@@ -44,7 +44,6 @@ function fromDimensions (dimensions) {
   for (var i = dimensions.length - 1; i >= 0; i--) {
     dims[dimensions[i].dimensionType].value = dimensions[i].measurementValue
     dims[dimensions[i].dimensionType].unit = dimensions[i].dimensionUnit
-    console.log(dims)
   }
   return dims
 }
@@ -223,7 +222,7 @@ new Vue({
       return this.find.findSpot.location.lat && this.find.findSpot.location.lng
     },
     hasLocation () {
-      return this.find.findSpot.location.locationPlaceName.appellation || this.find.findSpot.location.address.locality || this.find.findSpot.location.address.street || this.find.findSpot.location.address.line
+      return this.find.findSpot.findSpotTitle || this.find.findSpot.location.address.locality || this.find.findSpot.location.address.street || this.find.findSpot.location.address.line
     },
 
     step2valid () {
