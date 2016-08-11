@@ -16,6 +16,8 @@ class UpsertUserRequest extends Request
     {
         $user = $request->input();
 
+        // You're allowed to upsert your own profile
+        // Note: this includes roles which is bad
         if (!empty($user) && $user['id'] == \Auth::user()->id) {
             return true;
         }
