@@ -123,7 +123,6 @@ class UserController extends Controller
         unset($fullUser['verified']);
 
         $fullUser['id'] = $user->id;
-        $fullUser['identifier'] = $user->id;
 
         return view('pages.settings', [
             'accessLevels' => $this->getProfileAccessLevels(),
@@ -159,7 +158,6 @@ class UserController extends Controller
         unset($fullUser['verified']);
 
         $fullUser['id'] = $userId;
-        $fullUser['identifier'] = $userId;
 
         return view('pages.settings', [
             'accessLevels' => $this->getProfileAccessLevels(),
