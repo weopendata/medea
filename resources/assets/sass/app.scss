@@ -163,13 +163,15 @@ dd {
 
 /* FindsList > Empty state */
 
-.status-lg,
-.finds-empty {
-	margin: 10% auto;
+h1 {
 	small {
 		display: block;
 		opacity: .4;
 	}
+}
+.status-lg,
+.finds-empty {
+	margin: 10% auto;
 }
 .finds-cta {
 	margin: 5% auto;

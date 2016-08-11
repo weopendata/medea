@@ -49,7 +49,9 @@ class UserController extends Controller
             )
         ) {
             return view('users.show', [
-                'profile' => $person->getPublicProfile()
+                'findCount' => $person->getFindCount(),
+                'profile' => $person->getPublicProfile(),
+                'roles' => $person->getRoles(),
             ]);
         }
 

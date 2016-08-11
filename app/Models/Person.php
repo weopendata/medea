@@ -343,6 +343,7 @@ class Person extends Base implements Authenticatable
     public function getPublicProfile()
     {
         $person = [];
+        $person['created_at'] = substr($this->created_at, 0, 10);
 
         // Iterate over the default fillable fields
         foreach ($this->fillable as $property) {
