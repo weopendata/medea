@@ -50,3 +50,41 @@
 		margin: 0 10px 2em;
 	}
 }
+
+/* Material btn */
+
+.btn {
+	cursor: pointer;
+	display: inline-block;
+	padding: 0 16px;
+	height: 36px;
+	line-height: 36px;
+	outline: none;
+	border: none;
+	border-radius: 2px;
+	vertical-align: baseline;
+	background: none;
+	color: rgba(0, 0, 0, .6);
+	font-family: Roboto, 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	box-shadow: none;
+	user-select: none;
+	&:hover {
+		background: #ddd;
+		color: black;
+	}
+}
+.btn-icon {
+	padding: 0;
+	width: 36px;
+}
+.btn-primary {
+	color: #27ae60;
+	&:hover {
+		color: #16a085;
+		background: #ecf0f1;
+	}
+}

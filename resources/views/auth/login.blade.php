@@ -31,6 +31,10 @@
             </div>
 
             <button class="ui green button" type="submit">Submit</button>
+
+            <p>
+                <a href="/password/reset">Wachtwoord vergeten?</a>
+            </p>
         </form>
     </div>
     <div style="max-width:20em;float:right;padding:16px">
