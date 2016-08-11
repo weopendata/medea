@@ -194,22 +194,22 @@ class Person extends Base implements Authenticatable
     {
         $addressProperties = [
             [
-                'key' => 'street',
+                'key' => 'personAddressStreet',
                 'name' => 'personAddressStreet',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'number',
+                'key' => 'personAddressNumber',
                 'name' => 'personAddressNumber',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'postalCode',
+                'key' => 'personAddressPostalCode',
                 'name' => 'personAddressPostalCode',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'locality',
+                'key' => 'personAddressLocality',
                 'name' => 'personAddressLocality',
                 'node_type' => 'E45'
             ]
