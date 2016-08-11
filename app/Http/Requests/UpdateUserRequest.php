@@ -8,7 +8,7 @@ use App\Http\Requests\Request;
 /**
  * Request that handles the update or insertion of a user
  */
-class UpsertUserRequest extends Request
+class UpdateUserRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,11 @@ class UpsertUserRequest extends Request
             return false;
         }
 
-        // Dont allow the email to be updated
-        // TODO: Password must be hashed
-        $forbiddenFields = ['email', 'password'];
+        $forbiddenFields = ['email'];
 
-        if (count(array_intersect_key(array_flip($forbiddenFields), $user)) > 0) {
+        $userFields = array_keys($user);
+
+        if (count(array_intersect($userFields, $forbiddenFields)) > 0) {
             return false;
         }
 

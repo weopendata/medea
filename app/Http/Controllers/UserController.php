@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests\UpsertUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
@@ -60,7 +60,7 @@ class UserController extends Controller
         abort(403);
     }
 
-    public function update($userId, UpsertUserRequest $request)
+    public function update($userId, UpdateUserRequest $request)
     {
         // Get the user
         $userNode = $this->users->getById($userId);
