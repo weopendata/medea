@@ -24,17 +24,11 @@ class UpsertUserRequest extends Request
             return false;
         }
 
-
-        $forbiddenFields = [];
-
         // Dont allow the email to be updated
-        if ($request->method() == 'PUT') {
-            $forbiddenFields[] = 'email';
-        }
+        // TODO: Password must be hashed
+        $forbiddenFields = ['email', 'password'];
 
-        $userFields = array_keys($user);
-
-        if (count(array_intersect($userFields, $forbiddenFields)) > 0) {
+        if (count(array_intersect_key(array_flip($forbiddenFields), $user)) > 0) {
             return false;
         }
 
