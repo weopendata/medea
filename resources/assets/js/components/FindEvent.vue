@@ -15,7 +15,7 @@
         </a>
         <a class="btn" :href="uri" v-if="classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
           <i class="tag icon"></i>
-          {{classificationCount}} classificaties bekijken
+          {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}} bekijken
         </a>
         <a class="btn" :href="uri" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
           Valideren

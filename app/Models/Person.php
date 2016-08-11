@@ -365,6 +365,31 @@ class Person extends Base implements Authenticatable
     }
 
     /**
+     * Indicates which roles are allowed to see the profile of this user
+     *
+     * @return array
+     */
+    public function getProfileAllowedRoles()
+    {
+        switch ($this->profileAccessLevel) {
+            case 1:
+                return ['onderzoeker', 'administrator'];
+            case 2:
+                return ['onderzoeker', 'agentschap', 'administrator'];
+            case 3:
+                return [
+                    'administrator',
+                    'agentschap',
+                    'detectorist',
+                    'onderzoeker',
+                    'validator',
+                    'vondstexpert',
+                ];
+        }
+        return ['administrator'];
+    }
+
+    /**
      * Get the amount of finds for the person
      *
      * @return string

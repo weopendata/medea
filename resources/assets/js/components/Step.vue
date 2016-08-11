@@ -18,7 +18,7 @@ export default {
 	},
 	methods: {
 		click () {
-			this.$parent.step = this.number
+			this.$parent.step = this.$parent.step == this.number ? 5 : this.number
 		}
 	}
 }

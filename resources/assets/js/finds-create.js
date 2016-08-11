@@ -145,8 +145,8 @@ new Vue({
       fields: window.fields,
       // Model
       find: initialFind,
+      currentStatus: initialFind.object.objectValidationStatus,
       // Mapped to model
-      toValidate: true,
       inscription: fromInscription(initialFind.object.objectInscription),
       dims: fromDimensions(initialFind.object.dimensions),
       // Interface state
@@ -211,6 +211,9 @@ new Vue({
     },
     markerNeeded () {
       return this.map.zoom < 21 - Math.log2(this.accuracy)
+    },
+    toValidate () {
+      return this.find.object.objectValidationStatus === 'in bewerking'
     },
     submittable () {
       return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)
@@ -362,9 +365,6 @@ new Vue({
       this.find.object.dimensions = toDimensions(this.dims)
       this.find.object.objectInscription = toInscription(this.inscription)
 
-      // Validation status
-      this.find.object.objectValidationStatus = this.toValidate ? 'in bewerking' : 'revisie nodig'
-
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
@@ -380,8 +380,8 @@ new Vue({
         this.marker.visible = true
       }
     }
-    $('.ui.checkbox').dropdown()
-    $('.step .ui.dropdown').dropdown()
+    $('.ui.checkbox', this.$el).checkbox()
+    // $('.step .ui.dropdown').dropdown()
   },
   watch: {
     'find.object.objectCategory' (val) {

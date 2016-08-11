@@ -34,7 +34,7 @@
     <li class="li-feedback" v-if="f.modificationTechniqueType" @click="toStep(3, 'technique')">Oppervlaktebehandeling</li>
     <li class="li-feedback" v-if="f.objectInscriptionNote" @click="toStep(3, 'technique')">Opschrift</li>
     <li class="li-feedback" v-if="f.dimensions" @click="toStep(3, true)">Dimensies</li>
-    <li class="li-feedback" v-if="f.description">Beschrijving?</li>
+    <li class="li-feedback" v-if="f.objectDescription">Beschrijving?</li>
   </ul>
 </div>
 
@@ -296,24 +296,38 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   </div>
 </step>
 
-<step number="5" title="Klaar met vondstfiche">
-  <div class="field">
+<div class="grouped fields">
+  <h3>5. Klaar met vondstfiche</h3>
+  <div class="field" :class="{error:validation.feedback.objectDescription}">
     <label>Opmerkingen bij het object</label>
     <input type="text" v-model="find.object.objectDescription">
   </div>
+  <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="toValidate">
-      <label>
-        <b>Vondstfiche laten valideren</b>
-        <br>Na validatie wordt de vondst zichtbaar voor andere bezoekers en kunnen vondstexperten informatie toevoegen.
-        <br>Uw identiteitsgegevens en de precieze vondstlocatie worden afgeschermd voor niet-geautoriseerde gebruikers.
-      </label>
+    <div class="ui radio checkbox">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="in bewerking">
+      <label>Vondstfiche is klaar voor validatie</label>
     </div>
   </div>
-</step>
+  <div class="field">
+    <div class="ui radio checkbox">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
+      <label>Vondstfiche is een voorlopige versie. Ik vul ze later aan.</label>
+    </div>
+  </div>
+  <p v-if="currentStatus!='in bewerking'&&currentStatus!='revisie nodig'">
+    Huidige status: @{{currentStatus}}
+  </p>
+</div>
 
 <div v-if="submittable||step==5">
+  <p v-if="submitting&&toValidate" style="color:#090">
+    Bedankt, jouw vondstfiche wordt bewaard en doorgestuurd voor validatie.
+    <br>Je krijgt een verwittiging van de uitkomst zodra dit is gebeurd.
+  </p>
+  <p v-if="submitting&&!toValidate" style="color:#090">
+    Bedankt, jouw vondstfiche wordt bewaard.
+  </p>
   <div class="field">
     <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
     <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
@@ -321,9 +335,6 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div class="field">
     <p v-if="!submittable" style="color:red">
       Niet alle verplichte velden zijn ingevuld.
-    </p>
-    <p v-if="submitting" style="color:#090">
-      Vondstfiche wordt bewaard. Even geduld.
     </p>
   </div>
 </div>
