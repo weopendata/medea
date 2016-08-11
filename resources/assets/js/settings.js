@@ -6,12 +6,14 @@ Vue.use(VueResource)
 Vue.config.debug = true
 
 var email = window.user.email
+var id = window.user.id
 delete window.user.email
 
 new Vue({
   el: 'body',
   data () {
     return {
+      id: id,
       email: email,
       medeaUser: window.medeaUser,
       message: null,
@@ -55,7 +57,7 @@ new Vue({
       this.user._token = 'PUT'
       this.user.password = undefined
       this.user.email = undefined
-      this.$http.put('/users/' + this.user.identifier, this.user)
+      this.$http.put('/users/' + this.id, this.user)
       .then(this.submitSuccess, this.submitError).catch(function () {
         this.submitting = false
       })

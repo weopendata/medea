@@ -13,6 +13,9 @@
   list-style: none;
   margin: 0;
   padding: 0;
+}
+.nav-settings a {
+  display: block;
   line-height: 2em;
 }
 .nav-settings p {
@@ -133,7 +136,7 @@
     </div>
 
     <p class="cta-profile">
-      <a :href="'/users/'+user.id" class="ui blue button">Profiel bekijken</a>
+      <a :href="'/users/'+id" class="ui blue button">Profiel bekijken</a>
     </p>
     <h2 id="profiel">Profiel</h2>
     <div class="two fields">
