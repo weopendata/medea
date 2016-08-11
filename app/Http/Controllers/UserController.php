@@ -104,10 +104,29 @@ class UserController extends Controller
 
     public function showSettings(Request $request)
     {
-        if (empty(\Auth::user())) {
+        $user = $request->user();
+
+        if (empty($user)) {
             return redirect('/');
         }
 
-        return view('pages.settings')->with('accessLevels', $this->getProfileAccessLevels());
+        $fullUser = $user->getNode()->getProperties();
+
+        unset($fullUser['created_at']);
+        unset($fullUser['MEDEA_UUID']);
+        unset($fullUser['password']);
+        unset($fullUser['remember_token']);
+        unset($fullUser['token']);
+        unset($fullUser['updated_at']);
+        unset($fullUser['verified']);
+
+        $fullUser['id'] = $user->id;
+        $fullUser['identifier'] = $user->id;
+
+        return view('pages.settings', [
+            'accessLevels' => $this->getProfileAccessLevels(),
+            'roles' => $user->getRoles(),
+            'user' => $fullUser,
+        ]);
     }
 }

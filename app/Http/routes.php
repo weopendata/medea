@@ -59,7 +59,7 @@ Route::group(['middleware' => 'web'], function () {
             Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
         });
 
-        Route::delete('users/{id}', 'UserController@delete');
+        // Route::delete('users/{id}', 'UserController@delete');
         Route::get('settings', 'UserController@showSettings');
     });
 });

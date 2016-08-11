@@ -23,6 +23,8 @@
 
 @if (Request::is('/'))
 <div class="nav-home">
+@else
+<div class="nav-top">
 @endif
   <nav class="ui container">
     <div class="ui secondary green pointing menu">
@@ -63,14 +65,11 @@
       </div>
     </div>
   </nav>
-@if (Request::is('/'))
 </div>
-@endif
 
 @yield('content')
 
 <script type="text/javascript">
-// var medeaUser = {!! json_encode($user) !!};
 var medeaUser = {isGuest: true};
 @if (!Auth::guest())
 try {

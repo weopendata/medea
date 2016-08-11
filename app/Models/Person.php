@@ -76,8 +76,19 @@ class Person extends Base implements Authenticatable
             'name' => 'lastName'
         ],
         [
+            'name' => 'phone'
+        ],
+        [
             'name' => 'profileAccessLevel',
             'default_value' => 0
+        ],
+        [
+            'name' => 'showContactForm',
+            'default_value' => true
+        ],
+        [
+            'name' => 'showEmail',
+            'default_value' => false
         ],
         [
             'name' => 'showNameOnPublicFinds',
@@ -88,10 +99,19 @@ class Person extends Base implements Authenticatable
             'default_value' => false,
         ],
         [
+            'name' => 'function'
+        ],
+        [
+            'name' => 'affiliation'
+        ],
+        [
             'name' => 'bio'
         ],
         [
             'name' => 'expertise'
+        ],
+        [
+            'name' => 'research'
         ],
         [
             'name' => 'detectoristNumber'
@@ -102,7 +122,11 @@ class Person extends Base implements Authenticatable
         'personType',
         'lastName',
         'firstName',
+        'phone',
+        'function',
+        'affiliation',
         'bio',
+        'research',
         'expertise',
         'detectoristNumber',
     ];
