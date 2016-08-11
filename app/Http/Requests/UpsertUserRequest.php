@@ -26,7 +26,7 @@ class UpsertUserRequest extends Request
 
         $forbiddenFields = ['email', 'password'];
 
-        if (count(array_intersect($user, $forbiddenFields) > 0)) {
+        if (count(array_intersect($user, $forbiddenFields)) > 0) {
             return false;
         }
 
