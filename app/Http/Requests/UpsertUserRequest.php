@@ -20,19 +20,28 @@ class UpsertUserRequest extends Request
         $user = $request->input();
 
         // You cannot update or insert an empty user
-        if (empty($user)) {
+        if (empty($user) && !empty($request->user())) {
             return false;
         }
 
-        $forbiddenFields = ['email', 'password'];
 
-        if (count(array_intersect($user, $forbiddenFields)) > 0) {
+        $forbiddenFields = [];
+
+        // Dont allow the email to be updated
+        if ($request->method() == 'PUT') {
+            $forbiddenFields[] = 'email';
+        }
+
+        $userFields = array_keys($user);
+
+        if (count(array_intersect($userFields, $forbiddenFields)) > 0) {
             return false;
         }
 
         // You're allowed to upsert your own profile, except for the administrator role
         if (!$user['id'] == $request->user()->id) {
             if (!empty($user['personType']) && !$request->user()->hasRole('administrator')) {
+                dd("hi");
                 return false;
             }
 
@@ -40,7 +49,7 @@ class UpsertUserRequest extends Request
         }
 
         // Only administrators are allowed to upsert other users
-        return !empty($request->user()) && $request->user()->hasRole('administrator');
+        return $request->user()->hasRole('administrator');
     }
 
     /**
