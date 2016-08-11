@@ -45,7 +45,7 @@ class ObjectRepository extends BaseRepository
             $production_event_rel = $object->getFirstRelationship(['P108']);
 
             if (empty($production_event_rel)) {
-                $production_event = new ProductionEvent(['classification' => $classification]);
+                $production_event = new ProductionEvent(['productionClassification' => $classification]);
 
                 $object->relateTo($production_event, 'P108')->save();
             } else {
@@ -95,7 +95,7 @@ class ObjectRepository extends BaseRepository
 
         $results = $query->getResultSet();
 
-        if (!empty($results->current())) {
+        if ($results->count() > 0 && !empty($results->current())) {
             $person = $results->current()->current();
 
             return $person->getId();

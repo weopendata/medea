@@ -23,7 +23,7 @@ class ClassificationController extends Controller
      * @param $id             integer The id of the object
      * @param $classification array   The classification of the object
      *
-     * return Node
+     * @return Node
      */
     public function store($id, Request $request)
     {
