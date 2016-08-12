@@ -29,7 +29,7 @@
   <dl v-if="find.object.dimensions && find.object.dimensions.length && detail=='all'">
     <dt-check v-if="validating" prop="dimensions"></dt-check>
     <dt>Dimensies</dt>
-    <dd v-for="dim in find.object.dimensions">{{dim.dimensionType}}: {{dim.measurementValue}}{{dim.dimensionUnit}}</dd>
+    <dd v-for="dim in find.object.dimensions">{{dim.dimensionType}}: {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
   </dl>
   <dl v-if="find.object.objectMaterial">
     <dt-check v-if="validating" prop="objectMaterial"></dt-check>
@@ -71,6 +71,11 @@ export default {
       setTimeout(function () {
         $('#dt-check-help').removeClass('tooltip-show')
       }, 6000)
+    }
+  },
+  filters: {
+    comma (n) {
+      return n.toString().replace('.', ',')
     }
   },
   components: {
