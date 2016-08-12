@@ -61,19 +61,13 @@ class PasswordController extends Controller
     {
         $this->validate($request, ['email' => 'required|email']);
 
-        //$broker = $this->getBroker();
-
-        /*$response = Password::broker($broker)->sendResetLink($request->only('email'), function (Message $message) {
-            $message->subject($this->getEmailSubject());
-        });*/
-
         $email = $request->input('email');
 
         // Check if the given user exists
         $userNode = $this->users->getUser($email);
 
         if (empty($userNode)) {
-            return response()->json(['error' => 'Het email adres werd niet gevonden.'], 404);
+            return redirect()->back()->withErrors(['error', 'Het email adres werd niet gevonden.']);
         }
 
         $person = new Person();
@@ -83,7 +77,7 @@ class PasswordController extends Controller
         // Send the reset link to the user
         $mailer->sendResetLinkEmail($person);
 
-        return response()->json(['message' => 'Er werd een email verstuurd, hou zeker ook uw SPAM folder in het oog.']);
+        return redirect()->back()->with('message', 'Er werd een email verstuurd, hou zeker ook uw SPAM folder in het oog.');
     }
 
     /**
@@ -104,9 +98,6 @@ class PasswordController extends Controller
      */
     public function reset(Request $request)
     {
-        //$this->validate($request, $this->getResetValidationRules());
-        // TODO validate: check email + token
-
         $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
 
         $userNode = $this->users->getUser($credentials['email']);
@@ -156,6 +147,7 @@ class PasswordController extends Controller
         $person = new Person();
         $person->setNode($user);
         $person->setPassword($password);
+        $person->setPasswordResetToken('');
 
         Auth::guard($this->getGuard())->login($person);
     }

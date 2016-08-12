@@ -3,6 +3,14 @@
 <!-- Main Content -->
 @section('content')
 <div style="max-width:25em;margin:0 auto;">
+
+    @if (!empty(session('message')))
+    <div class="ui success message">
+        <div class="header">
+            {{ session('message') }}
+        </div>
+    </div>
+    @endif
     <form class="card ui form" role="form" method="POST" action="{{ url('/password/email') }}">
 
         {!! csrf_field() !!}
