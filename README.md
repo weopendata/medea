@@ -1,5 +1,11 @@
-# medea
-The MEDEA project is a project for find experts, researchers and detectorists to collaborate on historical findings.
+# MEDEA
+The goal of the MEDEA projects is to bring together find experts, researchers and detectorists and let them collaborate on historical finds.
+
+## Requirements
+
+* Database: Neo4j 2.2.x
+* PHP 5.6+
+* MariaDB 10.10 (or equivalent)
 
 ## Development documentation
 
@@ -14,21 +20,6 @@ The command that will perform the correct MySQL migration is:
 
 ### Usefull commands while developing
 
-During development, data will get injected that will have to be deleted at a certain point in time due to testing, data injection, dummy data etc.
+    php artisan medea:management
 
-Deleting data in Neo4j isn't as trivial as in a RDBMS systems, rather you have nodes with relationships. First you'll have to delete incoming and outgoing relationships before one can delete a node. So in order to delete nodes with label E10 for example, delete the relationships with the end node:
-
-    MATCH (n:E10)-[r*]-(e)
-    FOREACH (rel IN r| DELETE rel)
-    DELETE e
-
-In order to clean out your Neo4j database from any MEDEA related nodes:
-
-    MATCH (n:MEDEA_NODE)
-    DETACH DELETE n
-
-Then delete the nodes with label E10:
-
-    MATCH n
-    WHERE n:E10
-    delete n
+This command will list a number of actions you can take in order to manage your database (e.g. remove all finds, users, ...)

@@ -137,6 +137,14 @@ class Base
                                 $modelName = 'App\Models\\' . $config['model_name'];
                                 $model = new $modelName($entry);
                                 $model->save();
+
+                                if (!empty($model)) {
+                                    $this->makeRelationship($model, $relationshipName);
+
+                                    if (!empty($config['reverse_relationship'])) {
+                                        $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                    }
+                                }
                             }
                         } else {
                             if (!empty($config['link_only']) && $config['link_only']) {
@@ -147,13 +155,13 @@ class Base
                                 $model = new $modelName($input);
                                 $model->save();
                             }
-                        }
 
-                        if (!empty($model)) {
-                            $this->makeRelationship($model, $relationshipName);
+                            if (!empty($model)) {
+                                $this->makeRelationship($model, $relationshipName);
 
-                            if (!empty($config['reverse_relationship'])) {
-                                $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                if (!empty($config['reverse_relationship'])) {
+                                    $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                }
                             }
                         }
                     }
@@ -228,8 +236,8 @@ class Base
                 } elseif (!empty($properties[$config['key']])) {
                     $input = $properties[$config['key']];
 
-                    // Keep track of the related models through the return identifiers
-                    // The identifiers that we find that are not in this list, we need to delete
+                    // Keep track of the related models by the returned identifiers
+                    // The identifiers that we get and are not in this list, we need to delete
                     $related_identifiers = [];
                     if (!empty($input)) {
                         if (is_array($input) && !$this->isAssoc($input)) {
