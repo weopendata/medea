@@ -32,7 +32,7 @@
       </button>
     </p>
     <p v-if="!embargo&&!remove&&!valid">
-      <button @click="post('onder embargo')" class="ui orange big button">Aanpassen</button>
+      <button @click="post('revisie nodig')" class="ui orange big button">Aanpassen</button>
     </p>
     <p v-if="embargo">
       <button @click="post('onder embargo')" class="ui orange big button">Embargo</button>
