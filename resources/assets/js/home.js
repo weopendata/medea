@@ -6,8 +6,6 @@ import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
 import Ajax from './mixins/Ajax'
 
-console.log(Ajax)
-
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -47,7 +45,14 @@ new Vue({
   },
   computed: {
     submittable () {
-      return !this.registered && this.user.firstName && this.user.lastName && this.user.email && this.user.password
+      if (!this.registered && this.user.firstName && this.user.lastName && this.user.email && this.user.password) {
+        for (let key in this.roles) {
+          if (this.roles[key]) {
+            return true
+          }
+        }
+      }
+      return false
     }
   },
   methods: {
