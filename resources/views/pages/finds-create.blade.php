@@ -332,11 +332,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
     <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
   </div>
-  <div class="field">
-    <p v-if="!submittable" style="color:red">
-      Niet alle verplichte velden zijn ingevuld.
-    </p>
-  </div>
+</div>
+<div class="field" v-if="!submittable">
+  <p  style="color:red">
+    Niet alle verplichte velden zijn ingevuld.
+  </p>
 </div>
 
 {!! Form::close() !!}
