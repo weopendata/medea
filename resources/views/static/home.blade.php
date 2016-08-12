@@ -2,6 +2,10 @@
 
 @section('title', 'Home')
 
+@section('nav')
+<div class="nav-home">
+@endsection
+
 @section('content')
   <div class="hero">
     <div class="ui container">

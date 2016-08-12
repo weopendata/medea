@@ -5,6 +5,15 @@ body {
 nav {
 	margin-bottom: 2rem;
 }
+footer {
+	clear: both;
+	padding: 100px;
+	background: #2c3e50;
+	color: white;
+	a {
+		color: inherit;
+	}
+}
 .mycontainer {
 	margin: 0 auto;
 	max-width: 50rem;

@@ -21,11 +21,9 @@
 
 <body>
 
-@if (Request::is('/'))
-<div class="nav-home">
-@else
+@section('nav')
 <div class="nav-top">
-@endif
+@show
   <nav class="ui container">
     <div class="ui secondary green pointing menu">
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
@@ -70,16 +68,13 @@
 @yield('content')
 
 <footer>
-  <hr>
   <div class="ui container">
-    <p>&nbsp;</p>
+    <a href="/contact" style="float:right">Contact</a>
     <a href="https://creativecommons.org/licenses/by-nc/4.0/">
       We gebruiken een open content licentie<br>
       <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png">
     </a>
   </div>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
 </footer>
 
 <script type="text/javascript">
