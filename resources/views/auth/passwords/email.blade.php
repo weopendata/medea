@@ -3,24 +3,27 @@
 <!-- Main Content -->
 @section('content')
 <div style="max-width:25em;margin:0 auto;">
-
-    @if (!empty(session('message')))
-    <div class="ui success message">
-        <div class="header">
-            {{ session('message') }}
-        </div>
-    </div>
-    @endif
     <form class="card ui form" role="form" method="POST" action="{{ url('/password/email') }}">
 
         {!! csrf_field() !!}
 
         <div class="card-textual" style="padding-top:8px;">
             <div class="card-title">Reset wachtwoord</div>
-            @if (session('status'))
-                <div class="alert alert-success">
-                    {{ session('status') }}
-                </div>
+
+            @if (session('message'))
+            <div class="ui success message visible">
+                <p>
+                    {{ session('message') }}
+                </p>
+            </div>
+            @endif
+
+            @if ($errors->any())
+            <div class="ui error message">
+                <p>
+                    {{ $errors->first() }}
+                </p>
+            </div>
             @endif
 
             <div class="field{{ $errors->has('email') ? ' error' : '' }}">
