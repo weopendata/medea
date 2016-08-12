@@ -150,6 +150,7 @@ new Vue({
       inscription: fromInscription(initialFind.object.objectInscription),
       dims: fromDimensions(initialFind.object.dimensions),
       // Interface state
+      today: new Date().toISOString().slice(0, 10),
       show: {
         map: false,
         spotdescription: false,

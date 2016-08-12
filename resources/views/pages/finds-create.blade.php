@@ -60,7 +60,7 @@
     </div>
     <div class="required fluid field" :class="{error:validation.feedback.findDate}">
       <label>Vondstdatum</label>
-      <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
+      <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD" :max="today">
     </div>
   </div>
   <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)" id="location-picker">
