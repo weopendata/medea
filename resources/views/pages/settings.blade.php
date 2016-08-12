@@ -271,7 +271,7 @@
       <h2 id="veiligheid">Veiligheid</h2>
       <div class="field">
         <label for="pw" @click="show.password=!show.password">Wachtwoord <a href="#" @click.prevent style="display:none;color:#999;font-weight:normal" v-text="show.password?'wordt getoond':'tonen'">tonen</a></label>
-        <input v-model="user.password" :type="show.password?'text':'password'" placeholder="Laat dit leeg om je wachtwoord te behouden">
+        <input v-model="user.password" :type="show.password?'text':'password'" placeholder="Laat dit leeg om je wachtwoord te behouden" disabled>
       </div>
       @if (Auth::user()->hasRole('administrator'))
       <pre v-text="user|json"></pre>
