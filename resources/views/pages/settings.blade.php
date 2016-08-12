@@ -145,7 +145,7 @@
         <input v-model="user.function" type="text">
       </div>
       <div class="field">
-        <label for="last_name">Affiliatie</label>
+        <label for="last_name">Instelling</label>
         <input v-model="user.affiliation" type="text">
       </div>
     </div>

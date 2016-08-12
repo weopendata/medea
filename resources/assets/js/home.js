@@ -45,7 +45,16 @@ new Vue({
   },
   computed: {
     submittable () {
+      if (this.roles.onderzoeker && !this.roles.vondstexpert) {
+        this.roles.onderzoeker = false
+      }
       if (!this.registered && this.user.firstName && this.user.lastName && this.user.email && this.user.password) {
+        if (this.roles.vondstexpert && !this.user.expertise) {
+          return false
+        }
+        if (this.roles.onderzoeker && (!this.user.research || !this.user.affiliation || !this.user.function)) {
+          return false
+        }
         for (let key in this.roles) {
           if (this.roles[key]) {
             return true

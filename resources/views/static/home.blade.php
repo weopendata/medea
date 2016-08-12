@@ -38,24 +38,24 @@
   <h3>Contactgegevens</h3>
   <div class="two fields">
     <div class="field" :class="{error:errors.firstName}">
-      <label for="first_name">Voornaam</label>
-      <input v-model="user.firstName" type="text">
+      <label for="firstName">Voornaam</label>
+      <input v-model="user.firstName" type="text" id="firstName">
       <div v-for="msg in errors.firstName" v-text="msg" class="input"></div>
     </div>
     <div class="field" :class="{error:errors.lastName}">
-      <label for="last_name">Achternaam</label>
-      <input v-model="user.lastName" type="text">
+      <label for="lastName">Achternaam</label>
+      <input v-model="user.lastName" type="text" id="lastName">
       <div v-for="msg in errors.lastName" v-text="msg" class="input"></div>
     </div>
   </div>
   <div class="field" :class="{error:errors.email}">
     <label for="email">Email</label>
-    <input v-model="user.email" type="email">
+    <input v-model="user.email" type="email" id="email">
     <div v-for="msg in errors.email" v-text="msg" class="input"></div>
   </div>
   <div class="field" :class="{error:errors.password}">
     <label for="pw" @click="show.password=!show.password">Wachtwoord <a href="#" @click.prevent style="color:#999;font-weight:normal" v-text="show.password?'wordt getoond':'tonen'">tonen</a></label>
-    <input v-model="user.password" :type="show.password?'text':'password'">
+    <input v-model="user.password" :type="show.password?'text':'password'" id="pw">
     <div v-for="msg in errors.password" v-text="msg" class="input"></div>
   </div>
   <h3>Rollen</h3>
@@ -109,6 +109,18 @@
   <div class="required field" v-if="roles.onderzoeker">
     <label for="research">Onderzoek</label>
     <textarea-growing id="research" :model.sync="user.research" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
+  </div>
+  <div class="required two fields" v-if="roles.onderzoeker">
+    <div class="field" :class="{error:errors.function}">
+      <label for="function">Functie</label>
+      <input v-model="user.function" type="text" id="function">
+      <div v-for="msg in errors.function" v-text="msg" class="input"></div>
+    </div>
+    <div class="field" :class="{error:errors.affiliation}">
+      <label for="affiliation">Instelling</label>
+      <input v-model="user.affiliation" type="text" id="affiliation">
+      <div v-for="msg in errors.affiliation" v-text="msg" class="input"></div>
+    </div>
   </div>
   <div class="field" v-if="roles.detectorist||roles.registrator">
     <label for="bio">Biografie</label>
