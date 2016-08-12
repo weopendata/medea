@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      <div class="card-bar text-right" v-if="(user.email==find.person.email)||user.validator">
+      <div class="card-bar text-right" v-if="editable">
         <a class="btn" href="/finds/{{find.identifier}}/edit">
           <i class="pencil icon"></i>
           Bewerken
@@ -103,6 +103,9 @@ export default {
   computed: {
     validating () {
       return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
+    },
+    editable () {
+      return this.user.email === this.find.person.email || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
     }
   },
   methods: {
