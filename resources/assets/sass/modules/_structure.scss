@@ -48,3 +48,10 @@ footer {
 .ui.form .pct60.wide.field {
 	width: 60% !important;
 }
+.loading,
+[v-cloak] {
+	display: none!important
+}
+.loading[v-cloak] {
+	display: block!important
+}

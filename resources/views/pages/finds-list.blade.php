@@ -23,7 +23,7 @@
         <input type="checkbox" v-model="filterState.showmap"> Kaart
       </label>
     </div>
-    <div v-if="filterState.showmap" class="card mapview">
+    <div v-if="filterState.showmap" class="card mapview" v-cloak>
       <map :center.sync="map.center" :zoom.sync="map.zoom">
         <marker v-for="f in finds | markable" :position.sync="f.position"></marker>
         <circle v-for="f in finds | markable" :center.sync="f.position" :radius.sync="f.accuracy" :options="markerOptions"></circle>
