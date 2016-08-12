@@ -196,8 +196,8 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div class="two fields" v-show="show.technique">
     <div class="field" :class="{error:validation.feedback.productionTechniqueType}">
       <label>Techniek</label>
-      <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.productionTechniqueType">
-        <option value="">onbekend</option>
+      <select class="ui dropdown" v-model="technique">
+        <option>onbekend</option>
         <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
         <option value="{{$technique}}">{{$technique}}</option>
@@ -206,7 +206,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     </div>
     <div class="field" :class="{error:validation.feedback.modificationTechniqueType}">
       <label>Oppervlaktebehandeling</label>
-      <select class="ui dropdown" v-model="find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
+      <select class="ui dropdown" v-model="treatment">
         <option>onbekend</option>
         <option>meerdere</option>
         <option>email (cloissoné)</option>

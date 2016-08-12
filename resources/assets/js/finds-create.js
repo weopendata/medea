@@ -83,6 +83,17 @@ function toTechnique (tech) {
   } || undefined
 }
 
+function fromTreatment (tech) {
+  return tech && tech.modificationTechnique && tech.modificationTechnique.modificationTechniqueType 
+}
+function toTreatment (tech) {
+  return tech && {
+    modificationTechnique: {
+      modificationTechniqueType: tech
+    }
+  } || undefined
+}
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -112,11 +123,6 @@ new Vue({
         objectCategory: 'onbekend',
         objectMaterial: null,
         surfaceTreatment: null,
-        treatmentEvent: {
-          modificationTechnique: {
-            modificationTechniqueType: null
-          }
-        },
         period: 'onbekend',
         photograph: [],
         dimensions: [],
@@ -153,9 +159,10 @@ new Vue({
       find: initialFind,
       currentStatus: initialFind.object.objectValidationStatus,
       // Mapped to model
-      inscription: fromInscription(initialFind.object.objectInscription),
       dims: fromDimensions(initialFind.object.dimensions),
+      inscription: fromInscription(initialFind.object.objectInscription),
       technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
+      treatment: fromTreatment(initialFind.object.treatmentEvent),
       // Interface state
       today: new Date().toISOString().slice(0, 10),
       show: {
@@ -373,6 +380,7 @@ new Vue({
       this.find.object.dimensions = toDimensions(this.dims)
       this.find.object.objectInscription = toInscription(this.inscription)
       this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
+      this.find.object.treatmentEvent = toTreatment(this.treatment)
 
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
