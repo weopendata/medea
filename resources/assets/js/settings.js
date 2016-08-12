@@ -57,6 +57,7 @@ new Vue({
       this.user._token = 'PUT'
       this.user.password = undefined
       this.user.email = undefined
+      this.user.personType = undefined
       this.$http.put('/users/' + this.id, this.user)
       .then(this.submitSuccess, this.submitError).catch(function () {
         this.submitting = false
