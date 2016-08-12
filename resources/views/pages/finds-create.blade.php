@@ -3,7 +3,6 @@
 @section('title', 'Vondst toevoegen')
 
 @section('content')
-<style type="text/css">.loading,[v-cloak]{display:none!important}.loading[v-cloak]{display:block!important}</style>
 <p v-cloak class="ui container container-723 loading">Deze pagina wordt geladen...</p>
 {!! Form::open(array(
 'files' => true,
