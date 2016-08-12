@@ -303,6 +303,38 @@ class Person extends Base implements Authenticatable
         $this->node->save();
     }
 
+    /**
+     * Set the password reset token
+     */
+    public function setPasswordResetToken($token)
+    {
+        $this->node->setProperty($this->getPasswordResetTokenName(), $token)->save();
+    }
+
+    /**
+     * Get the password reset token.
+     *
+     * @return string
+     */
+    public function getPasswordResetToken()
+    {
+        return $this->node->getProperty($this->getPasswordResetTokenName());
+    }
+
+    /**
+     * Set the password of the user.
+     *
+     * @param string $password
+     *
+     * @return void
+     */
+    public function setPassword($password)
+    {
+        $password = Hash::make($password);
+
+        $this->node->setProperty('password', $password)->save();
+    }
+
     public function update($properties)
     {
         return $this->patch($properties);
@@ -353,13 +385,23 @@ class Person extends Base implements Authenticatable
     }
 
     /**
-     * Get the column name for the "remember me" token.
+     * Get the property name for the "remember me" token.
      *
      * @return string
      */
     public function getRememberTokenName()
     {
         return 'remember_token';
+    }
+
+    /**
+     * Get the property name for the password reset token.
+     *
+     * @return string
+     */
+    public function getPasswordResetTokenName()
+    {
+        return 'password_token';
     }
 
     /**

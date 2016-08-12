@@ -21,8 +21,6 @@ class UserRepository extends BaseRepository
      */
     public function store($properties)
     {
-        $client = $this->getClient();
-
         $person = new Person($properties);
         $person->save();
 
@@ -41,7 +39,6 @@ class UserRepository extends BaseRepository
         // Label (= type) is already configured for Person
         $label = $this->getLabel();
 
-        // Get all of the Person node with the admin email
         $user_nodes = $label->getNodes("email", $email);
 
         if ($user_nodes->count() > 0) {
@@ -49,6 +46,32 @@ class UserRepository extends BaseRepository
         } else {
             return [];
         }
+    }
+
+    /**
+     * Get a user based on the token and email
+     *
+     * @param string $token
+     *
+     * @return Node
+     */
+    public function getByPasswordResetToken($token, $email)
+    {
+        $users = $this->getLabel()->getNodes("email", $email);
+
+        if ($users->count() > 0) {
+            $user = $users->current();
+
+            $person = new Person();
+
+            if ($user->getProperty($person->getPasswordResetTokenName()) != $token) {
+                return null;
+            }
+
+            return $user;
+        }
+
+        return null;
     }
 
     /**
@@ -125,14 +148,14 @@ class UserRepository extends BaseRepository
      * Make a vote connection between a user and a classification
      *
      * @param Node    $classification
-     * @param integer $person_id
+     * @param integer $personId
      * @param string  $vote_type agree|disagree
      *
      * @return Relationship
      */
-    public function addVote($classification, $person_id, $vote_type)
+    public function addVote($classification, $personId, $vote_type)
     {
-        $user_node = $this->getById();
+        $user_node = $this->getById($personId);
 
         return $user_node->relateTo($classification, $vote_type)->save();
     }
