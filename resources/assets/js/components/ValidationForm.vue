@@ -65,7 +65,7 @@ export default {
     submitSuccess ({data}) {
       console.log('Validation', data)
       if (data.success) {
-        window.location.href = '/finds'
+        window.location.href = '/finds?status=in%20bewerking'
       }
     },
     submitError ({data}) {
