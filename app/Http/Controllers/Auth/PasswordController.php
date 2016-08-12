@@ -67,7 +67,7 @@ class PasswordController extends Controller
         $userNode = $this->users->getUser($email);
 
         if (empty($userNode)) {
-            return redirect()->back()->withErrors(['error', 'Het email adres werd niet gevonden.']);
+            return redirect()->back()->withErrors(['Het email adres werd niet gevonden.']);
         }
 
         $person = new Person();
@@ -103,7 +103,7 @@ class PasswordController extends Controller
         $userNode = $this->users->getUser($credentials['email']);
 
         if (empty($userNode)) {
-            return redirect()->back()->with('error', 'Het email adres werd niet gevonden');
+            return redirect()->back()->withErrors(['Het email adres werd niet gevonden']);
         }
 
         try {
@@ -111,8 +111,8 @@ class PasswordController extends Controller
 
             return redirect('/')->with('message', 'Uw wachtwoord is opnieuw ingesteld.');
         } catch (\Exception $ex) {
-            return redirect()->back()->with('error', 'Er is iets foutgegaan bij het instellen van het wachtwoord.
-                Probeer het nog eens of contacteer de beheerder van de applicatie.');
+            return redirect()->back()->withErrors(['Er is iets foutgegaan bij het instellen van het wachtwoord.
+                Probeer het nog eens of contacteer de beheerder van de applicatie.']);
         }
     }
 
