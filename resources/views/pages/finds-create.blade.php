@@ -123,11 +123,11 @@
   <div class="fields" v-if="show.co||show.map">
     <div class="three wide field">
       <label>Breedtegraad</label>
-      <input type="number" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
+      <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
     </div>
     <div class="three wide field">
       <label>Lengtegraad</label>
-      <input type="number" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
+      <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
     </div>
     <div class="four wide field" v-if="show.map">
       <label>Nauwkeurigheid (meter)</label>

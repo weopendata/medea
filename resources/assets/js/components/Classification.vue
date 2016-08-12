@@ -13,20 +13,39 @@
         <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
       </div>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
-      <div v-for="pub in cls.publication" v-if="pub.publicationTitle">
+      <p v-if="cls.publication&&cls.publication.length">
         <i class="bookmark icon"></i>
-        {{pub.publicationTitle}}
+        Referenties:
+      </p>
+      <div v-for="pub in pubs">
+        <a :href="pub.href" v-if="href" v-text="href"></a>
+        <span v-else v-text="text"></span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+function urlify (u) {
+  if (u && u.slice(0, 4) === 'http') {
+    return {
+      href: u
+    }
+  }
+  return {
+    text: u
+  }
+}
 export default {
   props: ['cls', 'obj'],
   data () {
     return {
       me: this.cls ? this.cls.me : false
+    }
+  },
+  computed: {
+    pubs () {
+      return this.cls.publication && this.cls.publication.map(p => urlify(p.publicationTitle))
     }
   },
   methods: {

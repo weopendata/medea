@@ -42,7 +42,7 @@
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
         @else
         <div class="ui top right pointing dropdown link item">
-          <span class="text">Notifications</span>
+          <span class="text">Meldingen</span>
           <i class="dropdown icon"></i>
           <div class="menu">
             <div class="item">Vondst #424389 werd gepubliceerd</div>
@@ -68,6 +68,19 @@
 </div>
 
 @yield('content')
+
+<footer>
+  <hr>
+  <div class="ui container">
+    <p>&nbsp;</p>
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+      We gebruiken een open content licentie<br>
+      <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png">
+    </a>
+  </div>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</footer>
 
 <script type="text/javascript">
 var medeaUser = {isGuest: true};

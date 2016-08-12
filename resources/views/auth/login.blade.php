@@ -30,7 +30,7 @@
                 @endif
             </div>
 
-            <button class="ui green button" type="submit">Submit</button>
+            <button class="ui green button" type="submit">Aanmelden</button>
 
             <p>
                 <a href="/password/reset">Wachtwoord vergeten?</a>
