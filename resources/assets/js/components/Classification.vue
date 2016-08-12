@@ -13,8 +13,11 @@
         <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
       </div>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
-      <div v-for="pub in cls.publication" v-if="pub.publicationTitle">
+      <p v-if="cls.publication&&cls.publication.length">
         <i class="bookmark icon"></i>
+        Referenties:
+      </p>
+      <div v-for="pub in cls.publication" v-if="pub.publicationTitle">
         {{pub.publicationTitle}}
       </div>
     </div>
