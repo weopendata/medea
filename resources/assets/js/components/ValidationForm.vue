@@ -25,6 +25,7 @@
       </div>
     </div>
     <photo-validation :model="remarks" :index="index" v-for="(index, remarks) in imgRemarks"></photo-validation>
+    <p v-if="result" v-text="result"></p>
     <p v-if="!embargo&&!remove&&valid">
       <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
         <i class="thumbs up icon"></i> Goedkeuren
@@ -53,7 +54,10 @@ export default {
       embargo: false,
       imgRemarks: {},
       remarks: '',
-      remove: false
+      remove: false,
+      submitting: false,
+      status: null,
+      result: false
     }
   },
   computed: {
@@ -64,8 +68,11 @@ export default {
   methods: {
     submitSuccess ({data}) {
       console.log('Validation', data)
+      this.result = data.success ? 'Status van de vondst: ' + this.status : 'Er ging iets fout'
       if (data.success) {
-        window.location.href = '/finds?status=in%20bewerking'
+        setTimeout(function () {
+          window.location.href = '/finds?status=in%20bewerking'
+        }, 1000)
       }
     },
     submitError ({data}) {
@@ -73,6 +80,8 @@ export default {
       alert('Er trad een fout op')
     },
     post (status) {
+      this.submitting = true
+      this.status = status
       var f = ''
       for (var i in this.imgRemarks) {
         f += this.imgRemarks[i] ? '\n\nFoto ' + (parseInt(i)+1) + '\n * ' + this.imgRemarks[i].join('\n * ') : ''
