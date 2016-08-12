@@ -6,7 +6,7 @@
     <div class="card-content">
       <div class="card-textual">
         <a :href="uri" class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</a>
-        <span>Gevonden {{find.findDate?'op '+find.findDate:''}} in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
+        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
       <div class="card-bar">
         <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
@@ -44,6 +44,7 @@
 
 <script>
 import ObjectFeatures from './ObjectFeatures';
+import {fromDate} from '../const.js'
 
 export default {
   props: ['user', 'find'],
@@ -85,6 +86,9 @@ export default {
       accuracy = accuracy == 'city' ? 7000 : 0
       this.$dispatch('mapFocus', {lat:this.find.findSpot.location.lat, lng:this.find.findSpot.location.lng}, accuracy || this.find.findSpot.location.accuracy || 1)
     }
+  },
+  filters: {
+    fromDate
   }
 }
 </script>

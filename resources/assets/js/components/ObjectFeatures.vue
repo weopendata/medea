@@ -3,7 +3,7 @@
   <dl v-if="detail=='all'">  
     <dt-check v-if="validating" prop="findDate" data-tooltip="Duid aan wat gewijzigd moet worden" data-position="top left" data-green="" id="dt-check-help"></dt-check>
     <dt>Datum</dt>
-    <dd>{{find.findDate || 'niet beschikbaar'}}</dd>
+    <dd>{{find.findDate | fromDate}}</dd>
   </dl>
   <dl v-if="find.findSpot&&detail=='all'">
     <dt-check v-if="validating" prop="location"></dt-check>
@@ -60,6 +60,7 @@
 
 <script>
 import DtCheck from './DtCheck.vue'
+import {fromDate} from '../const.js'
 
 export default {
   props: ['find', 'detail', 'feedback', 'validating'],
@@ -76,7 +77,8 @@ export default {
   filters: {
     comma (n) {
       return n.toString().replace('.', ',')
-    }
+    },
+    fromDate
   },
   components: {
     DtCheck
