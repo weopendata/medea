@@ -71,7 +71,16 @@ function fromInscription (ins) {
 function toInscription (ins) {
   return ins && {
     objectInscriptionNote: ins
-  }
+  } || undefined
+}
+
+function fromTechnique (tech) {
+  return tech && tech.productionTechniqueType
+}
+function toTechnique (tech) {
+  return tech && {
+    productionTechniqueType: tech
+  } || undefined
 }
 
 Vue.use(VueResource)
@@ -112,10 +121,7 @@ new Vue({
         photograph: [],
         dimensions: [],
         productionEvent: {
-          productionClassification: [],
-          productionTechnique: {
-            productionTechniqueType: null
-          }
+          productionClassification: []
         }
       }
     };
@@ -149,6 +155,7 @@ new Vue({
       // Mapped to model
       inscription: fromInscription(initialFind.object.objectInscription),
       dims: fromDimensions(initialFind.object.dimensions),
+      technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
       // Interface state
       today: new Date().toISOString().slice(0, 10),
       show: {
@@ -365,6 +372,7 @@ new Vue({
       // Dimensions
       this.find.object.dimensions = toDimensions(this.dims)
       this.find.object.objectInscription = toInscription(this.inscription)
+      this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
 
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find

@@ -693,8 +693,6 @@ class Base
                  $model = new $modelName();
                  $model->setNode($node);
 
-                 \Log::info($modelName);
-
                  return $model;
             }
         }
