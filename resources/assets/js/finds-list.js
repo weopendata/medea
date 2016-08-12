@@ -115,7 +115,7 @@ new Vue({
   events: {
     mapFocus (position, accuracy) {
       this.map.center = position
-      this.map.zoom = accuracy ? Math.floor(25 - Math.log2(accuracy)) : 18
+      this.map.zoom = Math.min(14, accuracy ? Math.floor(25 - Math.log2(accuracy)) : 14)
       // nextTick is just to be sure that the map immediately shows the correct location
       this.$nextTick(function () {
         this.filterState.showmap = true
