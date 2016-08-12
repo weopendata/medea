@@ -67,12 +67,13 @@
 
 @yield('content')
 
+<br style="clear:both;">
 <footer>
   <div class="ui container">
     <a href="/contact" style="float:right">Contact</a>
     <a href="https://creativecommons.org/licenses/by-nc/4.0/">
-      We gebruiken een open content licentie<br>
       <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png">
+      We gebruiken een open content licentie
     </a>
   </div>
 </footer>

@@ -1,12 +1,22 @@
+html {
+	position: relative;
+	min-height: 100%;
+	height: auto!important;
+}
 body {
-	overflow: auto;
+	padding-bottom: 240px;
+	min-height: 100%;
 	background: #ecf0f1;
 }
 nav {
 	margin-bottom: 2rem;
 }
 footer {
-	clear: both;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	left: 0;
+	right: 0;
 	padding: 100px;
 	background: #2c3e50;
 	color: white;
