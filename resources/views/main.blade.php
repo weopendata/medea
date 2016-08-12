@@ -42,7 +42,7 @@
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
         @else
         <div class="ui top right pointing dropdown link item">
-          <span class="text">Notifications</span>
+          <span class="text">Meldingen</span>
           <i class="dropdown icon"></i>
           <div class="menu">
             <div class="item">Vondst #424389 werd gepubliceerd</div>
