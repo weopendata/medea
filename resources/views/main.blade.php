@@ -69,6 +69,19 @@
 
 @yield('content')
 
+<footer>
+  <hr>
+  <div class="ui container">
+    <p>&nbsp;</p>
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+      We gebruiken een open content licentie<br>
+      <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png">
+    </a>
+  </div>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</footer>
+
 <script type="text/javascript">
 var medeaUser = {isGuest: true};
 @if (!Auth::guest())
