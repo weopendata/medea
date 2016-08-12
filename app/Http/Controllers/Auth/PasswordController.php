@@ -100,6 +100,11 @@ class PasswordController extends Controller
     {
         $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
 
+        // A token must be set
+        if (empty($credentials['token'])) {
+            return redirect('/');
+        }
+
         $userNode = $this->users->getUser($credentials['email']);
 
         if (empty($userNode)) {
