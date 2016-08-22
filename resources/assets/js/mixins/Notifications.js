@@ -19,11 +19,9 @@ export default {
       console.warn(data)
     },
     notifSuccess ({data}) {
-      console.log(data)
       this.notifications = data || ['jowkes']
-      ls('notifications', data)
-      ls('notifTotal', Math.floor((Math.random() * 10) + 10))
-      ls('notifUnread', Math.floor((Math.random() * 10) + 1))
+      ls('notifications', data.data)
+      ls('notifUnread', data.unread)
     },
     notifFetch () {
       console.log('fetching notifications', this.notifications)
