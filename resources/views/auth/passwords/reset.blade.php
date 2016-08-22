@@ -22,7 +22,7 @@
             </div>
 
             <div class="field{{ $errors->has('password') ? ' error' : '' }}">
-                <label>Wachtwoord</label>
+                <label>Nieuw wachtwoord</label>
                 <input type="password" name="password">
                 @if ($errors->has('password'))
                     <div class="ui negative message">
@@ -32,7 +32,7 @@
             </div>
 
             <div class="field{{ $errors->has('password_confirmation') ? ' error' : '' }}">
-                <label>Wachtwoord herhalen</label>
+                <label>Nieuw wachtwoord herhalen</label>
                 <input type="password" name="password_confirmation">
                 @if ($errors->has('password_confirmation'))
                     <div class="ui negative message">

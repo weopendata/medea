@@ -34,6 +34,7 @@ class ObjectController extends Controller
 
         $this->objects->setValidationStatus($objectId, $input['objectValidationStatus'], $input);
 
+        // Add a notification for the user
         $this->addNotification($objectId, $input);
 
         return response()->json(['success' => true]);
