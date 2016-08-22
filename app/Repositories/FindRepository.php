@@ -122,6 +122,15 @@ class FindRepository extends BaseRepository
 
         $variables = [];
 
+        $startStatement = '';
+
+        if (!empty($filters['text'])) {
+            // Replace the whitespace with the lucene syntax for white spaces text queries
+            $text = preg_replace('#\s+#', ' AND ', $filters['text']);
+
+            $startStatement = "START object=node:node_auto_index('fulltext_description:(*" . $text . "*)') ";
+        }
+
         // Non personal find statement
         $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
 
@@ -176,16 +185,21 @@ class FindRepository extends BaseRepository
         SKIP $offset
         LIMIT $limit";
 
-        $countquery = "MATCH $initialStatement, $matchstatement
+        $countQuery = "MATCH $initialStatement, $matchstatement
         WITH $withStatement
         ORDER BY $orderStatement
         WHERE $whereStatement
         RETURN count(distinct find)";
 
+        if (!empty($startStatement)) {
+            $query = $startStatement . $query;
+            $countQuery = $startStatement . $countQuery;
+        }
+
         $cypherQuery = new Query($this->getClient(), $query, $variables);
         $data = $this->parseResults($cypherQuery);
 
-        $cypherQuery = new Query($this->getClient(), $countquery, $variables);
+        $cypherQuery = new Query($this->getClient(), $countQuery, $variables);
         $count_results = $cypherQuery->getResultSet();
 
         $count = 0;

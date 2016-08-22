@@ -110,6 +110,49 @@ class Object extends Base
     ];
 
     /**
+     * Overwrite the constructor and construct a full text field
+     * after construction of the subtree
+     *
+     * @param array $properties
+     *
+     * @return Base
+     */
+    public function __construct($properties = [])
+    {
+        parent::__construct($properties);
+
+        if (!empty($properties)) {
+            $this->addFtsField($properties);
+        }
+    }
+
+    /**
+     * Fill in the Fulltest Search field
+     *
+     * @param array $properties The properties assigned to an Object node
+     *
+     * @return void
+     */
+    private function addFtsField($properties)
+    {
+        $fulltextProperties = [
+            'objectCategory',
+            'objectDescription',
+            'material',
+        ];
+
+        $description = '';
+
+        foreach ($fulltextProperties as $property) {
+            if (!empty($properties[$property])) {
+                $description .= $properties[$property] . ' ';
+            }
+        }
+
+        $this->getNode()->setProperty('fulltext_description', $description)->save();
+    }
+
+    /**
      * Dimension is not a main entity, so we create it in this object only
      *
      * @param $dimension array An array with value, type, unit
