@@ -23,13 +23,13 @@ class NotificationRepository extends EloquentRepository
      */
     public function getForUser($userId, $read, $limit = 20, $offset = 0)
     {
-        $query = $this->model->where('user_id', $userId);
+        $query = $this->model->select('url', 'message', 'id', 'read')->where('user_id', $userId);
 
         if (!is_null($read)) {
             $query->where('read', $read);
         }
 
-        $notifications = $query->take($limit)->skip($offset)->get();
+        $notifications = $query->take($limit)->skip($offset)->orderBy('created_at', 'desc')->get();
 
         $unreadCount = $this->model->where('user_id', $userId)->where('read', 0)->count();
 
