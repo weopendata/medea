@@ -313,3 +313,18 @@ h4.required::after {
 		}
 	}
 }
+
+/* Notifications */
+.ui.menu .ui.dropdown .menu {
+	width: 23em;
+	max-height: 60vh;
+	overflow: auto;
+}
+.ui.menu .ui.dropdown .menu .item:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+  cursor: pointer;
+}
+.ui.dropdown .menu .item {
+	white-space: pre-wrap;
+}

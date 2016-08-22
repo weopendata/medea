@@ -1,13 +1,15 @@
-import Vue from 'vue/dist/vue.min.js';
-import VueResource from 'vue-resource/dist/vue-resource.min.js';
-import FindsList from './components/FindsList';
-import FindsFilter from './components/FindsFilter';
-import MapControls from './components/MapControls';
-import {load, Map, Marker, Circle} from 'vue-google-maps';
-// import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js';
-import DevBar from './components/DevBar';
+import Vue from 'vue/dist/vue.min.js'
+import VueResource from 'vue-resource/dist/vue-resource.min.js'
+import FindsList from './components/FindsList'
+import FindsFilter from './components/FindsFilter'
+import MapControls from './components/MapControls'
+import {load, Map, Marker, Circle} from 'vue-google-maps'
+// import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
+import DevBar from './components/DevBar'
 
-import parseLink from 'parse-link-header';
+import Notifications from './mixins/Notifications'
+
+import parseLink from 'parse-link-header'
 
 Vue.use(VueResource)
 Vue.config.debug = true
@@ -73,8 +75,8 @@ new Vue({
         delete model.myfinds
       }
       var query = Object.keys(model).map(function(key, index) {
-        return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null;
-      }).filter(Boolean).join('&');
+        return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
+      }).filter(Boolean).join('&')
       query = query ? '/finds?' + query : '/finds'
       window.history.pushState({}, document.title, query)
       if (cause == 'showmap' || this.query == query) {
@@ -83,7 +85,7 @@ new Vue({
       this.query = query
       this.$http.get('/api' + query).then(this.fetchSuccess, function () {
         console.error('could not fetch findevents')
-      });
+      })
     },
     fetchSuccess (res) {
       this.paging = parseLink(res.headers('link'))
@@ -98,7 +100,7 @@ new Vue({
       this.fetch('showmap')
     },
     toggleMyfinds () {
-      this.filterState.myfinds = this.filterState.myfinds ? false : 'yes';
+      this.filterState.myfinds = this.filterState.myfinds ? false : 'yes'
       this.fetch()
     },
     sortBy (type) {
@@ -145,5 +147,6 @@ new Vue({
         localStorage.debugUser = JSON.stringify(user) 
       }
     }
-  }
-});
+  },
+  mixins: [Notifications]
+})

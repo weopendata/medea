@@ -10,9 +10,10 @@ import DevBar from './components/DevBar'
 import DimInput from './components/DimInput.vue'
 import FindEvent from './components/FindEvent'
 import PhotoUpload from './components/PhotoUpload'
-import Step from './components/Step';
+import Step from './components/Step'
 
-import Ajax from './mixins/Ajax';
+import Ajax from './mixins/Ajax'
+import Notifications from './mixins/Notifications'
 
 import {EMPTY_CLS} from './const.js'
 
@@ -416,7 +417,7 @@ new Vue({
     }
   },
   el: 'body',
-  mixins: [Ajax],
+  mixins: [Ajax, Notifications],
   components: {
     DevBar,
     Step,

@@ -43,8 +43,10 @@
           <span class="text">Meldingen</span>
           <i class="dropdown icon"></i>
           <div class="menu">
-            <div class="item">Vondst #424389 werd gepubliceerd</div>
-            <div class="item">Vondst #379407 werd gepubliceerd</div>
+            <div v-if="notifications&&notifications.length" v-cloak>
+              <div class="item" v-for="n in notifications" v-text="n.message" @click.stop="notifGo(n)"></div>
+            </div>
+            <div v-else class="item">Er zijn geen meldingen</div>
           </div>
         </div>
         <div class="ui top right pointing dropdown link item">
@@ -105,10 +107,10 @@ medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
 <script src="/js/vendor.min.js"></script>
+@yield('script')
 <script type="text/javascript">
 $('nav .ui.dropdown').dropdown()
 </script>
-@yield('script')
 
 @if (Config::get('app.debug'))
 <script type="text/javascript">

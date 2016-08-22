@@ -2,6 +2,8 @@ import Vue from 'vue/dist/vue.min.js'
 import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import TrUser from './components/TrUser'
 
+import Notifications from './mixins/Notifications'
+
 import parseLink from 'parse-link-header'
 
 Vue.use(VueResource)
@@ -17,5 +19,6 @@ new Vue({
   },
   components: {
     TrUser
-  }
+  },
+  mixins: [Notifications]
 })

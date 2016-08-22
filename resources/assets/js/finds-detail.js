@@ -1,8 +1,10 @@
-import Vue from 'vue/dist/vue.min.js';
-import VueResource from 'vue-resource/dist/vue-resource.min.js';
+import Vue from 'vue/dist/vue.min.js'
+import VueResource from 'vue-resource/dist/vue-resource.min.js'
 
-import FindEventDetail from './components/FindEventDetail';
-import DevBar from './components/DevBar';
+import FindEventDetail from './components/FindEventDetail'
+import DevBar from './components/DevBar'
+
+import Notifications from './mixins/Notifications'
 
 Vue.use(VueResource)
 Vue.config.debug = true
@@ -42,5 +44,6 @@ new Vue({
         localStorage.debugUser = JSON.stringify(user) 
       }
     }
-  }
+  },
+  mixins: [Notifications]
 });
