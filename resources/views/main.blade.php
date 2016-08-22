@@ -40,11 +40,11 @@
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
         @else
         <div class="ui top right pointing dropdown link item">
-          <span class="text">Meldingen</span>
+          <span class="text"><span class="ui red circular label" v-if="notifUnread" v-text="notifUnread" v-cloak></span> Meldingen</span>
           <i class="dropdown icon"></i>
           <div class="menu">
             <div v-if="notifications&&notifications.length" v-cloak>
-              <div class="item" v-for="n in notifications" v-text="n.message" @click.stop="notifGo(n)"></div>
+              <div class="item" v-for="n in notifications" v-text="n.message" :class="{read:n.read}" @click.stop="notifGo(n, $index)"></div>
             </div>
             <div v-else class="item">Er zijn geen meldingen</div>
           </div>

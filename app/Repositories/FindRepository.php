@@ -124,11 +124,11 @@ class FindRepository extends BaseRepository
 
         $startStatement = '';
 
-        if (!empty($filters['text'])) {
+        if (!empty($filters['query'])) {
             // Replace the whitespace with the lucene syntax for white spaces text queries
-            $text = preg_replace('#\s+#', ' AND ', $filters['text']);
+            $query = preg_replace('#\s+#', ' AND ', $filters['query']);
 
-            $startStatement = "START object=node:node_auto_index('fulltext_description:(*" . $text . "*)') ";
+            $startStatement = "START object=node:node_auto_index('fulltext_description:(*" . $query . "*)') ";
         }
 
         // Non personal find statement
