@@ -2,6 +2,8 @@ import Vue from 'vue/dist/vue.min.js'
 import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
+import Notifications from './mixins/Notifications'
+
 Vue.use(VueResource)
 Vue.config.debug = true
 
@@ -72,5 +74,6 @@ new Vue({
   },
   attached () {
     $('.ui.checkbox', this.$el).checkbox()
-  }
+  },
+  mixins: [Notifications]
 })

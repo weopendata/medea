@@ -24,6 +24,7 @@
     "deep-extend": "^0.4.1",
     "laravel-elixir": "*",
     "less-loader": "^2.2.2",
+    "local-storage": "^1.4.2",
     "lodash": "^3.10.1",
     "parse-link-header": "^0.4.1",
     "semantic-ui-css": "^2.2",

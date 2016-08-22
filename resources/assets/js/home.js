@@ -5,6 +5,7 @@ import TextareaGrowing from './components/TextareaGrowing'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
 import Ajax from './mixins/Ajax'
+import Notifications from './mixins/Notifications'
 
 Vue.use(VueResource)
 Vue.config.debug = true
@@ -93,7 +94,7 @@ new Vue({
     $('.ui.checkbox').checkbox()
   },
   el: 'body',
-  mixins: [Ajax],
+  mixins: [Ajax, Notifications],
   components: {
     TextareaGrowing,
     DevBar
