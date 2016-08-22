@@ -19,7 +19,7 @@ export default {
       console.warn(data)
     },
     notifSuccess ({data}) {
-      this.notifications = data || ['jowkes']
+      this.notifications = data.data || null
       ls('notifications', data.data)
       ls('notifUnread', data.unread)
     },
