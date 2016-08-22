@@ -14,6 +14,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\MessageBag;
 use App\Helpers\Pager;
 use App\Http\Middleware\FindApi;
+use App\Http\Requests\EditFindRequest;
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -242,12 +243,8 @@ class FindController extends Controller
      * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function edit($findId, Request $request)
+    public function edit($findId, EditFindRequest $request)
     {
-        if (!Auth::check()) {
-            return redirect('/finds/' . $findId);
-        }
-
         $find = $this->finds->expandValues($findId, $request->user());
 
         return view('pages.finds-create', [
