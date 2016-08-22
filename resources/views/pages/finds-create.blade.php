@@ -16,7 +16,7 @@
   <div class="header">
     Opmerking van de validator:
   </div>
-  @{{validation.remarks}}
+  <div style="white-space:pre-wrap">@{{validation.remarks}}</div>
 </div>
 
 <div class="ui visible warning message" v-if="hasFeedback">

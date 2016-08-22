@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    <photo-validation :model="remarks" :index="index" v-for="(index, remarks) in imgRemarks"></photo-validation>
+    <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks"></photo-validation>
     <p v-if="result" v-text="result"></p>
     <p v-if="!embargo&&!remove&&valid">
       <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
@@ -48,7 +48,7 @@ import PhotoValidation from './PhotoValidation';
 import TextareaGrowing from './TextareaGrowing';
 
 export default {
-  props: ['obj', 'feedback'],
+  props: ['obj', 'feedback', 'json'],
   data () {
     return {
       embargo: false,
@@ -61,8 +61,24 @@ export default {
     }
   },
   computed: {
+    // Get the last validation
+    validation () {
+      return this.validationList[0] || {
+        feedback: {}
+      }
+    },
+    // Order validations: most recent first
+    validationList () {
+      return JSON.parse(this.json).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+    },
+    hasFeedback () {
+      return Object.values(this.feedback).filter(Boolean).length > 0
+    },
+    hasImgRemarks () {
+      return Object.values(this.imgRemarks).filter(Boolean).length > 0
+    },
     valid () {
-      return !this.remarks && !Object.keys(this.imgRemarks).length && !Object.keys(this.feedback).length
+      return !this.remarks && !this.hasImgRemarks && !this.hasFeedback
     }
   },
   methods: {
@@ -82,15 +98,22 @@ export default {
     post (status) {
       this.submitting = true
       this.status = status
+
+      // Attach extra remarks about the photos
       var f = ''
       for (var i in this.imgRemarks) {
         f += this.imgRemarks[i] ? '\n\nFoto ' + (parseInt(i)+1) + '\n * ' + this.imgRemarks[i].join('\n * ') : ''
       }
       this.remarks = (this.remarks + f).trim()
+
+      // Gather all data
+      // TODO: it would be more consistent if the feedback property was calculated in the front-end
+      //       that would solve the json_encode issue below
       var data = {
         objectValidationStatus: status,
         embargo: this.embargo,
         feedback: this.feedback,
+        imgRemarks: this.imgRemarks,
         remarks: this.remarks
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))
@@ -99,11 +122,36 @@ export default {
   },
   events: {
     imgRemark (index) {
-      this.$set('imgRemarks[' + index + ']', [])
+      var remarks = JSON.parse(JSON.stringify(this.imgRemarks))
+
+      // Fix php json_encode issue where objects are encoded as arrays
+      if (Array.isArray(remarks)) {
+        var oldRemarks = remarks
+        remarks = {}
+        for (var i = oldRemarks.length - 1; i >= 0; i--) {
+          remarks[i] = oldRemarks[i]
+        }
+      }
+
+      // Toggle the remark list
+      if (remarks[index]) {
+        delete remarks[index]
+      } else {
+        remarks[index] = []
+      }
+      this.imgRemarks = remarks
     }
   },
   attached () {
     $('.ui.checkbox', this.$el).checkbox()
+
+    // Fill in the previous validation feedback
+    if (this.json && this.validation.objectValidationStatus !== 'gevalideerd') {
+      console.log('This find has been validated before and the status was', this.validation.objectValidationStatus)
+      this.feedback = this.validation.feedback
+      this.remarks = this.validation.remarks
+      this.imgRemarks = this.validation.imgRemarks
+    }
   },
   components: {
     PhotoValidation,

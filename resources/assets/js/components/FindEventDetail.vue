@@ -5,13 +5,13 @@
         <h1 class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
-            <object-features :find="find" detail="all" :feedback="feedback" :validating="validating"></object-features>
+            <object-features :find="find" detail="all" :feedback.sync="feedback" :validating="validating"></object-features>
           </div>
           <div class="column" :class="{'fe-validating':validating}">
             <div class="fe-header">
               <div class="fe-imglist">
                 <div class="img" v-for="image in find.object.photograph">
-                  <dt-check v-if="validating" :prop="image.identifier" @click="imgRemark($index)"></dt-check>
+                  <dt-check v-if="validating" :prop="image.identifier" @change="imgRemark($index)"></dt-check>
                   <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
                 </div>
               </div>
@@ -31,7 +31,7 @@
       <p>&nbsp;</p>
       <div class="ui container">
           <div v-if="validating">
-            <validation-form :obj="find.object.identifier" :feedback="feedback"></validation-form>
+            <validation-form :obj="find.object.identifier" :feedback.sync="feedback" :json="find.object.feedback"></validation-form>
             <p>&nbsp;</p>
           </div>
           <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
