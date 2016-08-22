@@ -9,6 +9,7 @@ use App\Http\Requests\DeleteUserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Models\Person;
+use App\Http\Requests\ViewUserRequest;
 
 class UserController extends Controller
 {
@@ -30,34 +31,25 @@ class UserController extends Controller
         ]);
     }
 
-    public function show($userId, Request $request)
+    /**
+     * Show a users profile
+     *
+     * @param  int $userId The id of the user to show the profile of
+     * @param  ViewUserRequest $request The form request that handles auth
+     *
+     * @return
+     */
+    public function show(ViewUserRequest $request)
     {
-        $user = $this->users->getById($userId);
+        $person = $request->getPerson();
 
-        if (empty($user)) {
-            abort(404);
-        }
-
-        // The person to view the profile of
-        $person = new Person();
-        $person->setNode($user);
-
-        if ($person->profileAccessLevel == 4 ||
-            !empty($request->user()) && (
-                $request->user()->id == $person->id ||
-                $request->user()->hasRole($person->getProfileAllowedRoles())
-            )
-        ) {
-            return view('users.show', [
-                'findCount' => $person->getFindCount(),
-                'profile' => $person->getPublicProfile(),
-                'roles' => $person->getRoles(),
-                'id' => $person->id,
-                'profileAccessLevel' => $person->profileAccessLevel,
-            ]);
-        }
-
-        abort(403);
+        return view('users.show', [
+            'findCount' => $person->getFindCount(),
+            'profile' => $person->getPublicProfile(),
+            'roles' => $person->getRoles(),
+            'id' => $person->id,
+            'profileAccessLevel' => $person->profileAccessLevel,
+        ]);
     }
 
     public function update($userId, UpdateUserRequest $request)
@@ -95,15 +87,36 @@ class UserController extends Controller
         ];
     }
 
+    /**
+     * Remove a user
+     *
+     * @param  int $userId
+     * @param  DeleteUserRequest $request
+     * @return Response
+     */
     public function delete($userId, DeleteUserRequest $request)
     {
         if ($this->users->delete($userId)) {
             return response()->json(['message' => 'The user was deleted']);
         } else {
-            return response()->json(['errors' => ['Something went wrong while deleting, make sure the user id is correct.']], 400);
+            return response()->json(
+                [
+                    'errors' => [
+                        'Something went wrong while deleting, make sure the user id is correct.'
+                    ]
+                ],
+                400
+            );
         }
     }
 
+    /**
+     * Return the personal settings view
+     *
+     * @param  Request $request
+     *
+     * @return
+     */
     public function mySettings(Request $request)
     {
         $user = $request->user();

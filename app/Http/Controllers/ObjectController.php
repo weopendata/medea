@@ -41,6 +41,7 @@ class ObjectController extends Controller
 
     /**
      * Add a notification about the new validation status
+     *
      * @param integer $objectId The id of the object
      * @param array $input The input of the request
      *
@@ -48,7 +49,7 @@ class ObjectController extends Controller
      */
     private function addNotification($objectId, $input)
     {
-        $message = 'Uw vondst werd bekeken door een validator. De nieuwe status is: ' . $input['objectValidationStatus'];
+        $message = 'Uw vondst werd behandeld door een validator. De nieuwe status is: ' . $input['objectValidationStatus'];
 
         // If the status is revision, then add a link to the edit page, if not set the link to the find URI
         $url = url('/finds/' . $this->objects->getRelatedFindEventId($objectId));
