@@ -26,16 +26,18 @@ class NotificationRepository extends EloquentRepository
         $query = $this->model->where('user_id', $userId);
 
         if (!is_null($read)) {
-            $query->where('read', (boolean) $read);
+            $query->where('read', $read);
         }
 
         $notifications = $query->take($limit)->skip($offset)->get();
 
+        $unreadCount = $this->model->where('user_id', $userId)->where('read', 0)->count();
+
         if (!empty($notifications)) {
-            return $notifications->toArray();
+            return ['unread' => $unreadCount, 'data' => $notifications->toArray()];
         }
 
-        return [];
+        return ['unread' => 0, 'data' => []];
     }
 
     /**
