@@ -328,3 +328,11 @@ h4.required::after {
 .ui.dropdown .menu .item {
 	white-space: pre-wrap;
 }
+.ui.menu .item > .text > .circular.label {
+	margin: -.35em .2em;
+}
+.read {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  font-weight: 300;
+}

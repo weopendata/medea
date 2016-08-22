@@ -4,39 +4,65 @@ export default {
   data () {
     return {
       notifications: ls('notifications') || [],
-      notifTotal: ls('notifTotal') || 0,
-      notifUnread: ls('notifUnread') || 0
+      notifUnread: ls('notifUnread') || 0,
+      notifLast: ls('notifLast') || 0
     }
   },
   methods: {
-    notifGo (n) {
+    notifGo (n, index) {
       if (!typeof n === 'object' || !n.url) {
         return console.warn('notifGo could not decide where to go')
       }
+
+      // Set notification as read
+      this.notifRead(n, index)
+
+      // Move to notification url
       window.location.href = n.url
     },
     notifError ({data}) {
       console.warn(data)
     },
     notifSuccess ({data}) {
-      this.notifications = data.data || null
-      ls('notifications', data.data)
-      ls('notifUnread', data.unread)
+      console.log('Notifications updated', data.data.length)
+      this.notifications = data.data
+      this.notifUnread = data.unread
+      this.notifLast = new Date().getTime()
+
+      // Save for next page
+      this.notifPersist()
     },
     notifFetch () {
-      console.log('fetching notifications', this.notifications)
+      if (new Date().getTime() < this.notifLast + 1000 * 60) {
+        return console.log('Not fetching notifications')
+      }
       this.$http.get('/api/notifications')
       .then(this.notifSuccess, this.submitError)
       .catch(function () {
         this.submitting = false
       })
     },
-    notifRead (id) {
-      console.log('notif read', id)
-      this.$http.post('/api/notifications/' + id, {read: 1}).then(this.notifSuccess, this.notifError)
+    notifRead (n, index) {
+      if (n.read) {
+        return
+      }
+      if (typeof index === 'number') {
+        this.notifications[index].read = 1
+      }
+      this.notifUnread--
+      console.log('Set notification', n.id, 'as read')
+      this.$http.post('/api/notifications/' + n.id, {read: 1})
+
+      // Save for next page
+      this.notifPersist()
+    },
+    notifPersist () {
+      ls('notifications', this.notifications)
+      ls('notifUnread', this.notifUnread)
+      ls('notifLast', this.notifLast)
     }
   },
   ready () {
-    setTimeout(() => this.notifFetch(), 2000)
+    setTimeout(() => this.notifFetch(), 1000)
   }
 }
