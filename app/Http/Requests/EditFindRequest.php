@@ -33,7 +33,8 @@ class EditFindRequest extends Request
 
         $this->find = $finds->expandValues($findId);
 
-        return ($this->find['object']['objectValidationStatus'] == 'in bewerking'
+        return (($this->find['object']['objectValidationStatus'] == 'in bewerking'
+            || $this->find['object']['objectValidationStatus'] == 'revisie nodig')
             && $user->id == $this->find['person']['identifier']);
     }
 

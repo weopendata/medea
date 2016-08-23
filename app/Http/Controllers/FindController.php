@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
 use App\Models\FindEvent;
 use App\Repositories\FindRepository;
@@ -31,8 +30,7 @@ class FindController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     * @deprecated, is never being used.
+     * Display a listing of the resource
      *
      * @return \Illuminate\Http\Response
      */
