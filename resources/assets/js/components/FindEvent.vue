@@ -5,7 +5,7 @@
     </div>
     <div class="card-content">
       <div class="card-textual">
-        <a :href="uri" class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</a>
+        <a :href="uri" class="card-title">{{findTitle}}</a>
         <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
       </div>
       <div class="card-bar">
@@ -66,6 +66,21 @@ export default {
     },
     uriEdit () {
       return this.uri + '/edit'
+    },
+    findTitle () {
+        title = this.find.object.objectCategory
+
+        if (this.find.object.period) {
+          title += ', ' + this.find.object.period
+        }
+
+        if (this.find.object.objectMaterial) {
+          title += ', ' + this.find.object.objectMaterial
+        }
+
+        title += ' (ID-' + this.find.identifier + ')'
+
+        return title;
     }
   },
   methods: {
