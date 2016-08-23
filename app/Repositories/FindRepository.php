@@ -69,8 +69,8 @@ class FindRepository extends BaseRepository
             $query = "MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = {userId} AND id(find) = {findId} RETURN r";
 
             $variables = [];
-            $variables['userId'] = $user->id;
-            $variables['findId'] = $findId;
+            $variables['userId'] = (int) $user->id;
+            $variables['findId'] = (int) $findId;
 
             $client = $this->getClient();
 
