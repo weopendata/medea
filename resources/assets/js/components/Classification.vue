@@ -1,11 +1,9 @@
 <template>
-  <div class="cls">
-    <div class="cls-buttons">
-      <button class="ui small icon button" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
-      <button class="ui small icon button" :class="{red:me==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
-    </div>
-    <div class="cls-content">
-      <button class="ui small basic red icon button" @click.prevent.stop="rm" v-if="$root.user.administrator" style="float:right"><i class="trash icon"></i></button>
+<div class="card card-center fe-card">
+    <div class="card-textual">
+      <p>
+        Deze classificatie werd opgesteld door vondstexpert
+      </p>
       <div v-if="cls.productionClassificationPeriod || cls.productionClassificationNation">
         <span class="cls-labeled" v-if="cls.productionClassificationPeriod">Periode <b>{{cls.productionClassificationPeriod}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationNation">Natie <b>{{cls.productionClassificationNation}}</b></span>
@@ -13,15 +11,30 @@
         <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
       </div>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
-      <p v-if="cls.publication&&cls.publication.length">
+      <p v-if="singlePub">
         <i class="bookmark icon"></i>
-        Referenties:
+        Referentie:
+        <a :href="singlePub.href" v-if="singlePub.href" v-text="singlePub.href"></a>
+        <span v-else v-text="singlePub.text"></span>@@
       </p>
-      <div v-for="pub in pubs">
-        <a :href="pub.href" v-if="href" v-text="href"></a>
-        <span v-else v-text="text"></span>
+      <div v-if="multiPub">
+        <p v-if="cls.publication&&cls.publication.length">
+          <i class="bookmark icon"></i>
+          Referenties:
+        </p>
+        <div v-for="pub in pubs">@
+          <a :href="pub.href" v-if="pub.href" v-text="pub.href"></a>
+          <span v-else v-text="pub.text"></span>
+        </div>
       </div>
     </div>
+    <div class="card-bar">
+      <button class="btn" :class="{green:me==='agree'}" @click.stop="agree">{{cls.agree}} <i class="thumbs up icon"></i></button>
+      <button class="btn" :class="{red:me==='disagree'}" @click.stop="disagree">{{cls.disagree}} <i class="thumbs down icon"></i></button>
+
+      <button class="btn" @click.prevent.stop="rm" v-if="$root.user.administrator" style="float:right"><i class="trash icon"></i></button>
+
+    </div><!--v-if-->
   </div>
 </template>
 
@@ -44,6 +57,12 @@ export default {
     }
   },
   computed: {
+    multiPub () {
+      return this.cls.publication && this.cls.publication.length > 1
+    },
+    singlePub () {
+      return this.pubs && this.pubs.length === 1 && this.pubs[0]
+    },
     pubs () {
       return this.cls.publication && this.cls.publication.map(p => urlify(p.publicationTitle))
     }
