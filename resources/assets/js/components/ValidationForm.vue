@@ -26,16 +26,13 @@
     </div>
     <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks"></photo-validation>
     <p v-if="result" v-text="result"></p>
-    <p v-if="!embargo&&!remove&&valid">
+    <p v-if="!remove&&valid">
       <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
         <i class="thumbs up icon"></i> Goedkeuren
       </button>
     </p>
-    <p v-if="!embargo&&!remove&&!valid">
+    <p v-if="!remove&&!valid">
       <button @click="post('revisie nodig')" class="ui orange big button">Aanpassen</button>
-    </p>
-    <p v-if="embargo">
-      <button @click="post('onder embargo')" class="ui orange big button">Embargo</button>
     </p>
     <p v-if="remove">
       <button @click="post('verwijderd')" class="ui red big button">Afwijzen</button>
