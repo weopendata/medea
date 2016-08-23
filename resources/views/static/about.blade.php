@@ -1,6 +1,6 @@
 @extends('main')
 
-@section('title', 'Contact')
+@section('title', 'Over MEDEA')
 
 @section('content')
 een tekstje over medea

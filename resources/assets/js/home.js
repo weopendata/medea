@@ -39,6 +39,7 @@ new Vue({
         jjjj: null,
         nnnnn: null,
       },
+      score: 0,
       errors: {},
       submitAction: 'register',
       registered: false
@@ -46,6 +47,9 @@ new Vue({
   },
   computed: {
     submittable () {
+      if (this.score < 2) {
+        return false
+      }
       if (this.roles.onderzoeker && !this.roles.vondstexpert) {
         this.roles.onderzoeker = false
       }
@@ -66,6 +70,18 @@ new Vue({
     }
   },
   methods: {
+    pwFeedback () {
+      var score = zxcvbnAsync(this.user.password)
+      if (score === -1) {
+        return
+      }
+      this.score = score
+      if (this.user.password.length < 6 && this.score > 2) {
+        this.score = 2
+      } else {
+        this.user.passwordRegErrors = []
+      }
+    },
     formdata () {
       var data = this.user
 
@@ -99,4 +115,22 @@ new Vue({
     TextareaGrowing,
     DevBar
   }
-});
+})
+
+var zxcvbnAsync = function(pw) {
+  if (window.zxcvbn) {
+    return window.zxcvbn(pw).score
+  }
+  if (window.zxcvbnLoading) {
+    return -1
+  }
+  window.zxcvbnLoading = true
+  var first, s
+  s = document.createElement('script')
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.3.0/zxcvbn.js'
+  s.type = 'text/javascript'
+  s.async = true
+  first = document.getElementsByTagName('script')[0]
+  first.parentNode.insertBefore(s, first)
+  return -1
+}

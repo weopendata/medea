@@ -6,15 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <!-- <link rel="stylesheet" href="{{ asset('assets/css/leaflet.extra-markers.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('assets/css/leaflet.css') }}" rel="stylesheet"/> -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
-
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-   <!--  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
-    <script src="{{ asset('assets/js/leaflet.extra-markers.min.js') }}"></script> -->
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - MEDEA</title>
 </head>

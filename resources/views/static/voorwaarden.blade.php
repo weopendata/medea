@@ -1,7 +1,7 @@
 @extends('main')
 
-@section('title', 'Contact')
+@section('title', 'Gebruikersvoorwaarden')
 
 @section('content')
-iframe met google form komt hier
+Dit zijn voorwaarden
 @endsection

@@ -1,6 +1,6 @@
 @extends('main')
 
-@section('title', 'Contact')
+@section('title', 'Handleiding')
 
 @section('content')
 handleiding
