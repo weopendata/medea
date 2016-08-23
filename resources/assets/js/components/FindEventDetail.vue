@@ -35,6 +35,12 @@
             <p>&nbsp;</p>
           </div>
           <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
+            <div style="max-width: 900px;margin: 0 auto 1em;">
+              <h2>
+                Classificaties
+                <small>Deze vondst werd {{find.object.productionEvent.productionClassification&&find.object.productionEvent.productionClassification.length}} keer geclassicifeerd.</small>
+              </h2>
+            </div>
             <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
             <div class="ui orange message" v-if="!find.object.productionEvent||!find.object.productionEvent.productionClassification||!find.object.productionEvent.productionClassification.length">
               <div class="ui header">Deze vondst is niet geclassificeerd</div>

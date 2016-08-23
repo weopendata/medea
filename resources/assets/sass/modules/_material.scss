@@ -14,6 +14,9 @@
 .card-bar:last-child {
 	padding: 8px;
 }
+.card-bar-border {
+	border-top: 1px solid #eee;
+}
 .card-img {
 	float: left;
 	width: 200px;
@@ -85,6 +88,20 @@
 	color: #27ae60;
 	&:hover {
 		color: #16a085;
+		background: #ecf0f1;
+	}
+}
+.btn.red {
+	color: #DB2828;
+	&:hover {
+		color: #DB2828;
+		background: #ecf0f1;
+	}
+}
+.btn.green {
+	color: #27ae60;
+	&:hover {
+		color: #27ae60;
 		background: #ecf0f1;
 	}
 }

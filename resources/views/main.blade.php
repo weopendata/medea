@@ -64,7 +64,10 @@
 <br style="clear:both;">
 <footer>
   <div class="ui container">
-    <a href="/contact" style="float:right">Contact</a>
+    <div style="float:right">
+      <a href="mailto:pdeckers@vub.ac.be">Contact</a> &middot;
+      <a href="/feedback">Feedback</a>
+    </div>
     <a href="https://creativecommons.org/licenses/by-nc/4.0/">
       <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png">
       We gebruiken een open content licentie
