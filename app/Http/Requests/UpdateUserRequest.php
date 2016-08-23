@@ -53,7 +53,21 @@ class UpdateUserRequest extends Request
     public function rules()
     {
         return [
-            //
+            'lastName' => 'required',
+            'firstName' => 'required'
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'lastName.required' => 'De achternaam mag niet leeg zijn',
+            'firstName.required'  => 'De voornaam mag niet leeg zijn',
         ];
     }
 }

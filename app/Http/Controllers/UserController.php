@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
