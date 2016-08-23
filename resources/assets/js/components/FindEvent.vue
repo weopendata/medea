@@ -68,7 +68,7 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-        title = this.find.object.objectCategory
+        var title = this.find.object.objectCategory
 
         if (this.find.object.period) {
           title += ', ' + this.find.object.period
