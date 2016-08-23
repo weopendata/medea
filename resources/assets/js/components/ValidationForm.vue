@@ -1,5 +1,10 @@
 <template>
   <div class="ui form" @submit.prevent="submit" :action="submitAction">
+    <div class="ui warning message visible" v-if="validation.feedback">
+      <p>
+        <b>De vondst werd aangepast door de detectorist. Vink aan welke velden ok zijn, indien alles ok is bevonden kan de vondst goedgekeurd worden en is ze gevalideerd. </b>
+      </p>
+    </div>
     <h3>Vondst valideren</h3>
     <div class="ui two columns doubling grid">
       <div class="column">
@@ -32,7 +37,10 @@
       </button>
     </p>
     <p v-if="!remove&&!valid">
-      <button @click="post('revisie nodig')" class="ui orange big button">Aanpassen</button>
+      <b>De vondst kan alleen goedgekeurd worden als alle velden aangevinkt zijn.</b>
+    </p>
+    <p v-if="!remove&&!valid">
+      <button @click="post('revisie nodig')" class="ui orange big button">Terug naar detectorist sturen</button>
     </p>
     <p v-if="remove">
       <button @click="post('verwijderd')" class="ui red big button">Afwijzen</button>
@@ -75,7 +83,7 @@ export default {
       return Object.values(this.imgRemarks).filter(Boolean).length > 0
     },
     valid () {
-      return !this.remarks && !this.hasImgRemarks && !this.hasFeedback
+      return !this.hasFeedback && !this.hasImgRemarks
     }
   },
   methods: {

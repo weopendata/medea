@@ -25,17 +25,16 @@ class EditFindRequest extends Request
         // or the user is an admin
         $user = $request->user();
 
-        if ($user->hasRole('administrator')) {
-            return true;
-        }
-
         $findId = $request->finds;
 
         $this->find = $finds->expandValues($findId);
 
-        return (($this->find['object']['objectValidationStatus'] == 'in bewerking'
-            || $this->find['object']['objectValidationStatus'] == 'revisie nodig')
-            && $user->id == $this->find['person']['identifier']);
+        if ($user->hasRole('administrator')) {
+            return true;
+        }
+
+        return ($this->find['object']['objectValidationStatus'] == 'revisie nodig'
+           && $user->id == $this->find['person']['identifier']);
     }
 
     public function getFind()

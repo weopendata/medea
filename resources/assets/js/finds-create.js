@@ -221,7 +221,7 @@ new Vue({
       return JSON.parse(this.find.object.feedback).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
     },
     hasFeedback () {
-      return Object.values(this.feedback).filter(Boolean).length > 0
+      return this.validationList.length > 0
     },
     accuracyStep () {
       return Math.max(1, Math.pow(10, Math.floor(Math.log10(this.find.findSpot.location.accuracy) - 1)))
