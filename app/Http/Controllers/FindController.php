@@ -32,104 +32,14 @@ class FindController extends Controller
 
     /**
      * Display a listing of the resource.
-     * @deprecated, is never being used.
+     *
+     * @deprecated, finds in bulk are being requested
+     * by the API Finds controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        /*$filters = $request->all();
-
-        $limit = $request->input('limit', 50);
-        $offset = $request->input('offset', 0);
-
-        $order = $request->input('order', null);
-
-        $order_flow = 'ASC';
-        $order_by = 'findDate';
-
-        if (!empty($order)) {
-            $first_char = substr($order, 0, 1);
-
-            if ($first_char == '-') {
-                $order_flow = 'DESC';
-                $order_by = substr($order, 1, strlen($order));
-            }
-        }
-
-        $validated_status = $request->input('status', 'gevalideerd');
-
-        if (empty($request->user())) {
-            $validated_status = 'gevalideerd';
-        }
-
-        // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
-            $filters['myfinds'] = $request->user()->email;
-            $validated_status = '*';
-        }
-
-        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
-
-        $finds = $result['data'];
-        $count = $result['count'];
-
-        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
-
-        $linkHeader = '';
-
-        $query_string = $this->buildQueryString($request);
-
-        foreach ($pages as $rel => $page_info) {
-            if (!empty($query_string)) {
-                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . ';rel=' . $rel . ';';
-            } else {
-                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
-            }
-        }
-
-        $linkHeader = rtrim($linkHeader, ';');
-
-        // If a user is a researcher or personal finds have been set, return the exact
-        // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
-        if (empty($filters['myfinds'])) {
-            $adjusted_finds = [];
-
-            $user = $request->user();
-
-            foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-                    && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['findSpot']['location']['lat'])) {
-                        $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
-                        $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
-                        $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
-                        $find['findSpot']['location']['accuracy'] = max(1000, $accuracy);
-                    }
-                }
-
-                $adjusted_finds[] = $find;
-            }
-
-            $finds = $adjusted_finds;
-        }
-
-        return response()->view('pages.finds-list', [
-            'finds' => $finds,
-            'filterState' => [
-                'query' => '',
-                'order' => $order,
-                'myfinds' => @$filters['myfinds'],
-                'category' => $request->input('category', '*'),
-                'period' => $request->input('period', '*'),
-                'technique' => $request->input('technique', '*'),
-                'objectMaterial' => $request->input('objectMaterial', '*'),
-                'status' => $validated_status,
-                'showmap' => $request->input('showmap', null)
-            ],
-            'fields' => $this->list_values->getFindTemplate(),
-            'link' => $linkHeader
-        ])->header('Link', $linkHeader);*/
     }
 
     /**
@@ -150,6 +60,7 @@ class FindController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, UserRepository $users)
