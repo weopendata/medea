@@ -80,6 +80,11 @@ class FindApiRequest extends Request
         return true;
     }
 
+    public function rules()
+    {
+        return [];
+    }
+
     /**
      * Get the roles that are allowed to view all
      * unvalidated finds

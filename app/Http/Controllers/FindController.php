@@ -32,12 +32,13 @@ class FindController extends Controller
 
     /**
      * Display a listing of the resource.
+     * @deprecated, is never being used.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        $filters = $request->all();
+        /*$filters = $request->all();
 
         $limit = $request->input('limit', 50);
         $offset = $request->input('offset', 0);
@@ -128,7 +129,7 @@ class FindController extends Controller
             ],
             'fields' => $this->list_values->getFindTemplate(),
             'link' => $linkHeader
-        ])->header('Link', $linkHeader);
+        ])->header('Link', $linkHeader);*/
     }
 
     /**

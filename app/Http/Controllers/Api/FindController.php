@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 use App\Helpers\Pager;
+use App\Http\Requests\FindApiRequest;
 
 /**
  * This controller provides an API on top of FindEvent nodes, but also on Object nodes.
@@ -21,7 +22,7 @@ class FindController extends Controller
         $this->objects = new ObjectRepository();
     }
 
-    public function index(Request $request)
+    public function index(FindApiRequest $request)
     {
         $filters = $request->all();
 
