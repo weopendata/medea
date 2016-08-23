@@ -171,7 +171,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     </div>
   </div>
   <p v-if="!hasImages" style="color:red">
-    Zorg voor minstens 1 foto
+    Zorg voor minstens 2 foto's
   </p>
   <p>
     <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Volgende stap</button>
@@ -298,8 +298,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 <div class="grouped fields">
   <h3>5. Klaar met vondstfiche</h3>
   <div class="field" :class="{error:validation.feedback.objectDescription}">
-    <label>Opmerkingen bij het object</label>
-    <input type="text" v-model="find.object.objectDescription">
+    <label>Beschrijving van het object</label>
+    <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
+    <p>
+      Dit is een vrije beschrijving van het object.
+    </p>
   </div>
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">

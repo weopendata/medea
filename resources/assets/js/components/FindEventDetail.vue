@@ -1,5 +1,11 @@
 <template>
   <article>
+    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.objectValidationStatus == 'revisie nodig'&&(user.email==find.person.email)">
+      <p>
+        De validator heeft enkele opmerking bij validatie.
+      </p>
+      <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
+    </div>
     <div class="card card-center fe-card">
       <div class="card-textual">
         <h1 class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
@@ -63,13 +69,9 @@
               <small>Je krijgt een notificatie wanneer de validator de vonstfiche beoordeeld heeft.</small>
               <p>&nbsp;</p>
             </h1>
-            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">
-              Ofwel is dit een draft, ofwel is er feedback die wijzigingen aan deze vondstfiche gebieden.
-              <p>&nbsp;</p>
-            </div>
           </div>
           <div v-else>
-            <div v-if="find.object.objectValidationStatus == 'in bewerking'">
+            <div v-if="find.object.objectValidationStatus == 'in bewerking'&&!user.validator">
               Deze vondstfiche wordt gevalideerd.
               <p>&nbsp;</p>
             </div>

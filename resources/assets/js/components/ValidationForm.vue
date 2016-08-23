@@ -13,7 +13,7 @@
         <div class="field">
           <div class="ui checkbox">
             <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
-            <label>Deze vondstfiche bevat gevoelige informatie</label>
+            <label>Deze vondstfiche bevat gevoelige informatie (plaats onder embargo)</label>
           </div>
         </div>
       </div>

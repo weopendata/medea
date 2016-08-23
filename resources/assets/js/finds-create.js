@@ -11,6 +11,7 @@ import DimInput from './components/DimInput.vue'
 import FindEvent from './components/FindEvent'
 import PhotoUpload from './components/PhotoUpload'
 import Step from './components/Step'
+import TextareaGrowing from './components/TextareaGrowing'
 
 import Ajax from './mixins/Ajax'
 import Notifications from './mixins/Notifications'
@@ -251,7 +252,7 @@ new Vue({
       return this.hasImages
     },
     hasImages () {
-      return this.find.object.photograph.length
+      return this.find.object.photograph.length > 1
     },
 
     step3valid () {
@@ -427,6 +428,7 @@ new Vue({
     PhotoUpload,
     DimInput,
     FindEvent,
+    TextareaGrowing,
     AddClassificationForm
   }
 });
