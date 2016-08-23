@@ -43,6 +43,11 @@ class HomeController extends Controller
         return view('static.disclaimer');
     }
     
+    public function feedback(Request $request)
+    {
+        return view('static.feedback');
+    }
+    
     public function help(Request $request)
     {
         return view('static.help');

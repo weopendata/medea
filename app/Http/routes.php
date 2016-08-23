@@ -28,6 +28,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('/', 'HomeController@index');
     Route::get('about', 'HomeController@about');
     Route::get('contact', 'HomeController@contact');
+    Route::get('feedback', 'HomeController@feedback');
     Route::get('disclaimer', 'HomeController@disclaimer');
     Route::get('help', 'HomeController@help');
 
