@@ -31,7 +31,7 @@
         @if (Auth::guest())
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
         @else
-        <div class="ui top right pointing dropdown link item">
+        <div class="ui top right pointing dropdown link item item-notif">
           <span class="text"><span class="ui red circular label" v-if="notifUnread" v-text="notifUnread" v-cloak></span> Meldingen</span>
           <i class="dropdown icon"></i>
           <div class="menu">
