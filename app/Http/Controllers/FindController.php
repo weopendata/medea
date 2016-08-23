@@ -15,6 +15,7 @@ use Illuminate\Support\MessageBag;
 use App\Helpers\Pager;
 use App\Http\Middleware\FindApi;
 use App\Http\Requests\EditFindRequest;
+use App\Http\Requests\ShowFindRequest;
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -196,31 +197,13 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $findId
+     * @param ShowFindRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($findId, Request $request)
+    public function show(ShowFindRequest $request)
     {
-        // Get the find
-        $find = $this->finds->expandValues($findId, $request->user());
-
-        if (empty($find)) {
-            abort(404);
-        }
-
-        // Get the logged in user
-        $user = $request->user();
-
-        // Check if the person is allowed to view the find, we need properties
-        // from the find in order to do this, hence the fetch first, validation later
-        // Apply the same middleware logic as done in the finds API request
-        // TODO: get the embargo property of the object
-        $personalFind = !empty($user) && !empty($find['person']['identifier']) && $find['person']['identifier'] == $user->id;
-        $embargo = $find['object']['embargo'];
-
-        $auth = new FindApi();
-        $auth->validateFindRequest($personalFind, $find['object']['objectValidationStatus'], $embargo, $user);
+        $find = $request->getFind();
 
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
         if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
@@ -240,12 +223,14 @@ class FindController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $findId
+     * @param EditFindRequest $requst
+     *
      * @return \Illuminate\Http\Response
      */
-    public function edit($findId, EditFindRequest $request)
+    public function edit(EditFindRequest $request)
     {
-        $find = $this->finds->expandValues($findId, $request->user());
+        $find = $request->getFind();
+        //$find = $this->finds->expandValues($findId, $request->user());
 
         return view('pages.finds-create', [
             'fields' => $this->list_values->getFindTemplate(),

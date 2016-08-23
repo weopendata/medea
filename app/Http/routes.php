@@ -34,10 +34,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('voorwaarden', 'HomeController@voorwaarden');
 
     Route::resource('finds', 'FindController');
-
-    Route::group(['middleware' => 'findapi'], function () {
-        Route::resource('api/finds', 'Api\FindController');
-    });
+    Route::resource('api/finds', 'Api\FindController');
 
     Route::group(['middleware' => 'auth'], function () {
         Route::resource('users', 'UserController');
