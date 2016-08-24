@@ -21,3 +21,14 @@ export const fromDate = function (d) {
   d = new Date(Date.parse(d))
   return d.getDay() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
 }
+
+// Filesize
+export const MAX_FILE_SIZE = 4 * 1024 * 1024
+
+export function toBytes (bytes) {
+  return bytes < 10000
+    ? bytes.toFixed(0) + ' B'
+    : bytes < 1024000
+    ? (bytes / 1024).toPrecision(3) + ' kB'
+    : (bytes / 1024 / 1024).toPrecision(3) + ' MB'
+}

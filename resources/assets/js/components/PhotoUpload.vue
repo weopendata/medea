@@ -3,6 +3,7 @@
     <div class="photo-upload-img" v-for="image in photograph">
       <img :src="image.src" @click="rm($index)">
     </div>
+    <div v-for="msg in warnings" class="ui warning message visible" v-text="msg"></div>
     <div class="photo-upload-cover">
       <div>
         <i class="ui upload big large icon"></i>
@@ -14,47 +15,71 @@
 </template>
 
 <script>
+import {MAX_FILE_SIZE, toBytes} from '../const.js'
+
 export default {
   props: ['photograph'],
+  data () {
+    return {
+      warnings: []
+    }
+  },
   attached () {
     var container = $(this.$el)
     $('.photo-upload-inp', container).on('dragenter dragover', function () {
-      container.addClass('dragging');
+      container.addClass('dragging')
     })
     $('.photo-upload-inp', container).on('drop dragend dragleave', function () {
-      console.log('dra')
-      container.removeClass('dragging');
+      container.removeClass('dragging')
     })
-
   },
   methods: {
+    warn (...msg) {
+      this.warnings.push(msg.join(' '))
+    },
     onFileChange(e) {
-      var files = e.target.files || e.dataTransfer.files;
-      if (!files.length)
-        return;
+      var files = e.target.files || e.dataTransfer.files
+      if (!files.length) {
+        return this.warn('No files selected')
+      }
+
+      // Clear warnings
+      this.warnings = []
+
+      // Validate all selected files
       for (var i = 0; i < files.length; i++) {
-        this.createImage(files[i]);
+        this.createImage(files[i])
       }
     },
     createImage(file) {
-      var image = new Image();
-      var reader = new FileReader();
-      var vm = this;
+      var image = new Image
+      var reader = new FileReader
       if (file.type.substr(0, 5) !== 'image') {
-        return console.warn(file.name, 'has unsupported type:', file.type.substr(0, 5));
+        return this.warn('Dit bestand wordt niet ondersteund:', file.type.substr(0, 5), '\nBestand:', file.name)
       }
-      if (file.size > 1024*1024*4) {
-        return console.warn(file.name, 'is too large:', file.size);
+      if (file.size > MAX_FILE_SIZE) {
+        return this.warn('Dit bestand is te groot:', toBytes(file.size), '(max. ' + toBytes(MAX_FILE_SIZE) + ')', '\nBestand:', file.name)
       }
 
+      // Read file and load it as an image
       reader.onload = (e) => {
-        vm.photograph.push({
-          name: file.name,
-          size: file.size,
-          src: e.target.result
-        });
-      };
-      reader.readAsDataURL(file);
+        image.onload = () => {
+          if (image.width < 400 || image.height < 400) {
+            return this.warn('Resolutie is te klein:', image.width, 'x', image.height, '(min. 400 x 400)', '\nBestand:', file.name)
+          }
+
+          // It's valid
+          this.photograph.push({
+            name: file.name,
+            size: file.size,
+            width: image.width,
+            height: image.height,
+            src: reader.result
+          })
+        }
+        image.src = reader.result;
+      }
+      reader.readAsDataURL(file)
     },
     rm: function (index) {
       if (confirm('Deze foto verwijderen?')) {
@@ -68,7 +93,15 @@ export default {
 <style lang="sass">
   .photo-upload {
     position:relative;
-    overflow: auto;
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .warning {
+      clear: both;
+      white-space: pre-wrap;
+    }
   }
   .photo-upload-cover {
     position: relative;
@@ -101,12 +134,53 @@ export default {
     pointer-events: auto;
   }
   .photo-upload-img {
+    position: relative;
     margin: 0 1rem 1rem 0;
     float: left;
     min-width: 10px;
+    background: #fff;
+    cursor: pointer;
     >img {
       display: block;
       max-height: 160px;
+    }
+    &::before {
+      transition: opacity .3s;
+      content: '';
+      position:absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      background: #f00;
+      pointer-events: none;
+    }
+    &::after {
+      transition: transform .3s;
+      content: "\00d7";
+      position:absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 1em;
+      height: 1em;
+      font-size: 16px;
+      line-height: 1em;
+      border-radius: .5em;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      background: red;
+    }
+    &:hover {
+      >img {
+      }
+      &::before {
+        opacity: .4;
+      }
+      &::after {
+        transform: scale(2);
+      }
     }
   }
 </style>
