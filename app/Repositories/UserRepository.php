@@ -236,6 +236,31 @@ class UserRepository extends BaseRepository
     }
 
     /**
+     * Get all users with saved searches
+     *
+     * @return array
+     */
+    public function getAllWithSavedSearches()
+    {
+        $query = "MATCH (n:person) where has (n.savedSearches) return n";
+
+        $cypherQuery = new Query($this->getClient(), $query);
+
+        $users = [];
+
+        foreach ($cypherQuery->getResultSet() as $row) {
+            $result = $row['n'];
+
+            $users[] = [
+                'user_id' => $result->getId(),
+                'searches' => json_decode($result->savedSearches, true)
+            ];
+        }
+
+        return $users;
+    }
+
+    /**
      * Get the find count for a user
      *
      * @param integer $userId

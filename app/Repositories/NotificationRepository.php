@@ -61,4 +61,27 @@ class NotificationRepository extends EloquentRepository
 
         return $this->update($notificationId, $notification);
     }
+
+    /**
+     * Get the latest notification with a certain uri
+     * for a specific user
+     *
+     * @param string $uri
+     * @param integer $userId
+     *
+     * @return array
+     */
+    public function getLatestByUri($uri, $userId)
+    {
+        $notification = $this->model->whereRaw(
+            "created_at = (select max(created_at) from notifications where user_id= ? AND url= ?)",
+            [$userId, $uri]
+        )->first();
+
+        if (!empty($notification)) {
+            return $notification->toArray();
+        }
+
+        return [];
+    }
 }
