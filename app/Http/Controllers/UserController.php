@@ -38,7 +38,7 @@ class UserController extends Controller
      * @param  int $userId The id of the user to show the profile of
      * @param  ViewUserRequest $request The form request that handles auth
      *
-     * @return
+     * @return View
      */
     public function show(ViewUserRequest $request)
     {
@@ -93,6 +93,7 @@ class UserController extends Controller
      *
      * @param  int $userId
      * @param  DeleteUserRequest $request
+     *
      * @return Response
      */
     public function delete($userId, DeleteUserRequest $request)
@@ -145,6 +146,14 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Administrator can view settings of a certain user
+     *
+     * @param integer $userId
+     * @param Request $request
+     *
+     * @return
+     */
     public function userSettings($userId, Request $request)
     {
         if (empty($request->user()) || !$request->user()->hasRole('administrator')) {

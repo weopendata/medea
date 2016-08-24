@@ -29,7 +29,7 @@
         <circle v-for="f in finds | markable" :center.sync="f.position" :radius.sync="f.accuracy" :options="markerOptions"></circle>
       </map>
       <map-controls :showmap.sync="filterState.showmap"></map-controls>
-    </div> 
+    </div>
     <finds-list :finds="finds" :user="user" :paging="paging"></finds-list>
   </div>
 </div>

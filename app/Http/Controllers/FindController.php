@@ -36,6 +36,7 @@ class FindController extends Controller
      */
     public function index(Request $request)
     {
+        dd($request->user()->getSavedSearches());
         $filters = $request->all();
 
         $limit = $request->input('limit', 50);

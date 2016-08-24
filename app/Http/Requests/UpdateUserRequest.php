@@ -17,24 +17,24 @@ class UpdateUserRequest extends Request
      */
     public function authorize(NormalRequest $request)
     {
-        $user = $request->input();
+        $this->user = $request->input();
 
         // You cannot update or insert an empty user
-        if (empty($user) && !empty($request->user())) {
+        if (empty($this->user) && !empty($request->user())) {
             return false;
         }
 
         $forbiddenFields = ['email'];
 
-        $userFields = array_keys($user);
+        $userFields = array_keys($this->user);
 
         if (count(array_intersect($userFields, $forbiddenFields)) > 0) {
             return false;
         }
 
         // You're allowed to upsert your own profile, except for the administrator role
-        if ($user['id'] == $request->user()->id) {
-            if (!empty($user['personType']) && !$request->user()->hasRole('administrator')) {
+        if ($this->user['id'] == $request->user()->id) {
+            if (!empty($this->user['personType']) && !$request->user()->hasRole('administrator')) {
                 return true;
             }
 
@@ -43,6 +43,22 @@ class UpdateUserRequest extends Request
 
         // Only administrators are allowed to upsert other users
         return $request->user()->hasRole('administrator');
+    }
+
+    /**
+     * Overwrite the validation method
+     * only needs to be triggered when certain properties are set.
+     * This is to enable patch updates.
+     *
+     * @return
+     */
+    public function validate()
+    {
+        $input = request()->input();
+
+        if ($this->validationRequired($input)) {
+            return parent::validate();
+        }
     }
 
     /**
@@ -59,6 +75,25 @@ class UpdateUserRequest extends Request
     }
 
     /**
+     * Process the data and make necessary changes
+     * e.g. create JSON strings from
+     *
+     * @param  string  $key
+     * @param  string|array|null  $default
+     * @return string|array
+     */
+    public function input($key = null, $default = null)
+    {
+        $input = request()->input();
+
+        if (!empty($input['savedSearches'])) {
+            $input['savedSearches'] = json_encode($input['savedSearches']);
+        }
+
+        return data_get($input, $key, $default);
+    }
+
+    /**
      * Get the error messages for the defined validation rules.
      *
      * @return array
@@ -69,5 +104,17 @@ class UpdateUserRequest extends Request
             'lastName.required' => 'De achternaam mag niet leeg zijn',
             'firstName.required'  => 'De voornaam mag niet leeg zijn',
         ];
+    }
+
+    private function validationRequired($input)
+    {
+        // Assuming no nested properties are given in the rules
+        foreach (array_keys($this->rules()) as $property) {
+            if (array_key_exists($property, $input)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -116,6 +116,9 @@ class Person extends Base implements Authenticatable
         ],
         [
             'name' => 'detectoristNumber'
+        ],
+        [
+            'name' => 'savedSearches'
         ]
     ];
 
@@ -133,6 +136,7 @@ class Person extends Base implements Authenticatable
         'research',
         'expertise',
         'detectoristNumber',
+        'savedSearches',
     ];
 
     public function __construct($properties = [])
@@ -341,10 +345,7 @@ class Person extends Base implements Authenticatable
     }
 
     /**
-     * Perform a patch request, person is the
-     * only model that requires this because not all
-     * properties are passed in order to update the model
-     * (e.g. password and other privacy related data points)
+     * Perform a patch request
      *
      * @param array $properties The new properties of the person
      *
@@ -457,6 +458,17 @@ class Person extends Base implements Authenticatable
                 ];
         }
         return ['administrator'];
+    }
+
+    public function getSavedSearches()
+    {
+        $searches = $this->node->getProperty('savedSearches');
+
+        if (!is_null($searches)) {
+            return [];
+        }
+
+        return $searches;
     }
 
     /**
