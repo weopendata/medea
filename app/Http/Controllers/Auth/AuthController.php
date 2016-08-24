@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Person;
 use App\Mailers\AppMailer;
 use Illuminate\Support\MessageBag;
+use PiwikTracker;
 
 class AuthController extends Controller
 {
@@ -68,6 +69,9 @@ class AuthController extends Controller
                 } elseif (Hash::check($password, $user->password)) {
                     Auth::login($user);
 
+                    // Register the event to Piwik
+                    $this->registerPiwikEvent($user->id, 'Login');
+
                     return redirect($this->redirectTo);
                 } else {
                     $message_bag = new MessageBag();
@@ -81,6 +85,15 @@ class AuthController extends Controller
             $message_bag = new MessageBag();
             return redirect()->back()->with('errors', $message_bag->add('email', 'Het emailadres werd niet gevonden.'));
         }
+    }
+
+    public function logout()
+    {
+        $this->registerPiwikEvent(Auth::user()->id, 'Logout');
+
+        Auth::guard($this->getGuard())->logout();
+
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
 
     public function register(Request $request, AppMailer $mailer)
@@ -119,6 +132,24 @@ class AuthController extends Controller
         }
 
         return $input;
+    }
+
+    /**
+     * Register a login/logout event
+     *
+     * @param integer $userId
+     * @param string $action
+     * @return
+     */
+    private function registerPiwikEvent($userId, $action)
+    {
+        if (!empty(env('PIWIK_SITE_ID')) && !empty(env('PIWIK_URI'))) {
+            PiwikTracker::$URL = env('PIWIK_URI');
+            $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
+
+            $piwikTracker->doTrackEvent('User', $action, $userId);
+        }
+
     }
 
     /**

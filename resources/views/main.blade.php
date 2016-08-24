@@ -95,7 +95,7 @@ try {
     medeaUser.registrator = true;
     medeaUser.administrator = true;
   }
-  _paq.push(['setUserId', {!! json_encode(Auth::user()->email) !!}]);
+  _paq.push(['setUserId', {!! json_encode(Auth::user()->id) !!}]);
 } catch (e) {
   window.alert('Something wrong with user profile');
 }
