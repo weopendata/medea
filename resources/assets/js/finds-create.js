@@ -387,6 +387,20 @@ new Vue({
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
+    submitTrack (data, action) {
+      if (data.identifier) {
+        _paq.push(['trackEvent', 'FindEvent', 'Update', data.identifier]);
+      } else {
+        _paq.push(['trackEvent', 'FindEvent', 'Create', 0]);
+      }
+      if (data.object.objectValidationStatus == 'in bewerking') {
+        _paq.push(['trackEvent', 'FindEvent', 'Submit', data.identifier || 0]);
+      } else if (data.object.objectValidationStatus == 'revisie nodig') {
+        _paq.push(['trackEvent', 'FindEvent', 'Draft', data.identifier || 0]);
+      } else {
+        _paq.push(['trackEvent', 'FindEvent', 'InvalidStatus', data.identifier || 0]);
+      }
+    },
     submitSuccess () {
       window.location.href = this.redirectTo
     }
