@@ -69,8 +69,9 @@ class UpdateUserRequest extends Request
     public function rules()
     {
         return [
-            'lastName' => 'required',
-            'firstName' => 'required'
+            'lastName' => 'min:2',
+            'firstName' => 'min:2',
+            'savedSearches' => 'jsonMax:5'
         ];
     }
 
@@ -101,8 +102,9 @@ class UpdateUserRequest extends Request
     public function messages()
     {
         return [
-            'lastName.required' => 'De achternaam mag niet leeg zijn',
-            'firstName.required'  => 'De voornaam mag niet leeg zijn',
+            'lastName.min' => 'De achternaam moet langer zijn dan 1 letter.',
+            'firstName.min'  => 'De voornaam moet langer zijn dan 1 letter.',
+            'savedSearches.jsonMax' => 'Het aantal opgeslagen zoekfilters mag maximum 5 zijn.'
         ];
     }
 
