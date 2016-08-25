@@ -9,7 +9,7 @@
       </form>
     </div>
     
-    <h3 class="facet-title">Snelle filters</h3>
+    <h3 class="facet-title">Favorieten</h3>
     <a href="#" class="facet-a" :class="{active:model.status=='in bewerking'}" @click.prevent="toggle('status', 'in bewerking')" v-if="$root.user.validator">Te valideren vondsten</a>
     <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggleMyfinds" v-if="$root.user.email">Mijn vondsten</a>
     <a href="#" class="facet-a" @click.prevent="restore(filter)" v-for="filter in saved" v-text="filter.name"></a>

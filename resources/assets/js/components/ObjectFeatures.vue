@@ -1,16 +1,16 @@
 <template>
-  <h4 v-if="detail=='all'">Vondst</h4>
-  <dl v-if="detail=='all'">  
+  <h4>Vondst</h4>
+  <dl>  
     <dt-check v-if="validating" prop="findDate" data-tooltip="Duid aan wat gewijzigd moet worden" data-position="top left" data-green="" id="dt-check-help"></dt-check>
     <dt>Datum</dt>
     <dd>{{find.findDate | fromDate}}</dd>
   </dl>
-  <dl v-if="find.findSpot&&detail=='all'">
+  <dl v-if="find.findSpot">
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address.locality}}&nbsp;</dd>
   </dl>
-  <dl v-if="find.finder&&detail=='all'">
+  <dl v-if="find.finder">
     <dt-check v-if="validating" prop="finder.name"></dt-check>
     <dt>Vinder</dt>
     <dd>{{find.finder.name||'Niet zichtbaar'}}</dd>
@@ -19,8 +19,8 @@
     <dt>Status</dt>
     <dd>{{find.object.objectValidationStatus}}</dd>
   </dl>
-  <h4 v-if="detail=='all'">Object</h4>
-  <dl v-if="find.object.objectDescription&&detail=='all'">
+  <h4>Object</h4>
+  <dl v-if="find.object.objectDescription">
     <dt-check v-if="validating" prop="objectDescription"></dt-check>
     <dt>Beschrijving</dt>
     <dd>{{find.object.objectDescription}}</dd>
@@ -30,7 +30,7 @@
     <dt>Opschrift</dt>
     <dd>{{find.object.objectInscription.objectInscriptionNote}}</dd>
   </dl>
-  <dl v-if="find.object.dimensions && find.object.dimensions.length && detail=='all'">
+  <dl v-if="find.object.dimensions && find.object.dimensions.length">
     <dt-check v-if="validating" prop="dimensions"></dt-check>
     <dt>Dimensies</dt>
     <dd v-for="dim in find.object.dimensions">{{dim.dimensionType}}: {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
@@ -60,6 +60,15 @@
     <dt>Periode</dt>
     <dd>{{find.object.period}}</dd>
   </dl>
+  <h4>Details</h4>
+  <dl v-if="find.updated_at!==find.created_at">
+    <dt>Gewijzigd op</dt>
+    <dd>{{find.updated_at | fromDate}}</dd>
+  </dl>
+  <dl>
+    <dt>Toegevoegd op</dt>
+    <dd>{{find.created_at | fromDate}}</dd>
+  </dl>
 </template>
 
 <script>
@@ -67,7 +76,7 @@ import DtCheck from './DtCheck.vue'
 import {fromDate} from '../const.js'
 
 export default {
-  props: ['find', 'detail', 'feedback', 'validating'],
+  props: ['find', 'feedback', 'validating'],
   attached () {
     if (this.validating) {
       setTimeout(function () {
