@@ -8,7 +8,7 @@
     </div>
     <div class="card card-center fe-card">
       <div class="card-textual">
-        <h1 class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
+        <h1 class="card-title">{{findTitle}}</h1>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
             <object-features :find="find" :feedback.sync="feedback" :validating="validating"></object-features>
@@ -113,6 +113,18 @@ export default {
     },
     editable () {
       return this.user.email === this.find.person.email || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
+    },
+    findTitle () {
+      // Not showing undefined and onbekend in title
+      var title = [
+        this.find.object.objectCategory,
+        this.find.object.period,
+        this.find.object.objectMaterial
+      ].filter(f => f && f !== 'onbekend').join(', ')
+
+      title += ' (ID-' + this.find.identifier + ')'
+
+      return title;
     }
   },
   methods: {

@@ -122,7 +122,7 @@ class Object extends Base
         parent::__construct($properties);
 
         if (!empty($properties)) {
-            $this->addFtsField($properties);
+            $this->updateFtsField($properties);
         }
     }
 
@@ -133,7 +133,7 @@ class Object extends Base
      *
      * @return void
      */
-    private function addFtsField($properties)
+    private function updateFtsField($properties)
     {
         $fulltextProperties = [
             'objectCategory',
@@ -150,6 +150,15 @@ class Object extends Base
         }
 
         $this->getNode()->setProperty('fulltext_description', $description)->save();
+    }
+
+    public function update($properties)
+    {
+        parent::update($properties);
+
+        if (!empty($properties)) {
+            $this->updateFtsField($properties);
+        }
     }
 
     /**
