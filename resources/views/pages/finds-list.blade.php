@@ -23,10 +23,9 @@
         <input type="checkbox" v-model="filterState.showmap"> Kaart
       </label>
     </div>
-    <div v-if="filterState.showmap" class="card mapview" v-cloak>
+    <div v-if="filterState.showmap" id="mapview" class="card mapview" v-cloak>
       <map :center.sync="map.center" :zoom.sync="map.zoom">
-        <marker v-for="f in finds | markable" :position.sync="f.position"></marker>
-        <circle v-for="f in finds | markable" :center.sync="f.position" :radius.sync="f.accuracy" :options="markerOptions"></circle>
+        <rectangle v-for="f in finds | markable" :bounds="f.bounds" :options="markerOptions"></circle>
       </map>
       <map-controls :showmap.sync="filterState.showmap"></map-controls>
     </div>

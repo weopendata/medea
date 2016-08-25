@@ -3,7 +3,7 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
-import {load, Map, Marker, Circle} from 'vue-google-maps'
+import {load, Map, Marker, Rectangle} from 'vue-google-maps'
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
 import DevBar from './components/DevBar'
 
@@ -22,7 +22,7 @@ new Vue({
     MapControls,
     Map,
     Marker,
-    Circle
+    Rectangle
   },
   data () {
     return {
@@ -35,9 +35,8 @@ new Vue({
         zoom: 8
       },
       markerOptions: {
-        fillColor: '#FF6600',
-        fillOpacity: 0.3,
-        strokeWeight: 0 
+        fillOpacity: 0.1,
+        strokeWeight: 1
       },
       loaded: false
     }
@@ -130,7 +129,13 @@ new Vue({
         .filter(f => f.findSpot && f.findSpot.location && f.findSpot.location.lat)
         .map(f => ({
           accuracy: f.findSpot.location.accuracy || 1,
-          position: {lat: f.findSpot.location.lat, lng: f.findSpot.location.lng}
+          position: {lat: f.findSpot.location.lat, lng: f.findSpot.location.lng},
+          bounds: {
+            north: f.findSpot.location.lat + 20 / f.findSpot.location.accuracy,
+            south: f.findSpot.location.lat - 20 / f.findSpot.location.accuracy,
+            east: f.findSpot.location.lng + 20 / f.findSpot.location.accuracy,
+            west: f.findSpot.location.lng - 20 / f.findSpot.location.accuracy
+          }
         }))
     }
   },

@@ -6,7 +6,7 @@
     <div class="card-content">
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
-        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
+        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</a></span>
         <br>Status: {{ find.object.objectValidationStatus }}
       </div>
       <div class="card-bar">
@@ -24,10 +24,10 @@
         <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.object.objectValidationStatus == 'gevalideerd'">
           Bekijken
         </a>
-        <button class="btn" @click="mapFocus" v-if="hasLocation">
+        <a class="btn" href="#mapview" @click="mapFocus" v-if="hasLocation">
           <i class="marker icon"></i>
           Op de kaart
-        </button>
+        </a>
         <a class="btn" :href="uriEdit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
           <i class="pencil icon"></i>
           Bewerken
