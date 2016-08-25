@@ -165,6 +165,8 @@ class FindRepository extends BaseRepository
 
         if (!empty($email)) {
             $initialStatement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
+            $withStatement .= ", person";
+
             if ($validationStatus == '*') {
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
             } else {
@@ -172,7 +174,7 @@ class FindRepository extends BaseRepository
                 $variables['validationStatus'] = $validationStatus;
             }
             // Can be deleted
-            $withStatement = "find, validation";
+            //$withStatement .= "find, validation";
         }
 
         $matchstatement = implode(', ', $matchStatements);
