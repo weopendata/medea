@@ -67,7 +67,7 @@ class FindController extends Controller
             $validated_status = '*';
         }
 
-        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+        $result = $thisis->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
 
         $finds = $result['data'];
         $count = $result['count'];
@@ -99,8 +99,8 @@ class FindController extends Controller
                 if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
                     && !in_array('onderzoeker', $user->getRoles())) {
                     if (!empty($find['findSpot']['location']['lat'])) {
-                        $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
-                        $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+                        $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
+                        $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
                         $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
                         $find['findSpot']['location']['accuracy'] = max(1000, $accuracy);
                     }
