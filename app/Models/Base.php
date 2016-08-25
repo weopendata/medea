@@ -657,8 +657,16 @@ class Base
             }
         }
 
-        // Get the data properties
-        foreach ($this->properties as $property) {
+        // Get the data properties 
+        $nodeProperties = array_merge(
+            $this->properties, 
+            [
+                ['name' => 'created_at'], 
+                ['name' => 'updated_at']
+            ]
+        );
+
+        foreach ($nodeProperties as $property) {
             $val = $this->node->getProperty($property['name']);
 
             if (!is_null($val)) {

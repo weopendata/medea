@@ -7,6 +7,7 @@
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
         <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
+        <br>Status: {{ find.object.objectValidationStatus }}
       </div>
       <div class="card-bar">
         <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
@@ -68,19 +69,16 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-        var title = this.find.object.objectCategory
+      // Not showing undefined and onbekend in title
+      var title = [
+        this.find.object.objectCategory,
+        this.find.object.period,
+        this.find.object.objectMaterial
+      ].filter(f => f && f !== 'onbekend').join(', ')
 
-        if (this.find.object.period) {
-          title += ', ' + this.find.object.period
-        }
+      title += ' (ID-' + this.find.identifier + ')'
 
-        if (this.find.object.objectMaterial) {
-          title += ', ' + this.find.object.objectMaterial
-        }
-
-        title += ' (ID-' + this.find.identifier + ')'
-
-        return title;
+      return title;
     }
   },
   methods: {

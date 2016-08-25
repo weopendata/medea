@@ -63,6 +63,8 @@ export default {
     }
   },
   ready () {
-    setTimeout(() => this.notifFetch(), 1000)
+    if (this.user) {
+      setTimeout(() => this.notifFetch(), 1000)
+    }
   }
 }

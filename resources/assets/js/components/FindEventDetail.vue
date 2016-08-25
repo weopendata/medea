@@ -11,15 +11,14 @@
         <h1 class="card-title">#{{find.identifier}} {{find.object.objectCategory}} {{find.object.period}} {{find.object.objectMaterial}}</h1>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
-            <object-features :find="find" detail="all" :feedback.sync="feedback" :validating="validating"></object-features>
+            <object-features :find="find" :feedback.sync="feedback" :validating="validating"></object-features>
           </div>
-          <div class="column" :class="{'fe-validating':validating}">
-            <div class="fe-header">
-              <div class="fe-imglist">
-                <div class="img" v-for="image in find.object.photograph">
-                  <dt-check v-if="validating" :prop="image.identifier" @change="imgRemark($index)"></dt-check>
-                  <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
-                </div>
+          <div class="column scrolling" :class="{'fe-validating':validating}">
+            <div class="fe-imglist">
+              <div class="fe-img" v-for="image in find.object.photograph">
+                <dt-check v-if="validating" :prop="image.identifier" @change="imgRemark($index)"></dt-check>
+                <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
+                <i class="magnify icon"></i>
               </div>
             </div>
           </div>
