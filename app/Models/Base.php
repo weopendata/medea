@@ -657,11 +657,11 @@ class Base
             }
         }
 
-        // Get the data properties 
+        // Get the data properties
         $nodeProperties = array_merge(
-            $this->properties, 
+            $this->properties,
             [
-                ['name' => 'created_at'], 
+                ['name' => 'created_at'],
                 ['name' => 'updated_at']
             ]
         );
@@ -737,11 +737,6 @@ class Base
         }
 
         return $data;
-    }
-
-    public function getId()
-    {
-        return $this->node->getId();
     }
 
     /**

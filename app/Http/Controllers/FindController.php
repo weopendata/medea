@@ -15,6 +15,7 @@ use App\Helpers\Pager;
 use App\Http\Middleware\FindApi;
 use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\ShowFindRequest;
+use App\Models\Person;
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -218,14 +219,31 @@ class FindController extends Controller
         if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
             && !in_array('onderzoeker', $user->getRoles())) {
             if (!empty($find['findSpot']['location']['lat'])) {
-                $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
-                $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
+                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
+            }
+        }
+
+        $users = new UserRepository();
+
+        // Check if the user of the find allows their name to be displayed on the find details
+        $findUser = $users->getById($find['person']['identifier']);
+
+        $publicUserInfo = [];
+
+        if (!empty($findUser)) {
+            $person = new Person();
+            $person->setNode($findUser);
+
+            if ($person->showNameOnPublicFinds) {
+                $publicUserInfo['name'] = $person->lastName . ' ' . $person->firstName;
             }
         }
 
         return view('pages.finds-detail', [
             'fields' => $this->list_values->getFindTemplate(),
-            'find' => $find
+            'find' => $find,
+            'publicUserInfo' => $publicUserInfo
         ]);
     }
 

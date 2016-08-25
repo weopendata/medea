@@ -11,9 +11,9 @@
 				<th>Vondsten</th>
 			</tr>
 		</thead>
-		@foreach ($users as $user)         
+		@foreach ($users as $user)
 		<tr>
-			<td><a href="/users/{{ $user['id'] }}">{{ $user['firstName'] }} {{ $user['lastName'] }}</a></td>
+			<td><a href="/persons/{{ $user['id'] }}">{{ $user['firstName'] }} {{ $user['lastName'] }}</a></td>
 			<td>{{ $user['finds'] }}</td>
 		</tr>
 		@endforeach

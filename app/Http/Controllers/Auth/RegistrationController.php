@@ -32,7 +32,7 @@ class RegistrationController extends Controller
             $mailer->sendRegistrationConfirmation($person);
         }
 
-        return redirect('/users');
+        return redirect('/persons');
     }
 
     /**
@@ -53,6 +53,6 @@ class RegistrationController extends Controller
             $mailer->sendRegistrationDenial($person);
         }
 
-        return redirect('/users');
+        return redirect('/persons');
     }
 }

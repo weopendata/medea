@@ -21,7 +21,7 @@
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
       @if (!Auth::guest())
-      <a href="/users" class="item {{ Request::is('users') ? 'active' : '' }}">Leden</a>
+      <a href="/persons" class="item {{ Request::is('users') ? 'active' : '' }}">Leden</a>
       <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
       @endif
 
@@ -46,7 +46,7 @@
           <i class="dropdown icon"></i>
           <div class="menu">
             <div class="header">Profiel</div>
-            <a href="/users/{{ Auth::user()->id }}" class="item">Profiel bekijken</a>
+            <a href="/persons/{{ Auth::user()->id }}" class="item">Profiel bekijken</a>
             <a href="/settings" class="item">Profiel aanpassen</a>
             <div class="divider"></div>
             <a href="/settings" class="item">Instellingen</a>

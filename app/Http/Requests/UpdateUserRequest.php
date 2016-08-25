@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Http\Request as NormalRequest;
+use Illuminate\Http\Request as HttpRequest;
 use App\Http\Requests\Request;
 
 /**
@@ -15,26 +15,26 @@ class UpdateUserRequest extends Request
      *
      * @return bool
      */
-    public function authorize(NormalRequest $request)
+    public function authorize(HttpRequest $request)
     {
-        $this->user = $request->input();
+        $this->userInput = $request->input();
 
         // You cannot update or insert an empty user
-        if (empty($this->user) && !empty($request->user())) {
+        if (empty($this->userInput) && !empty($request->user())) {
             return false;
         }
 
         $forbiddenFields = ['email'];
 
-        $userFields = array_keys($this->user);
+        $userFields = array_keys($this->userInput);
 
         if (count(array_intersect($userFields, $forbiddenFields)) > 0) {
             return false;
         }
 
         // You're allowed to upsert your own profile, except for the administrator role
-        if ($this->user['id'] == $request->user()->id) {
-            if (!empty($this->user['personType']) && !$request->user()->hasRole('administrator')) {
+        if ($this->userInput['id'] == $request->user()->id) {
+            if (!empty($this->userInput['personType']) && !$request->user()->hasRole('administrator')) {
                 return true;
             }
 

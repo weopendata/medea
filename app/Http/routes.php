@@ -38,7 +38,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::resource('api/finds', 'Api\FindController');
 
     Route::group(['middleware' => 'auth'], function () {
-        Route::resource('users', 'UserController');
+        Route::resource('persons', 'UserController');
 
         Route::get('api/statistics', 'Api\StatisticsController@index');
         Route::get('api/notifications', 'Api\NotificationController@index');

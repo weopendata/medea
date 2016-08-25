@@ -141,9 +141,9 @@ class Person extends Base implements Authenticatable
 
     public function __construct($properties = [])
     {
-        parent::__construct($properties);
-
         if (!empty($properties)) {
+            parent::__construct($properties);
+
             $this->node->setProperty('token', str_random(40));
             $this->node->setProperty('password', Hash::make($properties['password']));
             $this->node->save();
@@ -457,6 +457,7 @@ class Person extends Base implements Authenticatable
                     'vondstexpert',
                 ];
         }
+
         return ['administrator'];
     }
 
