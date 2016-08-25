@@ -67,7 +67,7 @@ class FindController extends Controller
             $validated_status = '*';
         }
 
-        $result = $thisis->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
 
         $finds = $result['data'];
         $count = $result['count'];
@@ -102,7 +102,7 @@ class FindController extends Controller
                         $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
                         $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
                         $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
-                        $find['findSpot']['location']['accuracy'] = max(1000, $accuracy);
+                        $find['findSpot']['location']['accuracy'] = max(2000, $accuracy);
                     }
                 }
 
