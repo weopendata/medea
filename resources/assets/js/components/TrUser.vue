@@ -23,7 +23,7 @@ export default {
 			return obj
 		},
 		uri () {
-			return '/user/' + this.user.id
+			return '/persons/' + this.user.id
 		}
 	},
 	methods: {
@@ -42,7 +42,7 @@ export default {
 		},
 		verify () {
 			this.user.verified = !this.user.verified
-			this.$http.post('/user/' + this.user.id, {
+			this.$http.post('/persons/' + this.user.id, {
 				_method: 'PUT',
 				id: this.user.id,
 				verified: this.user.verified

@@ -98,7 +98,7 @@ class ObjectRepository extends BaseRepository
         if ($results->count() > 0 && !empty($results->current())) {
             $person = $results->current()->current();
 
-            return $person['id'];
+            return $person->getId();
         } else {
             return null;
         }

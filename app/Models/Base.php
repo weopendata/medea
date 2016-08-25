@@ -528,6 +528,11 @@ class Base
         return $node;
     }
 
+    public function getId()
+    {
+        return $this->node->getId();
+    }
+
     /**
      * Recursively retrieve the data out of related nodes
      *

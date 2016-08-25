@@ -17,7 +17,7 @@ class ViewUserRequest extends Request
     public function authorize(HttpRequest $request, UserRepository $users)
     {
         // Get the id of the user from the route
-        $userId = $request->users;
+        $userId = $request->persons;
 
         $user = $users->getById($userId);
 

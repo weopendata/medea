@@ -17,24 +17,24 @@ class UpdateUserRequest extends Request
      */
     public function authorize(HttpRequest $request)
     {
-        $this->userInput = $request->input();
+        $userInput = $request->input();
 
         // You cannot update or insert an empty user
-        if (empty($this->userInput) && !empty($request->user())) {
+        if (empty($userInput) && !empty($request->user())) {
             return false;
         }
 
         $forbiddenFields = ['email'];
 
-        $userFields = array_keys($this->userInput);
+        $userFields = array_keys($userInput);
 
         if (count(array_intersect($userFields, $forbiddenFields)) > 0) {
             return false;
         }
 
         // You're allowed to upsert your own profile, except for the administrator role
-        if ($this->userInput['id'] == $request->user()->id) {
-            if (!empty($this->userInput['personType']) && !$request->user()->hasRole('administrator')) {
+        if ($userInput['id'] == $request->user()->id) {
+            if (!empty($userInput['personType']) && !$request->user()->hasRole('administrator')) {
                 return true;
             }
 

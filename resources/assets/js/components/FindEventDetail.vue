@@ -43,7 +43,7 @@
             <div style="max-width: 900px;margin: 0 auto 1em;">
               <h2>
                 Classificaties
-                <small>Deze vondst werd {{find.object.productionEvent.productionClassification&&find.object.productionEvent.productionClassification.length}} keer geclassicifeerd.</small>
+                <small v-if="find.object.productionEvent.productionClassification">Deze vondst werd {{find.object.productionEvent.productionClassification.length}} keer geclassicifeerd.</small>
               </h2>
             </div>
             <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
