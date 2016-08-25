@@ -98,16 +98,8 @@ class Base
             $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
             $this->node->setProperty('name', static::$NODE_NAME)->save();
 
-            // Set value properties for the node
-            foreach ($this->properties as $property_config) {
-                $property_name = $property_config['name'];
-
-                if (!empty($properties[$property_name])) {
-                    $this->node->setProperty($property_name, $properties[$property_name]);
-                } elseif (array_key_exists('default_value', $property_config)) {
-                    $this->node->setProperty($property_name, $property_config['default_value']);
-                }
-            }
+            // Set the properties of the model
+            $this->setProperties($properties);
 
             $this->node->save();
 
@@ -212,20 +204,7 @@ class Base
         if (!empty($properties)) {
             $client = self::getClient();
 
-            // Set value properties for the node
-            foreach ($this->properties as $property_config) {
-                $property_name = $property_config['name'];
-
-                if (!empty($properties[$property_name])) {
-                    $this->node->setProperty($property_name, $properties[$property_name]);
-                } elseif (array_key_exists('default_value', $property_config)) {
-                    $this->node->setProperty($property_name, $property_config['default_value']);
-                } else {
-                    $this->node->setProperty($property_name, null);
-                }
-            }
-
-            $this->node->save();
+            $this->setProperties($properties);
 
             // Create related models through recursion
             foreach ($this->relatedModels as $relationshipName => $config) {
@@ -357,6 +336,31 @@ class Base
         $this->node->save();
 
         return $this->node;
+    }
+
+    /**
+     * Set the properties of the model
+     *
+     * @param array $properties The full list of properties for the model
+     *
+     * @return void
+     */
+    protected function setProperties($properties)
+    {
+        // Set value properties for the node
+        foreach ($this->properties as $propertyConfig) {
+            $propertyName = $propertyConfig['name'];
+
+            if (!empty($properties[$propertyName])) {
+                $this->node->setProperty($propertyName, $properties[$propertyName]);
+            } elseif (array_key_exists('default_value', $propertyConfig)) {
+                $this->node->setProperty($propertyName, $propertyConfig['default_value']);
+            } else {
+                $this->node->setProperty($propertyName, '');
+            }
+        }
+
+        $this->node->save();
     }
 
     /**

@@ -1,6 +1,6 @@
 <template>
   <h4>Vondst</h4>
-  <dl>  
+  <dl>
     <dt-check v-if="validating" prop="findDate" data-tooltip="Duid aan wat gewijzigd moet worden" data-position="top left" data-green="" id="dt-check-help"></dt-check>
     <dt>Datum</dt>
     <dd>{{find.findDate | fromDate}}</dd>
@@ -8,7 +8,7 @@
   <dl v-if="find.findSpot">
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
-    <dd>{{find.findSpot.location.address.locality}}&nbsp;</dd>
+    <dd>{{find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
   </dl>
   <dl v-if="find.finder">
     <dt-check v-if="validating" prop="finder.name"></dt-check>

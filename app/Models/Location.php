@@ -5,6 +5,7 @@ namespace App\Models;
 class Location extends Base
 {
     public static $NODE_TYPE = 'E53';
+
     public static $NODE_NAME = 'location';
 
     protected $implicitModels = [
@@ -62,6 +63,28 @@ class Location extends Base
         $this->node->relateTo($id_node, 'P1')->save();
     }
 
+    /**
+     * Override the setProperties in order to add the virtual grid
+     * coordinates by rounding them up to achieve a certain accuracy.
+     *
+     * @param array $properties
+     *
+     * @return void
+     */
+    public function setProperties($properties)
+    {
+        parent::setProperties($properties);
+
+        $lat = round($properties['lat'], 1);
+        $lng = round($properties['lng'], 1);
+
+        $grid = $lat . ',' . $lng;
+
+        $this->node->setProperty('geoGrid', $grid);
+
+        $this->node->save();
+    }
+
     public function createLat($lat)
     {
         $lat_node = $this->createValueNode('lat', ['E47', 'locationSpatialCoordinate', $this->getGeneralId()], $lat);
@@ -88,22 +111,22 @@ class Location extends Base
     {
         $address_properties = [
             [
-                'key' => 'street',
+                'key' => 'locationAddressStreet',
                 'name' => 'locationAddressStreet',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'number',
+                'key' => 'locationAddressNumber',
                 'name' => 'locationAddressNumber',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'postalCode',
+                'key' => 'locationAddressPostalCode',
                 'name' => 'locationAddressPostalCode',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'locality',
+                'key' => 'locationAddressLocality',
                 'name' => 'locationAddressLocality',
                 'node_type' => 'E45'
             ]
@@ -122,8 +145,8 @@ class Location extends Base
         foreach ($address_properties as $address_property) {
             if (!empty($address[$address_property['key']])) {
                 $node = $this->createValueNode(
-                    $address_property['key'],
-                    [$address_property['key'], $address_property['node_type']],
+                    $address_property['name'],
+                    [$address_property['name'], $address_property['node_type']],
                     $address[$address_property['key']]
                 );
 

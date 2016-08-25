@@ -86,7 +86,7 @@ function toTechnique (tech) {
 }
 
 function fromTreatment (tech) {
-  return tech && tech.modificationTechnique && tech.modificationTechnique.modificationTechniqueType 
+  return tech && tech.modificationTechnique && tech.modificationTechnique.modificationTechniqueType
 }
 function toTreatment (tech) {
   return tech && {
@@ -108,10 +108,10 @@ new Vue({
         findSpotType: '',
         location: {
           address: {
-            street: null,
-            number: null,
-            locality: null,
-            postalCode: null
+            locationAddressStreet: null,
+            locationAddressNumber: null,
+            locationAddressLocality: null,
+            locationAddressPostalCode: null
           },
           accuracy: 1,
           lat: null,
@@ -245,7 +245,7 @@ new Vue({
       return this.find.findSpot.location.lat && this.find.findSpot.location.lng
     },
     hasLocation () {
-      return this.find.findSpot.findSpotTitle || this.find.findSpot.location.address.locality || this.find.findSpot.location.address.street || this.find.findSpot.location.address.line
+      return this.find.findSpot.findSpotTitle || this.find.findSpot.location.address.locationAddressLocality || this.find.findSpot.location.address.locationAddressStreet || this.find.findSpot.location.address.line
     },
 
     step2valid () {
@@ -297,10 +297,10 @@ new Vue({
           return console.warn('reverse geocoding: no results', status)
         }
         var location = getCities(results)
-        self.find.findSpot.location.address.street = location.street
-        self.find.findSpot.location.address.number = location.number
-        self.find.findSpot.location.address.locality = location.locality
-        self.find.findSpot.location.address.postalCode = location.postalCode
+        self.find.findSpot.location.address.locationAddressStreet = location.street
+        self.find.findSpot.location.address.locationAddressNumber = location.number
+        self.find.findSpot.location.address.locationAddressLocality = location.locality
+        self.find.findSpot.location.address.locationAddressPostalCode = location.postalCode
 
         // Center map
         self.map.center = {
@@ -337,9 +337,9 @@ new Vue({
           return console.warn('no results', status)
         }
         var location = getCities(results)
-        self.find.findSpot.location.address.street = location.street
-        self.find.findSpot.location.address.locality = location.locality
-        self.find.findSpot.location.address.postalCode = location.postalCode
+        self.find.findSpot.location.address.locationAddressStreet = location.street
+        self.find.findSpot.location.address.locationAddressLocality = location.locality
+        self.find.findSpot.location.address.locationAddressPostalCode = location.postalCode
 
         self.marker.visible = true
         self.latlng = self.map.center = {

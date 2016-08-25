@@ -89,26 +89,26 @@
   <div class="fields" v-if="show.address">
     <div class="six wide field">
       <label>Straat</label>
-      <input type="text" v-model="find.findSpot.location.address.street" id="street">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressStreet" id="street">
     </div>
     <div class="two wide field">
       <label>Nummer</label>
-      <input type="number" v-model="find.findSpot.location.address.number">
+      <input type="number" v-model="find.findSpot.location.address.locationAddressNumber">
     </div>
   </div>
   <div class="fields">
     <div class="two wide field" v-if="show.address">
       <label>Postcode</label>
-      <input type="text" v-model="find.findSpot.location.address.postalCode">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressPostalCode">
     </div>
     <div class="six wide required field" v-bind:class="{six:show.address,eight:!show.address}">
       <label v-text="show.address||show.map?'Stad/Gemeente':'Straat en/of Gemeente/stad'">Stad/Gemeente</label>
-      <input type="text" v-model="find.findSpot.location.address.locality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressLocality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
     <div class="eight wide field">
       <label>&nbsp;</label>
       <button v-if="show.map" @click.prevent="showOnMap" class="ui button">Omzetten naar coördinaten</button>
-      <button v-else @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locality}">
+      <button v-else @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locationAddressLocality}">
         Aanduiden op kaart
       </button>
     </div>
