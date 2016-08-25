@@ -1,6 +1,5 @@
 import Vue from 'vue/dist/vue.min.js'
 import VueResource from 'vue-resource/dist/vue-resource.min.js'
-import DevBar from './components/DevBar'
 import TextareaGrowing from './components/TextareaGrowing'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
@@ -20,7 +19,7 @@ new Vue({
         validator: false,
         detectorist: false,
         onderzoeker: false,
-        expert: false,
+        vondstexpert: false,
         registrator: false
       },
       reg: {
@@ -113,8 +112,7 @@ new Vue({
   el: 'body',
   mixins: [Ajax, Notifications],
   components: {
-    TextareaGrowing,
-    DevBar
+    TextareaGrowing
   }
 })
 
