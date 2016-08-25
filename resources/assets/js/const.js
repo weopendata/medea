@@ -1,7 +1,7 @@
 export const EMPTY_CLS = {
 	productionClassificationCulturePeople: '',
 	productionClassificationDescription: '',
-	productionClassificationNation: '',
+	productionClassificationRulerNation: '',
 	productionClassificationPeriod: '',
 	productionClassificationType: '',
 	startDate: '',

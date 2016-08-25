@@ -22,7 +22,7 @@ export default {
   },
   computed: {
     submittable () {
-      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationNation || this.cls.productionClassificationDescription
+      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'

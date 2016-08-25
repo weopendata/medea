@@ -14,7 +14,7 @@
       </div>
       <div class="field">
         <label>Heerser</label>
-        <input type="text" v-model="cls.productionClassificationNation" placeholder="(Alleen voor munten)" list="nations">
+        <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
       </div>
     </div>
     <div class="two fields">
