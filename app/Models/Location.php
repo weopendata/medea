@@ -46,6 +46,12 @@ class Location extends Base
     protected $relatedModels = [
     ];
 
+    protected $properties = [
+        [
+            'name' => 'accuracy'
+        ]
+    ];
+
     public function save()
     {
         parent::save();
