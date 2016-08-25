@@ -43,8 +43,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P42',
             'config' => [
-                'key' => 'productionClassificationPeriod',
-                'name' => 'productionClassificationPeriod',
+                'key' => 'productionClassificationCentury',
+                'name' => 'productionClassificationCentury',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
@@ -52,8 +52,17 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P42',
             'config' => [
-                'key' => 'productionClassificationNation',
-                'name' => 'productionClassificationNation',
+                'key' => 'productionClassificationCulturePeople',
+                'name' => 'productionClassificationCulturePeople',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
+        ],
+        [
+            'relationship' => 'P42',
+            'config' => [
+                'key' => 'productionClassificationRulerNation',
+                'name' => 'productionClassificationRulerNation',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]

@@ -70,6 +70,7 @@ class ListValueRepository
             'classification' => [
                 'period' => 'ProductionClassificationPeriodAuthorityList',
                 'type' => 'ProductionClassificationTypeAuthorityList',
+                'culturepeople' => 'ProductionClassificationCultureAuthorityList'
             ],
 
             'collection' => [

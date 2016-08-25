@@ -24,6 +24,7 @@ class ListValueSeeder extends Seeder
         "ProductionClassificationTypeAuthorityList",
         "ProductionClassificationCenturyAuthorityList",
         "ProductionClassificationRulerNationAuthorityList",
+        "ProductionClassificationCultureAuthorityList",
     ];
 
     public function run()
@@ -172,6 +173,20 @@ class ListValueSeeder extends Seeder
     }
 
     public function getProductionClassificationPeriodAuthorityList()
+    {
+        return [
+            "Bronstijd",
+            "IJzertijd",
+            "Romeins",
+            "middeleeuws",
+            "postmiddeleeuws",
+            "modern",
+            "Wereldoorlog I",
+            "Wereldoorlog II",
+        ];
+    }
+
+     public function getProductionClassificationCultureAuthorityList()
     {
         return [
             "Bronstijd",
