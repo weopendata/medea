@@ -189,9 +189,18 @@ class FindController extends Controller
         }
 
         // Make find
-        $find = $this->finds->store($input);
+        try {
+            $findId = $this->finds->store($input);
 
-        return response()->json($find);
+            return response()->json(['id' => $findId, 'url' => '/finds/' . $findId]);
+        } catch (\Exception $ex) {
+            return response()->json(
+                [
+                'error' => $ex->getMessage()
+                ],
+                400
+            );
+        }
     }
 
     /**
@@ -290,9 +299,18 @@ class FindController extends Controller
             $find = new FindEvent();
             $find->setNode($find_node);
 
-            $find = $find->update($input);
+            try {
+                $find->update($input);
 
-            return response()->json(['success' => true]);
+                return response()->json(['url' => '/finds/' . $findId, 'id' => $findId]);
+            } catch (\Exception $ex) {
+                return response()->json(
+                    [
+                        'error' => $ex->getMessage()
+                    ],
+                    400
+                );
+            }
         } else {
             abort('404');
         }

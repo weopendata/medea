@@ -20,7 +20,7 @@ class FindRepository extends BaseRepository
 
         $find->save();
 
-        return $find;
+        return $find->getId();
     }
 
     /**
@@ -171,11 +171,13 @@ class FindRepository extends BaseRepository
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
                 $variables['validationStatus'] = $validationStatus;
             }
+            // Can be deleted
             $withStatement = "find, validation";
         }
 
         $matchstatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
+        $withStatement .= " count(distinct find)";
 
         $query = "MATCH $initialStatement, $matchstatement
         WITH $withStatement
@@ -244,6 +246,42 @@ class FindRepository extends BaseRepository
             ],
         ];
     }
+
+    /**
+     * Get some basic numbers from the findEvents and related objects
+     *
+     * @return array
+     */
+    public function getStatistics()
+    {
+        $statistics = [
+            'finds' => 0,
+            'validatedFinds' => 0,
+            'classifications' => 0,
+        ];
+
+        $countQuery = "MATCH (allFinds:findEvent), (object:E22)-[objectVal:P2]->(validation),
+        (classification:productionClassification)
+        WITH count(distinct allFinds) as findCount, count(distinct object) as validatedFindCount,
+        count(distinct classification) as classificationCount, validation
+        WHERE validation.name = 'objectValidationStatus' AND validation.value='gevalideerd'
+        RETURN findCount, validatedFindCount, classificationCount";
+
+        $cypherQuery = new Query($this->getClient(), $countQuery);
+
+        $resultSet = $cypherQuery->getResultSet();
+
+        if ($resultSet->count() > 0) {
+            // There's only one row as a result
+            $row = $resultSet->current();
+            $statistics['finds'] = $row['findCount'];
+            $statistics['validatedFinds'] = $row['validatedFindCount'];
+            $statistics['classifications'] = $row['classificationCount'];
+        }
+
+        return $statistics;
+    }
+
 
     private function parseResults($cypherQuery)
     {

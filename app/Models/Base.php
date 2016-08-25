@@ -731,6 +731,11 @@ class Base
         return $data;
     }
 
+    public function getId()
+    {
+        return $this->node->getId();
+    }
+
     /**
      * Retrieve a node's related nodes through the relationship type and the end node type
      *
