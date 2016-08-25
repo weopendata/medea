@@ -23,7 +23,7 @@ new Vue({
         expert: false,
         registrator: false
       },
-      user: {
+      reg: {
         firstName: '',
         lastName: '',
         email: '',
@@ -42,7 +42,8 @@ new Vue({
       score: 0,
       errors: {},
       submitAction: 'register',
-      registered: false
+      registered: false,
+      userd: window.medeaUser
     }
   },
   computed: {
@@ -53,11 +54,11 @@ new Vue({
       if (this.roles.onderzoeker && !this.roles.vondstexpert) {
         this.roles.onderzoeker = false
       }
-      if (!this.registered && this.user.firstName && this.user.lastName && this.user.email && this.user.password) {
-        if (this.roles.vondstexpert && !this.user.expertise) {
+      if (!this.registered && this.reg.firstName && this.reg.lastName && this.reg.email && this.reg.password) {
+        if (this.roles.vondstexpert && !this.reg.expertise) {
           return false
         }
-        if (this.roles.onderzoeker && (!this.user.research || !this.user.affiliation || !this.user.function)) {
+        if (this.roles.onderzoeker && (!this.reg.research || !this.reg.affiliation || !this.reg.function)) {
           return false
         }
         for (let key in this.roles) {
@@ -71,19 +72,19 @@ new Vue({
   },
   methods: {
     pwFeedback () {
-      var score = zxcvbnAsync(this.user.password)
+      var score = zxcvbnAsync(this.reg.password)
       if (score === -1) {
         return
       }
       this.score = score
-      if (this.user.password.length < 6 && this.score > 2) {
+      if (this.reg.password.length < 6 && this.score > 2) {
         this.score = 2
       } else {
-        this.user.passwordRegErrors = []
+        this.reg.passwordRegErrors = []
       }
     },
     formdata () {
-      var data = this.user
+      var data = this.reg
 
       data.personType = []
 
