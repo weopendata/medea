@@ -177,41 +177,24 @@ class FindRepository extends BaseRepository
 
         $matchstatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
-        $withStatement .= " count(distinct find)";
+        $withStatement .= ", count(distinct find) as findCount";
 
         $query = "MATCH $initialStatement, $matchstatement
         WITH $withStatement
         ORDER BY $orderStatement
         WHERE $whereStatement
-        RETURN distinct find
+        RETURN distinct find, findCount
         SKIP $offset
         LIMIT $limit";
 
-        $countQuery = "MATCH $initialStatement, $matchstatement
-        WITH $withStatement
-        ORDER BY $orderStatement
-        WHERE $whereStatement
-        RETURN count(distinct find)";
-
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
-            $countQuery = $startStatement . $countQuery;
         }
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
-        $data = $this->parseResults($cypherQuery);
+        $data = $this->parseApiResults($cypherQuery->getResultSet());
 
-        $cypherQuery = new Query($this->getClient(), $countQuery, $variables);
-        $count_results = $cypherQuery->getResultSet();
-
-        $count = 0;
-
-        if (!empty($count_results)) {
-            $row = $count_results->current();
-            $count = $row['count(distinct find)'];
-        }
-
-        return ['data' => $data, 'count' => $count];
+        return $data;
     }
 
     /**
@@ -283,21 +266,33 @@ class FindRepository extends BaseRepository
     }
 
 
-    private function parseResults($cypherQuery)
+    /**
+     * Parse the result set of the API cypher query
+     *
+     * @param ResultSet $results
+     *
+     * @return array
+     */
+    private function parseApiResults($results)
     {
-        $results = $cypherQuery->getResultSet();
         $data = [];
+        $count = 0;
 
         foreach ($results as $result) {
             $find = new FindEvent();
-            $node = $result->current();
+            $node = $result['find'];
+            $count = $result['findCount'];
+
             $find->setNode($node);
             $find = $find->getValues();
 
             $data[] = $find;
         }
 
-        return $data;
+        return [
+            'data' => $data,
+            'count' => $count
+        ];
     }
 
     /**
