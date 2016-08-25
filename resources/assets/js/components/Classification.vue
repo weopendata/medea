@@ -25,7 +25,7 @@
         <i class="thumbs up icon"></i> {{cls.agree}} vondstexperts zijn het eens met deze classificatie
       </p>
       <p v-if="cls.disagree">
-        <i class="thumbs down icon"></i> {{cls.disagree}} vondstexperts zijn het eens met deze classificatie
+        <i class="thumbs down icon"></i> {{cls.disagree}} vondstexperts zijn het oneens met deze classificatie
       </p>
     </div>
     <div class="card-bar card-bar-border">

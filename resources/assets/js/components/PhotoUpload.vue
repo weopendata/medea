@@ -1,7 +1,7 @@
 <template>
   <div class="photo-upload">
-    <div class="photo-upload-img" v-for="image in photograph">
-      <img :src="image.src" @click="rm($index)">
+    <div class="photo-upload-img" v-for="image in photograph" @click="rm($index)">
+      <img :src="image.src">
     </div>
     <div v-for="msg in warnings" class="ui warning message visible" v-text="msg"></div>
     <div class="photo-upload-cover">
@@ -171,10 +171,9 @@ export default {
       font-weight: bold;
       color: white;
       background: red;
+      pointer-events: none;
     }
     &:hover {
-      >img {
-      }
       &::before {
         opacity: .4;
       }

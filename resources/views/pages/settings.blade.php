@@ -22,7 +22,7 @@
   margin: 1em 0;
 }
 .nav-top>nav {
-  background: #ecf0f1;
+  background: #f0f4f8;
 }
 .last-page {
   min-height: 100vh
