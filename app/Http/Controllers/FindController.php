@@ -159,10 +159,10 @@ class FindController extends Controller
 
         if (empty($user)) {
             // Test code in order to test with PostMan requests
-            $userNode = $users->getUser('foo@bar.com');
+            /*$userNode = $users->getUser('foo@bar.com');
             $user = new \App\Models\Person();
-            $user->setNode($userNode);
-            //abort('401');
+            $user->setNode($userNode);*/
+            abort('401');
         }
 
         $images = [];
