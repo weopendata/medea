@@ -7,6 +7,7 @@
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
         <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <u @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locality}}</u></span>
+        <br>Status: {{ find.object.objectValidationStatus }}
       </div>
       <div class="card-bar">
         <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">

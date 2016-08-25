@@ -15,6 +15,10 @@
     <dt>Vinder</dt>
     <dd>{{find.finder.name||'Niet zichtbaar'}}</dd>
   </dl>
+  <dl>
+    <dt>Status</dt>
+    <dd>{{find.object.objectValidationStatus}}</dd>
+  </dl>
   <h4 v-if="detail=='all'">Object</h4>
   <dl v-if="find.object.objectDescription&&detail=='all'">
     <dt-check v-if="validating" prop="objectDescription"></dt-check>
