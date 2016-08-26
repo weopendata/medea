@@ -37,7 +37,11 @@ class FindController extends Controller
 
     private function makeHeatMapResponse($request)
     {
-        //
+        extract($this->processQueryParts($request));
+
+        $heatMap = $this->finds->getHeatMap($filters, $validatedStatus);
+
+        return response()->json($heatMap);
     }
 
     private function makeApiFindsResponse($request)

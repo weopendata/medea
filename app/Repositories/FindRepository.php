@@ -101,6 +101,7 @@ class FindRepository extends BaseRepository
      * We'll have to build our query based on the filters that are configured,
      * some are filters on object relationships, some on find event, some on classifications
      *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @param array $filters
      *
      * @return
@@ -113,6 +114,83 @@ class FindRepository extends BaseRepository
         $orderFlow = 'ASC',
         $validationStatus = '*'
     ) {
+        extract($this->prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus));
+
+        $cypherQuery = new Query($this->getClient(), $query, $variables);
+        $data = $this->parseApiResults($cypherQuery->getResultSet());
+
+        return $data;
+    }
+
+    /**
+     * Get a heatmap count for a filtered search
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     *
+     * @param  array $filters
+     * @param  string $validationStatus
+     * @return array
+     */
+    public function getHeatMap($filters, $validationStatus)
+    {
+        extract($this->getQueryStatements($filters, '', '', $validationStatus));
+
+        $query = "MATCH $initialStatement, $matchstatement, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
+        WITH $withStatement, location
+        WHERE $whereStatement
+        RETURN count(distinct find) as findCount, location.geoGrid as centre";
+
+        if (!empty($startStatement)) {
+            $query = $startStatement . $query;
+        }
+
+        $cypherQuery = new Query($this->getClient(), $query, $variables);
+
+        $heatMapResults = [];
+
+        foreach ($cypherQuery->getResultSet() as $result) {
+            $heatMapResults[] = [
+                'count' => $result['findCount'],
+                'gridCenter' => $result['centre']
+            ];
+        }
+
+        return $heatMapResults;
+    }
+
+    /**
+     * Prepare the filtered cypher query
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     *
+     * @param  array $filters
+     * @param  integer $limit
+     * @param  integer $offset
+     * @param  string $orderBy
+     * @param  string $orderFlow
+     * @param  string $validationStatus
+     * @return array
+     */
+    private function prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus)
+    {
+        extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
+
+        $query = "MATCH $initialStatement, $matchstatement
+        WITH $withStatement
+        ORDER BY $orderStatement
+        WHERE $whereStatement
+        RETURN distinct find, findCount
+        SKIP $offset
+        LIMIT $limit";
+
+        if (!empty($startStatement)) {
+            $query = $startStatement . $query;
+        }
+
+        return compact('query', 'variables');
+    }
+
+    private function getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus)
+    {
         $matchStatements = [];
         $whereStatements = [];
 
@@ -181,22 +259,15 @@ class FindRepository extends BaseRepository
         $whereStatement = implode(' AND ', $whereStatements);
         $withStatement .= ", count(distinct find) as findCount";
 
-        $query = "MATCH $initialStatement, $matchstatement
-        WITH $withStatement
-        ORDER BY $orderStatement
-        WHERE $whereStatement
-        RETURN distinct find, findCount
-        SKIP $offset
-        LIMIT $limit";
-
-        if (!empty($startStatement)) {
-            $query = $startStatement . $query;
-        }
-
-        $cypherQuery = new Query($this->getClient(), $query, $variables);
-        $data = $this->parseApiResults($cypherQuery->getResultSet());
-
-        return $data;
+        return compact(
+            'startStatement',
+            'initialStatement',
+            'matchstatement',
+            'whereStatement',
+            'withStatement',
+            'orderStatement',
+            'variables'
+        );
     }
 
     /**
