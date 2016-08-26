@@ -21,7 +21,7 @@
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
       @if (!Auth::guest())
-      <a href="/persons" class="item {{ Request::is('users') ? 'active' : '' }}">Leden</a>
+      <a href="/persons" class="item {{ Request::is('persons') ? 'active' : '' }}">Leden</a>
       <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
       @endif
 
