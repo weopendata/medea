@@ -7,9 +7,9 @@
       </div>
       <div class="field">
         <label>Periode</label>
-        <select class="ui search fluid dropdown" v-model="cls.productionClassificationPeriod">
+        <select class="ui search fluid dropdown" v-model="cls.productionClassificationCulturePeople">
           <option>onbekend</option>
-          <option v-for="opt in fields.period" :value="opt" v-text="opt"></option>
+          <option v-for="opt in fields.culturepeople" :value="opt" v-text="opt"></option>
         </select>
       </div>
       <div class="field">

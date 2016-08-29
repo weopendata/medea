@@ -68,6 +68,7 @@ class ListValueRepository
             ],
 
             'classification' => [
+                'nation' => 'ProductionClassificationRulerNationAuthorityList',
                 'period' => 'ProductionClassificationPeriodAuthorityList',
                 'type' => 'ProductionClassificationTypeAuthorityList',
                 'culturepeople' => 'ProductionClassificationCultureAuthorityList'

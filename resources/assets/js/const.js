@@ -9,6 +9,20 @@ export const EMPTY_CLS = {
 	publication: [{ publicationTitle: '' }],
 }
 
+export function urlify (u) {
+  if (!u) {
+    return
+  }
+  if (u.slice(0, 4) === 'http') {
+    return {
+      href: u
+    }
+  }
+  return {
+    text: u
+  }
+}
+
 // Date & time
 export const MONTHS = 'jan,feb,mar,apr,may,jun,jul,aug,sept,oct,nov,dec'.split(',')
 
