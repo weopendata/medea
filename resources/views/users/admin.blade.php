@@ -4,6 +4,9 @@
 
 @section('content')
 <div class="ui container">
+<pre>Alle vondsten:         {{ $stats['finds'] }}
+Gevalideerde vondsten: {{ $stats['validatedFinds'] }}
+Classificaties:        {{ $stats['classifications'] }}</pre>
 	<table class="ui unstackable table" style="text-align:center;min-width:600px;width:100%">
 		<thead>
 			<tr>

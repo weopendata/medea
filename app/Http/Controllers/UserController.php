@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
 use App\Http\Controllers\Controller;
+use App\Repositories\FindRepository;
 use App\Repositories\UserRepository;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
@@ -22,7 +23,11 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if (in_array('administrator', $request->user()->getRoles())) {
+            $this->finds = new FindRepository();
+            $stats = $this->finds->getStatistics();
+
             return view('users.admin', [
+                'stats' => $stats,
                 'users' => $this->users->getAllWithRoles()
             ]);
         }
