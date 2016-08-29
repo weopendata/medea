@@ -182,8 +182,6 @@ class FindRepository extends BaseRepository
         SKIP $offset
         LIMIT $limit";
 
-        \Log::info($query);
-
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
         }
