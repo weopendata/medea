@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\Repositories\FindRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +26,10 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        return view('static.home');
+        $this->finds = new FindRepository();
+        $stats = $this->finds->getStatistics();
+
+        return view('static.home', ['stats' => $stats]);
     }
     
     public function about(Request $request)
