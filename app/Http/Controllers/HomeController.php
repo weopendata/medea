@@ -31,32 +31,32 @@ class HomeController extends Controller
 
         return view('static.home', ['stats' => $stats]);
     }
-    
+
     public function about(Request $request)
     {
         return view('static.about');
     }
-    
+
     public function contact(Request $request)
     {
         return view('static.contact');
     }
-    
+
     public function disclaimer(Request $request)
     {
         return view('static.disclaimer');
     }
-    
+
     public function feedback(Request $request)
     {
         return view('static.feedback');
     }
-    
+
     public function help(Request $request)
     {
         return view('static.help');
     }
-    
+
     public function voorwaarden(Request $request)
     {
         return view('static.voorwaarden');
