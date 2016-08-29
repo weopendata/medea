@@ -94,13 +94,15 @@
 
     <h2 id="contact">Contactgegevens</h2>
     <div class="two fields">
-      <div class="field">
-        <label for="first_name">Voornaam</label>
-        <input v-model="user.firstName" type="text">
+      <div class="field" :class="{error:errors.firstName}">
+        <label for="firstName">Voornaam</label>
+        <input v-model="user.firstName" type="text" id="firstName">
+        <div v-for="msg in errors.firstName" v-text="msg" class="input"></div>
       </div>
-      <div class="field">
-        <label for="last_name">Achternaam</label>
-        <input v-model="user.lastName" type="text">
+      <div class="field" :class="{error:errors.lastName}">
+        <label for="lastName">Achternaam</label>
+        <input v-model="user.lastName" type="text" id="lastName">
+        <div v-for="msg in errors.lastName" v-text="msg" class="input"></div>
       </div>
     </div>
     <div class="two fields">
@@ -108,29 +110,29 @@
         <label for="email">Email</label>
         <input v-model="email" type="email" disabled>
       </div>
-      <div class="field">
+      <div class="field" :class="{error:errors.phone}">
         <label for="last_name">Telefoon</label>
         <input v-model="user.phone" type="text">
       </div>
     </div>
     <div class="fields">
-      <div class="twelve wide field">
+      <div class="twelve wide field" :class="{error:errors['personAddress_personAddressStreet']}">
         <label for="first_name">Straat</label>
         <input v-model="user.personAddress.personAddressStreet" type="text">
       </div>
-      <div class="four wide field">
+      <div class="four wide field" :class="{error:errors['personAddress_personAddressNumber']}">
         <label for="last_name">Nummer</label>
         <input v-model="user.personAddress.personAddressNumber" type="text">
       </div>
     </div>
     <div class="fields">
-      <div class="four wide field">
-        <label for="email">Postcode</label>
-        <input v-model="user.personAddress.personAddressPostalCode" type="email">
+      <div class="four wide field" :class="{error:errors['personAddress_personAddressPostalCode']}">
+        <label for="zip">Postcode</label>
+        <input v-model="user.personAddress.personAddressPostalCode" type="email" id="zip">
       </div>
-      <div class="twelve wide field">
-        <label for="last_name">Gemeente</label>
-        <input v-model="user.personAddress.personAddressLocality" type="text">
+      <div class="twelve wide field" :class="{error:errors['personAddress_personAddressLocality']}">
+        <label for="locality">Gemeente</label>
+        <input v-model="user.personAddress.personAddressLocality" type="text" id="locality">
       </div>
     </div>
 
@@ -139,16 +141,16 @@
     </p>
     <h2 id="profiel">Profiel</h2>
     <div class="two fields">
-      <div class="field">
-        <label for="email">Functie</label>
-        <input v-model="user.function" type="text">
+      <div class="field" :class="{error:errors.firstName}">
+        <label for="function">Functie</label>
+        <input v-model="user.function" type="text" id="function">
       </div>
-      <div class="field">
-        <label for="last_name">Instelling</label>
-        <input v-model="user.affiliation" type="text">
+      <div class="field" :class="{error:errors.affiliation}">
+        <label for="affiliation">Instelling</label>
+        <input v-model="user.affiliation" type="text" id="affiliation">
       </div>
     </div>
-    <div class="field" v-if="roles.detectorist">
+    <div class="field" v-if="roles.detectorist" :class="{error:errors.detectorist}">
       <label for="email">Erkenningsnummer</label>
       <div class="ui labeled input double-labeled">
         <div class="ui default label">

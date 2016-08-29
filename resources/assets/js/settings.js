@@ -22,6 +22,7 @@ new Vue({
       roles: window.medeaUser,
       user: window.user,
       submitting: false,
+      errors: {}
     }
   },
   computed: {
@@ -60,16 +61,19 @@ new Vue({
       this.user.password = undefined
       this.user.email = undefined
       this.user.personType = undefined
-      this.$http.put('/persons/' + this.id, this.user)
+      this.user.savedSearches = undefined
+      this.$http.put('/persons/' + id, this.user)
       .then(this.submitSuccess, this.submitError).catch(function () {
         this.submitting = false
       })
     },
     submitSuccess (response) {
       this.message = response.data.message
+      this.errors = {}
     },
-    submitError () {
-      alert('failed to save')
+    submitError (response) {
+      this.message = response.data.message
+      this.errors = response.data
     }
   },
   attached () {

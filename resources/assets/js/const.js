@@ -33,7 +33,7 @@ export function toMonth (d) {
 
 export const fromDate = function (d) {
   d = new Date(Date.parse(d))
-  return d.getDay() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
+  return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
 }
 
 // Filesize

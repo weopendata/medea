@@ -69,9 +69,9 @@ class UpdateUserRequest extends Request
     public function rules()
     {
         return [
-            'lastName' => 'min:2',
-            'firstName' => 'min:2',
-            'savedSearches' => 'jsonMax:5'
+            'lastName' => 'sometimes|required|min:2',
+            'firstName' => 'sometimes|required|min:2',
+            'savedSearches' => 'sometimes|required|jsonMax:5',
         ];
     }
 
@@ -102,6 +102,8 @@ class UpdateUserRequest extends Request
     public function messages()
     {
         return [
+            'lastName.required' => 'De achternaam is verplicht.',
+            'firstName.required'  => 'De voornaam is verplicht.',
             'lastName.min' => 'De achternaam moet langer zijn dan 1 letter.',
             'firstName.min'  => 'De voornaam moet langer zijn dan 1 letter.',
             'savedSearches.jsonMax' => 'Het aantal opgeslagen zoekfilters mag maximum 5 zijn.'
@@ -118,5 +120,14 @@ class UpdateUserRequest extends Request
         }
 
         return false;
+    }
+
+    public function forbiddenResponse()
+    {
+        if (self::format() === 'json') {
+            return response()->json(['message' => 'Permission denied'], 403);
+        }
+
+        return response('Permission denied foo!', 403);
     }
 }
