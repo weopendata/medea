@@ -243,7 +243,7 @@ class FindRepository extends BaseRepository
                 $variables[$config['nodeName']] = $filters[$property];
 
                 if (!empty($config['with'])) {
-                    $withStatement .= ', period';
+                    $withStatement .= ', ' . $config['with'];
                 }
             }
         }
@@ -278,8 +278,12 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * Return the supported filters for findEvents
-     * with the accompanying match and where statements
+     * Return the supported filters for findEvent with the accompanying match and where statements
+     *
+     * The key of the filter properties map is the key that is normally passed down through the filters
+     * array. This means you can look up filternames by index and fetch their configuration easily and quickly.
+     * The nodeName property is the name of the variable that the where statement contains, this can be used
+     * to pass down the name of the varaible in the bindings of the query builder.
      *
      * @return array
      */
@@ -308,6 +312,18 @@ class FindRepository extends BaseRepository
                 'nodeName' => 'period',
                 'with' => 'period',
             ],
+            'findSpot' => [
+                'match' => '(find:E10)-[P7]->(findSpot:E27)-[P2]->(findSpotType:E55)',
+                'where' => 'findSpotType.value = {findSpotType}',
+                'nodeName' => 'findSpotType',
+                'with' => 'findSpotType',
+            ],
+            'modificationTechniqueType' => [
+                'match' => '(object:E22)-[P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
+                    'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
+                    'nodeName' => 'modificationTechniqueType',
+                    'with' => 'modificationTechniqueType'
+            ]
         ];
     }
 
