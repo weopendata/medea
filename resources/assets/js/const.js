@@ -1,3 +1,21 @@
+// Remove reactivity
+export function inert (v) {
+  return JSON.parse(JSON.stringify(v))
+}
+
+// FindEvent helpers
+export function findTitle (find) {
+  // Not showing undefined and onbekend in title
+  var title = [
+    find.object.objectCategory,
+    find.object.period,
+    find.object.objectMaterial
+  ].filter(f => f && f !== 'onbekend').join(', ')
+
+  return title + ' (ID-' + find.identifier + ')'
+}
+
+// Classification helpers
 export const EMPTY_CLS = {
 	productionClassificationCulturePeople: '',
 	productionClassificationDescription: '',

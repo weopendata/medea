@@ -81,6 +81,8 @@ var medeaUser = {isGuest: true};
 @if (!Auth::guest())
 try {
   medeaUser = {!! json_encode([
+    'savedSearches' => Auth::user()->savedSearches,
+    'id' => Auth::user()->id,
     'email' => Auth::user()->email,
     'roles' => Auth::user()->getRoles()
   ]) !!};

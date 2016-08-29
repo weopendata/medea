@@ -10,7 +10,7 @@
 @section('content')
 <div class="ui container">
   <div class="list-left">
-    <finds-filter :model.sync="filterState" :saved="[]"></finds-filter>
+    <finds-filter :name.sync="filterName" :model.sync="filterState" :saved="saved"></finds-filter>
   </div>
   <div class="list-right">
     <div class="card-bar">
@@ -25,7 +25,9 @@
     </div>
     <div v-if="filterState.showmap" id="mapview" class="card mapview" v-cloak>
       <map :center.sync="map.center" :zoom.sync="map.zoom">
-        <rectangle v-for="f in finds | markable" :bounds="f.bounds" :options="markerOptions"></circle>
+        <marker v-for="f in finds | markable" @g-click="mapClick(f)" v-if="markerNeeded||f.accuracy==1" :position.sync="f.position"></marker>
+        <rectangle v-for="f in finds | markable" @g-click="mapClick(f)" :bounds="f.bounds" :options="markerOptions"></circle>
+        <div class="gm-panel" style="direction: ltr; overflow: hidden; text-align: center; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;right: 10px;" v-if="map.info" v-html="map.info"></div>
       </map>
       <map-controls :showmap.sync="filterState.showmap"></map-controls>
     </div>

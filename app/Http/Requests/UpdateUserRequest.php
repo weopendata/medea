@@ -87,7 +87,7 @@ class UpdateUserRequest extends Request
     {
         $input = request()->input();
 
-        if (!empty($input['savedSearches'])) {
+        if (!empty($input['savedSearches']) && is_array($input['savedSearches'])) {
             $input['savedSearches'] = json_encode($input['savedSearches']);
         }
 

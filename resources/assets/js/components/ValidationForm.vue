@@ -52,6 +52,8 @@
 import PhotoValidation from './PhotoValidation';
 import TextareaGrowing from './TextareaGrowing';
 
+import {inert} from '../const.js';
+
 export default {
   props: ['obj', 'feedback', 'json'],
   data () {
@@ -133,7 +135,7 @@ export default {
   },
   events: {
     imgRemark (index) {
-      var remarks = JSON.parse(JSON.stringify(this.imgRemarks))
+      var remarks = inert(this.imgRemarks)
 
       // Fix php json_encode issue where objects are encoded as arrays
       if (Array.isArray(remarks)) {

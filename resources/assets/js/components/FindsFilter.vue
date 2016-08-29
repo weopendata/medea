@@ -10,9 +10,9 @@
     </div>
     
     <h3 class="facet-title">Favorieten</h3>
-    <a href="#" class="facet-a" :class="{active:model.status=='in bewerking'}" @click.prevent="toggle('status', 'in bewerking')" v-if="$root.user.validator">Te valideren vondsten</a>
-    <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggleMyfinds" v-if="$root.user.email">Mijn vondsten</a>
-    <a href="#" class="facet-a" @click.prevent="restore(filter)" v-for="filter in saved" v-text="filter.name"></a>
+    <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'in bewerking'}})" v-if="$root.user.validator">Te valideren vondsten</a>
+    <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="restore({name:'$mine', state:{myfinds:true}})" v-if="$root.user.email">Mijn vondsten</a>
+    <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
 
     <div v-if="$root.user.validator">
       <span></span>
@@ -46,23 +46,44 @@
 
 <script>
 import FindEvent from './FindEvent';
+import {inert} from '../const.js';
+
+var backupState = {myfinds: false}
 
 export default {
-  props: ['model', 'saved'],
+  props: ['name', 'model', 'saved'],
   data () {
     return {
+      name: '',
       fields: window.fields,
       advanced: false
     }
   },
+  computed: {
+    unnamed () {
+      return this.saved.filter(s => !s.name)
+    }
+  },
   methods: {
     restore (filter) {
-      console.warn('Restoring save filter:', filter)
-      this.model = filter
-      this.$root.fetch()
-    },
-    unset (filter) {
-      this.model[filter] = null
+      if (filter.state) {
+        //
+        if (filter.name === this.name) {
+          this.name = ''
+          filter = backupState
+        } else {
+          backupState = inert(filter.state)
+          this.name = filter.name
+          filter = filter.state
+        }
+      }
+      for (let key in this.model) {
+        this.model[key] = filter[key] || null 
+      }
+      for (let key in filter) {
+        this.model[key] = filter[key] || null 
+      }
+      console.log(inert(this.model))
       this.$root.fetch()
     },
     toggle (filter, value) {
@@ -71,6 +92,7 @@ export default {
       } else {
         this.model[filter] = this.model[filter] == value ? false : value
       }
+      this.name = ''
       this.$root.fetch()
     },
     toggleMyfinds () {

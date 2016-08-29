@@ -292,16 +292,19 @@ class FindRepository extends BaseRepository
                 'match' => "(object:E22)-[P45]-(material:E57)",
                 'where' => "material.value = {material}",
                 'nodeName' => 'material',
+                'with' => 'material',
             ],
             'technique' => [
                 'match' => "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[techniqueType:P2]-(type:E55)",
                 'where' => "type.value = {technique}",
                 'nodeName' => 'technique',
+                'with' => 'type',
             ],
             'category' => [
                 'match' => "(object:E22)-[categoryType:P2]-(category:E55)",
                 'where' => "category.value = {category}",
                 'nodeName' => 'category',
+                'with' => 'category',
             ],
             'period' => [
                 'match' => "(object:E22)-[P42]-(period:E55)",

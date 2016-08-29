@@ -3,11 +3,12 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
-import {load, Map, Marker, Rectangle} from 'vue-google-maps'
+import {load, Map, Marker, Rectangle, InfoWindow} from 'vue-google-maps'
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
 import DevBar from './components/DevBar'
 
 import Notifications from './mixins/Notifications'
+import {findTitle, inert} from './const.js'
 
 import parseLink from 'parse-link-header'
 
@@ -15,22 +16,15 @@ Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
   el: 'body',
-  components: {
-    DevBar,
-    FindsFilter,
-    FindsList,
-    MapControls,
-    Map,
-    Marker,
-    Rectangle
-  },
   data () {
     return {
       paging: window.link ? parseLink(window.link) : {},
       finds: window.initialFinds || [],
       filterState: window.filterState || {myfinds: false},
+      filterName: '',
       user: window.medeaUser,
       map: {
+        info: null,
         center: {lat: 50.9, lng: 4.3},
         zoom: 8
       },
@@ -41,14 +35,12 @@ new Vue({
       loaded: false
     }
   },
-  ready () {
-    console.log(JSON.parse(JSON.stringify(window.initialFinds)))
-    if (!this.finds || !this.finds.length) {
-      this.fetch()
-    }
-    if (this.filterState.showmap && !this.loaded) {
-      load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
-      this.loaded = true
+  computed: {
+    markerNeeded () {
+      return this.map.zoom < 10
+    },
+    saved () {
+      return JSON.parse(this.user.savedSearches || '[]')
     }
   },
   methods: {
@@ -63,7 +55,7 @@ new Vue({
       return true
     },
     fetch (cause) {
-      var model = JSON.parse(JSON.stringify(this.filterState))
+      var model = inert(this.filterState)
       if (model.status == 'gevalideerd') {
         delete model.status
       }
@@ -94,6 +86,9 @@ new Vue({
       this.filterState.showmap = value
       this.fetch('showmap')
     },
+    mapClick (f) {
+      this.map.info = f.title
+    },
     showCity (value) {
       this.filterState.showmap = value
       this.fetch('showmap')
@@ -111,6 +106,29 @@ new Vue({
         this.filterState.order = type
       }
       this.fetch()
+    },
+    persistSearches () {
+      // Save the new list of favorites
+      this.$http.put('/persons/' + this.user.id, {
+        _token: 'PUT',
+        id: this.user.id,
+        savedSearches: this.user.savedSearches
+      })
+      .then(function () {
+        console.log('Searches saved')
+      }).catch(function () {
+        console.warn('Something went wrong')
+      })
+    }
+  },
+  ready () {
+    console.log(JSON.parse(JSON.stringify(window.initialFinds)))
+    if (!this.finds || !this.finds.length) {
+      this.fetch()
+    }
+    if (this.filterState.showmap && !this.loaded) {
+      load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
+      this.loaded = true
     }
   },
   events: {
@@ -121,22 +139,40 @@ new Vue({
       this.$nextTick(function () {
         this.filterState.showmap = true
       })
+    },
+    saveSearch (name) {
+      var saved = this.saved
+      saved.push({name: name, state: this.filterState})
+      this.user.savedSearches = JSON.stringify(saved)
+      this.persistSearches()
+    },
+    rmSearch () {
+      // Remove from saved searches
+      this.user.savedSearches = JSON.stringify(this.saved.filter(s => s.name !== this.filterName))
+      this.persistSearches()
     }
   },
   filters: {
     markable (finds) {
+      const GEO_ROUND = 0.01
       return finds
         .filter(f => f.findSpot && f.findSpot.location && f.findSpot.location.lat)
-        .map(f => ({
-          accuracy: f.findSpot.location.accuracy || 1,
+        .map(f => {
+          let pubLat = Math.round(f.findSpot.location.lat / GEO_ROUND) * GEO_ROUND
+          let pubLng = Math.round(f.findSpot.location.lng / GEO_ROUND) * GEO_ROUND
+          return {
+          identifier: f.identifier,
+          title: findTitle(f),
+          accuracy: f.findSpot.location.accuracy || 2000,
           position: {lat: f.findSpot.location.lat, lng: f.findSpot.location.lng},
           bounds: {
-            north: f.findSpot.location.lat + 20 / f.findSpot.location.accuracy,
-            south: f.findSpot.location.lat - 20 / f.findSpot.location.accuracy,
-            east: f.findSpot.location.lng + 20 / f.findSpot.location.accuracy,
-            west: f.findSpot.location.lng - 20 / f.findSpot.location.accuracy
+            north: pubLat + GEO_ROUND / 2,
+            south: pubLat - GEO_ROUND / 2,
+            east: pubLng + GEO_ROUND / 2,
+            west: pubLng - GEO_ROUND / 2
           }
-        }))
+        }
+      })
     }
   },
   watch: {
@@ -153,5 +189,15 @@ new Vue({
       }
     }
   },
-  mixins: [Notifications]
+  mixins: [Notifications],
+  components: {
+    DevBar,
+    FindsFilter,
+    FindsList,
+    MapControls,
+    Map,
+    Marker,
+    InfoWindow,
+    Rectangle
+  }
 })
