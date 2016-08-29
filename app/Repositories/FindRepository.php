@@ -182,6 +182,8 @@ class FindRepository extends BaseRepository
         SKIP $offset
         LIMIT $limit";
 
+        \Log::info($query);
+
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
         }
@@ -212,6 +214,7 @@ class FindRepository extends BaseRepository
         // Non personal find statement
         $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
 
+        // Check on validationstatus
         if ($validationStatus == '*') {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
         } else {
@@ -238,6 +241,10 @@ class FindRepository extends BaseRepository
                 $matchStatements[] = $config['match'];
                 $whereStatements[] = $config['where'];
                 $variables[$config['nodeName']] = $filters[$property];
+
+                if (!empty($config['with'])) {
+                    $withStatement .= ', period';
+                }
             }
         }
 
@@ -299,6 +306,7 @@ class FindRepository extends BaseRepository
                 //"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)",
                 'where' => "period.value = {period}",
                 'nodeName' => 'period',
+                'with' => 'period',
             ],
         ];
     }
