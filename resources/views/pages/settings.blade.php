@@ -135,7 +135,7 @@
     </div>
 
     <p class="cta-profile">
-      <a :href="'/users/'+id" class="ui blue button">Profiel bekijken</a>
+      <a :href="'/persons/'+id" class="ui blue button">Profiel bekijken</a>
     </p>
     <h2 id="profiel">Profiel</h2>
     <div class="two fields">

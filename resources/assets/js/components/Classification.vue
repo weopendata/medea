@@ -22,22 +22,22 @@
         </span>
       </p>
       <p v-if="cls.agree">
-        <i class="thumbs up icon"></i> {{cls.agree}} vondstexperts zijn het eens met deze classificatie
+        <i class="thumbs up icon"></i> {{cls.agree}} vondstexpert{{cls.agree===1?' is':'s zijn'}} het eens met deze classificatie
       </p>
       <p v-if="cls.disagree">
-        <i class="thumbs down icon"></i> {{cls.disagree}} vondstexperts zijn het oneens met deze classificatie
+        <i class="thumbs down icon"></i> {{cls.disagree}} vondstexpert{{cls.disagree===1?' is':'s zijn'}} het oneens met deze classificatie
       </p>
     </div>
     <div class="card-bar card-bar-border">
-      <span v-dif="user.vondstexpert">
+      <span v-if="user.vondstexpert">
         <button class="btn" :class="{green:cls.me==='agree'}" @click.stop="agree"><i class="thumbs up icon"></i></button>
         <button class="btn" :class="{red:cls.me==='disagree'}" @click.stop="disagree"><i class="thumbs down icon"></i></button>
       </span>{{cls.me}}
       <span class="cls-creator" v-if="creator||cls.created_at">
         Opgesteld
         <span v-if="creator">door {{creator}}</span>
-        <span v-if="cls.created_at">op {{cls.updated_at}}</span>
-        <span v-if="cls.updated_at!==cls.created_at" style="margin-left:1em">update op {{cls.updated_at}}</span>
+        <time v-if="cls.created_at" :title="cls.created_at">op {{cls.created_at | fromDate}}</time>
+        <time v-if="cls.updated_at!==cls.created_at" :title="cls.updated_at" style="margin-left:1em">update op {{cls.updated_at | fromDate}}</time>
       </span>
       <div style="float:right">
         <button class="btn" @click.prevent.stop="rm" v-if="$root.user.administrator"><i class="trash icon"></i></button>
@@ -47,19 +47,8 @@
 </template>
 
 <script>
-function urlify (u) {
-  if (!u) {
-    return
-  }
-  if (u.slice(0, 4) === 'http') {
-    return {
-      href: u
-    }
-  }
-  return {
-    text: u
-  }
-}
+import {fromDate, urlify} from '../const.js'
+
 export default {
   props: ['cls', 'obj'],
   computed: {
@@ -98,6 +87,9 @@ export default {
     rm () {
       this.$http.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1)).then(this.$root.fetch)
     }
+  },
+  filters: {
+    fromDate
   }
 }
 </script>

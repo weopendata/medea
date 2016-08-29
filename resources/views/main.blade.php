@@ -21,7 +21,7 @@
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
       @if (!Auth::guest())
-      <a href="/persons" class="item {{ Request::is('users') ? 'active' : '' }}">Leden</a>
+      <a href="/persons" class="item {{ Request::is('persons') ? 'active' : '' }}">Leden</a>
       <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
       @endif
 
@@ -38,7 +38,7 @@
             <div v-if="notifications&&notifications.length" v-cloak>
               <div class="item" v-for="n in notifications" v-text="n.message" :class="{read:n.read}" @click.stop="notifGo(n, $index)"></div>
             </div>
-            <div v-else class="item">Er zijn geen meldingen</div>
+            <div v-else class="item" @click.stop>Er zijn geen meldingen</div>
           </div>
         </div>
         <div class="ui top right pointing dropdown link item">
@@ -46,11 +46,11 @@
           <i class="dropdown icon"></i>
           <div class="menu">
             <div class="header">Profiel</div>
-            <a href="/persons/{{ Auth::user()->id }}" class="item">Profiel bekijken</a>
-            <a href="/settings" class="item">Profiel aanpassen</a>
+            <a href="/persons/{{ Auth::user()->id }}" @click.stop class="item">Profiel bekijken</a>
+            <a href="/settings" @click.stop class="item">Profiel aanpassen</a>
             <div class="divider"></div>
-            <a href="/settings" class="item">Instellingen</a>
-            <a href="/logout" class="item">Afmelden</a>
+            <a href="/settings" @click.stop class="item">Instellingen</a>
+            <a href="/logout" @click.stop class="item">Afmelden</a>
           </div>
         </div>
         @endif
@@ -86,14 +86,6 @@ try {
   ]) !!};
   for (var i = 0; i < medeaUser.roles.length; i++) {
     medeaUser[medeaUser.roles[i]] = true
-  }
-  if (medeaUser.administrator) {
-    medeaUser.validator = true;
-    medeaUser.detectorist = true;
-    medeaUser.onderzoeker = true;
-    medeaUser.vondstexpert = true;
-    medeaUser.registrator = true;
-    medeaUser.administrator = true;
   }
   _paq.push(['setUserId', {!! json_encode(Auth::user()->id) !!}]);
 } catch (e) {
