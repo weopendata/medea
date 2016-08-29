@@ -10,10 +10,10 @@
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
   </dl>
-  <dl v-if="find.finder">
+  <dl v-if="finder">
     <dt-check v-if="validating" prop="finder.name"></dt-check>
     <dt>Vinder</dt>
-    <dd>{{find.finder.name||'Niet zichtbaar'}}</dd>
+    <dd><a :href="'/persons/'+finder.id" v-text="finder.name"></a></dd>
   </dl>
   <dl>
     <dt>Status</dt>
@@ -77,6 +77,11 @@ import {fromDate} from '../const.js'
 
 export default {
   props: ['find', 'feedback', 'validating'],
+  computed: {
+    finder () {
+      return window.publicUserInfo
+    }
+  },
   attached () {
     if (this.validating) {
       setTimeout(function () {

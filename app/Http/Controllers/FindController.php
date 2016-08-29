@@ -236,6 +236,7 @@ class FindController extends Controller
             $person->setNode($findUser);
 
             if ($person->showNameOnPublicFinds) {
+                $publicUserInfo['id'] = $person->id;
                 $publicUserInfo['name'] = $person->lastName . ' ' . $person->firstName;
             }
         }
