@@ -142,6 +142,9 @@ dd {
 	height: calc(100% - 40px);
 	overflow: auto;
 }
+.list-controls {
+	overflow: auto;
+}
 @media (min-width: 768px) {
 	.list-left {
 		float: left;
@@ -226,6 +229,8 @@ h4.required::after {
 /* FindsList > FindsFilter */
 
 .finds-order {
+	float: left;
+	padding-top: 8px;
 	user-select: none;
 	a {
 		padding: 5px 8px;

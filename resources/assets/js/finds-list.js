@@ -3,7 +3,7 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
-import {load, Map, Marker, Rectangle, InfoWindow} from 'vue-google-maps'
+import {load, Map as GoogleMap, Marker, Rectangle, InfoWindow} from 'vue-google-maps'
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
 import DevBar from './components/DevBar'
 
@@ -11,6 +11,9 @@ import Notifications from './mixins/Notifications'
 import {findTitle, inert} from './const.js'
 
 import parseLink from 'parse-link-header'
+
+const HEATMAP_RADIUS = 0.05
+const GEO_ROUND = 0.01
 
 Vue.use(VueResource)
 Vue.config.debug = true
@@ -24,6 +27,7 @@ new Vue({
       filterName: '',
       user: window.medeaUser,
       map: {
+        type: false,
         info: null,
         center: {lat: 50.9, lng: 4.3},
         zoom: 8
@@ -32,10 +36,32 @@ new Vue({
         fillOpacity: 0.1,
         strokeWeight: 1
       },
+      rawmap: null,
       loaded: false
     }
   },
   computed: {
+    heatmapMax () {
+      return this.rawmap ? Math.max.apply(Math, this.rawmap.map(x => x.count)) : 0
+    },
+    heatmap () {
+      var max = this.heatmapMax
+      return this.rawmap && this.rawmap.map(x => {
+        let co = x.gridCenter.split(',')
+        return {
+          options: {
+            fillOpacity: 0.1 + 0.6 * x.count / max,
+            strokeWeight: 0
+          },
+          bounds: {
+            north: parseFloat(co[0]) + HEATMAP_RADIUS,
+            south: parseFloat(co[0]) - HEATMAP_RADIUS,
+            east: parseFloat(co[1]) + HEATMAP_RADIUS,
+            west: parseFloat(co[1]) - HEATMAP_RADIUS
+          }
+        }
+      })
+    },
     markerNeeded () {
       return this.map.zoom < 10
     },
@@ -56,6 +82,7 @@ new Vue({
     },
     fetch (cause) {
       var model = inert(this.filterState)
+      var type = model.type
       if (model.status == 'gevalideerd') {
         delete model.status
       }
@@ -65,33 +92,45 @@ new Vue({
       if (model.myfinds && this.user.isGuest) {
         delete model.myfinds
       }
+      if (model.type) {
+        delete model.type
+      }
       var query = Object.keys(model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
       }).filter(Boolean).join('&')
-      query = query ? '/finds?' + query : '/finds'
+      query = query ? '/finds?' + query : '/finds?'
       window.history.pushState({}, document.title, query)
-      if (cause == 'showmap' || this.query == query) {
+      console.log('fetch')
+      if (cause !== 'heatmap' && this.query === query) {
         return
       }
       this.query = query
       this.$http.get('/api' + query).then(this.fetchSuccess, function () {
         console.error('could not fetch findevents')
       })
+      if (type === 'heatmap') {
+        console.log('loading heatmap')
+        this.$http.get('/api' + query + '&type=heatmap').then(this.heatmapSuccess, function () {
+          console.error('could not fetch heatmap')
+        })
+      }
     },
     fetchSuccess (res) {
       this.paging = parseLink(res.headers('link'))
       this.finds = res.data
     },
-    mapshow (value) {
-      this.filterState.showmap = value
-      this.fetch('showmap')
+    heatmapSuccess (res) {
+      this.rawmap = res.data
+    },
+    mapToggle (v) {
+      if (this.filterState.type === v) {
+        this.$set('filterState.type', false)
+      } else {
+        this.$set('filterState.type', v)
+      }
     },
     mapClick (f) {
       this.map.info = f.title
-    },
-    showCity (value) {
-      this.filterState.showmap = value
-      this.fetch('showmap')
     },
     toggleMyfinds () {
       this.filterState.myfinds = this.filterState.myfinds ? false : 'yes'
@@ -126,7 +165,7 @@ new Vue({
     if (!this.finds || !this.finds.length) {
       this.fetch()
     }
-    if (this.filterState.showmap && !this.loaded) {
+    if (this.filterState.type && !this.loaded) {
       load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
       this.loaded = true
     }
@@ -137,7 +176,7 @@ new Vue({
       this.map.zoom = Math.min(14, accuracy ? Math.floor(25 - Math.log2(accuracy)) : 14)
       // nextTick is just to be sure that the map immediately shows the correct location
       this.$nextTick(function () {
-        this.filterState.showmap = true
+        this.filterState.type = true
       })
     },
     saveSearch (name) {
@@ -154,7 +193,6 @@ new Vue({
   },
   filters: {
     markable (finds) {
-      const GEO_ROUND = 0.01
       return finds
         .filter(f => f.findSpot && f.findSpot.location && f.findSpot.location.lat)
         .map(f => {
@@ -176,10 +214,13 @@ new Vue({
     }
   },
   watch: {
-    'filterState.showmap' (shown) {
-      if (shown && !this.loaded) {
+    'filterState.type' (type) {
+      if (type && !this.loaded) {
         load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
         this.loaded = true
+      }
+      if (type === 'heatmap') {
+        this.fetch('heatmap')
       }
     },
     'user': {
@@ -195,7 +236,7 @@ new Vue({
     FindsFilter,
     FindsList,
     MapControls,
-    Map,
+    GoogleMap,
     Marker,
     InfoWindow,
     Rectangle

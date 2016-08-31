@@ -22,8 +22,12 @@
         </div>
       </p>
       <p>
-        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Log in </a>
+        @if (Auth::guest())
+        <a href="/login" class="ui green button"><i class="sign in icon"></i> Log in </a>
         <a href="#register" class="ui green button"><i class="edit icon"></i> Word lid </a>
+        @else
+        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Vondsten doorzoeken</a>
+        @endif
       </p>
     </div>
   </div>
