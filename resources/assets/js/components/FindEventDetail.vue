@@ -112,7 +112,7 @@ export default {
       return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
     },
     editable () {
-      return this.user.email === this.find.person.email || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
+      return (this.user.email === this.find.person.email && this.find.object.objectValidationStatus == 'onder revisie') || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
     },
     findTitle () {
       // Not showing undefined and onbekend in title

@@ -325,7 +325,7 @@ new Vue({
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
-        address: (a.street ? a.street + (a.number || '') + ' , ': '') + (a.zip || '') + a.locality,
+        address: (a.locationAddressStreet ? a.locationAddressStreet + (a.locationAddressNumber || '') + ' , ': '') + (a.locationAddressPostalCode || '') + a.locationAddressLocality,
         region: 'be'
       }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
