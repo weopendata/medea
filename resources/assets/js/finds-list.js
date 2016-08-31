@@ -176,7 +176,7 @@ new Vue({
       this.map.zoom = Math.min(14, accuracy ? Math.floor(25 - Math.log2(accuracy)) : 14)
       // nextTick is just to be sure that the map immediately shows the correct location
       this.$nextTick(function () {
-        this.filterState.type = true
+        this.$set('filterState.type', 'map')
       })
     },
     saveSearch (name) {

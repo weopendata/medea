@@ -15,10 +15,10 @@
         <a @click.prevent="sortBy('identifier')" :class="{active:filterState.order=='identifier', reverse:filterState.order=='-identifier'}">vondstnummer</a>
       </span>
       <label class="pull-right" style="margin-left:20px">
-        <button class="ui basic button" @click="mapToggle('heatmap')">Heatmap</button>
+        <button class="ui basic button" :class="{green:filterState.type=='heatmap'}" @click="mapToggle('heatmap')">Heatmap</button>
       </label>
       <label class="pull-right">
-        <button class="ui basic button" @click="mapToggle('map')">Kaart</button>
+        <button class="ui basic button" :class="{green:filterState.type=='map'}" @click="mapToggle('map')">Kaart</button>
       </label>
     </div>
     <div v-if="filterState.type" id="mapview" class="card mapview" v-cloak>

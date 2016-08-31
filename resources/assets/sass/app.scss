@@ -145,6 +145,9 @@ dd {
 .list-controls {
 	overflow: auto;
 }
+.ui.basic.button:hover {
+	background: none!important;
+}
 @media (min-width: 768px) {
 	.list-left {
 		float: left;

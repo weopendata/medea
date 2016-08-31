@@ -387,22 +387,20 @@ new Vue({
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
-    submitTrack (data, action) {
-      if (data.identifier) {
-        _paq.push(['trackEvent', 'FindEvent', 'Update', data.identifier]);
+    submitSuccess (res) {
+      const newStatus = this.find.object.objectValidationStatus
+      var eventName = this.find.identifier ? 'Update' : 'Create'
+      if (newStatus === this.currentStatus) {
+
+      } else if (newStatus === 'in bewerking') {
+        eventName += 'AndSubmit'
+      } else if (newStatus === 'revisie nodig') {
+        eventName += 'ButNotSubmit'
       } else {
-        _paq.push(['trackEvent', 'FindEvent', 'Create', 0]);
+        eventName += 'ButUnexpectedStatus'
       }
-      if (data.object.objectValidationStatus == 'in bewerking') {
-        _paq.push(['trackEvent', 'FindEvent', 'Submit', data.identifier || 0]);
-      } else if (data.object.objectValidationStatus == 'revisie nodig') {
-        _paq.push(['trackEvent', 'FindEvent', 'Draft', data.identifier || 0]);
-      } else {
-        _paq.push(['trackEvent', 'FindEvent', 'InvalidStatus', data.identifier || 0]);
-      }
-    },
-    submitSuccess () {
-      window.location.href = this.redirectTo
+      _paq.push(['trackEvent', 'FindEvent', eventName, res.data.id || 0]);
+      window.location.href = res.data.url || this.redirectTo
     }
   },
   ready () {
