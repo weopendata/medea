@@ -13,7 +13,8 @@
   <dl v-if="finder">
     <dt-check v-if="validating" prop="finder.name"></dt-check>
     <dt>Vinder</dt>
-    <dd><a :href="'/persons/'+finder.id" v-text="finder.name"></a></dd>
+    <dd v-if="finder.id"><a :href="'/persons/'+finder.id" v-text="finder.name"></a></dd>
+    <dd v-else v-text="finder.name"></dd>
   </dl>
   <dl>
     <dt>Status</dt>

@@ -236,8 +236,17 @@ class FindController extends Controller
             $person->setNode($findUser);
 
             if ($person->showNameOnPublicFinds) {
-                $publicUserInfo['id'] = $person->id;
                 $publicUserInfo['name'] = $person->lastName . ' ' . $person->firstName;
+            }
+
+            // Should there be a link to the profile page
+            if ($person->profileAccessLevel == 4 ||
+                !empty($request->user()) && (
+                    $request->user()->id == $person->id ||
+                    $request->user()->hasRole($person->getProfileAllowedRoles())
+                )
+            ) {
+                $publicUserInfo['id'] = $person->id;
             }
         }
 
