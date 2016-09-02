@@ -22,12 +22,12 @@
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
       @if (!Auth::guest())
       <a href="/persons" class="item {{ Request::is('persons') ? 'active' : '' }}">Leden</a>
-      <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}">Nieuwe vondst</a>
+      <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
       @endif
 
       <div class="right menu">
         <a href="/about" class="item {{ Request::is('about') ? 'active' : '' }}">Over MEDEA</a>
-        <a href="/help" class="item {{ Request::is('help') ? 'active' : '' }}">Handleiding</a>
+        <a href="#" class="item {{ Request::is('help') ? 'active' : '' }}" onclick="startIntro();return false">Handleiding</a>
         @if (Auth::guest())
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
         @else

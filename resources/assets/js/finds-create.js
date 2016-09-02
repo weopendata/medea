@@ -444,3 +444,18 @@ new Vue({
     AddClassificationForm
   }
 });
+
+window.startIntro = function () {
+  introJs()
+  .setOptions({
+    scrollPadding: 200
+  })
+  .setOption('hideNext', true)
+  .setOption('hidePrev', true)
+  .setOption('doneLabel', 'Ik heb alles begrepen!')
+  .setOption('skipLabel', 'Ik heb alles begrepen!')
+  .start()
+}
+if (window.location.href.indexOf('startIntro') !== -1) {
+  window.startIntro()
+}

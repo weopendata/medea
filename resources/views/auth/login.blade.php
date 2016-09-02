@@ -50,3 +50,14 @@
     </div>
 </div>
 @endsection
+
+@section('script')
+<script>
+window.startIntro = function () {
+  introJs().start()
+}
+if (window.location.href.indexOf('startIntro') !== -1) {
+    window.startIntro()
+}
+</script>
+@endsection
