@@ -3,7 +3,7 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js'
 
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 import extend from 'deep-extend';
-import {load, Map, Marker, Circle} from 'vue-google-maps'
+import {load, Map, Marker, Circle, Rectangle} from 'vue-google-maps'
 
 import AddClassificationForm from './components/AddClassificationForm'
 import DevBar from './components/DevBar'
@@ -96,6 +96,8 @@ function toTreatment (tech) {
   } || undefined
 }
 
+const GEO_ROUND = 0.01
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -155,6 +157,12 @@ new Vue({
         draggable: true,
         clickable: true
       },
+      publicOptions: {
+        fillOpacity: 0.1,
+        strokeWeight: 1,
+        draggable: false,
+        clickable: false
+      },
       // Dropdowns
       fields: window.fields,
       // Model
@@ -192,6 +200,16 @@ new Vue({
     }
   },
   computed: {
+    publicBounds () {
+      var pubLat = Math.round(this.latlng.lat / GEO_ROUND) * GEO_ROUND
+      var pubLng = Math.round(this.latlng.lng / GEO_ROUND) * GEO_ROUND
+      return {
+        north: pubLat + GEO_ROUND / 2,
+        south: pubLat - GEO_ROUND / 2,
+        east: pubLng + GEO_ROUND / 2,
+        west: pubLng - GEO_ROUND / 2
+      }
+    },
     latlng: {
       get: function () {
         return {lat: parseFloat(this.find.findSpot.location.lat), lng: parseFloat(this.find.findSpot.location.lng)}
@@ -437,6 +455,7 @@ new Vue({
     Map,
     Marker,
     Circle,
+    Rectangle,
     PhotoUpload,
     DimInput,
     FindEvent,

@@ -113,8 +113,12 @@
       </button>
     </div>
   </div>
+  <div class="field" v-if="show.map">
+    Het zwarte kader geeft aan welke locatie zichtbaar is voor bezoekers en andere detectoristen.
+  </div>
   <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
+      <rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></rectangle>
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
       <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
     </map>
