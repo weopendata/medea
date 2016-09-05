@@ -1,5 +1,5 @@
 <template>
-  <div class="step" :class="{active:active, muted:!active, ready:ready}">
+  <div class="step" :class="{active:active, muted:!active, ready:ready}" :id="'step'+number">
   	<h3 @click="click">{{number}}. {{title}}</h3>
     <slot>Content expected</slot>
   </div>
@@ -18,7 +18,7 @@ export default {
 	},
 	methods: {
 		click () {
-			this.$parent.step = this.number
+			this.$parent.step = this.$parent.step == this.number ? 5 : this.number
 		}
 	}
 }

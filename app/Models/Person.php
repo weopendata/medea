@@ -5,7 +5,11 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Everyman\Neo4j\Relationship;
+use App\Repositories\UserRepository;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class Person extends Base implements Authenticatable
 {
     public static $NODE_TYPE = 'E21';
@@ -64,21 +68,82 @@ class Person extends Base implements Authenticatable
         ],
         [
             'name' => 'verified',
-            'default_value' => 'false'
+            'default_value' => false
         ],
         [
             'name' => 'firstName'
         ],
         [
             'name' => 'lastName'
+        ],
+        [
+            'name' => 'phone'
+        ],
+        [
+            'name' => 'profileAccessLevel',
+            'default_value' => 0
+        ],
+        [
+            'name' => 'showContactForm',
+            'default_value' => true
+        ],
+        [
+            'name' => 'showEmail',
+            'default_value' => false
+        ],
+        [
+            'name' => 'showNameOnPublicFinds',
+            'default_value' => false
+        ],
+        [
+            'name' => 'passContactInfoToAgency',
+            'default_value' => false,
+        ],
+        [
+            'name' => 'function'
+        ],
+        [
+            'name' => 'affiliation'
+        ],
+        [
+            'name' => 'bio'
+        ],
+        [
+            'name' => 'expertise'
+        ],
+        [
+            'name' => 'research'
+        ],
+        [
+            'name' => 'detectoristNumber'
+        ],
+        [
+            'name' => 'savedSearches'
         ]
+    ];
+
+    private $fillable = [
+        'personType',
+        'email',
+        'lastName',
+        'firstName',
+        'phone',
+        'showContactForm',
+        'showEmail',
+        'function',
+        'affiliation',
+        'bio',
+        'research',
+        'expertise',
+        'detectoristNumber',
+        'savedSearches',
     ];
 
     public function __construct($properties = [])
     {
-        parent::__construct($properties);
-
         if (!empty($properties)) {
+            parent::__construct($properties);
+
             $this->node->setProperty('token', str_random(40));
             $this->node->setProperty('password', Hash::make($properties['password']));
             $this->node->save();
@@ -133,22 +198,22 @@ class Person extends Base implements Authenticatable
     {
         $addressProperties = [
             [
-                'key' => 'street',
+                'key' => 'personAddressStreet',
                 'name' => 'personAddressStreet',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'number',
+                'key' => 'personAddressNumber',
                 'name' => 'personAddressNumber',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'postalCode',
+                'key' => 'personAddressPostalCode',
                 'name' => 'personAddressPostalCode',
                 'node_type' => 'E45'
             ],
             [
-                'key' => 'locality',
+                'key' => 'personAddressLocality',
                 'name' => 'personAddressLocality',
                 'node_type' => 'E45'
             ]
@@ -157,11 +222,11 @@ class Person extends Base implements Authenticatable
         $client = $this->getClient();
 
         $addressNode = $client->makeNode();
-        $addressNode->setProperty('name', 'address');
+        $addressNode->setProperty('name', 'personAddress');
         $addressNode->save();
 
         $addressNode->addLabels([
-            self::makeLabel('E53'), self::makeLabel('address'), self::makeLabel($this->getGeneralId())
+            self::makeLabel('E53'), self::makeLabel('personAddress'), self::makeLabel($this->getGeneralId())
         ]);
 
         foreach ($addressProperties as $addressProperty) {
@@ -243,13 +308,182 @@ class Person extends Base implements Authenticatable
     }
 
     /**
-     * Get the column name for the "remember me" token.
+     * Set the password reset token
+     */
+    public function setPasswordResetToken($token)
+    {
+        $this->node->setProperty($this->getPasswordResetTokenName(), $token)->save();
+    }
+
+    /**
+     * Get the password reset token.
+     *
+     * @return string
+     */
+    public function getPasswordResetToken()
+    {
+        return $this->node->getProperty($this->getPasswordResetTokenName());
+    }
+
+    /**
+     * Set the password of the user.
+     *
+     * @param string $password
+     *
+     * @return void
+     */
+    public function setPassword($password)
+    {
+        $password = Hash::make($password);
+
+        $this->node->setProperty('password', $password)->save();
+    }
+
+    public function update($properties)
+    {
+        return $this->patch($properties);
+    }
+
+    /**
+     * Perform a patch request
+     *
+     * @param array $properties The new properties of the person
+     *
+     * @return Node
+     */
+    public function patch($properties)
+    {
+        // Apply the new data properties we expect
+        // a flat document with lastName, firstName, roles, ...
+        $fullModel = $this->getValues();
+
+        foreach ($properties as $key => $value) {
+            $fullModel[$key] = $value;
+        }
+
+        unset($fullModel['_method']);
+        unset($fullModel['id']);
+        unset($fullModel['identifier']);
+
+        // Invoke the update method
+        return parent::update($fullModel);
+    }
+
+    /**
+     * Check if a user has a certain role
+     *
+     * @param array|string $roles
+     *
+     * @return boolean
+     */
+    public function hasRole($roles)
+    {
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
+
+        return count(array_intersect($roles, $this->getRoles())) > 0;
+    }
+
+    /**
+     * Get the property name for the "remember me" token.
      *
      * @return string
      */
     public function getRememberTokenName()
     {
         return 'remember_token';
+    }
+
+    /**
+     * Get the property name for the password reset token.
+     *
+     * @return string
+     */
+    public function getPasswordResetTokenName()
+    {
+        return 'password_token';
+    }
+
+    /**
+     * Get the public profile of a person
+     * @TODO
+     *
+     * @return array
+     */
+    public function getPublicProfile()
+    {
+        $person = [];
+        $person['created_at'] = substr($this->created_at, 0, 10);
+
+        // Iterate over the default fillable fields
+        foreach ($this->fillable as $property) {
+            $person[$property] = $this->$property;
+        }
+
+        return $person;
+    }
+
+    /**
+     * Indicates if the user has a public profile
+     * Note: The administrator has access in any case
+     *
+     * @return boolean
+     */
+    public function hasPublicProfile()
+    {
+        return is_numeric($this->profileAccessLevel) && $this->profileAccessLevel > 0;
+    }
+
+    /**
+     * Indicates which roles are allowed to see the profile of this user
+     *
+     * @return array
+     */
+    public function getProfileAllowedRoles()
+    {
+        switch ($this->profileAccessLevel) {
+            case 1:
+                return ['onderzoeker', 'administrator'];
+            case 2:
+                return ['onderzoeker', 'agentschap', 'administrator'];
+            case 3:
+                return [
+                    'administrator',
+                    'agentschap',
+                    'detectorist',
+                    'onderzoeker',
+                    'validator',
+                    'vondstexpert',
+                ];
+        }
+
+        return ['administrator'];
+    }
+
+    public function getSavedSearches()
+    {
+        $searches = $this->node->getProperty('savedSearches');
+
+        if (!is_null($searches)) {
+            return [];
+        }
+
+        return $searches;
+    }
+
+    /**
+     * Get the amount of finds for the person
+     * Note: when a user has a lot of finds, it's
+     * better to perform the count through a query
+     *
+     * @return string
+     */
+    public function getFindCount()
+    {
+        $users = new UserRepository();
+
+        return $users->getFindCountForUser($this->id);
     }
 
     /**

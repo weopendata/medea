@@ -8,10 +8,13 @@ use App\Http\Controllers\Controller;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 use App\Helpers\Pager;
+use App\Http\Requests\FindApiRequest;
 
 /**
  * This controller provides an API on top of FindEvent nodes, but also on Object nodes.
  * The two are mostly used in direct relationship with eachother.
+ *
+ * @SuppressWarnings(PHPMD.UnusedLocalVariable)
  */
 class FindController extends Controller
 {
@@ -21,20 +24,90 @@ class FindController extends Controller
         $this->objects = new ObjectRepository();
     }
 
-    public function index(Request $request)
+    public function index(FindApiRequest $request)
+    {
+        $type = $request->input('type');
+
+        if ($type == 'heatmap') {
+            return $this->makeHeatMapResponse($request);
+        } else {
+            return $this->makeApiFindsResponse($request);
+        }
+    }
+
+    private function makeHeatMapResponse($request)
+    {
+        extract($this->processQueryParts($request));
+
+        $heatMap = $this->finds->getHeatMap($filters, $validatedStatus);
+
+        return response()->json($heatMap);
+    }
+
+    private function makeApiFindsResponse($request)
+    {
+        extract($this->processQueryParts($request));
+
+        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
+        $finds = $result['data'];
+        $count = $result['count'];
+
+        // If a user is a researcher or personal finds have been set, return the exact
+        // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
+        if (empty($filters['myfinds'])) {
+            $adjustedFinds = [];
+
+            $user = $request->user();
+
+            foreach ($finds as $find) {
+                if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+                    && !in_array('onderzoeker', $user->getRoles())) {
+                    if (!empty($find['findSpot']['location']['lat'])) {
+                        $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
+                        $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
+                        $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
+                        $find['findSpot']['location']['accuracy'] = max(2000, $accuracy);
+                    }
+                }
+
+                $adjustedFinds[] = $find;
+            }
+
+            $finds = $adjustedFinds;
+        }
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
+
+        $linkHeader = '';
+
+        $queryString = $this->buildQueryString($request);
+
+        foreach ($pages as $rel => $page_info) {
+            if (!empty($queryString)) {
+                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $queryString . ';rel=' . $rel . ';';
+            } else {
+                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
+            }
+        }
+        $linkHeader = rtrim($linkHeader, ';');
+
+        return response()->json($finds)->header('Link', $linkHeader);
+    }
+
+    private function processQueryParts($request)
     {
         $filters = $request->all();
 
-        $validated_status = $request->input('status', 'gevalideerd');
+        $validatedStatus = $request->input('status', 'gevalideerd');
 
         if (empty($request->user())) {
-            $validated_status = 'gevalideerd';
+            $validatedStatus = 'gevalideerd';
         }
 
         // Check if personal finds are set
         if ($request->has('myfinds') && !empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
-            $validated_status = '*';
+            $validatedStatus = '*';
         }
 
         $limit = $request->input('limit', 20);
@@ -54,26 +127,7 @@ class FindController extends Controller
             }
         }
 
-        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
-        $finds = $result['data'];
-        $count = $result['count'];
-
-        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
-
-        $link_header = '';
-
-        $query_string = $this->buildQueryString($request);
-
-        foreach ($pages as $rel => $page_info) {
-            if (!empty($query_string)) {
-                 $link_header .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . ';rel=' . $rel . ';';
-            } else {
-                $link_header .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
-            }
-        }
-        $link_header = rtrim($link_header, ';');
-
-        return response()->json($finds)->header('Link', $link_header);
+        return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');
     }
 
     /**

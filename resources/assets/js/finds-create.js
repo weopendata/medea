@@ -1,19 +1,22 @@
-import Vue from 'vue/dist/vue.min.js';
-import VueResource from 'vue-resource/dist/vue-resource.min.js';
-import DevBar from './components/DevBar';
-import Step from './components/Step';
-import checkbox from 'semantic-ui-css/components/checkbox.min.js';
-import dropdown from 'semantic-ui-css/components/dropdown.min.js';
-import transition from 'semantic-ui-css/components/transition.min.js';
+import Vue from 'vue/dist/vue.min.js'
+import VueResource from 'vue-resource/dist/vue-resource.min.js'
 
-import {load, Map, Marker, Circle} from 'vue-google-maps';
-
-import PhotoUpload from './components/PhotoUpload';
-import DimInput from './components/DimInput.vue';
-import FindEvent from './components/FindEvent';
-import AddClassificationForm from './components/AddClassificationForm'
-import Ajax from './mixins/Ajax';
+import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 import extend from 'deep-extend';
+import {load, Map, Marker, Circle, Rectangle} from 'vue-google-maps'
+
+import AddClassificationForm from './components/AddClassificationForm'
+import DevBar from './components/DevBar'
+import DimInput from './components/DimInput.vue'
+import FindEvent from './components/FindEvent'
+import PhotoUpload from './components/PhotoUpload'
+import Step from './components/Step'
+import TextareaGrowing from './components/TextareaGrowing'
+
+import Ajax from './mixins/Ajax'
+import Notifications from './mixins/Notifications'
+
+import {EMPTY_CLS} from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -34,6 +37,67 @@ var getCities = function (results) {
   return location
 }
 
+function fromDimensions (dimensions) {
+  var dims = {
+    lengte: {unit: 'mm' },
+    breedte: {unit: 'mm' },
+    diepte: {unit: 'mm' },
+    omtrek: {unit: 'mm' },
+    diameter: {unit: 'mm' },
+    gewicht: {unit: 'g'}
+  }
+  for (var i = dimensions.length - 1; i >= 0; i--) {
+    dims[dimensions[i].dimensionType].value = dimensions[i].measurementValue
+    dims[dimensions[i].dimensionType].unit = dimensions[i].dimensionUnit
+  }
+  return dims
+}
+
+function toDimensions (dims) {
+  var dimensions = []
+  for (let type in dims) {
+    if (dims[type].value) {
+      dimensions.push({
+        dimensionType: type,
+        measurementValue: dims[type].value,
+        dimensionUnit: dims[type].unit
+      })
+    }
+  }
+  return dimensions
+}
+
+function fromInscription (ins) {
+  return ins && ins.objectInscriptionNote
+}
+function toInscription (ins) {
+  return ins && {
+    objectInscriptionNote: ins
+  } || undefined
+}
+
+function fromTechnique (tech) {
+  return tech && tech.productionTechniqueType
+}
+function toTechnique (tech) {
+  return tech && {
+    productionTechniqueType: tech
+  } || undefined
+}
+
+function fromTreatment (tech) {
+  return tech && tech.modificationTechnique && tech.modificationTechnique.modificationTechniqueType
+}
+function toTreatment (tech) {
+  return tech && {
+    modificationTechnique: {
+      modificationTechniqueType: tech
+    }
+  } || undefined
+}
+
+const GEO_ROUND = 0.01
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -46,10 +110,10 @@ new Vue({
         findSpotType: '',
         location: {
           address: {
-            street: null,
-            number: null,
-            locality: null,
-            postalCode: null
+            locationAddressStreet: null,
+            locationAddressNumber: null,
+            locationAddressLocality: null,
+            locationAddressPostalCode: null
           },
           accuracy: 1,
           lat: null,
@@ -57,24 +121,17 @@ new Vue({
         }
       },
       object: {
+        feedback: null,
         objectValidationStatus: 'in bewerking',
         objectDescription: null,
-        objectCategory: null,
-        material: null,
+        objectCategory: 'onbekend',
+        objectMaterial: null,
         surfaceTreatment: null,
-        treatmentEvent: {
-          modificationTechnique: {
-            modificationTechniqueType: null
-          }
-        },
         period: 'onbekend',
         photograph: [],
         dimensions: [],
         productionEvent: {
-          productionClassification: [],
-          productionTechnique: {
-            type: null
-          }
+          productionClassification: []
         }
       }
     };
@@ -100,22 +157,24 @@ new Vue({
         draggable: true,
         clickable: true
       },
+      publicOptions: {
+        fillOpacity: 0.1,
+        strokeWeight: 1,
+        draggable: false,
+        clickable: false
+      },
       // Dropdowns
       fields: window.fields,
       // Model
       find: initialFind,
+      currentStatus: initialFind.object.objectValidationStatus,
       // Mapped to model
-      toValidate: true,
-      inscription: null,
-      dims: {
-        lengte: {dimensionUnit: 'cm' },
-        breedte: {dimensionUnit: 'cm' },
-        diepte: {dimensionUnit: 'cm' },
-        omtrek: {dimensionUnit: 'cm' },
-        diameter: {dimensionUnit: 'cm' },
-        gewicht: {dimensionUnit: 'g'}
-      },
+      dims: fromDimensions(initialFind.object.dimensions),
+      inscription: fromInscription(initialFind.object.objectInscription),
+      technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
+      treatment: fromTreatment(initialFind.object.treatmentEvent),
       // Interface state
+      today: new Date().toISOString().slice(0, 10),
       show: {
         map: false,
         spotdescription: false,
@@ -133,13 +192,24 @@ new Vue({
       },
       // Form state
       ready: [],
-      step: 1,
+      step: initialFind.identifier ? 0 : 1,
       submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
+      redirectTo: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds?myfinds=yes',
       // App state
       user: window.medeaUser
     }
   },
   computed: {
+    publicBounds () {
+      var pubLat = Math.round(this.latlng.lat / GEO_ROUND) * GEO_ROUND
+      var pubLng = Math.round(this.latlng.lng / GEO_ROUND) * GEO_ROUND
+      return {
+        north: pubLat + GEO_ROUND / 2,
+        south: pubLat - GEO_ROUND / 2,
+        east: pubLng + GEO_ROUND / 2,
+        west: pubLng - GEO_ROUND / 2
+      }
+    },
     latlng: {
       get: function () {
         return {lat: parseFloat(this.find.findSpot.location.lat), lng: parseFloat(this.find.findSpot.location.lng)}
@@ -157,11 +227,28 @@ new Vue({
         this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 1
       }
     },
+    f () {
+      return this.validation.feedback
+    },
+    validation () {
+      return this.validationList[0] || {
+        feedback: {}
+      }
+    },
+    validationList () {
+      return JSON.parse(this.find.object.feedback).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+    },
+    hasFeedback () {
+      return this.validationList.length > 0
+    },
     accuracyStep () {
       return Math.max(1, Math.pow(10, Math.floor(Math.log10(this.find.findSpot.location.accuracy) - 1)))
     },
     markerNeeded () {
       return this.map.zoom < 21 - Math.log2(this.accuracy)
+    },
+    toValidate () {
+      return this.find.object.objectValidationStatus === 'in bewerking'
     },
     submittable () {
       return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)
@@ -176,14 +263,14 @@ new Vue({
       return this.find.findSpot.location.lat && this.find.findSpot.location.lng
     },
     hasLocation () {
-      return this.find.findSpot.location.locationPlaceName.appellation || this.find.findSpot.location.address.locality || this.find.findSpot.location.address.street || this.find.findSpot.location.address.line
+      return this.find.findSpot.findSpotTitle || this.find.findSpot.location.address.locationAddressLocality || this.find.findSpot.location.address.locationAddressStreet || this.find.findSpot.location.address.line
     },
 
     step2valid () {
       return this.hasImages
     },
     hasImages () {
-      return this.find.object.photograph.length
+      return this.find.object.photograph.length > 1
     },
 
     step3valid () {
@@ -194,9 +281,14 @@ new Vue({
     }
   },
   methods: {
-    toStep (i) {
+    toStep (i, show) {
       this.formdata()
       this.step = i
+      this.show[show] = true
+      var elem = document.getElementById('step' + i)
+      if (elem) {
+        this.$nextTick(() => elem.scrollIntoView())
+      }
     },
     setMarker (event) {
       this.marker.visible = true
@@ -223,10 +315,10 @@ new Vue({
           return console.warn('reverse geocoding: no results', status)
         }
         var location = getCities(results)
-        self.find.findSpot.location.address.street = location.street
-        self.find.findSpot.location.address.number = location.number
-        self.find.findSpot.location.address.locality = location.locality
-        self.find.findSpot.location.address.postalCode = location.postalCode
+        self.find.findSpot.location.address.locationAddressStreet = location.street
+        self.find.findSpot.location.address.locationAddressNumber = location.number
+        self.find.findSpot.location.address.locationAddressLocality = location.locality
+        self.find.findSpot.location.address.locationAddressPostalCode = location.postalCode
 
         // Center map
         self.map.center = {
@@ -251,7 +343,7 @@ new Vue({
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
-        address: (a.street ? a.street + (a.number || '') + ' , ': '') + (a.zip || '') + a.locality,
+        address: (a.locationAddressStreet ? a.locationAddressStreet + (a.locationAddressNumber || '') + ' , ': '') + (a.locationAddressPostalCode || '') + a.locationAddressLocality,
         region: 'be'
       }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
@@ -263,9 +355,9 @@ new Vue({
           return console.warn('no results', status)
         }
         var location = getCities(results)
-        self.find.findSpot.location.address.street = location.street
-        self.find.findSpot.location.address.locality = location.locality
-        self.find.findSpot.location.address.postalCode = location.postalCode
+        self.find.findSpot.location.address.locationAddressStreet = location.street
+        self.find.findSpot.location.address.locationAddressLocality = location.locality
+        self.find.findSpot.location.address.locationAddressPostalCode = location.postalCode
 
         self.marker.visible = true
         self.latlng = self.map.center = {
@@ -301,57 +393,32 @@ new Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.find.object.productionEvent.productionClassification.push({
-        type: '',
-        period: '',
-        nation: '',
-        startDate: '',
-        endDate: '',
-        publication: [{publicationTitle: ''}],
-        description: ''
-      })
-    },
-    import () {
-      // Inverse of formdata()
-      // Dimensions
-      for (var i = 0; i < this.find.object.dimensions.length; i++) {
-        this.dims[this.find.object.dimensions[i].dimensionType] = {
-          measurementValue: this.find.object.dimensions[i].measurementValue,
-          dimensionUnit: this.find.object.dimensions[i].dimensionUnit
-        }
-      }
-      // Inscription
-      if (this.find.object.objectInscription) {
-        this.$set('inscription', this.find.object.objectInscription.objectInscriptionNote)
-      }
+      this.find.object.productionEvent.productionClassification.push(EMPTY_CLS)
     },
     formdata () {
       // Dimensions
-      var dimensions = []
-      for (let type in this.dims) {
-        if (this.dims[type].measurementValue) {
-          dimensions.push({
-            dimensionType: type,
-            measurementValue: this.dims[type].measurementValue,
-            dimensionUnit: this.dims[type].dimensionUnit
-          })
-        }
-      }
-      this.find.object.dimensions = dimensions
+      this.find.object.dimensions = toDimensions(this.dims)
+      this.find.object.objectInscription = toInscription(this.inscription)
+      this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
+      this.find.object.treatmentEvent = toTreatment(this.treatment)
 
-      // Inscription
-      if (this.inscription) {
-        this.find.object.objectInscription = {
-          objectInscriptionNote: this.inscription
-        }
-      }
-
-      // Validation status
-      this.find.object.objectValidationStatus = this.toValidate ? 'in bewerking' : 'revisie nodig'
+      console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
-    submitSuccess () {
-      window.location.href = this.submitAction
+    submitSuccess (res) {
+      const newStatus = this.find.object.objectValidationStatus
+      var eventName = this.find.identifier ? 'Update' : 'Create'
+      if (newStatus === this.currentStatus) {
+
+      } else if (newStatus === 'in bewerking') {
+        eventName += 'AndSubmit'
+      } else if (newStatus === 'revisie nodig') {
+        eventName += 'ButNotSubmit'
+      } else {
+        eventName += 'ButUnexpectedStatus'
+      }
+      _paq.push(['trackEvent', 'FindEvent', eventName, res.data.id || 0]);
+      window.location.href = res.data.url || this.redirectTo
     }
   },
   ready () {
@@ -361,13 +428,12 @@ new Vue({
         this.show.map = true
         this.marker.visible = true
       }
-      this.import()
     }
-    $('.ui.checkbox').checkbox()
-    $('.ui.dropdown').dropdown()
+    $('.ui.checkbox', this.$el).checkbox()
+    // $('.step .ui.dropdown').dropdown()
   },
   watch: {
-    'find.object.category' (val) {
+    'find.object.objectCategory' (val) {
       if (val == 'munt' || val == 'rekenpenning') {
         this.show.diameter = true
         this.show.lengte = false
@@ -382,16 +448,33 @@ new Vue({
     }
   },
   el: 'body',
-  mixins: [Ajax],
+  mixins: [Ajax, Notifications],
   components: {
     DevBar,
     Step,
     Map,
     Marker,
     Circle,
+    Rectangle,
     PhotoUpload,
     DimInput,
     FindEvent,
+    TextareaGrowing,
     AddClassificationForm
   }
 });
+
+window.startIntro = function () {
+  introJs()
+  .setOptions({
+    scrollPadding: 200
+  })
+  .setOption('hideNext', true)
+  .setOption('hidePrev', true)
+  .setOption('doneLabel', 'Ik heb alles begrepen!')
+  .setOption('skipLabel', 'Ik heb alles begrepen!')
+  .start()
+}
+if (window.location.href.indexOf('startIntro') !== -1) {
+  window.startIntro()
+}

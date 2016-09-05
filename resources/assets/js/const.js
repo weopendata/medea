@@ -1,0 +1,66 @@
+// Remove reactivity
+export function inert (v) {
+  return JSON.parse(JSON.stringify(v))
+}
+
+// FindEvent helpers
+export function findTitle (find) {
+  // Not showing undefined and onbekend in title
+  var title = [
+    find.object.objectCategory,
+    find.object.period,
+    find.object.objectMaterial
+  ].filter(f => f && f !== 'onbekend').join(', ')
+
+  return title + ' (ID-' + find.identifier + ')'
+}
+
+// Classification helpers
+export const EMPTY_CLS = {
+	productionClassificationCulturePeople: '',
+	productionClassificationDescription: '',
+	productionClassificationRulerNation: '',
+	productionClassificationPeriod: '',
+	productionClassificationType: '',
+	startDate: '',
+	endDate: '',
+	publication: [{ publicationTitle: '' }],
+}
+
+export function urlify (u) {
+  if (!u) {
+    return
+  }
+  if (u.slice(0, 4) === 'http') {
+    return {
+      href: u
+    }
+  }
+  return {
+    text: u
+  }
+}
+
+// Date & time
+export const MONTHS = 'jan,feb,mar,apr,may,jun,jul,aug,sept,oct,nov,dec'.split(',')
+
+export function toMonth (d) {
+  d = new Date(Date.parse(d))
+  return MONTHS[d.getMonth()] + ', ' + d.getFullYear()
+}
+
+export const fromDate = function (d) {
+  d = new Date(Date.parse(d))
+  return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
+}
+
+// Filesize
+export const MAX_FILE_SIZE = 4 * 1024 * 1024
+
+export function toBytes (bytes) {
+  return bytes < 10000
+    ? bytes.toFixed(0) + ' B'
+    : bytes < 1024000
+    ? (bytes / 1024).toPrecision(3) + ' kB'
+    : (bytes / 1024 / 1024).toPrecision(3) + ' MB'
+}

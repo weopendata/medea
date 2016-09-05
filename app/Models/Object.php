@@ -49,8 +49,8 @@ class Object extends Base
         [
             'relationship' => 'P45',
             'config' => [
-                'key' => 'material',
-                'name' => 'material',
+                'key' => 'objectMaterial',
+                'name' => 'objectMaterial',
                 'value_node' => true,
                 'cidoc_type' => 'E57'
             ]
@@ -88,7 +88,7 @@ class Object extends Base
                 'cidoc_type' => 'E11'
             ]
         ],
-        /*[
+        [
             'relationship' => 'P42',
             'config' => [
                 'key' => 'period',
@@ -96,8 +96,70 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
-        ]*/
+        ]
     ];
+
+    protected $properties = [
+        [
+            'name' => 'feedback',
+        ],
+        [
+            'name' => 'embargo',
+            'default_value' => false
+        ]
+    ];
+
+    /**
+     * Overwrite the constructor and construct a full text field
+     * after construction of the subtree
+     *
+     * @param array $properties
+     *
+     * @return Base
+     */
+    public function __construct($properties = [])
+    {
+        parent::__construct($properties);
+
+        if (!empty($properties)) {
+            $this->updateFtsField($properties);
+        }
+    }
+
+    /**
+     * Fill in the Fulltest Search field
+     *
+     * @param array $properties The properties assigned to an Object node
+     *
+     * @return void
+     */
+    private function updateFtsField($properties)
+    {
+        $fulltextProperties = [
+            'objectCategory',
+            'objectDescription',
+            'material',
+        ];
+
+        $description = '';
+
+        foreach ($fulltextProperties as $property) {
+            if (!empty($properties[$property])) {
+                $description .= $properties[$property] . ' ';
+            }
+        }
+
+        $this->getNode()->setProperty('fulltext_description', $description)->save();
+    }
+
+    public function update($properties)
+    {
+        parent::update($properties);
+
+        if (!empty($properties)) {
+            $this->updateFtsField($properties);
+        }
+    }
 
     /**
      * Dimension is not a main entity, so we create it in this object only

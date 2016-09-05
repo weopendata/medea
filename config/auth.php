@@ -45,6 +45,11 @@ return [
             'driver' => 'token',
             'provider' => 'neo4j',
         ],
+
+        'users' => [
+            'driver' => 'token',
+            'provider' => 'neo4j',
+        ],
     ],
 
     /*
@@ -66,6 +71,11 @@ return [
 
     'providers' => [
         'neo4j' => [
+            'driver' => 'neo4j',
+            'model' => App\Models\Person::class,
+        ],
+
+        'users' => [
             'driver' => 'neo4j',
             'model' => App\Models\Person::class,
         ],
@@ -103,5 +113,4 @@ return [
             'expire' => 60,
         ],
     ],
-
 ];

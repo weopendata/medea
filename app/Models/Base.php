@@ -98,16 +98,8 @@ class Base
             $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
             $this->node->setProperty('name', static::$NODE_NAME)->save();
 
-            // Set value properties for the node
-            foreach ($this->properties as $property_config) {
-                $property_name = $property_config['name'];
-
-                if (!empty($properties[$property_name])) {
-                    $this->node->setProperty($property_name, $properties[$property_name]);
-                } elseif (array_key_exists('default_value', $property_config)) {
-                    $this->node->setProperty($property_name, $property_config['default_value']);
-                }
-            }
+            // Set the properties of the model
+            $this->setProperties($properties);
 
             $this->node->save();
 
@@ -137,6 +129,14 @@ class Base
                                 $modelName = 'App\Models\\' . $config['model_name'];
                                 $model = new $modelName($entry);
                                 $model->save();
+
+                                if (!empty($model)) {
+                                    $this->makeRelationship($model, $relationshipName);
+
+                                    if (!empty($config['reverse_relationship'])) {
+                                        $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                    }
+                                }
                             }
                         } else {
                             if (!empty($config['link_only']) && $config['link_only']) {
@@ -147,13 +147,13 @@ class Base
                                 $model = new $modelName($input);
                                 $model->save();
                             }
-                        }
 
-                        if (!empty($model)) {
-                            $this->makeRelationship($model, $relationshipName);
+                            if (!empty($model)) {
+                                $this->makeRelationship($model, $relationshipName);
 
-                            if (!empty($config['reverse_relationship'])) {
-                                $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                if (!empty($config['reverse_relationship'])) {
+                                    $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                }
                             }
                         }
                     }
@@ -204,20 +204,7 @@ class Base
         if (!empty($properties)) {
             $client = self::getClient();
 
-            // Set value properties for the node
-            foreach ($this->properties as $property_config) {
-                $property_name = $property_config['name'];
-
-                if (!empty($properties[$property_name])) {
-                    $this->node->setProperty($property_name, $properties[$property_name]);
-                } elseif (array_key_exists('default_value', $property_config)) {
-                    $this->node->setProperty($property_name, $property_config['default_value']);
-                } else {
-                    $this->node->setProperty($property_name, null);
-                }
-            }
-
-            $this->node->save();
+            $this->setProperties($properties);
 
             // Create related models through recursion
             foreach ($this->relatedModels as $relationshipName => $config) {
@@ -228,8 +215,8 @@ class Base
                 } elseif (!empty($properties[$config['key']])) {
                     $input = $properties[$config['key']];
 
-                    // Keep track of the related models through the return identifiers
-                    // The identifiers that we find that are not in this list, we need to delete
+                    // Keep track of the related models by the returned identifiers
+                    // The identifiers that we get and are not in this list, we need to delete
                     $related_identifiers = [];
                     if (!empty($input)) {
                         if (is_array($input) && !$this->isAssoc($input)) {
@@ -349,6 +336,31 @@ class Base
         $this->node->save();
 
         return $this->node;
+    }
+
+    /**
+     * Set the properties of the model
+     *
+     * @param array $properties The full list of properties for the model
+     *
+     * @return void
+     */
+    protected function setProperties($properties)
+    {
+        // Set value properties for the node
+        foreach ($this->properties as $propertyConfig) {
+            $propertyName = $propertyConfig['name'];
+
+            if (!empty($properties[$propertyName])) {
+                $this->node->setProperty($propertyName, $properties[$propertyName]);
+            } elseif (array_key_exists('default_value', $propertyConfig)) {
+                $this->node->setProperty($propertyName, $propertyConfig['default_value']);
+            } else {
+                $this->node->setProperty($propertyName, '');
+            }
+        }
+
+        $this->node->save();
     }
 
     /**
@@ -520,6 +532,11 @@ class Base
         return $node;
     }
 
+    public function getId()
+    {
+        return $this->node->getId();
+    }
+
     /**
      * Recursively retrieve the data out of related nodes
      *
@@ -650,7 +667,15 @@ class Base
         }
 
         // Get the data properties
-        foreach ($this->properties as $property) {
+        $nodeProperties = array_merge(
+            $this->properties,
+            [
+                ['name' => 'created_at'],
+                ['name' => 'updated_at']
+            ]
+        );
+
+        foreach ($nodeProperties as $property) {
             $val = $this->node->getProperty($property['name']);
 
             if (!is_null($val)) {
@@ -692,8 +717,6 @@ class Base
                  $modelName = 'App\Models\\' . $model;
                  $model = new $modelName();
                  $model->setNode($node);
-
-                 \Log::info($modelName);
 
                  return $model;
             }

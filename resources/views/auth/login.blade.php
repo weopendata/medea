@@ -2,14 +2,15 @@
 
 @section('content')
 
-<div class="ui four column centered doubling grid">
-    <div class="column">
+<div style="max-width:45em;margin:0 auto;">
+    <div style="width:20em;float:left;padding:16px">
         <form class="ui form" role="form" method="POST" action="{{ url('/login') }}">
+            <h2>Aanmelden</h2>
             {!! csrf_field() !!}
 
             <div class="field">
-                <label>Email</label>
-                <input type="text" name="email" placeholder="Email">
+                <label>Emailadres</label>
+                <input type="text" name="email">
 
                 @if ($errors->has('email'))
                 <div class="ui negative message">
@@ -19,7 +20,7 @@
             </div>
 
             <div class="field">
-                <label>Password</label>
+                <label>Wachtwoord</label>
                 <input type="password" class="form-control" name="password">
 
                 @if ($errors->has('password'))
@@ -29,8 +30,34 @@
                 @endif
             </div>
 
-            <button class="ui button" type="submit">Submit</button>
+            <button class="ui green button" type="submit">Aanmelden</button>
+
+            <p>
+                <a href="/password/reset">Wachtwoord vergeten?</a>
+            </p>
         </form>
     </div>
+    <div style="max-width:20em;float:right;padding:16px">
+        <h2 class="status-lg">
+            Eerste keer?
+        </h2>
+        <p>
+            Je moet eerst <a href="/#register">registreren</a> vooraleer je kunt aanmelden.
+        </p>
+        <p>
+            <a href="/#register" class="ui blue button">Nu registereren</a>
+        </p>
+    </div>
 </div>
+@endsection
+
+@section('script')
+<script>
+window.startIntro = function () {
+  introJs().start()
+}
+if (window.location.href.indexOf('startIntro') !== -1) {
+    window.startIntro()
+}
+</script>
 @endsection

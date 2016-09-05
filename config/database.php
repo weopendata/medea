@@ -90,7 +90,8 @@ return [
             'host' => env('NEO4J_HOST', 'localhost'),
             'port' => env('NEO4J_PORT', 7474),
             'username' => env('NEO4J_USER'),
-            'password' => env('NEO4J_PASSWORD')
+            'password' => env('NEO4J_PASSWORD'),
+            'database' => ''
         ]
 
     ],

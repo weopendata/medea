@@ -3,18 +3,18 @@
     <div class="two fields">
       <div class="field">
         <label>Type</label>
-        <input type="text" v-model="cls.type" placeholder="Voorbeeld: 2.1" list="types">
+        <input type="text" v-model="cls.productionClassificationType" placeholder="Voorbeeld: 2.1" list="types">
       </div>
       <div class="field">
         <label>Periode</label>
-        <select class="ui search fluid dropdown" v-model="cls.period">
+        <select class="ui search fluid dropdown" v-model="cls.productionClassificationCulturePeople">
           <option>onbekend</option>
-          <option v-for="opt in fields.period" :value="opt" v-text="opt"></option>
+          <option v-for="opt in fields.culturepeople" :value="opt" v-text="opt"></option>
         </select>
       </div>
       <div class="field">
         <label>Heerser</label>
-        <input type="text" v-model="cls.nation" placeholder="(Alleen voor munten)" list="nations">
+        <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
       </div>
     </div>
     <div class="two fields">
@@ -33,7 +33,7 @@
     </div>
     <div class="field">
       <label for="description">Opmerkingen</label>
-      <textarea-growing id="description" :model.sync="cls.description"></textarea-growing>
+      <textarea-growing id="description" :model.sync="cls.productionClassificationDescription"></textarea-growing>
     </div>
     <datalist id="types">
       <option v-for="opt in fields.type" :value="opt"></option>
@@ -84,7 +84,7 @@ export default {
     if (!this.cls.publication) {
       this.$set('cls.publication', [{publicationTitle: ''}])
     }
-    $('select.ui.dropdown').dropdown()
+    // $('select.ui.dropdown').dropdown()
   },
   components: {
     InputDate,

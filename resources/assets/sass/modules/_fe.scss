@@ -1,29 +1,29 @@
 /* FindEvent */
 
-.ui.items > .item > .image.fe-image {
-	width: 400px;
-	max-height: 250px;
-	white-space: nowrap;
-	overflow-x: auto;
-	overflow-y: hidden;
-}
-.ui.items > .item > .image.fe-image > img,
-.fe-img {
-	display: inline-block;
-	margin-right: 1.5rem;
-	width: auto;
-	height: 250px;
-	vertical-align: top;
-	&:last-child {
-		margin-right: 0;
-	}
-}
+// .ui.items > .item > .image.fe-image {
+// 	width: 400px;
+// 	max-height: 250px;
+// 	white-space: nowrap;
+// 	overflow-x: auto;
+// 	overflow-y: hidden;
+// }
+// .ui.items > .item > .image.fe-image > img,
+// .fe-img {
+// 	display: inline-block;
+// 	margin-right: 1.5rem;
+// 	width: auto;
+// 	height: 250px;
+// 	vertical-align: top;
+// 	&:last-child {
+// 		margin-right: 0;
+// 	}
+// }
 // Divider
-@media only screen and (min-width: 767px) {
-	.ui.items > .item > .image.fe-image {
-		border-right: 2px solid rgba(34, 36, 38, 0.15);
-	}
-}
+// @media only screen and (min-width: 767px) {
+// 	.ui.items > .item > .image.fe-image {
+// 		border-right: 2px solid rgba(34, 36, 38, 0.15);
+// 	}
+// }
 
 /* FindEvent preview */
 
@@ -41,48 +41,57 @@
 
 /* simple image carousel */
 
-.fe-header {
-	position: relative;
-	margin-top: -30px;
-	margin-bottom: 2rem;
-	text-align: center;
-	background: #666;
-	color: white;
-}
-.fe-header-fixed {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 1.5rem;
-	pointer-events: none;
-	>h1 {
-		display: inline;
-		font-weight: normal;
-		pointer-events: auto;
-	}
-}
-
-/* simple image carousel */
-
-.fe-imglist {
-	display: block;
-	padding: 3rem 1.5rem 5rem;
-	overflow-y: auto;
-	text-align: center;
-	white-space: nowrap;
-	.img {
-		display: inline-block;
-		margin: 0 1.5rem;
-	}
+.fe-header {}
+.fe-header-fixed {}
+.fe-card {
+	padding: 16px 0 0;
 	img {
 		display: block;
-		height: 400px;
+		max-height: 30vh;
+		max-width: 100%;
+		width: auto;
 	}
 }
-.fe-imglist-feedback {
-	width: 400px;
-	flex-basis: 50vw;
-	flex-shrink: 0;
+$magnify-color: black;
+$magnify-size: 1.4em;
+$magnify-margin: -.5 * $magnify-size;
+.fe-imglist {
+	margin: -.5rem;
+	.fe-img {
+		padding: .5rem;
+		position: relative;
+		display: inline-block;
+		max-width: 50%;
+		vertical-align: top;
+		cursor: zoom-in;
+		&:hover .magnify {
+			transform: scale(1.2);
+			background: $magnify-color;
+			box-shadow: 0 0 10px 5px $magnify-color;
+		}
+	}
+	.magnify {
+		transition: background .3s, box-shadow .3s, transform .3s;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin: $magnify-margin 0 0 $magnify-margin;
+		border-radius: 50%;
+		padding: .05em 0 0 .15em;
+		width: $magnify-size;
+		height: $magnify-size;
+		line-height: $magnify-size;
+		font-size: 2rem;
+		text-align: center;
+		background: transparentize($magnify-color, .5);
+		color: white;
+		box-shadow: 0 0 10px 5px transparentize($magnify-color, .5);
+		pointer-events: none;
+	}
+}
+.scrolling.column {
+	max-height: 70vh;
+	overflow: auto;
 }
 
 /* Image remarks */
@@ -91,7 +100,70 @@
 	display: block;
 	line-height: 3rem;
 	cursor: pointer;
-	&:hover {
-		background-color: black
+}
+
+/* Validation of finds */
+
+dl {
+	position: relative;
+}
+.fe-check {
+	position: absolute;
+	right: 100%;
+	line-height: 24px;
+	height: 24px;
+	width: 24px;
+	text-align: center;
+	color: white;
+	background: #F2711C;
+	border-radius: 2px;
+	margin-right: 1em;
+	cursor: pointer;
+	>.icon {
+		margin: 0;
+	}
+	dl & {
+		margin-top: -3px;
+	}
+}
+.fe-valid {
+	background: #21BA45;
+}
+.tooltip-show[data-tooltip]:before {
+	-webkit-transform: rotate(45deg) scale(1)!important;
+	-ms-transform: rotate(45deg) scale(1)!important;
+	transform: rotate(45deg) scale(1)!important;
+	opacity: 1;
+}
+.tooltip-show[data-tooltip]:after {
+	transform: scale(1) !important;
+	left: 0;
+	bottom: 100%;
+	margin-bottom: 0.5em;
+}
+.tooltip-show[data-tooltip]:before,
+.tooltip-show[data-tooltip]:after {
+	visibility: visible;
+	pointer-events: auto;
+}
+[data-green][data-position~="top"][data-tooltip]:before {
+	background: #21BA45;
+	box-shadow: none;
+}
+[data-tooltip][data-green]:after {
+	background: #21BA45;
+	color: #FFFFFF;
+	border: none;
+	box-shadow: none;
+}
+.fe-validating {
+	padding-left: 52px!important;
+	.img {
+		display: block;
+	}
+}
+@media only screen and (max-width: 767px) {
+	.ui.container > .ui.stackable.grid > .fe-validating {
+		padding-left: 38px!important;
 	}
 }

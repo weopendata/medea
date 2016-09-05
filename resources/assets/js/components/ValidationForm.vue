@@ -1,31 +1,50 @@
 <template>
   <div class="ui form" @submit.prevent="submit" :action="submitAction">
-    <h3>Vondst valideren</h3>
-    <div class="field">
-      <label for="description">Opmerkingen bij validatie</label>
-      <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
+    <div class="ui warning message visible" v-if="validation.feedback">
+      <p>
+        <b>De vondst werd aangepast door de detectorist. Vink aan welke velden ok zijn, indien alles ok is bevonden kan de vondst goedgekeurd worden en is ze gevalideerd. </b>
+      </p>
     </div>
-    <photo-validation :model="remarks" :index="index" v-for="(index, remarks) in imgRemarks"></photo-validation>
-    <p>
+    <h3>Vondst valideren</h3>
+    <div class="ui two columns doubling grid">
+      <div class="column">
+        <div class="field">
+          <label>Is deze vonstfiche klaar voor publicatie? Duid aan wat van toepassing is.</label>
+          <div class="ui checkbox">
+            <input type="checkbox" tabindex="0" class="hidden" v-model="remove">
+            <label>Deze vondst hoort niet thuis op MEDEA</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui checkbox">
+            <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
+            <label>Deze vondstfiche bevat gevoelige informatie (plaats onder embargo)</label>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label for="description">Geef feedback mee aan de detectorist over de gevraagde/gedane aanpassingen:</label>
+          <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
+        </div>
+      </div>
+    </div>
+    <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks"></photo-validation>
+    <p v-if="result" v-text="result"></p>
+    <p v-if="!remove&&valid">
       <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
-        <i class="thumbs up icon"></i> Valideren
+        <i class="thumbs up icon"></i> Goedkeuren
       </button>
     </p>
-    <p>&nbsp;</p>
-    <div class="equal width fields">
-      <div class="field">
-        <p><button @click="post('revisie nodig')" class="ui button" :class="{yellow:!valid}">Revisie</button>
-        <p>De informatie is onvolledig of mogelijk niet correct en moet herzien worden voor publicatie
-      </div>
-      <div class="field">
-        <p><button @click="post('onder embargo')" class="ui button" :class="{orange:!valid}">Embargo</button></p>
-        <p>De informatie is gevoelig en mag voorlopig niet gepubliceerd worden
-      </div>
-      <div class="field">
-        <p><button @click="post('verwijderd')" class="ui button" :class="{red:!valid}">Afwijzen</button>
-        <p>Dit is geen archeologische vondst
-      </div>
-    </div>
+    <p v-if="!remove&&!valid">
+      <b>De vondst kan alleen goedgekeurd worden als alle velden aangevinkt zijn.</b>
+    </p>
+    <p v-if="!remove&&!valid">
+      <button @click="post('revisie nodig')" class="ui orange big button">Terug naar detectorist sturen</button>
+    </p>
+    <p v-if="remove">
+      <button @click="post('verwijderd')" class="ui red big button">Afwijzen</button>
+    </p>
   </div>
 </template>
 
@@ -33,24 +52,50 @@
 import PhotoValidation from './PhotoValidation';
 import TextareaGrowing from './TextareaGrowing';
 
+import {inert} from '../const.js';
+
 export default {
-  props: ['obj'],
+  props: ['obj', 'feedback', 'json'],
   data () {
     return {
+      embargo: false,
+      imgRemarks: {},
       remarks: '',
-      imgRemarks: {}
+      remove: false,
+      submitting: false,
+      status: null,
+      result: false
     }
   },
   computed: {
+    // Get the last validation
+    validation () {
+      return this.validationList[0] || {
+        feedback: {}
+      }
+    },
+    // Order validations: most recent first
+    validationList () {
+      return JSON.parse(this.json).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+    },
+    hasFeedback () {
+      return Object.values(this.feedback).filter(Boolean).length > 0
+    },
+    hasImgRemarks () {
+      return Object.values(this.imgRemarks).filter(Boolean).length > 0
+    },
     valid () {
-      return !this.remarks && !this.imgRemarks.length
+      return !this.hasFeedback && !this.hasImgRemarks
     }
   },
   methods: {
     submitSuccess ({data}) {
       console.log('Validation', data)
+      this.result = data.success ? 'Status van de vondst: ' + this.status : 'Er ging iets fout'
       if (data.success) {
-        window.location.href = '/finds'
+        setTimeout(function () {
+          window.location.href = '/finds?status=in%20bewerking'
+        }, 1000)
       }
     },
     submitError ({data}) {
@@ -58,22 +103,67 @@ export default {
       alert('Er trad een fout op')
     },
     post (status) {
+      this.submitting = true
+      this.status = status
+
+      // Attach extra remarks about the photos
       var f = ''
       for (var i in this.imgRemarks) {
         f += this.imgRemarks[i] ? '\n\nFoto ' + (parseInt(i)+1) + '\n * ' + this.imgRemarks[i].join('\n * ') : ''
       }
       this.remarks = (this.remarks + f).trim()
+
+      // Gather all data
+      // TODO: it would be more consistent if the feedback property was calculated in the front-end
+      //       that would solve the json_encode issue below
       var data = {
         objectValidationStatus: status,
+        embargo: this.embargo,
+        feedback: this.feedback,
+        imgRemarks: this.imgRemarks,
         remarks: this.remarks
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
+
+      // Tracking
+      _paq.push(['trackEvent', 'Validation', status, this.obj]);
+      if (this.embargo) {
+        _paq.push(['trackEvent', 'Validation', 'Embargo', this.obj]);
+      }
     }
   },
   events: {
     imgRemark (index) {
-      this.$set('imgRemarks[' + index + ']', [])
+      var remarks = inert(this.imgRemarks)
+
+      // Fix php json_encode issue where objects are encoded as arrays
+      if (Array.isArray(remarks)) {
+        var oldRemarks = remarks
+        remarks = {}
+        for (var i = oldRemarks.length - 1; i >= 0; i--) {
+          remarks[i] = oldRemarks[i]
+        }
+      }
+
+      // Toggle the remark list
+      if (remarks[index]) {
+        delete remarks[index]
+      } else {
+        remarks[index] = []
+      }
+      this.imgRemarks = remarks
+    }
+  },
+  attached () {
+    $('.ui.checkbox', this.$el).checkbox()
+
+    // Fill in the previous validation feedback
+    if (this.json && this.validation.objectValidationStatus !== 'gevalideerd') {
+      console.log('This find has been validated before and the status was', this.validation.objectValidationStatus)
+      this.feedback = this.validation.feedback
+      this.remarks = this.validation.remarks
+      this.imgRemarks = this.validation.imgRemarks
     }
   },
   components: {

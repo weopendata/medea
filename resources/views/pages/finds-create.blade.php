@@ -3,7 +3,6 @@
 @section('title', 'Vondst toevoegen')
 
 @section('content')
-<style type="text/css">.loading,[v-cloak]{display:none!important}.loading[v-cloak]{display:block!important}</style>
 <p v-cloak class="ui container container-723 loading">Deze pagina wordt geladen...</p>
 {!! Form::open(array(
 'files' => true,
@@ -13,29 +12,54 @@
 'v-cloak' => 'true',
 )) !!}
 
-<step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}">
+<div class="ui visible warning message" v-if="validation.remarks">
+  <div class="header">
+    Opmerking van de validator:
+  </div>
+  <div style="white-space:pre-wrap">@{{validation.remarks}}</div>
+</div>
+
+<div class="ui visible warning message" v-if="hasFeedback">
+  <div class="header">
+    Te reviseren gegevens:
+  </div>
+  <ul>
+    <li class="li-feedback" v-if="f.objectCategory" @click="toStep(1)">Categorie</li>
+    <li class="li-feedback" v-if="f.period" @click="toStep(1)">Datering per periode</li>
+    <li class="li-feedback" v-if="f.findDate" @click="toStep(1)">Vondstdatum</li>
+    <li class="li-feedback" v-if="f.location" @click="toStep(1)">Locatie</li>
+    <li class="li-feedback" v-if="f.objectMaterial" @click="toStep(3)">Materiaal</li>
+    <li class="li-feedback" v-if="f.productionTechniqueType" @click="toStep(3, 'technique')">Techniek</li>
+    <li class="li-feedback" v-if="f.modificationTechniqueType" @click="toStep(3, 'technique')">Oppervlaktebehandeling</li>
+    <li class="li-feedback" v-if="f.objectInscriptionNote" @click="toStep(3, 'technique')">Opschrift</li>
+    <li class="li-feedback" v-if="f.dimensions" @click="toStep(3, true)">Dimensies</li>
+    <li class="li-feedback" v-if="f.objectDescription">Beschrijving?</li>
+  </ul>
+</div>
+
+<step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}" data-step="1" data-intro="Er zijn 5 stappen. Vul de velden in waarvan je zeker bent.">
   <div class="field" style="max-width: 16em">
     <div class="required field" v-if="user.registrator&&debugging">
       <label>Vinder</label>
       <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder">
     </div>
-    <div class="required field">
+    <div class="required field" :class="{error:validation.feedback.objectCategory}">
       <label>Categorie</label>
       <select class="ui search dropdown category" v-model="find.object.objectCategory">
         <option>onbekend</option>
         <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
       </select>
     </div>
-    <div class="required field">
+    <div class="required field" :class="{error:validation.feedback.period}">
       <label>Datering per periode</label>
       <select class="ui search dropdown category" v-model="find.object.period">
         <option>onbekend</option>
         <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
       </select>
     </div>
-    <div class="required fluid field">
+    <div class="required fluid field" :class="{error:validation.feedback.findDate}">
       <label>Vondstdatum</label>
-      <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD">
+      <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD" :max="today">
     </div>
   </div>
   <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)" id="location-picker">
@@ -65,32 +89,36 @@
   <div class="fields" v-if="show.address">
     <div class="six wide field">
       <label>Straat</label>
-      <input type="text" v-model="find.findSpot.location.address.street" id="street">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressStreet" id="street">
     </div>
     <div class="two wide field">
       <label>Nummer</label>
-      <input type="number" v-model="find.findSpot.location.address.number">
+      <input type="number" v-model="find.findSpot.location.address.locationAddressNumber">
     </div>
   </div>
   <div class="fields">
     <div class="two wide field" v-if="show.address">
       <label>Postcode</label>
-      <input type="text" v-model="find.findSpot.location.address.postalCode">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressPostalCode">
     </div>
     <div class="six wide required field" v-bind:class="{six:show.address,eight:!show.address}">
       <label v-text="show.address||show.map?'Stad/Gemeente':'Straat en/of Gemeente/stad'">Stad/Gemeente</label>
-      <input type="text" v-model="find.findSpot.location.address.locality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressLocality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
     <div class="eight wide field">
       <label>&nbsp;</label>
       <button v-if="show.map" @click.prevent="showOnMap" class="ui button">Omzetten naar coördinaten</button>
-      <button v-else @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locality}">
+      <button v-else @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locationAddressLocality}">
         Aanduiden op kaart
       </button>
     </div>
   </div>
+  <div class="field" v-if="show.map">
+    Het zwarte kader geeft aan welke locatie zichtbaar is voor bezoekers en andere detectoristen.
+  </div>
   <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
+      <rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></rectangle>
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
       <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
     </map>
@@ -98,11 +126,11 @@
   <div class="fields" v-if="show.co||show.map">
     <div class="three wide field">
       <label>Breedtegraad</label>
-      <input type="number" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
+      <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
     </div>
     <div class="three wide field">
       <label>Lengtegraad</label>
-      <input type="number" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
+      <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
     </div>
     <div class="four wide field" v-if="show.map">
       <label>Nauwkeurigheid (meter)</label>
@@ -118,10 +146,9 @@
   </p>
 </step>
 
-<step number="2" title="Foto's" class="required" :class="{completed:step2valid}">
+<step number="2" title="Foto's" class="required" :class="{completed:step2valid}" data-step="2" data-intro="Er moeten minstens 2 foto's opgeladen worden: de voor- en achterkant van het object.">
   <p>
     Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
-
   </p>
   <ul>
   <li>
@@ -147,7 +174,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     </div>
   </div>
   <p v-if="!hasImages" style="color:red">
-    Zorg voor minstens 1 foto
+    Zorg voor minstens 2 foto's
   </p>
   <p>
     <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Volgende stap</button>
@@ -156,9 +183,9 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 
 <step number="3" title="Gestructureerde beschrijving" class="required" :class="{completed:step3valid}">
   <div class="two fields">
-    <div class="field">
+    <div class="field" :class="{error:validation.feedback.objectMaterial}">
       <label>Materiaal</label>
-      <select class="ui dropdown" v-model="find.object.material">
+      <select class="ui dropdown" v-model="find.object.objectMaterial">
         <option>onbekend</option>
         @foreach ($fields['object']['objectMaterial'] as $material)
         <option value="{{$material}}">{{$material}}</option>
@@ -170,19 +197,19 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <button @click.prevent="show.technique=1" class="ui button">Techniek, behandeling, opschrift</button>
   </div>
   <div class="two fields" v-show="show.technique">
-    <div class="field">
+    <div class="field" :class="{error:validation.feedback.productionTechniqueType}">
       <label>Techniek</label>
-      <select class="ui dropdown" v-model="find.object.productionEvent.productionTechnique.type">
-        <option value="">onbekend</option>
+      <select class="ui dropdown" v-model="technique">
+        <option>onbekend</option>
         <option>meerdere</option>
         @foreach ($fields['object']['technique'] as $technique)
         <option value="{{$technique}}">{{$technique}}</option>
         @endforeach
       </select>
     </div>
-    <div class="field">
+    <div class="field" :class="{error:validation.feedback.modificationTechniqueType}">
       <label>Oppervlaktebehandeling</label>
-      <select class="ui dropdown" v-model="find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
+      <select class="ui dropdown" v-model="treatment">
         <option>onbekend</option>
         <option>meerdere</option>
         <option>email (cloissoné)</option>
@@ -199,7 +226,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
       </select>
     </div>
   </div>
-  <div class="field" v-show="show.technique">
+  <div class="field" :class="{error:validation.feedback.objectInscriptionNote}" v-show="show.technique">
     <label>Opschrift</label>
     <input type="text" v-model="inscription" placeholder="-- geen opschrift --">
   </div>
@@ -271,36 +298,53 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   </div>
 </step>
 
-<step number="5" title="Klaar met vondstfiche">
-  <div class="field">
-    <label>Opmerkingen bij het object</label>
-    <input type="text" v-model="find.object.objectDescription">
+<div class="grouped fields">
+  <h3>5. Klaar met vondstfiche</h3>
+  <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
+    <label>Beschrijving van het object</label>
+    <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
+    <p>
+      Dit is een vrije beschrijving van het object.
+    </p>
   </div>
+  <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
+    
+  <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="toValidate">
-      <label>
-        <b>Vondstfiche laten valideren</b>
-        <br>Na validatie wordt de vondst zichtbaar voor andere bezoekers en kunnen vondstexperten informatie toevoegen.
-        <br>Uw identiteitsgegevens en de precieze vondstlocatie worden afgeschermd voor niet-geautoriseerde gebruikers.
-      </label>
+    <div class="ui radio checkbox">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="in bewerking">
+      <label>Vondstfiche is klaar voor validatie</label>
     </div>
   </div>
-</step>
+  <div class="field">
+    <div class="ui radio checkbox">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
+      <label>Vondstfiche is een voorlopige versie. Ik vul ze later aan.</label>
+    </div>
+  </div>
+  </div>
+  <p v-if="currentStatus!='in bewerking'&&currentStatus!='revisie nodig'">
+    Huidige status: @{{currentStatus}}
+  </p>
+</div>
 
 <div v-if="submittable||step==5">
+  <p v-if="submitting&&toValidate" style="color:#090">
+    Bedankt, jouw vondstfiche wordt bewaard en doorgestuurd voor validatie.
+    <br>Je krijgt een verwittiging van de uitkomst zodra dit is gebeurd.
+  </p>
+  <p v-if="submitting&&!toValidate" style="color:#090">
+    Bedankt, jouw vondstfiche wordt bewaard.
+  </p>
   <div class="field">
     <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
     <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
   </div>
-  <div class="field">
-    <p v-if="!submittable" style="color:red">
-      Niet alle verplichte velden zijn ingevuld.
-    </p>
-    <p v-if="submitting" style="color:#090">
-      Vondstfiche wordt bewaard.
-    </p>
-  </div>
+</div>
+<div class="field" v-if="!submittable">
+  <p  style="color:red">
+    Niet alle verplichte velden zijn ingevuld.
+  </p>
 </div>
 
 {!! Form::close() !!}

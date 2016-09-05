@@ -24,18 +24,42 @@
 
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
-    Route::get('register/confirm/{token}', 'Auth\AuthController@confirmRegistration');
-    Route::get('register/deny/{token}', 'Auth\AuthController@denyRegistration');
 
     Route::get('/', 'HomeController@index');
+    Route::get('about', 'HomeController@about');
+    Route::get('contact', 'HomeController@contact');
+    Route::get('feedback', 'HomeController@feedback');
+    Route::get('disclaimer', 'HomeController@disclaimer');
+    Route::get('help', 'HomeController@help');
+
+    Route::get('voorwaarden', 'HomeController@voorwaarden');
+
     Route::resource('finds', 'FindController');
     Route::resource('api/finds', 'Api\FindController');
 
-    Route::post('objects/{id}/validation', 'ObjectController@validation');
-    Route::resource('objects/{id}/classifications', 'ClassificationController');
-    Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
-    Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+    Route::group(['middleware' => 'auth'], function () {
+        Route::resource('persons', 'UserController');
 
-    Route::delete('users/{id}', 'UserController@delete');
-    Route::get('settings', 'UserController@showSettings');
+        Route::get('api/statistics', 'Api\StatisticsController@index');
+        Route::get('api/notifications', 'Api\NotificationController@index');
+        Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
+
+        Route::group(['middleware' => 'roles:validator|detectorist'], function () {
+            Route::post('objects/{id}/validation', 'ObjectController@validation');
+        });
+
+        Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::get('register/confirm/{token}', 'Auth\RegistrationController@confirmRegistration');
+            Route::get('register/deny/{token}', 'Auth\RegistrationController@denyRegistration');
+        });
+
+        Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {
+            Route::resource('objects/{id}/classifications', 'ClassificationController');
+            Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
+            Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+        });
+
+        Route::get('settings', 'UserController@mySettings');
+        Route::get('settings/{id}', 'UserController@userSettings');
+    });
 });

@@ -24,6 +24,7 @@ class ListValueSeeder extends Seeder
         "ProductionClassificationTypeAuthorityList",
         "ProductionClassificationCenturyAuthorityList",
         "ProductionClassificationRulerNationAuthorityList",
+        "ProductionClassificationCultureAuthorityList",
     ];
 
     public function run()
@@ -116,14 +117,12 @@ class ListValueSeeder extends Seeder
     public function getObjectCategoryAuthorityList()
     {
         return [
-            'andere',
             'armband',
             'baar',
             'balansonderdeel',
             'bijl',
             'bit',
             'boekbeslag',
-            'categorie',
             'decoratief onderdeel van paardentuig',
             'gesp(onderdeel)',
             'geweerkogel',
@@ -169,10 +168,25 @@ class ListValueSeeder extends Seeder
             'vuurwapenonderdeel of -accessoire',
             'zegelstempel',
             'zwaard(onderdeel)',
+            'andere',
         ];
     }
 
     public function getProductionClassificationPeriodAuthorityList()
+    {
+        return [
+            "Bronstijd",
+            "IJzertijd",
+            "Romeins",
+            "middeleeuws",
+            "postmiddeleeuws",
+            "modern",
+            "Wereldoorlog I",
+            "Wereldoorlog II",
+        ];
+    }
+
+    public function getProductionClassificationCultureAuthorityList()
     {
         return [
             "Bronstijd",

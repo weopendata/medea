@@ -15,6 +15,9 @@ export default {
       this.submitAction = this.submitAction || window.event.target.action || ''
       this.submitSuccess = this.submitSuccess || function () {console.warn('No success handler')}
       this.submitError = this.submitError || function () {console.warn('No error handler')}
+      if (this.submitTrack) {
+        this.submitTrack(data)
+      }
       if (data.identifier) {
         this.$http.put(this.submitAction, data).then(this.submitSuccess, this.submitError).catch(function () {
           this.submitting = false

@@ -11,25 +11,18 @@
 <script>
 import AddClassificationForm from './AddClassificationForm'
 import Ajax from '../mixins/Ajax'
+import {EMPTY_CLS} from '../const.js'
 
 export default {
   props: ['object'],
   data () {
     return {
-      cls: {
-        productionClassificationType: '',
-        productionClassificationPeriod: '',
-        productionClassificationNation: '',
-        startDate: '',
-        endDate: '',
-        publication: [{publicationTitle: ''}],
-        productionClassificationDescription: '',
-      }
+      cls: EMPTY_CLS
     }
   },
   computed: {
     submittable () {
-      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationNation || this.cls.productionClassificationDescription
+      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'
@@ -37,19 +30,22 @@ export default {
   },
   methods: {
     formdata () {
-      return this.cls
+      var cls = JSON.parse(JSON.stringify(this.cls))
+
+      // Remove empty publications
+      for (var i = cls.publication.length - 1; i >= 0; i--) {
+        if (!cls.publication[i].publicationTitle.length) {
+          cls.publication.splice(i, 1)
+        }
+      }
+      return cls
     },
     submitSuccess ({data}) {
       this.$root.fetch()
-      this.cls = {
-        productionClassificationType: '',
-        productionClassificationPeriod: '',
-        productionClassificationNation: '',
-        startDate: '',
-        endDate: '',
-        publication: [{publicationTitle: ''}],
-        productionClassificationDescription: '',
-      }
+      this.cls = EMPTY_CLS
+
+      // Tracking
+      _paq.push(['trackEvent', 'Classification', 'Created', 0]);
     },
     submitError ({data}) {
       console.warn(data)

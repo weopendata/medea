@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
 use App\Models\FindEvent;
 use App\Repositories\FindRepository;
@@ -13,7 +12,15 @@ use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
 use Illuminate\Support\MessageBag;
 use App\Helpers\Pager;
+use App\Http\Middleware\FindApi;
+use App\Http\Requests\EditFindRequest;
+use App\Http\Requests\ShowFindRequest;
+use App\Models\Person;
 
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ */
 class FindController extends Controller
 {
     public function __construct()
@@ -24,7 +31,7 @@ class FindController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource
      *
      * @return \Illuminate\Http\Response
      */
@@ -62,13 +69,13 @@ class FindController extends Controller
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+
         $finds = $result['data'];
         $count = $result['count'];
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
         $linkHeader = '';
-
 
         $query_string = $this->buildQueryString($request);
 
@@ -93,10 +100,10 @@ class FindController extends Controller
                 if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
                     && !in_array('onderzoeker', $user->getRoles())) {
                     if (!empty($find['findSpot']['location']['lat'])) {
-                        $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
-                        $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+                        $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
+                        $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
                         $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
-                        $find['findSpot']['location']['accuracy'] = max(1000, $accuracy);
+                        $find['findSpot']['location']['accuracy'] = max(2000, $accuracy);
                     }
                 }
 
@@ -141,7 +148,8 @@ class FindController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, UserRepository $users)
@@ -152,9 +160,10 @@ class FindController extends Controller
 
         if (empty($user)) {
             // Test code in order to test with PostMan requests
-            $userNode = $users->getUser('foo@bar.com');
+            /*$userNode = $users->getUser('foo@bar.com');
             $user = new \App\Models\Person();
-            $user->setNode($userNode);
+            $user->setNode($userNode);*/
+            abort('401');
         }
 
         $images = [];
@@ -180,54 +189,85 @@ class FindController extends Controller
             $input['object']['objectValidationStatus'] = 'in bewerking';
         }
 
-        \Log::info($input['person']);
-
         // Make find
-        $find = $this->finds->store($input);
+        try {
+            $findId = $this->finds->store($input);
 
-        return response()->json($find);
+            return response()->json(['id' => $findId, 'url' => '/finds/' . $findId]);
+        } catch (\Exception $ex) {
+            return response()->json(
+                [
+                'error' => $ex->getMessage()
+                ],
+                400
+            );
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param ShowFindRequest $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show(ShowFindRequest $request)
     {
-        $find = $this->finds->expandValues($id, $request->user());
-
-        $user = $request->user();
+        $find = $request->getFind();
 
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
         if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
             && !in_array('onderzoeker', $user->getRoles())) {
             if (!empty($find['findSpot']['location']['lat'])) {
-                $find['findSpot']['location']['lat'] = round($find['findSpot']['location']['lat'], 2);
-                $find['findSpot']['location']['lng'] = round($find['findSpot']['location']['lng'], 2);
+                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
+                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
+            }
+        }
+
+        $users = new UserRepository();
+
+        // Check if the user of the find allows their name to be displayed on the find details
+        $findUser = $users->getById($find['person']['identifier']);
+
+        $publicUserInfo = [];
+
+        if (!empty($findUser)) {
+            $person = new Person();
+            $person->setNode($findUser);
+
+            if ($person->showNameOnPublicFinds) {
+                $publicUserInfo['name'] = $person->lastName . ' ' . $person->firstName;
+            }
+
+            // Should there be a link to the profile page
+            if ($person->profileAccessLevel == 4 ||
+                !empty($request->user()) && (
+                    $request->user()->id == $person->id ||
+                    $request->user()->hasRole($person->getProfileAllowedRoles())
+                )
+            ) {
+                $publicUserInfo['id'] = $person->id;
             }
         }
 
         return view('pages.finds-detail', [
             'fields' => $this->list_values->getFindTemplate(),
-            'find' => $find
+            'find' => $find,
+            'publicUserInfo' => $publicUserInfo
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param EditFindRequest $requst
+     *
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Request $request)
+    public function edit(EditFindRequest $request)
     {
-        if (!Auth::check()) {
-            return redirect('/finds/' . $id);
-        }
-
-        $find = $this->finds->expandValues($id, $request->user());
+        $find = $request->getFind();
+        //$find = $this->finds->expandValues($findId, $request->user());
 
         return view('pages.finds-create', [
             'fields' => $this->list_values->getFindTemplate(),
@@ -239,12 +279,12 @@ class FindController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $findId)
     {
-        $find_node = $this->finds->getById($id);
+        $find_node = $this->finds->getById($findId);
 
         if (!empty($find_node)) {
             $input = $request->json()->all();
@@ -253,10 +293,11 @@ class FindController extends Controller
 
             if (empty($user)) {
                 // Test code in order to test with PostMan requests
-                $users = new UserRepository();
+                /*$users = new UserRepository();
                 $user_node = $users->getUser('foo@bar.com');
                 $user = new \App\Models\Person();
-                $user->setNode($user_node);
+                $user->setNode($user_node);*/
+                abort('401');
             }
 
             $images = [];
@@ -286,9 +327,18 @@ class FindController extends Controller
             $find = new FindEvent();
             $find->setNode($find_node);
 
-            $find = $find->update($input);
+            try {
+                $find->update($input);
 
-            return response()->json(['success' => true]);
+                return response()->json(['url' => '/finds/' . $findId, 'id' => $findId]);
+            } catch (\Exception $ex) {
+                return response()->json(
+                    [
+                        'error' => $ex->getMessage()
+                    ],
+                    400
+                );
+            }
         } else {
             abort('404');
         }
@@ -297,12 +347,19 @@ class FindController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int  $findId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($findId, Request $request)
     {
-        $this->finds->delete($id);
+        $user = $request->user();
+
+        if (empty($user)) {
+            abort('401');
+        }
+
+        $this->finds->delete($findId);
+
         return response()->json(['success' => true]);
     }
 

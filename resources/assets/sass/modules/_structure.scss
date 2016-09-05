@@ -1,8 +1,35 @@
+html {
+	position: relative;
+	min-height: 100%;
+	height: auto!important;
+}
 body {
-	overflow: auto;
+	padding-bottom: 240px;
+	min-height: 100%;
+	background: #f0f4f8;
 }
 nav {
 	margin-bottom: 2rem;
+}
+footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	left: 0;
+	right: 0;
+	padding: 100px;
+	background: #2c3e50;
+	color: white;
+	a {
+		color: inherit;
+		&:hover,
+		&:focus {
+			color: transparentize(white, .4);
+		}
+	}
+}
+u {
+	cursor: pointer;
 }
 .mycontainer {
 	margin: 0 auto;
@@ -27,4 +54,11 @@ nav {
 }
 .ui.form .pct60.wide.field {
 	width: 60% !important;
+}
+.loading,
+[v-cloak] {
+	display: none!important
+}
+.loading[v-cloak] {
+	display: block!important
 }

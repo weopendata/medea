@@ -1,5 +1,9 @@
 {
   "private": true,
+  "scripts": {
+    "dev": "gulp && gulp watch",
+    "build": "gulp"
+  },
   "devDependencies": {
     "babel-core": "6.7.7",
     "babel-loader": "6.2.4",
@@ -18,11 +22,13 @@
   "dependencies": {
     "bootstrap-sass": "^3.0.0",
     "deep-extend": "^0.4.1",
-    "laravel-elixir": "^6.0.0-1",
+    "intro.js": "^2.3.0",
+    "laravel-elixir": "*",
     "less-loader": "^2.2.2",
+    "local-storage": "^1.4.2",
     "lodash": "^3.10.1",
     "parse-link-header": "^0.4.1",
-    "semantic-ui-css": "^2.1.8",
+    "semantic-ui-css": "^2.2",
     "vue": "^1.0.15",
     "vue-datetime-picker": "^0.1.1",
     "vue-google-maps": "0.1.15",

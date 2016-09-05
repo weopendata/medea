@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Person;
 use App\Mailers\AppMailer;
 use Illuminate\Support\MessageBag;
+use PiwikTracker;
 
 class AuthController extends Controller
 {
@@ -68,6 +69,9 @@ class AuthController extends Controller
                 } elseif (Hash::check($password, $user->password)) {
                     Auth::login($user);
 
+                    // Register the event to Piwik
+                    $this->registerPiwikEvent($user->id, 'Login');
+
                     return redirect($this->redirectTo);
                 } else {
                     $message_bag = new MessageBag();
@@ -81,6 +85,15 @@ class AuthController extends Controller
             $message_bag = new MessageBag();
             return redirect()->back()->with('errors', $message_bag->add('email', 'Het emailadres werd niet gevonden.'));
         }
+    }
+
+    public function logout()
+    {
+        $this->registerPiwikEvent(Auth::user()->id, 'Logout');
+
+        Auth::guard($this->getGuard())->logout();
+
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
 
     public function register(Request $request, AppMailer $mailer)
@@ -104,7 +117,7 @@ class AuthController extends Controller
 
             return response()->json(['message' => 'Uw registratie is doorgevoerd, een admin moet deze echter wel nog goedkeuren. Hou ook uw SPAM folder in uw inbox in de gaten, de bevestiging kan bij sommige daar terecht komen.']);
         } else {
-            return response()->json(['error' => ['email' => 'Een gebruiker met dit email adres is reeds geregistreerd.']], 400);
+            return response()->json(['email' => ['Een gebruiker met dit email adres is reeds geregistreerd.']], 400);
         }
     }
 
@@ -122,45 +135,21 @@ class AuthController extends Controller
     }
 
     /**
-     * Confirm a user's registration
+     * Register a login/logout event
      *
-     * @param  string $token
-     * @return mixed
+     * @param integer $userId
+     * @param string $action
+     * @return
      */
-    public function confirmRegistration($token, AppMailer $mailer)
+    private function registerPiwikEvent($userId, $action)
     {
-        $user = $this->users->confirmUser($token);
+        if (!empty(env('PIWIK_SITE_ID')) && !empty(env('PIWIK_URI'))) {
+            PiwikTracker::$URL = env('PIWIK_URI');
+            $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
 
-        if (!empty($user)) {
-            $person = new Person();
-            $person->setNode($user);
-
-            // Send an email to the user that his email has been confirmed
-            $mailer->sendRegistrationConfirmation($person);
+            $piwikTracker->doTrackEvent('User', $action, $userId);
         }
 
-        return redirect('/');
-    }
-
-    /**
-     * Deny a user's registration
-     *
-     * @param  string $token
-     * @return mixed
-     */
-    public function denyRegistration($token, AppMailer $mailer)
-    {
-        $user = $this->users->denyUser($token);
-
-        if (!empty($user)) {
-            $person = new Person();
-            $person->setNode($user);
-
-            // Send an email to the user that his email has been confirmed
-            $mailer->sendRegistrationDenial($person);
-        }
-
-        return redirect('/');
     }
 
     /**

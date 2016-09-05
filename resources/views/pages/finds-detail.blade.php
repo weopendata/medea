@@ -62,6 +62,9 @@
 <script type="text/javascript">
 var initialFind = {!! json_encode($find) !!};
 window.fields = {!! json_encode($fields) !!};
+@if (!empty($publicUserInfo))
+window.publicUserInfo = {!! json_encode($publicUserInfo) !!};
+@endif
 </script>
 <script src="{{ asset('js/finds-detail.js') }}"></script>
 <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
