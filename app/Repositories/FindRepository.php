@@ -364,9 +364,9 @@ class FindRepository extends BaseRepository
         $resultSet = $cypherQuery->getResultSet();
 
         if ($resultSet->count() > 0) {
-            $statistics['classifications'] = empty($resultSet[0][0]) ? 0 : $resultSet[0][0];
-            $statistics['finds'] = empty($resultSet[1][0]) ? 0 : $resultSet[1][0];
-            $statistics['validatedFinds'] = empty($resultSet[2][0]) ? 0 : $resultSet[2][0];
+            $statistics['classifications'] = empty(@$resultSet[0][0]) ? 0 : $resultSet[0][0];
+            $statistics['finds'] = empty(@$resultSet[1][0]) ? 0 : $resultSet[1][0];
+            $statistics['validatedFinds'] = empty(@$resultSet[2][0]) ? 0 : $resultSet[2][0];
         }
 
         return $statistics;
