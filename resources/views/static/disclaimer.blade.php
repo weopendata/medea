@@ -3,5 +3,5 @@
 @section('title', 'Disclaimer')
 
 @section('content')
-disclaimer stuff
+Placeholder voor de disclaimer.
 @endsection

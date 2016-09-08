@@ -13,7 +13,7 @@ To enable full text search, we'll need to enable the legacy indexes. This means 
 
 [Credit where credit is due](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/)
 
-1. Create a POST request, as mentioned in the [link](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/)
+1. Create a POST request, as mentioned in the [link](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/) Don't forget to add the extra lower case analyzer.
 2. Edit the conf/neo4j.properties file and add/edit the following lines:
     ```
         node_auto_indexing=true

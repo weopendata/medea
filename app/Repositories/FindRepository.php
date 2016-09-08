@@ -341,23 +341,32 @@ class FindRepository extends BaseRepository
             'classifications' => 0,
         ];
 
-        $countQuery = "MATCH (allFinds:findEvent), (object:E22)-[objectVal:P2]->(validation),
-        (classification:productionClassification)
-        WITH count(distinct allFinds) as findCount, count(distinct object) as validatedFindCount,
-        count(distinct classification) as classificationCount, validation
+        // There could be finds (and thus objects) but no classifications at all
+        // if the query would take the match statements below as one statement this
+        // would make the result return zero rows, even though finds have been registered
+        // therefore a UNION is in place (which is way more efficient than adding an optional MATCH statement)
+        $countQuery = "
+        MATCH (classification:productionClassification)
+        WITH count(distinct classification) as count
+        RETURN count
+        UNION ALL
+        MATCH (allFinds:findEvent)
+        WITH count(distinct allFinds) as count
+        RETURN count
+        UNION ALL
+        MATCH (object:E22)-[objectVal:P2]->(validation)
+        WITH count(distinct object) as count, validation
         WHERE validation.name = 'objectValidationStatus' AND validation.value='gevalideerd'
-        RETURN findCount, validatedFindCount, classificationCount";
+        RETURN count";
 
         $cypherQuery = new Query($this->getClient(), $countQuery);
 
         $resultSet = $cypherQuery->getResultSet();
 
         if ($resultSet->count() > 0) {
-            // There's only one row as a result
-            $row = $resultSet->current();
-            $statistics['finds'] = $row['findCount'];
-            $statistics['validatedFinds'] = $row['validatedFindCount'];
-            $statistics['classifications'] = $row['classificationCount'];
+            $statistics['classifications'] = $resultSet[0][0];
+            $statistics['finds'] = $resultSet[1][0];
+            $statistics['validatedFinds'] = $resultSet[2][0];
         }
 
         return $statistics;
