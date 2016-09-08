@@ -4,6 +4,4 @@
 
 @section('content')
 Contactpagina met contactdetails
-
-
 @endsection

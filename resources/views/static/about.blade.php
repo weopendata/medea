@@ -3,5 +3,5 @@
 @section('title', 'Over MEDEA')
 
 @section('content')
-een tekstje over medea
+Hier komt informatie omtrent het project.
 @endsection

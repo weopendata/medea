@@ -22,5 +22,5 @@
 @endsection
 
 @section('content')
-<iframe class="contact-frame" src="https://docs.google.com/forms/d/e/1FAIpQLSfkdy68ZBrkiCw2nMVf8nwzcohzT3bfi2rmabnSAGzec0r8DA/viewform?embedded=true" width="760" height="500" frameborder="0" marginheight="0" marginwidth="0">Bezig met laden...</iframe>
+<iframe class="contact-frame" src="https://docs.google.com/forms/d/e/1FAIpQLSfeStZAmwSXCjtU0wkTv697RbLzpGxzH2zsP63F6eKveUqagA/viewform?embedded=true" width="760" height="500" frameborder="0" marginheight="0" marginwidth="0">Bezig met laden...</iframe>
 @endsection
