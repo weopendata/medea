@@ -1,8 +1,8 @@
 <template>
   <article>
-    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.objectValidationStatus == 'revisie nodig'&&(user.email==find.person.email)">
+    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.feedback.length&&find.object.objectValidationStatus == 'revisie nodig'&&(user.email==find.person.email)">
       <p>
-        De validator heeft enkele opmerking bij validatie.
+        De validator heeft enkele opmerkingen bij validatie.
       </p>
       <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
     </div>
@@ -112,7 +112,7 @@ export default {
       return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
     },
     editable () {
-      return this.user.email === this.find.person.email || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
+      return (this.user.email === this.find.person.email && this.find.object.objectValidationStatus == 'onder revisie') || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
     },
     findTitle () {
       // Not showing undefined and onbekend in title

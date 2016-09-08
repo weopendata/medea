@@ -27,6 +27,7 @@
 @import "../../../node_modules/semantic-ui-css/components/item";
 @import "./modules/material";
 @import "./modules/fe";
+@import "./introjs.min";
 
 /* FindsList */
 
@@ -142,6 +143,12 @@ dd {
 	height: calc(100% - 40px);
 	overflow: auto;
 }
+.list-controls {
+	overflow: auto;
+}
+.ui.basic.button:hover {
+	background: none!important;
+}
 @media (min-width: 768px) {
 	.list-left {
 		float: left;
@@ -226,6 +233,8 @@ h4.required::after {
 /* FindsList > FindsFilter */
 
 .finds-order {
+	float: left;
+	padding-top: 8px;
 	user-select: none;
 	a {
 		padding: 5px 8px;

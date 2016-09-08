@@ -42,7 +42,7 @@ new Vue({
       errors: {},
       submitAction: 'register',
       registered: false,
-      userd: window.medeaUser
+      user: window.medeaUser
     }
   },
   computed: {
@@ -132,4 +132,29 @@ var zxcvbnAsync = function(pw) {
   first = document.getElementsByTagName('script')[0]
   first.parentNode.insertBefore(s, first)
   return -1
+}
+
+window.startIntro = function () {
+  if (!window.medeaUser.email) {
+    introJs()
+    .setOption('hideNext', true)
+    .setOption('hidePrev', true)
+    .setOption('skipLabel', 'Registreren')
+    .setOption('doneLabel', 'Registreren')
+    .start()
+    .oncomplete(function() {
+      window.location.href = '#register';
+    })
+  } else {
+    document.getElementById('findsCreate').setAttribute('href', '/finds/create?startIntro')
+    introJs()
+    .setOption('hideNext', true)
+    .setOption('hidePrev', true)
+    .setOption('skipLabel', 'Nieuwe vondst registreren')
+    .setOption('doneLabel', 'Nieuwe vondst registreren')
+    .start()
+    .oncomplete(function() {
+      window.location.href = '/finds/create?startIntro';
+    })
+  }
 }

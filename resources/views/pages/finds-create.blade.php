@@ -37,7 +37,7 @@
   </ul>
 </div>
 
-<step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}">
+<step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}" data-step="1" data-intro="Er zijn 5 stappen. Vul de velden in waarvan je zeker bent.">
   <div class="field" style="max-width: 16em">
     <div class="required field" v-if="user.registrator&&debugging">
       <label>Vinder</label>
@@ -113,8 +113,12 @@
       </button>
     </div>
   </div>
+  <div class="field" v-if="show.map">
+    Het zwarte kader geeft aan welke locatie zichtbaar is voor bezoekers en andere detectoristen.
+  </div>
   <div class="field" v-if="show.map&&step==1">
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
+      <rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></rectangle>
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
       <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
     </map>
@@ -142,10 +146,9 @@
   </p>
 </step>
 
-<step number="2" title="Foto's" class="required" :class="{completed:step2valid}">
+<step number="2" title="Foto's" class="required" :class="{completed:step2valid}" data-step="2" data-intro="Er moeten minstens 2 foto's opgeladen worden: de voor- en achterkant van het object.">
   <p>
     Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
-
   </p>
   <ul>
   <li>
@@ -297,13 +300,15 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 
 <div class="grouped fields">
   <h3>5. Klaar met vondstfiche</h3>
-  <div class="field" :class="{error:validation.feedback.objectDescription}">
+  <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
     <label>Beschrijving van het object</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
     <p>
       Dit is een vrije beschrijving van het object.
     </p>
   </div>
+  <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
+    
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">
     <div class="ui radio checkbox">
@@ -316,6 +321,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
       <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
       <label>Vondstfiche is een voorlopige versie. Ik vul ze later aan.</label>
     </div>
+  </div>
   </div>
   <p v-if="currentStatus!='in bewerking'&&currentStatus!='revisie nodig'">
     Huidige status: @{{currentStatus}}

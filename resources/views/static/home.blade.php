@@ -9,7 +9,7 @@
 @section('content')
   <div class="hero">
     <div class="ui container">
-      <p class="lead">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
+      <p class="lead" data-step="1" data-intro="Deze intro zal je begeleiden bij het registreren van een vondst.">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
       <p>
         Verken <b>{{ $stats['finds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
       </p>
@@ -22,8 +22,12 @@
         </div>
       </p>
       <p>
-        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Log in </a>
+        @if (Auth::guest())
+        <a href="/login" class="ui green button"><i class="sign in icon"></i> Log in </a>
         <a href="#register" class="ui green button"><i class="edit icon"></i> Word lid </a>
+        @else
+        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Vondsten doorzoeken</a>
+        @endif
       </p>
     </div>
   </div>
@@ -33,8 +37,17 @@
 'class' => 'ui register-container form',
 '@submit.prevent' => 'submit',
 )) !!}
-  <a href="/login" style="float:right" class="ui basic small button">Login</a>
-  <h2 id="register">Registreren</h2>
+
+  @if (Auth::guest())
+  <div data-step="2" data-intro="Ben je al geregistreerd? Klik dan op 'Login'.<br><br>Als je nog niet geregistreerd bent op MEDEA, vul dan dit formulier in en klik op 'Registreer'.">
+    <a href="/login?startIntro" style="float:right" class="ui basic small button">Login</a>
+  @else
+  <div>
+    <a href="/finds/create?startIntro" style="float:right" class="ui basic small button">Nieuwe vondst</a>
+  @endif
+
+    <h2 id="register">Registreren</h2>
+  </div>
   <h3>Contactgegevens</h3>
   <div class="two fields">
     <div class="field" :class="{error:errors.firstName}">

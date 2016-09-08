@@ -3,7 +3,7 @@ import VueResource from 'vue-resource/dist/vue-resource.min.js'
 
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 import extend from 'deep-extend';
-import {load, Map, Marker, Circle} from 'vue-google-maps'
+import {load, Map, Marker, Circle, Rectangle} from 'vue-google-maps'
 
 import AddClassificationForm from './components/AddClassificationForm'
 import DevBar from './components/DevBar'
@@ -96,6 +96,8 @@ function toTreatment (tech) {
   } || undefined
 }
 
+const GEO_ROUND = 0.01
+
 Vue.use(VueResource)
 Vue.config.debug = true
 new Vue({
@@ -155,6 +157,12 @@ new Vue({
         draggable: true,
         clickable: true
       },
+      publicOptions: {
+        fillOpacity: 0.1,
+        strokeWeight: 1,
+        draggable: false,
+        clickable: false
+      },
       // Dropdowns
       fields: window.fields,
       // Model
@@ -192,6 +200,16 @@ new Vue({
     }
   },
   computed: {
+    publicBounds () {
+      var pubLat = Math.round(this.latlng.lat / GEO_ROUND) * GEO_ROUND
+      var pubLng = Math.round(this.latlng.lng / GEO_ROUND) * GEO_ROUND
+      return {
+        north: pubLat + GEO_ROUND / 2,
+        south: pubLat - GEO_ROUND / 2,
+        east: pubLng + GEO_ROUND / 2,
+        west: pubLng - GEO_ROUND / 2
+      }
+    },
     latlng: {
       get: function () {
         return {lat: parseFloat(this.find.findSpot.location.lat), lng: parseFloat(this.find.findSpot.location.lng)}
@@ -325,7 +343,7 @@ new Vue({
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
-        address: (a.street ? a.street + (a.number || '') + ' , ': '') + (a.zip || '') + a.locality,
+        address: (a.locationAddressStreet ? a.locationAddressStreet + (a.locationAddressNumber || '') + ' , ': '') + (a.locationAddressPostalCode || '') + a.locationAddressLocality,
         region: 'be'
       }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
@@ -387,22 +405,20 @@ new Vue({
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
-    submitTrack (data, action) {
-      if (data.identifier) {
-        _paq.push(['trackEvent', 'FindEvent', 'Update', data.identifier]);
+    submitSuccess (res) {
+      const newStatus = this.find.object.objectValidationStatus
+      var eventName = this.find.identifier ? 'Update' : 'Create'
+      if (newStatus === this.currentStatus) {
+
+      } else if (newStatus === 'in bewerking') {
+        eventName += 'AndSubmit'
+      } else if (newStatus === 'revisie nodig') {
+        eventName += 'ButNotSubmit'
       } else {
-        _paq.push(['trackEvent', 'FindEvent', 'Create', 0]);
+        eventName += 'ButUnexpectedStatus'
       }
-      if (data.object.objectValidationStatus == 'in bewerking') {
-        _paq.push(['trackEvent', 'FindEvent', 'Submit', data.identifier || 0]);
-      } else if (data.object.objectValidationStatus == 'revisie nodig') {
-        _paq.push(['trackEvent', 'FindEvent', 'Draft', data.identifier || 0]);
-      } else {
-        _paq.push(['trackEvent', 'FindEvent', 'InvalidStatus', data.identifier || 0]);
-      }
-    },
-    submitSuccess () {
-      window.location.href = this.redirectTo
+      _paq.push(['trackEvent', 'FindEvent', eventName, res.data.id || 0]);
+      window.location.href = res.data.url || this.redirectTo
     }
   },
   ready () {
@@ -439,6 +455,7 @@ new Vue({
     Map,
     Marker,
     Circle,
+    Rectangle,
     PhotoUpload,
     DimInput,
     FindEvent,
@@ -446,3 +463,18 @@ new Vue({
     AddClassificationForm
   }
 });
+
+window.startIntro = function () {
+  introJs()
+  .setOptions({
+    scrollPadding: 200
+  })
+  .setOption('hideNext', true)
+  .setOption('hidePrev', true)
+  .setOption('doneLabel', 'Ik heb alles begrepen!')
+  .setOption('skipLabel', 'Ik heb alles begrepen!')
+  .start()
+}
+if (window.location.href.indexOf('startIntro') !== -1) {
+  window.startIntro()
+}
