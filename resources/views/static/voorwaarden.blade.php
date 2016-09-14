@@ -383,7 +383,6 @@
         <li class="c13 c18"><span>Per post: Vakgroep Kunstwetenschappen en
         Archeologie, t.a.v. Pieterjan Deckers, Pleinlaan 2, 1050
         Brussel</span></li>
-        <li class="c13 c18"><span>Via dit telefoonnummer:</span></li>
     </ul>
     <p class="c11 c10"><span></span></p>
     <p class="c11 c22"><span>Tussentijdse feedback over het MEDEA-platform zelf
