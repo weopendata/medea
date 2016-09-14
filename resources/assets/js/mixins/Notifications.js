@@ -33,9 +33,6 @@ export default {
       this.notifPersist()
     },
     notifFetch () {
-      if (new Date().getTime() < this.notifLast + 1000 * 60) {
-        return console.log('Not fetching notifications')
-      }
       this.$http.get('/api/notifications')
       .then(this.notifSuccess, this.submitError)
       .catch(function () {
@@ -64,7 +61,7 @@ export default {
   },
   ready () {
     if (this.user) {
-      setTimeout(() => this.notifFetch(), 1000)
+      setTimeout(() => this.notifFetch(), 3000)
     }
   }
 }
