@@ -65,13 +65,18 @@
 <footer>
   <div class="ui container">
     <div style="float:right">
-      <a href="mailto:pdeckers@vub.ac.be">Contact</a> &middot;
+      <a href="mailto:pdeckers@vub.ac.be">Contact</a> &nbsp; &middot; &nbsp; 
       <a href="/feedback">Feedback</a>
     </div>
-    <a href="https://creativecommons.org/licenses/by-nc/4.0/">
-      <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png">
-      We gebruiken een open content licentie
-    </a>
+    <p>
+      <a href="/voorwaarden">Gebruikersvoorwaarden</a>
+    </p>
+    <p>
+      <a href="https://creativecommons.org/licenses/by-nc/4.0/">
+        <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png" style="vertical-align:middle">
+        <span style="opacity:.5;font-size:12px">We gebruiken een open content licentie</span>
+      </a>
+    </p>
   </div>
 </footer>
 
@@ -98,7 +103,11 @@ medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
 <script src="/js/vendor.min.js"></script>
-@yield('script')
+
+@section('script')
+<script src="{{ asset('js/users-admin.js') }}"></script>
+@show
+
 <script type="text/javascript">
 $('nav .ui.dropdown').dropdown()
 </script>

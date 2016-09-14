@@ -163,7 +163,7 @@
         <label>Vermeld mijn naam op publiek toegankelijke vondstfiches</label>
       </div>
     </div>
-    <div class="field">
+    {{-- <div class="field">
       <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="reg.passContactInfoToAgency">
         <label>
@@ -171,11 +171,11 @@
           <br><i>Merk op: Vanaf 1 april 2016 geldt de verplichting om als detectorist erkend te zijn door Onroerend Erfgoed. Indien u een erkenning heeft, dient u zich dus steeds bekend te maken bij melding van vondsten gedaan vanaf deze datum. Enkel toevalsvondsten kunnen nog gemeld worden zonder persoonsgegevens.</i>
         </label>
       </div>
-    </div>
+    </div> --}}
     <br>
   </div>
   <p>
-    Door te registreren verklaar je jezelf akkoord met de <a href="/voorwaarden">gebruikersvoorwaarden</a> en het <a href="/privacy">privacy-beleid</a> van MEDEA.
+    Door te registreren verklaar je jezelf akkoord met de <a href="/voorwaarden">gebruikersvoorwaarden en het privacy-beleid</a> van MEDEA.
   </p>
   <div class="field">
     <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Registreer</button>

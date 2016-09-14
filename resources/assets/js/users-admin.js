@@ -4,8 +4,6 @@ import TrUser from './components/TrUser'
 
 import Notifications from './mixins/Notifications'
 
-import parseLink from 'parse-link-header'
-
 Vue.use(VueResource)
 Vue.config.debug = true
 
@@ -13,7 +11,7 @@ new Vue({
   el: 'body',
   data () {
     return {
-      users: window.users.sort((a, b) => b.id - a.id),
+      users: window.users && window.users.sort((a, b) => b.id - a.id),
       user: window.medeaUser
     }
   },
