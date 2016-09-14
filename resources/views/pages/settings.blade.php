@@ -115,26 +115,6 @@
         <input v-model="user.phone" type="text">
       </div>
     </div>
-    <div class="fields">
-      <div class="twelve wide field" :class="{error:errors['personAddress_personAddressStreet']}">
-        <label for="first_name">Straat</label>
-        <input v-model="user.personAddress.personAddressStreet" type="text">
-      </div>
-      <div class="four wide field" :class="{error:errors['personAddress_personAddressNumber']}">
-        <label for="last_name">Nummer</label>
-        <input v-model="user.personAddress.personAddressNumber" type="text">
-      </div>
-    </div>
-    <div class="fields">
-      <div class="four wide field" :class="{error:errors['personAddress_personAddressPostalCode']}">
-        <label for="zip">Postcode</label>
-        <input v-model="user.personAddress.personAddressPostalCode" type="email" id="zip">
-      </div>
-      <div class="twelve wide field" :class="{error:errors['personAddress_personAddressLocality']}">
-        <label for="locality">Gemeente</label>
-        <input v-model="user.personAddress.personAddressLocality" type="text" id="locality">
-      </div>
-    </div>
 
     <p class="cta-profile">
       <a :href="'/persons/'+id" class="ui blue button">Profiel bekijken</a>
@@ -210,14 +190,14 @@
       </div>
     </div>
     <div class="field">
-      <div class="ui checkbox">
+    {{--  <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="user.passContactInfoToAgency">
         <label>
           <b>Mijn naam mag bij meldingen aan AOE doorgegeven worden</b>
           <br>Alleen toevalsvondsten en vondsten ouder dan april 2016 zullen gemeld worden aan Agentschap Onroerend Erfgoed
         </label>
       </div>
-    </div>
+    </div> --}}
 
     <div class="last-page">
     <h2 id="rollen">Rollen</h2>

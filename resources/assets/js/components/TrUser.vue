@@ -34,7 +34,7 @@ export default {
 			} else {
 				this.user.personType.push(role)
 			}
-			this.$http.post('/persons/' + this.persons.id, {
+			this.$http.post('/persons/' + this.user.id, {
 				_method: 'PUT',
 				id: this.user.id,
 				personType: this.user.personType
