@@ -240,6 +240,15 @@
         </label>
       </div>
     </div>
+    <div class="field" v-model="roles.vondstexpert">
+      <div class="ui checkbox disabled">
+        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
+        <label>
+          <b>Onderzoeker</b>
+          <br>Je hebt toegang tot exacte vondstlocaties
+        </label>
+      </div>
+    </div>
     </div>
   </div>
 </div>
