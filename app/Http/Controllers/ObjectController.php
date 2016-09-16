@@ -55,7 +55,7 @@ class ObjectController extends Controller
         // If the status is revision, then add a link to the edit page, if not set the link to the find URI
         $url = url('/finds/' . $this->objects->getRelatedFindEventId($objectId));
 
-        if ($input['objectValidationStatus'] == 'in revisie') {
+        if ($input['objectValidationStatus'] == 'revisie nodig') {
             $url += '/edit';
         }
 
