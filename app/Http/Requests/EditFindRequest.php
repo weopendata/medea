@@ -21,7 +21,7 @@ class EditFindRequest extends Request
             return redirect('/finds/' . $request->finds);
         }
 
-        // The edit can only be shown if the find if the status is "draft" or "revisie nodig"
+        // The edit can only be shown if the find if the status is "voorlopig" or "revisie nodig"
         // or the user is an admin
         $user = $request->user();
 
@@ -35,7 +35,7 @@ class EditFindRequest extends Request
 
         $status = $this->find['object']['objectValidationStatus'];
 
-        return (($status == 'draft' || $status == 'revisie nodig')
+        return (($status == 'voorlopig' || $status == 'revisie nodig')
            && $user->id == $this->find['person']['identifier']);
     }
 

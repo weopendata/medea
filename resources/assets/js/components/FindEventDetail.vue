@@ -6,7 +6,7 @@
       </p>
       <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
     </div>
-    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.objectValidationStatus == 'draft'">
+    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.objectValidationStatus == 'voorlopig'">
       <p>
         Dit is een voorlopige versie
       </p>
@@ -114,12 +114,12 @@ export default {
       return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
     },
     editable () {
-      // Finder    if 'revisie nodig' or 'draft'
+      // Finder    if 'revisie nodig' or 'voorlopig'
       // Validator if 'in bewerking'
       // Admin     always
       var s = this.find.object.objectValidationStatus
       return this.user.email && (
-        (this.user.email === this.find.person.email && ['revisie nodig', 'draft'].indexOf(s) !== -1) || 
+        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
         (this.user.validator && s === 'in bewerking') ||
         this.user.administrator
       )

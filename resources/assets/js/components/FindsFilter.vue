@@ -63,7 +63,7 @@ export default {
   computed: {
     statuses () {
       if (this.$root.user.administrator) {
-        return ['gevalideerd', 'in bewerking', 'revisie nodig', 'draft', 'embargo', 'afgekeurd']
+        return ['gevalideerd', 'in bewerking', 'revisie nodig', 'voorlopig', 'embargo', 'afgekeurd']
       }
       if (this.$root.user.validator) {
         return ['gevalideerd', 'in bewerking', 'revisie nodig']

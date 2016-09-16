@@ -54,13 +54,13 @@ export default {
   },
   computed: {
     editable () {
-      return ['revisie nodig', 'draft'].indexOf(this.find.object.objectValidationStatus) !== -1
-      // Finder    if 'revisie nodig' or 'draft'
+      return ['revisie nodig', 'voorlopig'].indexOf(this.find.object.objectValidationStatus) !== -1
+      // Finder    if 'revisie nodig' or 'voorlopig'
       // Validator if 'in bewerking'
       // Admin     always
       var s = this.find.object.objectValidationStatus
       return this.user.email && (
-        (this.user.email === this.find.person.email && ['revisie nodig', 'draft'].indexOf(s) !== -1) || 
+        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
         (this.user.validator && s === 'in bewerking')
       )
     },
