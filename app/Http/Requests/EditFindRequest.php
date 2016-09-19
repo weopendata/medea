@@ -34,7 +34,8 @@ class EditFindRequest extends Request
         }
 
         return ($this->find['object']['objectValidationStatus'] == 'revisie nodig'
-           && $user->id == $this->find['person']['identifier']);
+            && $user->id == $this->find['person']['identifier']
+           || $this->find['object']['objectValidationStatus'] == 'in bewerking' && $user->hasRole('validator'));
     }
 
     public function getFind()
