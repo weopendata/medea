@@ -21,8 +21,10 @@ class EditFindRequest extends Request
             return redirect('/finds/' . $request->finds);
         }
 
-        // The edit can only be shown if the find if the status is "voorlopig" or "revisie nodig"
-        // or the user is an admin
+        // Edit is available for these roles: status
+        //   Finder:    "voorlopig" or "revisie nodig"
+        //   Validator: "in bewerking"
+        //   Admin:     any role
         $user = $request->user();
 
         $findId = $request->finds;
@@ -35,8 +37,9 @@ class EditFindRequest extends Request
 
         $status = $this->find['object']['objectValidationStatus'];
 
-        return (($status == 'voorlopig' || $status == 'revisie nodig')
-           && $user->id == $this->find['person']['identifier']);
+        return (($status == 'revisie nodig' || $status == 'voorlopig')
+            && $user->id == $this->find['person']['identifier']
+           || $status == 'in bewerking' && $user->hasRole('validator'));
     }
 
     public function getFind()
