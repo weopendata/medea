@@ -1,8 +1,14 @@
 <template>
   <article>
-    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.feedback.length&&find.object.objectValidationStatus == 'revisie nodig'&&(user.email==find.person.email)">
+    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="showRemarks">
       <p>
         De validator heeft enkele opmerkingen bij validatie.
+      </p>
+      <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
+    </div>
+    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.objectValidationStatus == 'voorlopig'">
+      <p>
+        Dit is een voorlopige versie
       </p>
       <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
     </div>
@@ -59,7 +65,7 @@
             <p>&nbsp;</p>
           </h1>
           <div v-if="find.object.objectValidationStatus == 'embargo'">
-            Deze vondst is onder embargo.
+            Deze vondstfiche is onder embargo.
             <p>&nbsp;</p>
           </div>
           <div v-if="(user.email==find.person.email)">
@@ -74,13 +80,6 @@
               Deze vondstfiche wordt gevalideerd.
               <p>&nbsp;</p>
             </div>
-            <div v-if="find.object.objectValidationStatus == 'revisie nodig'">
-              Deze vondstfiche is in revisie.
-              <p>&nbsp;</p>
-            </div>
-          </div>
-          <div v-if="find.object.objectValidationStatus == 'afgekeurd'">
-            Deze vondstfiche is niet geschikt voor MEDEA.
           </div>
       </div>
     </div>
@@ -108,11 +107,22 @@ export default {
     }
   },
   computed: {
+    showRemarks () {
+      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'revisie nodig' && this.user.email === this.find.person.email
+    },
     validating () {
       return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
     },
     editable () {
-      return (this.user.email === this.find.person.email && this.find.object.objectValidationStatus == 'onder revisie') || (this.user.validator && this.find.object.objectValidationStatus == 'in bewerking')
+      // Finder    if 'revisie nodig' or 'voorlopig'
+      // Validator if 'in bewerking'
+      // Admin     always
+      var s = this.find.object.objectValidationStatus
+      return this.user.email && (
+        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
+        (this.user.validator && s === 'in bewerking') ||
+        this.user.administrator
+      )
     },
     findTitle () {
       // Not showing undefined and onbekend in title

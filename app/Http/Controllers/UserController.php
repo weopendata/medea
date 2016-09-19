@@ -9,6 +9,7 @@ use App\Http\Requests\DeleteUserRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\FindRepository;
 use App\Repositories\UserRepository;
+use App\Mailers\AppMailer;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
 use Illuminate\Support\Facades\Validator;
@@ -58,7 +59,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function update($userId, UpdateUserRequest $request)
+    public function update($userId, UpdateUserRequest $request, AppMailer $mailer)
     {
         // Get the user
         $userNode = $this->users->getById($userId);
@@ -67,6 +68,11 @@ class UserController extends Controller
             $person = new Person();
             $person->setNode($userNode);
             $person->update($request->input());
+
+            if ($request->input('verified', false)) {
+                // Send an email to the user that his email has been confirmed
+                $mailer->sendRegistrationConfirmation($person);
+            }
 
             return response()->json(['message' => 'De gebruiker werd bijgewerkt.']);
         }

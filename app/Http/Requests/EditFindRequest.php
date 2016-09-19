@@ -21,8 +21,10 @@ class EditFindRequest extends Request
             return redirect('/finds/' . $request->finds);
         }
 
-        // The edit can only be shown if the find if the status is "in bewerking"
-        // or the user is an admin
+        // Edit is available for these roles: status
+        //   Finder:    "voorlopig" or "revisie nodig"
+        //   Validator: "in bewerking"
+        //   Admin:     any role
         $user = $request->user();
 
         $findId = $request->finds;

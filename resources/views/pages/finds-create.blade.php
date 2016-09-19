@@ -316,14 +316,20 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
       <label>Vondstfiche is klaar voor validatie</label>
     </div>
   </div>
-  <div class="field">
+  <div class="field" v-if="currentStatus=='voorlopig'">
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="voorlopig">
       <label>Vondstfiche is een voorlopige versie. Ik vul ze later aan.</label>
     </div>
   </div>
+  <div class="field" v-else>
+    <div class="ui radio checkbox">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
+      <label>Vondstfiche bewaren maar nog niet laten valideren. Ik vul ze later aan.</label>
+    </div>
   </div>
-  <p v-if="currentStatus!='in bewerking'&&currentStatus!='revisie nodig'">
+  </div>
+  <p v-if="currentStatus!='voorlopig'&&currentStatus!='revisie nodig'">
     Huidige status: @{{currentStatus}}
   </p>
 </div>

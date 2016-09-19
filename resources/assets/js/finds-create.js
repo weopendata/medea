@@ -122,7 +122,7 @@ new Vue({
       },
       object: {
         feedback: null,
-        objectValidationStatus: 'in bewerking',
+        objectValidationStatus: 'voorlopig',
         objectDescription: null,
         objectCategory: 'onbekend',
         objectMaterial: null,
@@ -408,7 +408,9 @@ new Vue({
     submitSuccess (res) {
       const newStatus = this.find.object.objectValidationStatus
       var eventName = this.find.identifier ? 'Update' : 'Create'
-      if (newStatus === this.currentStatus) {
+      if (newStatus === 'voorlopig') {
+        eventName += 'Draft'
+      } else if (newStatus === this.currentStatus) {
 
       } else if (newStatus === 'in bewerking') {
         eventName += 'AndSubmit'

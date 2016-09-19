@@ -16,10 +16,10 @@
       <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
     </div>
 
-    <div v-if="$root.user.validator" style="margin-top:1rem;">
+    <div v-if="statuses" style="margin-top:1rem;">
       <h3 class="facet-title">Validatie status</h3>
       <div class="facet-options">
-        <a href="#" class="facet-a" :class="{active:model.status==opt}" @click.prevent="toggle('status', opt)" v-for="opt in ['in bewerking', 'gevalideerd', 'revisie nodig', 'embargo', 'afgekeurd']" v-text="opt"></a>
+        <a href="#" class="facet-a" :class="{active:model.status==opt}" @click.prevent="toggle('status', opt)" v-for="opt in statuses" v-text="opt"></a>
       </div>
     </div>
 
@@ -61,6 +61,14 @@ export default {
     }
   },
   computed: {
+    statuses () {
+      if (this.$root.user.administrator) {
+        return ['gevalideerd', 'in bewerking', 'revisie nodig', 'voorlopig', 'embargo', 'afgekeurd']
+      }
+      if (this.$root.user.validator) {
+        return ['gevalideerd', 'in bewerking', 'revisie nodig']
+      }
+    },
     unnamed () {
       return this.saved.filter(s => !s.name)
     }

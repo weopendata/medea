@@ -58,6 +58,7 @@ new Vue({
     },
     submit () {
       this.user._token = 'PUT'
+      this.user.verified = undefined
       this.user.password = undefined
       this.user.email = undefined
       this.user.personType = undefined

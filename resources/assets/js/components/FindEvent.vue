@@ -28,14 +28,14 @@
           <i class="marker icon"></i>
           Op de kaart
         </a>
-        <a class="btn" :href="uriEdit" v-if="find.object.objectValidationStatus == 'revisie nodig'">
+        <a class="btn" :href="uriEdit" v-if="editable && (user.email==find.person.email)">
           <i class="pencil icon"></i>
           Bewerken
         </a>
-        <button class="btn btn-icon pull-right" @click="rm" v-if="user.administrator&&find.identifier">
+        <button class="btn btn-icon pull-right" @click="rm" v-if="user.administrator||editable">
           <i class="trash icon"></i>
         </button>
-        <a class="btn btn-icon pull-right" :href="uriEdit" v-if="(user.email==find.person.email)||user.validator">
+        <a class="btn btn-icon pull-right" :href="uriEdit" v-if="user.administrator||editable">
           <i class="pencil icon"></i>
         </a>
       </div>
@@ -53,6 +53,17 @@ export default {
     ObjectFeatures
   },
   computed: {
+    editable () {
+      return ['revisie nodig', 'voorlopig'].indexOf(this.find.object.objectValidationStatus) !== -1
+      // Finder    if 'revisie nodig' or 'voorlopig'
+      // Validator if 'in bewerking'
+      // Admin     always
+      var s = this.find.object.objectValidationStatus
+      return this.user.email && (
+        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
+        (this.user.validator && s === 'in bewerking')
+      )
+    },
     classificationCount () {
       return this.find.object.productionEvent && this.find.object.productionEvent.productionClassification && this.find.object.productionEvent.productionClassification.length
     },
