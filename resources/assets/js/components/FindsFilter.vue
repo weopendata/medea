@@ -12,7 +12,7 @@
     <div v-if="$root.user.email">
       <h3 class="facet-title">Favorieten</h3>
       <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'in bewerking'}})" v-if="$root.user.validator">Te valideren vondsten</a>
-      <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="restore({name:'$mine', state:{myfinds:true}})">Mijn vondsten</a>
+      <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
       <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
     </div>
 
