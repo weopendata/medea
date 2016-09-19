@@ -60,7 +60,7 @@ export default {
     }
   },
   ready () {
-    if (this.user) {
+    if (!window.medeaUser.isGuest) {
       setTimeout(() => this.notifFetch(), 3000)
     }
   }
