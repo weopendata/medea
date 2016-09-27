@@ -147,6 +147,7 @@ class AuthController extends Controller
             PiwikTracker::$URL = env('PIWIK_URI');
             $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
 
+            $piwikTracker->setUserId($userId);
             $piwikTracker->doTrackEvent('User', $action, $userId);
         }
 
