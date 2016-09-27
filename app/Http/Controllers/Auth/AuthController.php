@@ -70,7 +70,7 @@ class AuthController extends Controller
                     Auth::login($user);
 
                     // Register the event to Piwik
-                    $this->registerPiwikEvent($user->id, 'Login');
+                    $this->registerPiwikEvent($user->email, 'Login');
 
                     return redirect($this->redirectTo);
                 } else {
@@ -89,7 +89,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        $this->registerPiwikEvent(Auth::user()->id, 'Logout');
+        $this->registerPiwikEvent(Auth::user()->email, 'Logout');
 
         Auth::guard($this->getGuard())->logout();
 
@@ -147,6 +147,7 @@ class AuthController extends Controller
             PiwikTracker::$URL = env('PIWIK_URI');
             $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
 
+            $piwikTracker->setUserId($userId);
             $piwikTracker->doTrackEvent('User', $action, $userId);
         }
 

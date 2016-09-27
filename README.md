@@ -52,3 +52,24 @@ The command that will perform the correct MySQL migration is:
     php artisan medea:management
 
 This command will list a number of actions you can take in order to manage your database (e.g. remove all finds, users, ...)
+
+
+Get logging csv from Piwik:
+```
+SELECT server_time,
+piwik_log_visit.user_id as user,
+IFNULL(cat.name, 'Pageview') as category, IFNULL(act3.name, '') as 'action',
+act2.name as 'value',
+url.name as 'url'
+INTO OUTFILE '/tmp/result.csv'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+ESCAPED BY '\\'
+LINES TERMINATED BY '\n'
+FROM `piwik_log_link_visit_action`
+LEFT JOIN piwik_log_visit ON piwik_log_link_visit_action.idvisit = piwik_log_visit.idvisit
+LEFT JOIN piwik_log_action as url ON piwik_log_link_visit_action.idaction_url = url.idaction
+LEFT JOIN piwik_log_action as act2 ON piwik_log_link_visit_action.idaction_name = act2.idaction
+LEFT JOIN piwik_log_action as act3 ON piwik_log_link_visit_action.idaction_event_action = act3.idaction
+LEFT JOIN piwik_log_action as cat ON piwik_log_link_visit_action.idaction_event_category = cat.idaction  
+ORDER BY `piwik_log_link_visit_action`.`server_time`  ASC;
+```
