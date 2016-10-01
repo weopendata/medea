@@ -94,7 +94,7 @@ try {
   for (var i = 0; i < medeaUser.roles.length; i++) {
     medeaUser[medeaUser.roles[i]] = true
   }
-  _paq.push(['setUserId', {!! json_encode((string) Auth::user()->id) !!}]);
+  _paq.push(['setUserId', {!! json_encode((string) Auth::user()->email) !!}]);
 } catch (e) {
   window.alert('Something wrong with user profile');
 }
