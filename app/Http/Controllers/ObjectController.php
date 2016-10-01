@@ -56,7 +56,7 @@ class ObjectController extends Controller
         $url = url('/finds/' . $this->objects->getRelatedFindEventId($objectId));
 
         if ($input['objectValidationStatus'] == 'revisie nodig') {
-            $url += '/edit';
+            $url .= '/edit';
         }
 
         $userId = $this->objects->getRelatedUserId($objectId);
