@@ -49,6 +49,7 @@ class FindController extends Controller
         extract($this->processQueryParts($request));
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
+
         $finds = $result['data'];
         $count = $result['count'];
 

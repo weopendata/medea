@@ -60,7 +60,7 @@ export default {
       // Admin     always
       var s = this.find.object.objectValidationStatus
       return this.user.email && (
-        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
+        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) ||
         (this.user.validator && s === 'in bewerking')
       )
     },
