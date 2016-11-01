@@ -191,10 +191,11 @@ class FindRepository extends BaseRepository
         OPTIONAL MATCH (object:E22)-[P45]-(material:E57)
         OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
         OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
+        OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
         WITH find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period
         ORDER BY $orderStatement
         WHERE $whereStatement
-        RETURN distinct find, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lon, material.value as material, category.value as category, period.value as period
+        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lon, material.value as material, category.value as category, period.value as period, photograph.resized as photograph
         SKIP $offset
         LIMIT $limit";
 
@@ -425,7 +426,7 @@ class FindRepository extends BaseRepository
         $data = [];
 
         foreach ($results as $result) {
-            $tmp[] = [
+            $tmp = [
                 'created_at' => $result['data']->getProperty('created_at'),
                 'updated_at' => $result['data']->getProperty('updated_at'),
             ];
