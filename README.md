@@ -14,6 +14,16 @@ To enable full text search, we'll need to enable the legacy indexes. This means 
 [Credit where credit is due](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/)
 
 1. Create a POST request, as mentioned in the [link](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/) Don't forget to add the extra lower case analyzer.
+```
+curl -XPOST http://neo4j:{password}@localhost:7474/db/data/index/node/ --header "Content-Type: application/json" -d '{
+  "name" : "node_auto_index",
+  "config" : {
+    "type" : "fulltext",
+    "provider" : "lucene",
+    "to_lower_case" : "true"
+  }
+}'
+```
 2. Edit the conf/neo4j.properties file and add/edit the following lines:
     ```
         node_auto_indexing=true
@@ -37,6 +47,10 @@ This should return:
     ```
 
 ## Development documentation
+
+## Export/Import data
+
+https://github.com/jexp/neo4j-shell-tools
 
 ### Migration
 
@@ -70,6 +84,14 @@ LEFT JOIN piwik_log_visit ON piwik_log_link_visit_action.idvisit = piwik_log_vis
 LEFT JOIN piwik_log_action as url ON piwik_log_link_visit_action.idaction_url = url.idaction
 LEFT JOIN piwik_log_action as act2 ON piwik_log_link_visit_action.idaction_name = act2.idaction
 LEFT JOIN piwik_log_action as act3 ON piwik_log_link_visit_action.idaction_event_action = act3.idaction
-LEFT JOIN piwik_log_action as cat ON piwik_log_link_visit_action.idaction_event_category = cat.idaction  
+LEFT JOIN piwik_log_action as cat ON piwik_log_link_visit_action.idaction_event_category = cat.idaction
 ORDER BY `piwik_log_link_visit_action`.`server_time`  ASC;
 ```
+
+## Trivia
+
+### Open files
+When booting the Neo4j, you might get a warning telling you that the amount of open files is limited and should be booted to a safe number, say 40000.
+Following the documentation of Neo4j might not work, but adding the number of open files to the system config files for the sudo or neo4j user.
+
+If this is the case, add "ulimit -n 40000" to in the do_start() function of the neo4j-service, this should boot the application with the preferred amount of open files.
