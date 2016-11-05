@@ -119,7 +119,9 @@ class FindRepository extends BaseRepository
         $cypherQuery = new Query($this->getClient(), $query, $variables);
         $data = $this->parseApiResults($cypherQuery->getResultSet());
 
-        return $data;
+        $count = $this->getCount($query, $variables);
+
+        return ['data' => $data, 'count' => $count];
     }
 
     /**
@@ -174,11 +176,26 @@ class FindRepository extends BaseRepository
     {
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
 
-        $query = "MATCH $initialStatement, $matchstatement
+        // May be deleted if the new query is found sufficient
+        /*$query = "MATCH $initialStatement, $matchstatement
         WITH $withStatement
         ORDER BY $orderStatement
         WHERE $whereStatement
-        RETURN distinct find, findCount
+        RETURN distinct find
+        SKIP $offset
+        LIMIT $limit";*/
+
+        $query = "MATCH (find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)
+        OPTIONAL MATCH (object:E22)-[P108]-(productionEvent:E12)-[P41]-(pClass:E17)
+        OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53)-[P89]-(address:E53), (address:E53)-[localityRel:P87]-(locality:locationAddressLocality), (location:E53)-[latRel:P87]-(lat:E47{name:\"lat\"}), (location:E53)-[lngRel:P87]-(lng:E47{name:\"lng\"})
+        OPTIONAL MATCH (object:E22)-[P45]-(material:E57)
+        OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
+        OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
+        OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
+        WITH find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph
+        ORDER BY $orderStatement
+        WHERE $whereStatement
+        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lon, material.value as material, category.value as category, period.value as period, photograph.resized as photograph
         SKIP $offset
         LIMIT $limit";
 
@@ -210,7 +227,7 @@ class FindRepository extends BaseRepository
         }
 
         // Non personal find statement
-        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
+        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)";
 
         // Check on validationstatus
         if ($validationStatus == '*') {
@@ -262,7 +279,7 @@ class FindRepository extends BaseRepository
 
         $matchstatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
-        $withStatement .= ", count(distinct find) as findCount";
+        //$withStatement .= ", count(distinct find) as findCount";
 
         return compact(
             'startStatement',
@@ -372,6 +389,30 @@ class FindRepository extends BaseRepository
         return $statistics;
     }
 
+    /**
+     * Get the count of a query by replacing the RETURN statement
+     * This function assumes that find is declared in the query
+     *
+     * @param  string $query     A cypher query string
+     * @param  array  $variables The variables and their variables for the query
+     *
+     * @return integer
+     */
+    private function getCount($query, $variables)
+    {
+        $chunks = explode('RETURN', $query);
+
+        $statement = $chunks[0];
+
+        $countQuery = $statement . ' RETURN count(distinct find) as findCount';
+
+        $countQuery = new Query($this->getClient(), $countQuery, $variables);
+        $results = $countQuery->getResultSet();
+
+        $countResult = $results->current();
+
+        return $countResult['findCount'];
+    }
 
     /**
      * Parse the result set of the API cypher query
@@ -383,23 +424,23 @@ class FindRepository extends BaseRepository
     private function parseApiResults($results)
     {
         $data = [];
-        $count = 0;
 
         foreach ($results as $result) {
-            $find = new FindEvent();
-            $node = $result['find'];
-            $count = $result['findCount'];
+            $tmp = [
+                'created_at' => $result['data']->getProperty('created_at'),
+                'updated_at' => $result['data']->getProperty('updated_at'),
+            ];
 
-            $find->setNode($node);
-            $find = $find->getValues();
+            foreach ($result as $key => $val) {
+                if (! is_object($val)) {
+                    $tmp[$key] = $val;
+                }
+            }
 
-            $data[] = $find;
+            $data[] = $tmp;
         }
 
-        return [
-            'data' => $data,
-            'count' => $count
-        ];
+        return $data;
     }
 
     /**

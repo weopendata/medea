@@ -6,29 +6,29 @@
     <div class="card-content">
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
-        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{find.findSpot.location.address&&find.findSpot.location.address.locationAddressLocality}}</a></span>
-        <br>Status: {{ find.object.objectValidationStatus }}
+        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{find.locality}}</a></span>
+        <br>Status: {{ find.validation }}
       </div>
       <div class="card-bar">
-        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.validation == 'gevalideerd'">
           <i class="tag icon"></i>
           Classificeren
         </a>
-        <a class="btn" :href="uri" v-if="classificationCount&&find.object.objectValidationStatus == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="classificationCount&&find.validation == 'gevalideerd'">
           <i class="tag icon"></i>
           {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}} bekijken
         </a>
-        <a class="btn" :href="uri" v-if="user.validator&&find.object.objectValidationStatus == 'in bewerking'">
+        <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'in bewerking'">
           Valideren
         </a>
-        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.object.objectValidationStatus == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.validation == 'gevalideerd'">
           Bekijken
         </a>
         <a class="btn" href="#mapview" @click="mapFocus" v-if="hasLocation">
           <i class="marker icon"></i>
           Op de kaart
         </a>
-        <a class="btn" :href="uriEdit" v-if="editable && (user.email==find.person.email)">
+        <a class="btn" :href="uriEdit" v-if="editable && (user.email==find.email)">
           <i class="pencil icon"></i>
           Bewerken
         </a>
@@ -54,24 +54,24 @@ export default {
   },
   computed: {
     editable () {
-      return ['revisie nodig', 'voorlopig'].indexOf(this.find.object.objectValidationStatus) !== -1
+      return ['revisie nodig', 'voorlopig'].indexOf(this.find.validation) !== -1
       // Finder    if 'revisie nodig' or 'voorlopig'
       // Validator if 'in bewerking'
       // Admin     always
-      var s = this.find.object.objectValidationStatus
+      var s = this.find.validation
       return this.user.email && (
-        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
+        (this.user.email === this.find.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) ||
         (this.user.validator && s === 'in bewerking')
       )
     },
     classificationCount () {
-      return this.find.object.productionEvent && this.find.object.productionEvent.productionClassification && this.find.object.productionEvent.productionClassification.length
+      return this.classificationCount
     },
     hasLocation () {
-      return this.find.findSpot.location && this.find.findSpot.location.lat
+      return this.find.lat
     },
     cardCover () {
-      return this.find.object.photograph && this.find.object.photograph[0] && encodeURI(this.find.object.photograph[0].resized)
+      return this.find.photograph && encodeURI(this.find.photograph)
     },
     uri () {
       return '/finds/' + this.find.identifier
@@ -82,9 +82,9 @@ export default {
     findTitle () {
       // Not showing undefined and onbekend in title
       var title = [
-        this.find.object.objectCategory,
-        this.find.object.period,
-        this.find.object.objectMaterial
+        this.find.objectCategory,
+        this.find.period,
+        this.find.material
       ].filter(f => f && f !== 'onbekend').join(', ')
 
       title += ' (ID-' + this.find.identifier + ')'
@@ -100,7 +100,7 @@ export default {
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
         this.$root.fetch()
-        this.find.object.objectValidationStatus = 'verwijderd'
+        this.find.validation = 'verwijderd'
       });
     },
     mapFocus (accuracy) {
