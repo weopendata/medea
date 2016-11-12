@@ -363,9 +363,8 @@ class FindRepository extends BaseRepository
         RETURN count
         UNION ALL
         MATCH (object:E22)-[objectVal:P2]->(validation)
-        WITH count(distinct object) as count, validation
         WHERE validation.name = 'objectValidationStatus' AND validation.value='gevalideerd'
-        RETURN count";
+        RETURN count(distinct object) as count";
 
         $cypherQuery = new Query($this->getClient(), $countQuery);
 

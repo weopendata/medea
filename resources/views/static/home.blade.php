@@ -11,7 +11,7 @@
     <div class="ui container">
       <p class="lead" data-step="1" data-intro="Deze intro zal je begeleiden bij het registreren van een vondst.">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
       <p>
-        Verken <b>{{ $stats['finds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
+        Verken <b>{{ $stats['validatedFinds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
       </p>
       <p>
         <div class="ui action input" style="width: 30%;">
