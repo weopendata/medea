@@ -183,10 +183,10 @@ class FindRepository extends BaseRepository
         OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
         OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
         OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
-        WITH distinct find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph
+        WITH distinct find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph, location
         ORDER BY $orderStatement
         WHERE $whereStatement
-        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lon, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph
+        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy
         SKIP $offset
         LIMIT $limit";
 

@@ -8,7 +8,7 @@ import {load, Map as GoogleMap, Marker, Rectangle, InfoWindow} from 'vue-google-
 import DevBar from './components/DevBar'
 
 import Notifications from './mixins/Notifications'
-import {findTitle, inert} from './const.js'
+import inert from './const.js'
 
 import parseLink from 'parse-link-header'
 
@@ -70,12 +70,22 @@ new Vue({
     }
   },
   methods: {
+    findTitle (find) {
+      // Not showing undefined and onbekend in title
+      var title = [
+      find.category,
+      find.period,
+      find.material
+      ].filter(f => f && f !== 'onbekend').join(', ')
+
+      return title + ' (ID-' + find.identifier + ')'
+    },
     relevant (find) {
-      if (find.object.objectValidationStatus == 'in bewerking') {
+      if (find.validation == 'in bewerking') {
         if (!this.user.validator) {
           console.warn('Security error, this user is not allowed to see this find')
         }
-      } else if (find.object.objectValidationStatus != 'gevalideerd' && !this.user.administrator) {
+      } else if (find.validation != 'gevalideerd' && !this.user.administrator) {
         console.warn('Security error, this user is not allowed to see this find')
       }
       return true
@@ -193,15 +203,15 @@ new Vue({
   filters: {
     markable (finds) {
       return finds
-        .filter(f => f.findSpot && f.findSpot.location && f.findSpot.location.lat)
+        .filter(f => f.lat)
         .map(f => {
-          let pubLat = Math.round(f.findSpot.location.lat / GEO_ROUND) * GEO_ROUND
-          let pubLng = Math.round(f.findSpot.location.lng / GEO_ROUND) * GEO_ROUND
+          let pubLat = Math.round(f.lat / GEO_ROUND) * GEO_ROUND
+          let pubLng = Math.round(f.lng / GEO_ROUND) * GEO_ROUND
           return {
           identifier: f.identifier,
-          title: findTitle(f),
-          accuracy: f.findSpot.location.accuracy || 2000,
-          position: {lat: f.findSpot.location.lat, lng: f.findSpot.location.lng},
+          title: this.findTitle(f),
+          accuracy: f.accuracy || 2000,
+          position: {lat: f.lat, lng: f.lng},
           bounds: {
             north: pubLat + GEO_ROUND / 2,
             south: pubLat - GEO_ROUND / 2,

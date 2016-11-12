@@ -82,7 +82,7 @@ export default {
     findTitle () {
       // Not showing undefined and onbekend in title
       var title = [
-        this.find.objectCategory,
+        this.find.category,
         this.find.period,
         this.find.material
       ].filter(f => f && f !== 'onbekend').join(', ')
@@ -104,11 +104,16 @@ export default {
       });
     },
     mapFocus (accuracy) {
-      if (!this.find.findSpot.location.lat) {
+      if (!this.find.lat) {
         return alert('LatLng is missing, this will never happen')
       }
       accuracy = accuracy == 'city' ? 7000 : 0
-      this.$dispatch('mapFocus', {lat:this.find.findSpot.location.lat, lng:this.find.findSpot.location.lng}, accuracy || this.find.findSpot.location.accuracy || 1)
+
+      var acc = accuracy || this.find.accuracy || 1
+      console.log(acc)
+      console.log(this.find.lat)
+      console.log(this.find.lng)
+      this.$dispatch('mapFocus', {lat:parseFloat(this.find.lat), lng:parseFloat(this.find.lng)}, parseInt(acc))
     }
   },
   filters: {
