@@ -39,7 +39,7 @@ class FindController extends Controller
     {
         $filters = $request->all();
 
-        $limit = $request->input('limit', 50);
+        $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
         $order = $request->input('order', null);

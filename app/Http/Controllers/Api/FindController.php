@@ -90,6 +90,7 @@ class FindController extends Controller
                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
             }
         }
+
         $linkHeader = rtrim($linkHeader, ';');
 
         return response()->json($finds)->header('Link', $linkHeader);

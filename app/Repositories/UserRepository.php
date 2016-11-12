@@ -168,7 +168,7 @@ class UserRepository extends BaseRepository
      *
      * @return array
      */
-    public function getAll($limit = 50, $offset = 0)
+    public function getAll($limit = 20, $offset = 0)
     {
         $client = $this->getClient();
 
@@ -186,7 +186,7 @@ class UserRepository extends BaseRepository
      *
      * @return array
      */
-    public function getAllWithFields($fields, $limit = 50, $offset = 0)
+    public function getAllWithFields($fields, $limit = 20, $offset = 0)
     {
         $userNodes = $this->getAll($limit, $offset);
 

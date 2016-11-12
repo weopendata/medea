@@ -161,7 +161,6 @@ new Vue({
     }
   },
   ready () {
-    console.log(JSON.parse(JSON.stringify(window.initialFinds)))
     if (!this.finds || !this.finds.length) {
       this.fetch()
     }
@@ -226,7 +225,7 @@ new Vue({
     'user': {
       deep: true,
       handler (user) {
-        localStorage.debugUser = JSON.stringify(user) 
+        localStorage.debugUser = JSON.stringify(user)
       }
     }
   },

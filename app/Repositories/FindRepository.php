@@ -108,7 +108,7 @@ class FindRepository extends BaseRepository
      */
     public function getAllWithFilter(
         $filters,
-        $limit = 50,
+        $limit = 20,
         $offset = 0,
         $orderBy = 'findDate',
         $orderFlow = 'ASC',
@@ -175,15 +175,6 @@ class FindRepository extends BaseRepository
     private function prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus)
     {
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
-
-        // May be deleted if the new query is found sufficient
-        /*$query = "MATCH $initialStatement, $matchstatement
-        WITH $withStatement
-        ORDER BY $orderStatement
-        WHERE $whereStatement
-        RETURN distinct find
-        SKIP $offset
-        LIMIT $limit";*/
 
         $query = "MATCH (find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)
         OPTIONAL MATCH (object:E22)-[P108]-(productionEvent:E12)-[P41]-(pClass:E17)
