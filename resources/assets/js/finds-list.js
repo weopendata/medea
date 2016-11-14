@@ -8,12 +8,13 @@ import {load, Map as GoogleMap, Marker, Rectangle, InfoWindow} from 'vue-google-
 import DevBar from './components/DevBar'
 
 import Notifications from './mixins/Notifications'
-import inert from './const.js'
+import { inert } from './const.js'
 
 import parseLink from 'parse-link-header'
 
 const HEATMAP_RADIUS = 0.05
-const GEO_ROUND = 0.01
+const GEO_ROUND_LAT = 0.07
+const GEO_ROUND_LNG = 0.1
 
 Vue.use(VueResource)
 Vue.config.debug = true
@@ -83,10 +84,10 @@ new Vue({
     relevant (find) {
       if (find.validation == 'in bewerking') {
         if (!this.user.validator) {
-          console.warn('Security error, this user is not allowed to see this find')
+          console.warn('List: Security error, this user is not allowed to see this find')
         }
       } else if (find.validation != 'gevalideerd' && !this.user.administrator) {
-        console.warn('Security error, this user is not allowed to see this find')
+        console.warn('List: Security error, this user is not allowed to see this find')
       }
       return true
     },
@@ -110,18 +111,18 @@ new Vue({
       }).filter(Boolean).join('&')
       query = query ? '/finds?' + query : '/finds?'
       window.history.pushState({}, document.title, query)
-      console.log('fetch')
       if (cause !== 'heatmap' && this.query === query) {
         return
       }
+      console.log('List: fetching finds')
       this.query = query
       this.$http.get('/api' + query).then(this.fetchSuccess, function () {
-        console.error('could not fetch findevents')
+        console.error('List: could not fetch finds')
       })
       if (type === 'heatmap') {
-        console.log('loading heatmap')
+        console.log('List: fetching finds heatmap')
         this.$http.get('/api' + query + '&type=heatmap').then(this.heatmapSuccess, function () {
-          console.error('could not fetch heatmap')
+          console.error('List: could not fetch finds heatmap')
         })
       }
     },
@@ -164,9 +165,9 @@ new Vue({
         savedSearches: this.user.savedSearches
       })
       .then(function () {
-        console.log('Searches saved')
+        console.log('List: searches saved')
       }).catch(function () {
-        console.warn('Something went wrong')
+        console.warn('List: something went wrong')
       })
     }
   },
@@ -205,18 +206,18 @@ new Vue({
       return finds
         .filter(f => f.lat)
         .map(f => {
-          let pubLat = Math.round(f.lat / GEO_ROUND) * GEO_ROUND
-          let pubLng = Math.round(f.lng / GEO_ROUND) * GEO_ROUND
+          let pubLat = Math.round(f.lat / GEO_ROUND_LAT) * GEO_ROUND_LAT
+          let pubLng = Math.round(f.lng / GEO_ROUND_LNG) * GEO_ROUND_LNG
           return {
           identifier: f.identifier,
           title: this.findTitle(f),
           accuracy: f.accuracy || 2000,
           position: {lat: f.lat, lng: f.lng},
           bounds: {
-            north: pubLat + GEO_ROUND / 2,
-            south: pubLat - GEO_ROUND / 2,
-            east: pubLng + GEO_ROUND / 2,
-            west: pubLng - GEO_ROUND / 2
+            north: pubLat + GEO_ROUND_LAT / 2,
+            south: pubLat - GEO_ROUND_LAT / 2,
+            east: pubLng + GEO_ROUND_LNG / 2,
+            west: pubLng - GEO_ROUND_LNG / 2
           }
         }
       })

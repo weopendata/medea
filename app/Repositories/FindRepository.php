@@ -424,7 +424,7 @@ class FindRepository extends BaseRepository
             foreach ($result as $key => $val) {
                 if (! is_object($val)) {
                     $tmp[$key] = $val;
-                } elseif ($key == 'photograph') {
+                } elseif ($key == 'photograph' && $val->count()) {
                     $tmp[$key] = $val->current();
                 }
             }
