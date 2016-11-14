@@ -54,18 +54,20 @@ class FindController extends Controller
         $count = $result['count'];
 
         // If a user is a researcher or personal finds have been set, return the exact
-        // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
+        // find location, if not, round up to 2 digits, which lowers the accuracy to about 10 km
         if (empty($filters['myfinds'])) {
-            $adjustedFinds = [];
+            $adjusted_finds = [];
 
             $user = $request->user();
 
             foreach ($finds as $find) {
                 if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
                     && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['lat'])) {
-                        $find['lat'] = round(($find['lat'] / 2), 2) * 2;
-                        $find['lng'] = round(($find['lng'] / 2), 2) * 2;
+                    if (! empty($find['grid']) || ! empty($find['lat'])) {
+                        list($lat, $lon) = explode(',', $find['grid']);
+
+                        $find['lat'] = $lat;//round(($find['lat'] / 2), 2) * 2;
+                        $find['lng'] = $lon;//round(($find['lng'] / 2), 2) * 2;
 
                         $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
                         $find['accuracy'] = max(7000, $accuracy);
@@ -75,7 +77,7 @@ class FindController extends Controller
                 $adjusted_finds[] = $find;
             }
 
-            $finds = $adjustedFinds;
+            $finds = $adjusted_finds;
         }
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
