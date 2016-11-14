@@ -97,13 +97,14 @@ class FindController extends Controller
             $user = $request->user();
 
             foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+                if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
                     && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['findSpot']['location']['lat'])) {
-                        $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
-                        $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
-                        $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
-                        $find['findSpot']['location']['accuracy'] = max(2000, $accuracy);
+                    if (!empty($find['lat'])) {
+                        $find['lat'] = round(($find['lat'] / 2), 2) * 2;
+                        $find['lng'] = round(($find['lng'] / 2), 2) * 2;
+
+                        $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
+                        $find['accuracy'] = max(7000, $accuracy);
                     }
                 }
 
@@ -317,7 +318,6 @@ class FindController extends Controller
                     } else {
                         $images[] = $image;
                     }
-
                 }
             }
 

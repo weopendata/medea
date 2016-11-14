@@ -186,7 +186,7 @@ class FindRepository extends BaseRepository
         WITH distinct find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph, location
         ORDER BY $orderStatement
         WHERE $whereStatement
-        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy
+        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy
         SKIP $offset
         LIMIT $limit";
 
