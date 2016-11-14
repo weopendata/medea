@@ -218,7 +218,7 @@ class FindRepository extends BaseRepository
         }
 
         // Non personal find statement
-        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)";
+        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P29]-(person:person)";
 
         // Check on validationstatus
         if ($validationStatus == '*') {
@@ -424,7 +424,7 @@ class FindRepository extends BaseRepository
             foreach ($result as $key => $val) {
                 if (! is_object($val)) {
                     $tmp[$key] = $val;
-                } elseif ($key == 'photograph') {
+                } elseif ($key == 'photograph' && $val->count()) {
                     $tmp[$key] = $val->current();
                 }
             }
