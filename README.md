@@ -46,7 +46,7 @@ This should return:
 }
 ```
 
-4. Finally, run this query in neo4j to start indexing:
+Finally, run this query in neo4j to start indexing:
 
     MATCH (n)
     WHERE has(n.fulltext_description)
