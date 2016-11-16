@@ -34,6 +34,13 @@
 .column img {
 	max-width: 100%;
 }
+.list-right>.items {
+	transition: opacity .2s;
+}
+.fetching .list-right>.items {
+	opacity: 0.5;
+	transition: opacity .6s;
+}
 
 /* Base */
 

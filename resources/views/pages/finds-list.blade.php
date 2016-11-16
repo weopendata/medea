@@ -3,7 +3,7 @@
 @section('title', 'Vondsten')
 
 @section('content')
-<div class="ui container">
+<div class="ui container" :class="{fetching:fetching}">
   <div class="list-left">
     <finds-filter :name.sync="filterName" :model.sync="filterState" :saved="saved"></finds-filter>
   </div>
