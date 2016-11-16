@@ -64,6 +64,15 @@ $magnify-margin: 0;
 		max-width: 50%;
 		vertical-align: top;
 		cursor: zoom-in;
+		// img {
+		// 	position: relative;
+		// 	transition: transform .2s;
+		// }
+		&:hover img {
+			// z-index: 1;
+			// transform: scale(1.1);
+			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+		}
 		&:hover .magnify {
 			opacity: 0;
 		}
@@ -71,6 +80,7 @@ $magnify-margin: 0;
 	.magnify {
 		transition: opacity .3s;
 		position: absolute;
+		z-index: 2;
 		top: .5rem;
 		right: .5rem;
 		margin: $magnify-margin 0 0 $magnify-margin;
@@ -81,9 +91,13 @@ $magnify-margin: 0;
 		line-height: $magnify-size;
 		font-size: 16px;
 		text-align: center;
-		background: transparentize($magnify-color, .5);
+		background: black;
 		color: white;
+		opacity: .3;
 		pointer-events: none;
+	}
+	.fe-check {
+		margin-right: .5rem;
 	}
 }
 .scrolling.column {
@@ -159,8 +173,8 @@ dl {
 		display: block;
 	}
 	.fe-img {
-		padding-left: 0;
-		max-width: 100%;
+		margin-right: 5em;
+
 	}
 }
 @media only screen and (max-width: 767px) {

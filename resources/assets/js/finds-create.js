@@ -16,7 +16,7 @@ import TextareaGrowing from './components/TextareaGrowing'
 import Ajax from './mixins/Ajax'
 import Notifications from './mixins/Notifications'
 
-import {EMPTY_CLS} from './const.js'
+import { EMPTY_CLS, toPublicBounds } from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -95,8 +95,6 @@ function toTreatment (tech) {
     }
   } || undefined
 }
-
-const GEO_ROUND = 0.01
 
 Vue.use(VueResource)
 Vue.config.debug = true
@@ -201,14 +199,7 @@ new Vue({
   },
   computed: {
     publicBounds () {
-      var pubLat = Math.round(this.latlng.lat / GEO_ROUND) * GEO_ROUND
-      var pubLng = Math.round(this.latlng.lng / GEO_ROUND) * GEO_ROUND
-      return {
-        north: pubLat + GEO_ROUND / 2,
-        south: pubLat - GEO_ROUND / 2,
-        east: pubLng + GEO_ROUND / 2,
-        west: pubLng - GEO_ROUND / 2
-      }
+      return toPublicBounds(this.latlng)
     },
     latlng: {
       get: function () {

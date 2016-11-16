@@ -1,3 +1,7 @@
+
+export const GEO_ROUND_LAT = 0.065
+export const GEO_ROUND_LNG = 0.1
+
 // Remove reactivity
 export function inert (v) {
   return JSON.parse(JSON.stringify(v))
@@ -63,4 +67,16 @@ export function toBytes (bytes) {
     : bytes < 1024000
     ? (bytes / 1024).toPrecision(3) + ' kB'
     : (bytes / 1024 / 1024).toPrecision(3) + ' MB'
+}
+
+// Public bounds rounded to 7km
+export function toPublicBounds (f) {
+  let pubLat = Math.round(f.lat / GEO_ROUND_LAT) * GEO_ROUND_LAT
+  let pubLng = Math.round(f.lng / GEO_ROUND_LNG) * GEO_ROUND_LNG
+  return {
+    north: pubLat + GEO_ROUND_LAT / 2,
+    south: pubLat - GEO_ROUND_LAT / 2,
+    east: pubLng + GEO_ROUND_LNG / 2,
+    west: pubLng - GEO_ROUND_LNG / 2
+  }
 }
