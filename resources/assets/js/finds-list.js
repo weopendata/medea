@@ -29,6 +29,7 @@ new window.Vue({
     return {
       paging: window.link ? parseLinkHeader(window.link) : {},
       finds: window.initialFinds || [],
+      fetching: false,
       filterState: window.filterState || {myfinds: false},
       filterName: '',
       user: window.medeaUser,
@@ -126,12 +127,15 @@ new window.Vue({
         this.query = query
         return      
       }
+      this.fetching = true
       this.query = query
       window.history.pushState({}, document.title, query)
 
       console.log('List: fetching finds', type === 'heatmap' ? 'incl. heatmap' : '')
       this.$http.get('/api' + query).then(this.fetchSuccess, function () {
         console.error('List: could not fetch finds')
+      }).then(function () {
+        this.fetching = false
       })
       if (type === 'heatmap') {
         this.$http.get('/api' + query + '&type=heatmap').then(this.heatmapSuccess, function () {
