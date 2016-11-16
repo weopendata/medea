@@ -1,5 +1,5 @@
 <template>
-  <form class="ui form" @submit.prevent="submit" :action="submitAction" style="max-width: 900px;margin: 5em auto 5em;">
+  <form class="ui form" @submit.prevent="submit" :action="submitAction" style="margin: 5em 0 5em;">
     <h2>Classificeren</h2>
     <div class="card card-center cls-card">
       <div class="card-textual">

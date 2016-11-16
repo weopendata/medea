@@ -1,12 +1,12 @@
 <template>
-  <article>
-    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="showRemarks">
+  <article style="max-width:900px;margin:2em auto;">
+    <div class="ui warning message visible" v-if="showRemarks">
       <p>
         De validator heeft enkele opmerkingen bij validatie.
       </p>
       <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
     </div>
-    <div class="ui warning message visible" style="max-width:900px;margin:2em auto;" v-if="find.object.objectValidationStatus == 'voorlopig'">
+    <div class="ui warning message visible" v-if="find.object.objectValidationStatus == 'voorlopig'">
       <p>
         Dit is een voorlopige versie
       </p>

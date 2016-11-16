@@ -10,11 +10,14 @@
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
   </dl>
-  <dl v-if="finder">
+  <dl v-if="finder&&finder.name">
     <dt-check v-if="validating" prop="finder.name"></dt-check>
     <dt>Vinder</dt>
-    <dd v-if="finder.id"><a :href="'/persons/'+finder.id" v-text="finder.name"></a></dd>
-    <dd v-else v-text="finder.name"></dd>
+    <dd>
+      <a v-if="finder.id" :href="'/persons/'+finder.id" v-text="finder.name"></a>
+      <span v-else v-text="finder.name"></span>
+      &nbsp;
+    </dd>
   </dl>
   <dl>
     <dt>Status</dt>
