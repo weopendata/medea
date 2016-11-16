@@ -1,5 +1,5 @@
 
-export const GEO_ROUND_LAT = 0.065
+export const GEO_ROUND_LAT = 0.1
 export const GEO_ROUND_LNG = 0.1
 
 // Remove reactivity
