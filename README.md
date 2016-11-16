@@ -25,26 +25,32 @@ curl -XPOST http://neo4j:{password}@localhost:7474/db/data/index/node/ --header 
 }'
 ```
 2. Edit the conf/neo4j.properties file and add/edit the following lines:
-    ```
-        node_auto_indexing=true
-        node_keys_indexable=fulltext_description
-    ```
+```
+node_auto_indexing=true
+node_keys_indexable=fulltext_description
+```
 
 3. Make sure the analyzer has to_lower_case, open up the bin/shell of neo4j and run:
 
-    ```
-        index --get-config node_auto_index
-    ```
+```
+index --get-config node_auto_index
+```
 
 This should return:
 
-    ```
-        {
-            "provider": "lucene",
-            "to_lower_case": "true",
-            "type": "fulltext"
-        }
-    ```
+```
+{
+    "provider": "lucene",
+    "to_lower_case": "true",
+    "type": "fulltext"
+}
+```
+
+4. Finally, run this query in neo4j to start indexing:
+
+    MATCH (n)
+    WHERE has(n.fulltext_description)
+    SET n.fulltext_description=n.fulltext_description
 
 ## Development documentation
 
