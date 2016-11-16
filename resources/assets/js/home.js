@@ -1,14 +1,10 @@
-import Vue from 'vue/dist/vue.min.js'
-import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import TextareaGrowing from './components/TextareaGrowing'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
 import Ajax from './mixins/Ajax'
 import Notifications from './mixins/Notifications'
 
-Vue.use(VueResource)
-Vue.config.debug = true
-new Vue({
+new window.Vue({
   data () {
     return {
       show: {

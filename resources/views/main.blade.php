@@ -102,7 +102,7 @@ medeaUser.name = '{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}';
 medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
-<script src="/js/vendor.min.js"></script>
+<script src="/js/vendor.min.js?16nov"></script>
 
 @section('script')
 <script src="{{ asset('js/users-admin.js') }}"></script>

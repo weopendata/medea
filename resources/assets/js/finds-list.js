@@ -1,5 +1,3 @@
-import Vue from 'vue/dist/vue.min.js'
-import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
@@ -10,17 +8,26 @@ import DevBar from './components/DevBar'
 import Notifications from './mixins/Notifications'
 import { inert, toPublicBounds } from './const.js'
 
-import parseLink from 'parse-link-header'
+import parseLinkHeader from 'parse-link-header'
 
 const HEATMAP_RADIUS = 0.05
 
-Vue.use(VueResource)
-Vue.config.debug = true
-new Vue({
+// Parse link header
+function getPaging (header) {
+  if (typeof header === 'function') {
+    return parseLinkHeader(header('link'))
+  }
+  if (typeof header === 'string') {
+    return parseLinkHeader(header)
+  }
+  return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0])
+}
+
+new window.Vue({
   el: 'body',
   data () {
     return {
-      paging: window.link ? parseLink(window.link) : {},
+      paging: window.link ? parseLinkHeader(window.link) : {},
       finds: window.initialFinds || [],
       filterState: window.filterState || {myfinds: false},
       filterName: '',
@@ -133,7 +140,7 @@ new Vue({
       }
     },
     fetchSuccess (res) {
-      this.paging = parseLink(res.headers('link'))
+      this.paging = getPaging(res.headers)
       this.finds = res.data
     },
     heatmapSuccess (res) {
