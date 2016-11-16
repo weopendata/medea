@@ -123,13 +123,11 @@ new window.Vue({
       }
 
       // Do not push state on first load
-      if (!this.query) {
-        this.query = query
-        return      
+      if (this.query) {
+        window.history.pushState({}, document.title, query)
       }
       this.fetching = true
       this.query = query
-      window.history.pushState({}, document.title, query)
 
       console.log('List: fetching finds', type === 'heatmap' ? 'incl. heatmap' : '')
       this.$http.get('/api' + query).then(this.fetchSuccess, function () {
