@@ -1,11 +1,11 @@
 <template>
   <div class="card card-center cls-card">
     <div class="card-textual">
-      <p v-if="cls.productionClassificationPeriod || cls.productionClassificationRulerNation">
+      <p v-if="cls.productionClassificationPeriod || cls.productionClassificationRulerNation || cls.productionClassificationType || cls.startDate || cls.endDate">
         <span class="cls-labeled" v-if="cls.productionClassificationPeriod">Periode <b>{{cls.productionClassificationPeriod}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Natie <b>{{cls.productionClassificationRulerNation}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationType">Type <b>{{cls.productionClassificationType}}</b></span>
-        <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
+        <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{vC(cls.startDate) || '?'}} - {{vC(cls.endDate, cls.startDate) || '?'}}</b></span>
       </p>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
@@ -66,6 +66,12 @@ export default {
     }
   },
   methods: {
+    vC (y1, y2) {
+      if (y1 < 0 || y2 < 0) {
+        return y1 < 0 ? -y1 + ' v.C.' : y1 + ' n.C.'
+      }
+      return y1
+    },
     agree () {
       this.cls[this.cls.me]--
       this.$set('cls.me', this.cls.me === 'agree' ? null : 'agree')

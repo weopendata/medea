@@ -67,5 +67,6 @@ window.publicUserInfo = {!! json_encode($publicUserInfo) !!};
 @endif
 </script>
 <script src="{{ asset('js/finds-detail.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendor.min.css') }}">
+<script src="{{ asset('assets/js/photoswipe.min.js') }}"></script>
+<link href="{{ asset('assets/css/photoswipe.min.css') }}" rel="stylesheet" type="text/css">
 @endsection
