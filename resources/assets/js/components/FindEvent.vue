@@ -65,7 +65,7 @@ export default {
       )
     },
     classificationCount () {
-      return this.classificationCount
+      return this.find.classificationCount
     },
     hasLocation () {
       return this.find.lat

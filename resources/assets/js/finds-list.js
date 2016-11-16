@@ -108,17 +108,25 @@ new Vue({
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
       }).filter(Boolean).join('&')
       query = query ? '/finds?' + query : '/finds?'
-      window.history.pushState({}, document.title, query)
+
+      // Do not fetch same query
       if (cause !== 'heatmap' && this.query === query) {
         return
       }
-      console.log('List: fetching finds')
+
+      // Do not push state on first load
+      if (!this.query) {
+        this.query = query
+        return      
+      }
       this.query = query
+      window.history.pushState({}, document.title, query)
+
+      console.log('List: fetching finds', type === 'heatmap' ? 'incl. heatmap' : '')
       this.$http.get('/api' + query).then(this.fetchSuccess, function () {
         console.error('List: could not fetch finds')
       })
       if (type === 'heatmap') {
-        console.log('List: fetching finds heatmap')
         this.$http.get('/api' + query + '&type=heatmap').then(this.heatmapSuccess, function () {
           console.error('List: could not fetch finds heatmap')
         })

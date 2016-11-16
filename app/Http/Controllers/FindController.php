@@ -119,7 +119,7 @@ class FindController extends Controller
         return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
-                'query' => '',
+                'query' => $request->input('query', ''),
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),

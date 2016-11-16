@@ -1,10 +1,14 @@
 <template>
-  <form class="ui form" @submit.prevent="submit" :action="submitAction">
+  <form class="ui form" @submit.prevent="submit" :action="submitAction" style="max-width: 900px;margin: 5em auto 5em;">
     <h2>Classificeren</h2>
-    <add-classification-form :cls.sync="cls"></add-classification-form>
-    <p>
-      <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Toevoegen</button>
-    </p>
+    <div class="card card-center cls-card">
+      <div class="card-textual">
+        <add-classification-form :cls.sync="cls"></add-classification-form>
+        <p>
+          <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Toevoegen</button>
+        </p>
+      </div>
+    </div>
   </form>
 </template>
 

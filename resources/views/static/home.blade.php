@@ -8,28 +8,28 @@
 
 @section('content')
   <div class="hero">
-    <div class="ui container">
+    <form method="GET" action="/finds" class="ui container">
       <p class="lead" data-step="1" data-intro="Deze intro zal je begeleiden bij het registreren van een vondst.">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
       <p>
         Verken <b>{{ $stats['validatedFinds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
       </p>
       <p>
-        <div class="ui action input" style="width: 30%;">
-          <input type="text" placeholder="Search...">
+        <span class="ui action input" style="width: 30%;">
+          <input type="text" placeholder="Search..." name="query">
           <button class="ui blue icon button">
             <i class="search icon"></i>
           </button>
-        </div>
+        </span>
       </p>
       <p>
         @if (Auth::guest())
         <a href="/login" class="ui green button"><i class="sign in icon"></i> Log in </a>
         <a href="#register" class="ui green button"><i class="edit icon"></i> Word lid </a>
         @else
-        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Vondsten doorzoeken</a>
+        <button type="submit" class="ui green button"><i class="sign in icon"></i> Vondsten doorzoeken</button>
         @endif
       </p>
-    </div>
+    </form>
   </div>
 {!! Form::open(array(
 'action' => 'Auth\AuthController@register',
