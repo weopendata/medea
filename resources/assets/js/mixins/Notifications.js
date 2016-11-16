@@ -34,10 +34,7 @@ export default {
     },
     notifFetch () {
       this.$http.get('/api/notifications')
-      .then(this.notifSuccess, this.submitError)
-      .catch(function () {
-        this.submitting = false
-      })
+      .then(this.notifSuccess, this.notifError)
     },
     notifRead (n, index) {
       if (n.read) {

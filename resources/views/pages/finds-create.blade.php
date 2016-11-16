@@ -342,9 +342,12 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <p v-if="submitting&&!toValidate" style="color:#090">
     Bedankt, jouw vondstfiche wordt bewaard.
   </p>
-  <div class="field">
+  <div v-if="!submitting" class="field">
     <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
     <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+  </div>
+  <div v-else>
+    <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
   </div>
 </div>
 <div class="field" v-if="!submittable">

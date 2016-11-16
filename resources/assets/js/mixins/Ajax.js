@@ -18,15 +18,17 @@ export default {
       if (this.submitTrack) {
         this.submitTrack(data)
       }
-      if (data.identifier) {
-        this.$http.put(this.submitAction, data).then(this.submitSuccess, this.submitError).catch(function () {
+
+      var request = data.identifier ? this.$http.put(this.submitAction, data) : this.$http.post(this.submitAction, data)
+
+      request
+        .then(this.submitSuccess, this.submitError)
+        .then(function () {
           this.submitting = false
         })
-      } else {
-        this.$http.post(this.submitAction, data).then(this.submitSuccess, this.submitError).catch(function () {
+        .catch(function () {
           this.submitting = false
         })
-      }
     }
   }
 }
