@@ -153,6 +153,9 @@ new window.Vue({
         this.$set('filterState.type', false)
       } else {
         this.$set('filterState.type', v)
+        if (v === 'heatmap') {
+          this.fetch('heatmap')
+        }
       }
     },
     mapClick (f) {
