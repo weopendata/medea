@@ -129,6 +129,8 @@ class FindController extends Controller
             if ($first_char == '-') {
                 $order_flow = 'DESC';
                 $order_by = substr($order, 1, strlen($order));
+            } else {
+                $order_by = $order;
             }
         }
 

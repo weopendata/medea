@@ -184,9 +184,9 @@ class FindRepository extends BaseRepository
         OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
         OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
         WITH distinct find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph, location
-        ORDER BY $orderStatement
         WHERE $whereStatement
         RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy, location.geoGrid as grid
+        ORDER BY $orderStatement
         SKIP $offset
         LIMIT $limit";
 
@@ -230,13 +230,14 @@ class FindRepository extends BaseRepository
 
         $withStatement = "find, validation";
 
-        $orderStatement = 'find.id DESC';
+        // In our query find.id is aliased as identifier
+        $orderStatement = 'identifier ' . $orderFlow;
 
         if ($orderBy == 'period') {
             $matchStatements[] = "(object:E22)-[P42]-(period:E55)";//"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
             $withStatement .= ", period";
             $orderStatement = "period.value $orderFlow";
-        } else {
+        } elseif ($orderBy == 'findDate') {
             $matchStatements[] = "(find:E10)-[P4]-(findDate:E52)";
             $withStatement .= ", findDate";
             $orderStatement = "findDate.value $orderFlow";
