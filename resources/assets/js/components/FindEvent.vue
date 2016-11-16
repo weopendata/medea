@@ -108,13 +108,9 @@ export default {
       if (!this.find.lat) {
         return alert('LatLng is missing, this will never happen')
       }
-      accuracy = accuracy == 'city' ? 7000 : 0
-
-      var acc = accuracy || this.find.accuracy || 1
-      console.log(acc)
-      console.log(this.find.lat)
-      console.log(this.find.lng)
-      this.$dispatch('mapFocus', {lat:parseFloat(this.find.lat), lng:parseFloat(this.find.lng)}, parseInt(acc))
+      accuracy = parseInt(accuracy == 'city' ? 7000 : this.find.accuracy || 1)
+      
+      this.$dispatch('mapFocus', {lat:parseFloat(this.find.lat), lng:parseFloat(this.find.lng)}, accuracy)
     }
   },
   filters: {

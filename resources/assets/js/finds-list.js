@@ -227,7 +227,7 @@ new window.Vue({
           identifier: f.identifier,
           title: this.findTitle(f),
           accuracy: f.accuracy || 2000,
-          position: {lat: f.lat, lng: f.lng},
+          position: { lat: parseFloat(f.lat), lng: parseFloat(f.lng) },
           bounds: toPublicBounds(f)
         }
       })
