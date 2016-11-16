@@ -136,7 +136,13 @@ class FindRepository extends BaseRepository
     {
         extract($this->getQueryStatements($filters, '', '', $validationStatus));
 
-        $query = "MATCH $initialStatement, $matchstatement, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
+        $match = $initialStatement;
+
+        if (! empty($matchStatement)) {
+            $match .= ', ' . $matchStatement;
+        }
+
+        $query = "MATCH $match, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
         WITH $withStatement, location
         WHERE $whereStatement
         RETURN count(distinct find) as findCount, location.geoGrid as centre";
@@ -269,14 +275,14 @@ class FindRepository extends BaseRepository
             //$withStatement .= "find, validation";
         }
 
-        $matchstatement = implode(', ', $matchStatements);
+        $matchStatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
         //$withStatement .= ", count(distinct find) as findCount";
 
         return compact(
             'startStatement',
             'initialStatement',
-            'matchstatement',
+            'matchStatement',
             'whereStatement',
             'withStatement',
             'orderStatement',
