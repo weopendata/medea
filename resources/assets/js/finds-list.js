@@ -23,6 +23,8 @@ function getPaging (header) {
   return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0])
 }
 
+let listQuery, heatmapQuery
+
 new window.Vue({
   el: 'body',
   data () {
@@ -117,36 +119,38 @@ new window.Vue({
       }).filter(Boolean).join('&')
       query = query ? '/finds?' + query : '/finds?'
 
-      // Do not fetch same query
-      if (cause !== 'heatmap' && this.query === query) {
-        return
-      }
-
       // Do not push state on first load
-      if (this.query) {
+      if (listQuery) {
         window.history.pushState({}, document.title, query)
       }
-      this.fetching = true
-      this.query = query
 
-      console.log('List: fetching finds', type === 'heatmap' ? 'incl. heatmap' : '')
-      this.$http.get('/api' + query).then(this.fetchSuccess, function () {
-        console.error('List: could not fetch finds')
-      }).then(function () {
-        this.fetching = false
-      })
-      if (type === 'heatmap') {
-        this.$http.get('/api' + query + '&type=heatmap').then(this.heatmapSuccess, function () {
-          console.error('List: could not fetch finds heatmap')
-        })
+      // Do not fetch same query twice
+      if (listQuery !== query) {
+        listQuery = query
+        this.fetching = true
+        this.$http.get('/api' + query)
+          .then(function (res) {
+            this.paging = getPaging(res.headers)
+            this.finds = res.data
+            this.fetching = false
+          })
+          .catch(function () {
+            this.paging = {}
+            this.finds = []
+            console.error('List: could not fetch finds')
+          })
       }
-    },
-    fetchSuccess (res) {
-      this.paging = getPaging(res.headers)
-      this.finds = res.data
-    },
-    heatmapSuccess (res) {
-      this.rawmap = res.data
+
+      // Do not fetch same query twice
+      if (type === 'heatmap' && heatmapQuery !== query) {
+        heatmapQuery = query
+        this.$http.get('/api' + query + '&type=heatmap')
+          .then(({ data }) => this.rawmap = res.data)
+          .catch(function () {
+            this.rawmap = []
+            console.error('List: could not fetch finds heatmap')
+          })
+      }
     },
     mapToggle (v) {
       if (this.filterState.type === v) {
