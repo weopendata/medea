@@ -145,7 +145,7 @@ new window.Vue({
       if (type === 'heatmap' && heatmapQuery !== query) {
         heatmapQuery = query
         this.$http.get('/api' + query + '&type=heatmap')
-          .then(({ data }) => this.rawmap = res.data)
+          .then(({ data }) => this.rawmap = data)
           .catch(function () {
             this.rawmap = []
             console.error('List: could not fetch finds heatmap')
