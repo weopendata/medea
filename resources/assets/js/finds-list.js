@@ -226,16 +226,23 @@ new window.Vue({
   filters: {
     markable (finds) {
       return finds
+        .filter(f => f.lat && f.accuracy == 1)
+        .map(f => {
+          return {
+            title: this.findTitle(f),
+            position: { lat: parseFloat(f.lat), lng: parseFloat(f.lng) }
+          }
+        })
+    },
+    rectangable (finds) {
+      return finds
         .filter(f => f.lat)
         .map(f => {
           return {
-          identifier: f.identifier,
-          title: this.findTitle(f),
-          accuracy: f.accuracy || 2000,
-          position: { lat: parseFloat(f.lat), lng: parseFloat(f.lng) },
-          bounds: toPublicBounds(f)
-        }
-      })
+            title: this.findTitle(f),
+            bounds: toPublicBounds(f)
+          }
+        })
     }
   },
   watch: {
