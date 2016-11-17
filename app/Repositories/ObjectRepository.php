@@ -148,8 +148,12 @@ class ObjectRepository extends BaseRepository
         foreach ($relationships as $relationship) {
             $typeNode = $relationship->getEndNode();
 
-            $relationship->delete();
-            $typeNode->delete();
+            if ($typeNode->getProperty('name') == 'objectValidationStatus') {
+                $relationship->delete();
+                $typeNode->delete();
+
+                break;
+            }
         }
 
         $object = new Object();
