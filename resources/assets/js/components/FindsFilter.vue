@@ -42,6 +42,11 @@
     <div class="facet-options">
       <a href="#" class="facet-a" :class="{active:model.technique==opt}" @click.prevent="toggle('technique', opt)" v-for="opt in fields.object.technique" v-text="opt"></a>
     </div>
+
+    <h3 class="facet-title">Oppervlaktebehandeling</h3>
+    <div class="facet-options">
+      <a href="#" class="facet-a" :class="{active:model.modification==opt}" @click.prevent="toggle('modification', opt)" v-for="opt in modificationFields" v-text="opt"></a>
+    </div>
   </div>
 </template>
 
@@ -51,12 +56,30 @@ import {inert} from '../const.js';
 
 var backupState = {myfinds: false}
 
+
+var modificationFields = [
+  'meerdere',
+  'email (cloissoné)',
+  'niello',
+  'filigraan',
+  'gegraveerd',
+  'opengewerkt',
+  'verguld',
+  'verzilverd',
+  'gedreven',
+  'gedamasceerd',
+  'email (groeven)',
+  'onbekend',
+  'andere'
+]
+
 export default {
   props: ['name', 'model', 'saved'],
   data () {
     return {
       name: '',
       fields: window.fields,
+      modificationFields: modificationFields,
       advanced: false
     }
   },

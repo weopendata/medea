@@ -126,6 +126,7 @@ class FindController extends Controller
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),
+                'modification' => $request->input('modification', '*'),
                 'status' => $validated_status,
                 'showmap' => $request->input('showmap', null)
             ],

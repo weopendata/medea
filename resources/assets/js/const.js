@@ -53,7 +53,7 @@ export function toMonth (d) {
   return MONTHS[d.getMonth()] + ', ' + d.getFullYear()
 }
 
-export const fromDate = function (d) {
+export function fromDate (d) {
   d = new Date(Date.parse(d))
   return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
 }

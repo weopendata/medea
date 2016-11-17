@@ -32,7 +32,7 @@ new window.Vue({
       paging: window.link ? parseLinkHeader(window.link) : {},
       finds: window.initialFinds || [],
       fetching: false,
-      filterState: window.filterState || {myfinds: false},
+      filterState: window.filterState || console.error('filterState warning') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
