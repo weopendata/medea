@@ -27,8 +27,8 @@
           <rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></rectangle>
         </div>
         <div v-else>
-          <marker v-for="f in finds | markable" @g-click="mapClick(f)" v-if="markerNeeded||f.accuracy==1" :position.sync="f.position"></marker>
-          <rectangle v-for="f in finds | markable" @g-click="mapClick(f)" :bounds="f.bounds" :options="markerOptions"></rectangle>
+          <marker v-for="f in finds | markable" @g-click="mapClick(f)" :position.sync="f.position"></marker>
+          <rectangle v-for="f in finds | rectangable" @g-click="mapClick(f)" :bounds="f.bounds" :options="markerOptions"></rectangle>
           <div class="gm-panel" style="direction: ltr; overflow: hidden; text-align: center; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;right: 10px;" v-if="map.info" v-html="map.info"></div>
         </div>
       </google-map>
