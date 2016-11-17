@@ -117,6 +117,7 @@ class FindRepository extends BaseRepository
         extract($this->prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus));
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
+
         $data = $this->parseApiResults($cypherQuery->getResultSet());
 
         $count = $this->getCount($query, $variables);
@@ -136,13 +137,18 @@ class FindRepository extends BaseRepository
     {
         extract($this->getQueryStatements($filters, '', '', $validationStatus));
 
-        $match = $initialStatement;
+        $withStatement = implode(', ', $withStatement);
 
-        if (! empty($matchStatement)) {
-            $match .= ', ' . $matchStatement;
+        $fullMatchStatement = $initialStatement;
+
+        if (! empty($fullMatchStatement)) {
+            $fullMatchStatement .= ', ' . $matchStatement;
+            $fullMatchStatement = trim($fullMatchStatement);
         }
 
-        $query = "MATCH $match, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
+        $fullMatchStatement = rtrim($fullMatchStatement, ',');
+
+        $query = "MATCH $fullMatchStatement, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
         WITH $withStatement, location
         WHERE $whereStatement
         RETURN count(distinct find) as findCount, location.geoGrid as centre";
@@ -182,14 +188,44 @@ class FindRepository extends BaseRepository
     {
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
 
-        $query = "MATCH (find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)
-        OPTIONAL MATCH (object:E22)-[P108]-(productionEvent:E12)-[P41]-(pClass:E17)
+        $withProperties = [
+           "distinct find",
+           "validation",
+           "findDate",
+           "locality",
+           "person",
+           "count(distinct pClass) as pClassCount",
+           "lat",
+           "lng",
+           "material",
+           "category",
+           "period",
+           "photograph",
+           "location",
+        ];
+
+        $withStatements = array_merge($withStatement, $withProperties);
+        $withStatements = array_unique($withStatements);
+
+        $withStatement = implode(', ', $withStatements);
+
+        $fullMatchStatement = $initialStatement;
+
+        if (! empty($fullMatchStatement)) {
+            $fullMatchStatement .= ', ' . $matchStatement;
+            $fullMatchStatement = trim($fullMatchStatement);
+        }
+
+        $fullMatchStatement = rtrim($fullMatchStatement, ',');
+
+        $query = "MATCH $fullMatchStatement
+        OPTIONAL MATCH (object:E22)-[producedBy:P108]-(productionEvent:E12)-[P41]-(pClass:E17)
         OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53)-[P89]-(address:E53), (address:E53)-[localityRel:P87]-(locality:locationAddressLocality), (location:E53)-[latRel:P87]-(lat:E47{name:\"lat\"}), (location:E53)-[lngRel:P87]-(lng:E47{name:\"lng\"})
         OPTIONAL MATCH (object:E22)-[P45]-(material:E57)
         OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
         OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
         OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
-        WITH distinct find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph, location
+        WITH $withStatement
         WHERE $whereStatement
         RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy, location.geoGrid as grid
         ORDER BY $orderStatement
@@ -224,7 +260,7 @@ class FindRepository extends BaseRepository
         }
 
         // Non personal find statement
-        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P29]-(person:person)";
+        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)";
 
         // Check on validationstatus
         if ($validationStatus == '*') {
@@ -234,18 +270,18 @@ class FindRepository extends BaseRepository
             $variables['validationStatus'] = $validationStatus;
         }
 
-        $withStatement = "find, validation";
+        $withStatement = ["distinct find", "validation", "person"];
 
         // In our query find.id is aliased as identifier
         $orderStatement = 'identifier ' . $orderFlow;
 
         if ($orderBy == 'period') {
-            $matchStatements[] = "(object:E22)-[P42]-(period:E55)";//"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
-            $withStatement .= ", period";
+            $matchStatements[] = "(object:E22)-[P42]-(period:E55)";
+            $withStatement[] = "period";
             $orderStatement = "period.value $orderFlow";
         } elseif ($orderBy == 'findDate') {
-            $matchStatements[] = "(find:E10)-[P4]-(findDate:E52)";
-            $withStatement .= ", findDate";
+            //$matchStatements[] = "(find:E10)-[P4]-(findDate:E52)"; // Is already part of the initial statement
+            $withStatement[] = "findDate";
             $orderStatement = "findDate.value $orderFlow";
         }
 
@@ -256,28 +292,22 @@ class FindRepository extends BaseRepository
                 $variables[$config['nodeName']] = $filters[$property];
 
                 if (!empty($config['with'])) {
-                    $withStatement .= ', ' . $config['with'];
+                    $withStatement[] = $config['with'];
                 }
             }
         }
 
         if (!empty($email)) {
-            $initialStatement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
-            $withStatement .= ", person";
-
             if ($validationStatus == '*') {
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
             } else {
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
                 $variables['validationStatus'] = $validationStatus;
             }
-            // Can be deleted
-            //$withStatement .= "find, validation";
         }
 
         $matchStatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
-        //$withStatement .= ", count(distinct find) as findCount";
 
         return compact(
             'startStatement',
@@ -310,10 +340,10 @@ class FindRepository extends BaseRepository
                 'with' => 'material',
             ],
             'technique' => [
-                'match' => "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[techniqueType:P2]-(type:E55)",
-                'where' => "type.value = {technique}",
+                'match' => "(object:E22)-[producedBy:P108]-(pEvent:E12)-[P33]-(techniqueNode:E29)-[hasTechniquetype:P2]-(technique:E55)",
+                'where' => "technique.value = {technique}",
                 'nodeName' => 'technique',
-                'with' => 'type',
+                'with' => 'technique',
             ],
             'category' => [
                 'match' => "(object:E22)-[categoryType:P2]-(category:E55)",
@@ -334,8 +364,8 @@ class FindRepository extends BaseRepository
                 'nodeName' => 'findSpotType',
                 'with' => 'findSpotType',
             ],
-            'modificationTechniqueType' => [
-                'match' => '(object:E22)-[P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
+            'modification' => [
+                'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
                     'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
                     'nodeName' => 'modificationTechniqueType',
                     'with' => 'modificationTechniqueType'
