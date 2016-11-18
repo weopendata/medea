@@ -7,6 +7,23 @@ export function inert (v) {
   return JSON.parse(JSON.stringify(v))
 }
 
+// Query
+export function fromQuery (query) {
+  var match
+  var output = {}
+  var pl = /\+/g
+  var search = /([^&=]+)=?([^&]*)/g
+  var decode = function (s) {
+    return decodeURIComponent(s.replace(pl, ' '))
+  }
+  query = query || window.location.search.substring(1)
+
+  while (match = search.exec(query)) {
+    output[decode(match[1])] = decode(match[2])
+  }
+  return output
+}
+
 // FindEvent helpers
 export function findTitle (find) {
   // Not showing undefined and onbekend in title

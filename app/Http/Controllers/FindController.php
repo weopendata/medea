@@ -75,19 +75,15 @@ class FindController extends Controller
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
-        $linkHeader = '';
+        $linkHeader = [];
 
         $query_string = $this->buildQueryString($request);
 
         foreach ($pages as $rel => $page_info) {
-            if (!empty($query_string)) {
-                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . ';rel=' . $rel . ';';
-            } else {
-                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
-            }
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' .$query_string . '>;rel=' . $rel;
         }
-
-        $linkHeader = rtrim($linkHeader, ';');
+    
+        $linkHeader = implode(', ', $linkHeader);
 
         // If a user is a researcher or personal finds have been set, return the exact
         // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
@@ -119,6 +115,8 @@ class FindController extends Controller
         return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
+                'limit' => $request->input('limit', null),
+                'offset' => $request->input('offset', null),
                 'query' => $request->input('query', ''),
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],

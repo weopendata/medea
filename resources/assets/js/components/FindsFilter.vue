@@ -125,6 +125,7 @@ export default {
         this.model[filter] = this.model[filter] == value ? false : value
       }
       this.name = ''
+      this.model.offset = 0
       this.$root.fetch()
     },
     toggleMyfinds () {

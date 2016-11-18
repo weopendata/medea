@@ -82,19 +82,15 @@ class FindController extends Controller
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
-        $linkHeader = '';
+        $linkHeader = [];
 
-        $queryString = $this->buildQueryString($request);
+        $query_string = $this->buildQueryString($request);
 
         foreach ($pages as $rel => $page_info) {
-            if (!empty($queryString)) {
-                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $queryString . ';rel=' . $rel . ';';
-            } else {
-                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
-            }
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . '>;rel=' . $rel;
         }
-
-        $linkHeader = rtrim($linkHeader, ';');
+    
+        $linkHeader = implode(', ', $linkHeader);
 
         return response()->json($finds)->header('Link', $linkHeader);
     }
