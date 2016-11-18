@@ -15,12 +15,12 @@ const HEATMAP_RADIUS = 0.05
 // Parse link header
 function getPaging (header) {
   if (typeof header === 'function') {
-    return parseLinkHeader(header('link'))
+    return parseLinkHeader(header('link')) || {}
   }
   if (typeof header === 'string') {
-    return parseLinkHeader(header)
+    return parseLinkHeader(header) || {}
   }
-  return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0])
+  return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0]) || {}
 }
 
 let listQuery, heatmapQuery
@@ -29,10 +29,10 @@ new window.Vue({
   el: 'body',
   data () {
     return {
-      paging: window.link ? parseLinkHeader(window.link) : {},
+      paging: getPaging(window.link),
       finds: window.initialFinds || [],
       fetching: false,
-      filterState: window.filterState || {myfinds: false},
+      filterState: window.filterState || console.error('filterState warning') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -99,7 +99,7 @@ new window.Vue({
       }
       return true
     },
-    fetch (cause) {
+    fetch () {
       var model = inert(this.filterState)
       var type = model.type
       if (model.status == 'gevalideerd') {
@@ -119,14 +119,8 @@ new window.Vue({
       }).filter(Boolean).join('&')
       query = query ? '/finds?' + query : '/finds?'
 
-      // Do not push state on first load
-      if (listQuery) {
-        window.history.pushState({}, document.title, query)
-      }
-
       // Do not fetch same query twice
       if (listQuery !== query) {
-        listQuery = query
         this.fetching = true
         this.$http.get('/api' + query)
           .then(function (res) {
@@ -139,6 +133,12 @@ new window.Vue({
             this.finds = []
             console.error('List: could not fetch finds')
           })
+
+        // Do not push state on first load
+        if (listQuery) {
+          window.history.pushState({}, document.title, query)
+        }
+        listQuery = query
       }
 
       // Do not fetch same query twice
@@ -252,7 +252,7 @@ new window.Vue({
         this.loaded = true
       }
       if (type === 'heatmap') {
-        this.fetch('heatmap')
+        this.fetch()
       }
     },
     'user': {

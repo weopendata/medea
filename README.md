@@ -1,6 +1,31 @@
 # MEDEA
 The goal of the MEDEA projects is to bring together find experts, researchers and detectorists and let them collaborate on historical finds.
 
+## Flow
+
+Onboarding
+[x] Visit homepage
+[x] Visit login, click register now
+[x] Fill in details, role, click register
+[x] Send email to admin about new user
+[x] Fail to login before admin approval
+[x] Allow admin to approve using confirmation link in email
+[x] Allow admin to approve in member list
+
+List of finds
+[x] Show only my finds
+[x] Filter by category
+[x] Filter by period
+[x] Filter by material
+[x] Filter by technique
+[x] Filter by technique
+[x] Filter by multiple properties
+
+Create a find
+[x] Add visible properties
+
+Validate a find
+
 ## Requirements
 
 * Database: Neo4j 2.2.x (higher or lower versions will most likely break the application)

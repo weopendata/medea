@@ -41,6 +41,24 @@
 	opacity: 0.5;
 	transition: opacity .6s;
 }
+.paging {
+	overflow: auto;
+	min-height: 2em;
+}
+.paging>.button {
+	position: relative;
+	z-index: 1;
+}
+.paging-current {
+	line-height: 2.5em;
+	@media (min-width: 450px) {
+		position: absolute;
+		width: 100%;
+		left: 0;
+		right: 0;
+		text-align: center;
+	}
+}
 
 /* Base */
 
