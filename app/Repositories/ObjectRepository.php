@@ -38,20 +38,26 @@ class ObjectRepository extends BaseRepository
         $object = $this->getById($objectId);
 
         if (!empty($object)) {
+            $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
+            WHERE id(object) = $objectId return productionEvent, object";
+
+            $client = $this->getClient();
+
+            $cypherQuery = new Query($client, $query);
+            $results = $cypherQuery->getResultSet();
+
             $prodClassification = new ProductionClassification($classification);
             $prodClassification->save();
 
-            // Check if a productionEvent already exists
-            $production_event_rel = $object->getFirstRelationship(['P108']);
+            if ($results->count() > 0) {
+                $row = $results->current();
+                $production_event = $row['productionEvent'];
 
-            if (empty($production_event_rel)) {
+                $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
+            } else {
                 $production_event = new ProductionEvent(['productionClassification' => $classification]);
 
                 $object->relateTo($production_event, 'P108')->save();
-            } else {
-                $production_event = $production_event_rel->getEndNode();
-
-                $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
             }
 
             return $object;

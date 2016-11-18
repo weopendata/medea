@@ -88,9 +88,9 @@ class FindController extends Controller
 
         foreach ($pages as $rel => $page_info) {
             if (!empty($queryString)) {
-                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $queryString . ';rel=' . $rel . ';';
+                 $linkHeader .= $request->root() . '/finds?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $queryString . ';rel=' . $rel . ';';
             } else {
-                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
+                $linkHeader .= $request->root() . '/finds?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
             }
         }
 
