@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Repositories\ObjectRepository;
 use App\Repositories\NotificationRepository;
+use App\Repositories\UserRepository;
 use App\Repositories\FindRepository;
+use App\Models\Person;
 use PiwikTracker;
 
 class ObjectController extends Controller
@@ -14,10 +16,12 @@ class ObjectController extends Controller
     public function __construct(
         ObjectRepository $objects,
         NotificationRepository $notifications,
+        UserRepository $users,
         FindRepository $finds
     ) {
         $this->objects = $objects;
         $this->notifications = $notifications;
+        $this->users = $users;
         $this->finds = $finds;
     }
 
@@ -90,12 +94,29 @@ class ObjectController extends Controller
         }
 
         $userId = $this->objects->getRelatedUserId($objectId);
+        $user = $this->users->getById($userId);
 
+        // User not found
+        if (empty($user)) {
+            \Log::error('The user could not be found.');
+
+            return;
+        }
+
+        // The person to view the profile of
+        $person = new Person();
+        $person->setNode($user);
+
+        // Add a platform notification
         $this->notifications->store([
             'message' => $message,
             'url' => $url,
             'user_id' => $userId
         ]);
+
+        // Send an email to the user
+        $mailer = app()->make('App\Mailers\AppMailer');
+        $mailer->sendFindStatusUpdate($person, $title, $find['identifier']);
     }
 
     /**
