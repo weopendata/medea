@@ -6,16 +6,19 @@ use Illuminate\Http\Request;
 
 use App\Repositories\ObjectRepository;
 use App\Repositories\NotificationRepository;
+use App\Repositories\FindRepository;
 use PiwikTracker;
 
 class ObjectController extends Controller
 {
     public function __construct(
         ObjectRepository $objects,
-        NotificationRepository $notifications
+        NotificationRepository $notifications,
+        FindRepository $finds
     ) {
         $this->objects = $objects;
         $this->notifications = $notifications;
+        $this->finds = $finds;
     }
 
     /**
@@ -58,7 +61,26 @@ class ObjectController extends Controller
      */
     private function addNotification($objectId, $input)
     {
-        $message = 'Uw vondst werd behandeld door een validator. De nieuwe status is: ' . $input['objectValidationStatus'];
+        $find = $this->finds->expandValues($this->objects->getRelatedFindEventId($objectId));
+
+        $title = 'ongeïdentificeerd';
+
+        if (! empty($find['object']['objectCategory'])) {
+            $title = $find['object']['objectCategory'] . ', ';
+        }
+
+        if (! empty($find['object']['period'])) {
+            $title .= $find['object']['period'] . ', ';
+        }
+
+        if (! empty($find['object']['objectMaterial'])) {
+            $title .= $find['object']['objectMaterial'];
+        }
+
+        $title = rtrim($title, ', ');
+        $title .= ' ' . '(ID-' . $find['identifier'] . ')';
+
+        $message = "Uw vondst: $title, werd behandeld. De nieuwe status is: " . $input['objectValidationStatus'];
 
         // If the status is revision, then add a link to the edit page, if not set the link to the find URI
         $url = url('/finds/' . $this->objects->getRelatedFindEventId($objectId));

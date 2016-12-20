@@ -27,7 +27,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import FindEvent from './FindEvent'
 import { inert, fromQuery } from '../const.js'

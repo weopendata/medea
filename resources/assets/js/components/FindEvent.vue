@@ -81,14 +81,25 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
+      // formule: categorie (OF: 'ongeïdentificeerd'), datering, materiaal (MEDEA-ID)
       // Not showing undefined and onbekend in title
-      var title = [
+      /*var title = [
         this.find.category,
+        this.find.period,
+        this.find.material
+      ].filter(f => f && f !== 'onbekend').join(', ')*/
+      var title = this.find.category
+
+      if (! title) {
+        title = 'ongeïdentificeerd'
+      }
+
+      var slug = [
         this.find.period,
         this.find.material
       ].filter(f => f && f !== 'onbekend').join(', ')
 
-      title += ' (ID-' + this.find.identifier + ')'
+      title += ', ' + slug + ' (ID-' + this.find.identifier + ')'
 
       return title;
     }
