@@ -72,7 +72,7 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
-        ],[
+        ], [
             'relationship' => 'P128',
             'config' => [
                 'key' => 'objectInscription',
@@ -106,6 +106,9 @@ class Object extends Base
         [
             'name' => 'embargo',
             'default_value' => false
+        ],
+        [
+            'name' => 'validated_at',
         ]
     ];
 
@@ -121,7 +124,7 @@ class Object extends Base
     {
         parent::__construct($properties);
 
-        if (!empty($properties)) {
+        if (! empty($properties)) {
             $this->updateFtsField($properties);
         }
     }
@@ -144,7 +147,7 @@ class Object extends Base
         $description = '';
 
         foreach ($fulltextProperties as $property) {
-            if (!empty($properties[$property])) {
+            if (! empty($properties[$property])) {
                 $description .= $properties[$property] . ' ';
             }
         }
@@ -156,7 +159,7 @@ class Object extends Base
     {
         parent::update($properties);
 
-        if (!empty($properties)) {
+        if (! empty($properties)) {
             $this->updateFtsField($properties);
         }
     }
@@ -219,13 +222,13 @@ class Object extends Base
         // Relate the created nodes to the main inscription Node
         $inscriptionNode->relateTo($noteNode, 'P3')->save();
 
-        if (!empty($inscription['objectInscriptionType'])) {
+        if (! empty($inscription['objectInscriptionType'])) {
             $typeNode = $this->createValueNode('objectInscriptionType', ['E55', $generalId, 'objectInscriptionType'], $inscription['objectInscriptionType']);
             $inscriptionNode->relateTo($typeNode, 'P2')->save();
         }
 
-        if (!empty($inscription['objectInscriptionLocation'])
-            && !empty($inscription['objectInscriptionLocation']['inscriptionLocationAppellation'])) {
+        if (! empty($inscription['objectInscriptionLocation'])
+            && ! empty($inscription['objectInscriptionLocation']['inscriptionLocationAppellation'])) {
             $locationNode = $this->createValueNode('objectInscriptionLocation', ['E53', $generalId, 'objectInscriptionLocation'], 'objectInscriptionLocation');
 
             $appellationNode = $this->createValueNode(

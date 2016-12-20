@@ -73,6 +73,10 @@
     <dt>Toegevoegd op</dt>
     <dd>{{find.created_at | fromDate}}</dd>
   </dl>
+  <dl v-if="find.object.validated_at">
+    <dt>Gevalideerd op</dt>
+    <dd>{{find.object.validated_at | fromDate}}</dd>
+  </dl>
 </template>
 
 <script>

@@ -7,6 +7,7 @@ use App\Models\ProductionClassification;
 use App\Models\ProductionEvent;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Relationship;
+use Carbon\Carbon;
 
 class ObjectRepository extends BaseRepository
 {
@@ -185,6 +186,12 @@ class ObjectRepository extends BaseRepository
 
         // Set the embargo property
         $objectNode->setProperty('embargo', $embargo)->save();
+
+        // If the status is final, set the timestamp
+        if ($status == 'Gepubliceerd' || $status == 'Wordt verwijderd') {
+            $now = Carbon::now();
+            $objectNode->setProperty('validated_at', $now->toIso8601String())->save();
+        }
 
         return $objectNode->relateTo($typeNode, 'P2')->save();
     }
