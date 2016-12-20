@@ -65,7 +65,7 @@
 <footer>
   <div class="ui container">
     <div style="float:right">
-      <a href="mailto:pdeckers@vub.ac.be">Contact</a> &nbsp; &middot; &nbsp; 
+      <a href="mailto:pdeckers@vub.ac.be">Contact</a> &nbsp; &middot; &nbsp;
       <a href="/feedback">Feedback</a>
     </div>
     <p>
@@ -94,7 +94,6 @@ try {
   for (var i = 0; i < medeaUser.roles.length; i++) {
     medeaUser[medeaUser.roles[i]] = true
   }
-  _paq.push(['setUserId', {!! json_encode((string) Auth::user()->email) !!}]);
 } catch (e) {
   window.alert('Something wrong with user profile');
 }
@@ -116,23 +115,6 @@ $('nav .ui.dropdown').dropdown()
 <script type="text/javascript">
 document.write('<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
 </script>
-@endif
-
-@if (!empty(env('PIWIK_SITE_ID')) && !empty(env('PIWIK_URI')))
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u={!! json_encode(env('PIWIK_URI')) !!};
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', {{ env('PIWIK_SITE_ID') }}]);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
 @endif
 </body>
 </html>

@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Repositories\ObjectRepository;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\NotificationRepository;
+use PiwikTracker;
 
 class ClassificationController extends Controller
 {
@@ -40,6 +39,9 @@ class ClassificationController extends Controller
             return response()->json(['errors' => ['message' => 'Something has gone wrong, make sure the object exists.']], 404);
         }
 
+        // Track the classification
+        $this->registerPiwikEvent($request->user()->id, 'Created');
+
         // Add a notification
         $this->addNotification($objectId);
 
@@ -63,7 +65,7 @@ class ClassificationController extends Controller
         // Get the current votes of the user and adjust where necessary
         $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user->id);
 
-        if (!empty($vote_relationship) && !empty($classification)) {
+        if (! empty($vote_relationship) && ! empty($classification)) {
             // Check which vote he casted, if he agreed, abort.
             // if he disagreed, remove link, adjust disagree count
             $type = $vote_relationship->getType();
@@ -81,7 +83,7 @@ class ClassificationController extends Controller
             $classification->setProperty('disagree', $disagree)->save();
         }
 
-        if (!empty($classification)) {
+        if (! empty($classification)) {
             $agree = $classification->getProperty('agree');
             $agree++;
 
@@ -113,7 +115,7 @@ class ClassificationController extends Controller
         // Get the current votes of the user and adjust where necessary
         $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user_id);
 
-        if (!empty($vote_relationship) && !empty($classification)) {
+        if (! empty($vote_relationship) && ! empty($classification)) {
             // Check which vote he casted, if he agreed, abort.
             // if he disagreed, remove link, adjust disagree count
             $type = $vote_relationship->getType();
@@ -130,7 +132,7 @@ class ClassificationController extends Controller
             $classification->setProperty('agree', $agree)->save();
         }
 
-        if (!empty($classification)) {
+        if (! empty($classification)) {
             $disagree = $classification->getProperty('disagree');
             $disagree++;
 
@@ -174,6 +176,24 @@ class ClassificationController extends Controller
             return response()->json(['success' => true]);
         } else {
             return response()->json(['error' => 'The classifcation was not deleted, probably because it did not exist.']);
+        }
+    }
+
+    /**
+     * Register a create/update event
+     *
+     * @param integer $userId
+     * @param string  $action
+     * @return
+     */
+    private function registerPiwikEvent($userId, $action)
+    {
+        if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {
+            PiwikTracker::$URL = env('PIWIK_URI');
+            $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
+
+            $piwikTracker->setUserId($userId);
+            $piwikTracker->doTrackEvent('Classification', $action, $userId);
         }
     }
 }

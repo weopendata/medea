@@ -47,9 +47,6 @@ export default {
     submitSuccess ({data}) {
       this.$root.fetch()
       this.cls = EMPTY_CLS
-
-      // Tracking
-      _paq.push(['trackEvent', 'Classification', 'Created', 0]);
     },
     submitError ({data}) {
       console.warn(data)

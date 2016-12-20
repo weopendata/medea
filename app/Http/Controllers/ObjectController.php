@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use App\Repositories\ObjectRepository;
 use App\Repositories\NotificationRepository;
+use PiwikTracker;
 
 class ObjectController extends Controller
 {
@@ -24,13 +23,16 @@ class ObjectController extends Controller
      * TODO check if the object exists
      * @param string
      *
-     * @return  Response
+     * @return Response
      */
     public function validation($objectId, Request $request)
     {
         $input = $request->json()->all();
 
         $input['timestamp'] = date('c');
+
+        // Track the validation change with Piwik
+        $this->registerPiwikEvent($request->user()->id, $input['objectValidationStatus']);
 
         $this->objects->setValidationStatus($objectId, $input['objectValidationStatus'], $input);
 
@@ -44,7 +46,7 @@ class ObjectController extends Controller
      * Add a notification about the new validation status
      *
      * @param integer $objectId The id of the object
-     * @param array $input The input of the request
+     * @param array   $input    The input of the request
      *
      * @return void
      */
@@ -66,5 +68,23 @@ class ObjectController extends Controller
             'url' => $url,
             'user_id' => $userId
         ]);
+    }
+
+    /**
+     * Register a validation status update event
+     *
+     * @param integer $userId
+     * @param string  $action
+     * @return
+     */
+    private function registerPiwikEvent($userId, $action)
+    {
+        if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {
+            PiwikTracker::$URL = env('PIWIK_URI');
+            $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
+
+            $piwikTracker->setUserId($userId);
+            $piwikTracker->doTrackEvent('Validation', $action, $userId);
+        }
     }
 }

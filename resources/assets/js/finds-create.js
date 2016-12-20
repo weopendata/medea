@@ -393,19 +393,6 @@ new window.Vue({
     },
     submitSuccess (res) {
       const newStatus = this.find.object.objectValidationStatus
-      var eventName = this.find.identifier ? 'Update' : 'Create'
-      if (newStatus === 'voorlopig') {
-        eventName += 'Draft'
-      } else if (newStatus === this.currentStatus) {
-
-      } else if (newStatus === 'in bewerking') {
-        eventName += 'AndSubmit'
-      } else if (newStatus === 'revisie nodig') {
-        eventName += 'ButNotSubmit'
-      } else {
-        eventName += 'ButUnexpectedStatus'
-      }
-      _paq.push(['trackEvent', 'FindEvent', eventName, res.data.id || 0]);
       window.location.href = res.data.url || this.redirectTo
     }
   },

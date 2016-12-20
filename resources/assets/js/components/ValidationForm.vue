@@ -125,12 +125,6 @@ export default {
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
-
-      // Tracking
-      _paq.push(['trackEvent', 'Validation', status, this.obj]);
-      if (this.embargo) {
-        _paq.push(['trackEvent', 'Validation', 'Embargo', this.obj]);
-      }
     }
   },
   events: {
