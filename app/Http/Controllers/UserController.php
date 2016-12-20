@@ -6,13 +6,11 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
-use App\Http\Controllers\Controller;
 use App\Repositories\FindRepository;
 use App\Repositories\UserRepository;
 use App\Mailers\AppMailer;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -41,8 +39,8 @@ class UserController extends Controller
     /**
      * Show a users profile
      *
-     * @param  int $userId The id of the user to show the profile of
-     * @param  ViewUserRequest $request The form request that handles auth
+     * @param int             $userId  The id of the user to show the profile of
+     * @param ViewUserRequest $request The form request that handles auth
      *
      * @return View
      */
@@ -64,7 +62,7 @@ class UserController extends Controller
         // Get the user
         $userNode = $this->users->getById($userId);
 
-        if (!empty($userNode)) {
+        if (! empty($userNode)) {
             $person = new Person();
             $person->setNode($userNode);
             $person->update($request->input());
@@ -91,19 +89,19 @@ class UserController extends Controller
     public function getProfileAccessLevels()
     {
         return [
-            0 => "Alleen ik",
-            1 => "Onderzoekers",
-            2 => "Onderzoekers en overheid",
-            3 => "Geregistreerde gebruikers",
-            4 => "Iedereen (publiek)"
+            0 => 'Alleen ik',
+            1 => 'Onderzoekers',
+            2 => 'Onderzoekers en overheid',
+            3 => 'Geregistreerde gebruikers',
+            4 => 'Iedereen (publiek)'
         ];
     }
 
     /**
      * Remove a user
      *
-     * @param  int $userId
-     * @param  DeleteUserRequest $request
+     * @param int               $userId
+     * @param DeleteUserRequest $request
      *
      * @return Response
      */
@@ -126,7 +124,7 @@ class UserController extends Controller
     /**
      * Return the personal settings view
      *
-     * @param  Request $request
+     * @param Request $request
      *
      * @return
      */
@@ -167,7 +165,7 @@ class UserController extends Controller
      */
     public function userSettings($userId, Request $request)
     {
-        if (empty($request->user()) || !$request->user()->hasRole('administrator')) {
+        if (empty($request->user()) || ! $request->user()->hasRole('administrator')) {
             return redirect('/');
         }
 
