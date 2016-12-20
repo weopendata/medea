@@ -37,7 +37,7 @@ class ObjectRepository extends BaseRepository
     {
         $object = $this->getById($objectId);
 
-        if (!empty($object)) {
+        if (! empty($object)) {
             $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
             WHERE id(object) = $objectId return productionEvent, object";
 
@@ -77,7 +77,7 @@ class ObjectRepository extends BaseRepository
         $cypherQuery = new Query($client, $query);
         $result = $cypherQuery->getResultSet();
 
-        if (!empty($result->current())) {
+        if (! empty($result->current())) {
             return $result->current()->current();
         } else {
             return null;
@@ -87,7 +87,7 @@ class ObjectRepository extends BaseRepository
     /**
      * Get the related user id for a given object
      *
-     * @param  integer $objectId The id of the object
+     * @param integer $objectId The id of the object
      *
      * @return integer
      */
@@ -101,7 +101,7 @@ class ObjectRepository extends BaseRepository
 
         $results = $query->getResultSet();
 
-        if ($results->count() > 0 && !empty($results->current())) {
+        if ($results->count() > 0 && ! empty($results->current())) {
             $person = $results->current()->current();
 
             return $person->getId();
@@ -113,7 +113,7 @@ class ObjectRepository extends BaseRepository
     /**
      * Get the related findEvent id for a given object
      *
-     * @param  integer $objectId The id of the object
+     * @param integer $objectId The id of the object
      *
      * @return integer
      */
@@ -127,7 +127,7 @@ class ObjectRepository extends BaseRepository
 
         $results = $query->getResultSet();
 
-        if (!empty($results->current())) {
+        if (! empty($results->current())) {
             $find = $results->current()->current();
 
             return $find->getId();
@@ -137,15 +137,16 @@ class ObjectRepository extends BaseRepository
     }
 
     /**
-     * Set the validation status of a certain object
+     * Set the validation status of an object
      *
      * @param integer $objectId The id of the object
-     * @param string $status The new status of the object
-     * @param array $feedback The given feedback on different properties
+     * @param string  $status   The new status of the object
+     * @param array   $feedback The given feedback on different properties
+     * @param boolean $embargo
      *
      * @return Node
      */
-    public function setValidationStatus($objectId, $status, $feedback)
+    public function setValidationStatus($objectId, $status, $feedback, $embargo)
     {
         $objectNode = $this->getById($objectId);
 
@@ -167,11 +168,11 @@ class ObjectRepository extends BaseRepository
 
         $typeNode = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);
 
-        if (!empty($feedback)) {
+        if (! empty($feedback)) {
             // Append the feedback if feedback already exists
             $currentFeedback = $objectNode->getProperty('feedback');
 
-            if (!empty($currentFeedback)) {
+            if (! empty($currentFeedback)) {
                 $currentFeedback = json_decode($currentFeedback, true);
             } else {
                 $currentFeedback = [];
@@ -181,6 +182,9 @@ class ObjectRepository extends BaseRepository
 
             $objectNode->setProperty('feedback', json_encode($currentFeedback))->save();
         }
+
+        // Set the embargo property
+        $objectNode->setProperty('embargo', $embargo)->save();
 
         return $objectNode->relateTo($typeNode, 'P2')->save();
     }

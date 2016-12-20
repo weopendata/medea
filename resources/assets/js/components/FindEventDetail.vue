@@ -6,7 +6,7 @@
       </p>
       <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
     </div>
-    <div class="ui warning message visible" v-if="find.object.objectValidationStatus == 'voorlopig'">
+    <div class="ui warning message visible" v-if="find.object.objectValidationStatus == 'Voorlopige versie'">
       <p>
         Dit is een voorlopige versie
       </p>
@@ -45,7 +45,7 @@
             <validation-form :obj="find.object.identifier" :feedback.sync="feedback" :json="find.object.feedback"></validation-form>
             <p>&nbsp;</p>
           </div>
-          <div v-if="find.object.objectValidationStatus == 'gevalideerd'">
+          <div v-if="find.object.objectValidationStatus == 'Gepubliceerd'">
             <div style="max-width: 900px;margin: 0 auto 1em;">
               <h2>
                 Classificaties
@@ -60,23 +60,23 @@
             <add-classification :object="find.object" v-if="user.vondstexpert"></add-classification>
             <p>&nbsp;</p>
           </div>
-          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'gevalideerd' && (user.email!==find.person.email)">
+          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (user.email!==find.person.email)">
             Security error #20984
             <p>&nbsp;</p>
           </h1>
-          <div v-if="find.object.objectValidationStatus == 'embargo'">
-            Deze vondstfiche is onder embargo.
+          <div v-if="find.object.objectValidationStatus == 'Afgeschermd'">
+            Deze vondstfiche staat onder embargo.
             <p>&nbsp;</p>
           </div>
           <div v-if="(user.email==find.person.email)">
-            <h1 v-if="find.object.objectValidationStatus == 'in bewerking'" class="status-lg">
+            <h1 v-if="find.object.objectValidationStatus == 'Klaar voor validatie'" class="status-lg">
               Je vondstfiche wordt gevalideerd.
               <small>Je krijgt een notificatie wanneer de validator de vonstfiche beoordeeld heeft.</small>
               <p>&nbsp;</p>
             </h1>
           </div>
           <div v-else>
-            <div v-if="find.object.objectValidationStatus == 'in bewerking'&&!user.validator">
+            <div v-if="find.object.objectValidationStatus == 'Klaar voor validatie'&&!user.validator">
               Deze vondstfiche wordt gevalideerd.
               <p>&nbsp;</p>
             </div>
@@ -108,19 +108,19 @@ export default {
   },
   computed: {
     showRemarks () {
-      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'revisie nodig' && this.user.email === this.find.person.email
+      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.user.email === this.find.person.email
     },
     validating () {
-      return this.user.validator && this.find.object.objectValidationStatus == 'in bewerking'
+      return this.user.validator && this.find.object.objectValidationStatus == 'Klaar voor validatie'
     },
     editable () {
-      // Finder    if 'revisie nodig' or 'voorlopig'
-      // Validator if 'in bewerking'
+      // Finder    if 'Aan te passen' or 'Voorlopige versie'
+      // Validator if 'Klaar voor validatie'
       // Admin     always
       var s = this.find.object.objectValidationStatus
       return this.user.email && (
-        (this.user.email === this.find.person.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) || 
-        (this.user.validator && s === 'in bewerking') ||
+        (this.user.email === this.find.person.email && ['Aan te passen', 'Voorlopige versie'].indexOf(s) !== -1) ||
+        (this.user.validator && s === 'Klaar voor validatie') ||
         this.user.administrator
       )
     },

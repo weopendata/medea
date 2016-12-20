@@ -115,7 +115,7 @@ new window.Vue({
       },
       object: {
         feedback: null,
-        objectValidationStatus: 'voorlopig',
+        objectValidationStatus: 'Voorlopige versie',
         objectDescription: null,
         objectCategory: 'onbekend',
         objectMaterial: null,
@@ -234,7 +234,7 @@ new window.Vue({
       return this.map.zoom < 21 - Math.log2(this.accuracy)
     },
     toValidate () {
-      return this.find.object.objectValidationStatus === 'in bewerking'
+      return this.find.object.objectValidationStatus === 'Klaar voor validatie'
     },
     submittable () {
       return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)

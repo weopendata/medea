@@ -308,28 +308,28 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     </p>
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
-    
+
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="in bewerking">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Klaar voor validatie">
       <label>Vondstfiche is klaar voor validatie</label>
     </div>
   </div>
-  <div class="field" v-if="currentStatus=='voorlopig'">
+  <div class="field" v-if="currentStatus=='Voorlopige versie'">
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="voorlopig">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Voorlopige versie">
       <label>Vondstfiche is een voorlopige versie. Ik vul ze later aan.</label>
     </div>
   </div>
   <div class="field" v-else>
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Voorlopige versie">
       <label>Vondstfiche bewaren maar nog niet laten valideren. Ik vul ze later aan.</label>
     </div>
   </div>
   </div>
-  <p v-if="currentStatus!='voorlopig'&&currentStatus!='revisie nodig'">
+  <p v-if="currentStatus!='Voorlopige versie'&&currentStatus!='Aan te passen'">
     Huidige status: @{{currentStatus}}
   </p>
 </div>

@@ -61,13 +61,13 @@ class FindController extends Controller
             $user = $request->user();
 
             foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
-                    && !in_array('onderzoeker', $user->getRoles())) {
+                if (empty($user) || (! empty($find['finderId']) && $find['finderId'] != $user->id)
+                    && ! in_array('onderzoeker', $user->getRoles())) {
                     if (! empty($find['grid']) || ! empty($find['lat'])) {
                         list($lat, $lon) = explode(',', $find['grid']);
 
-                        $find['lat'] = $lat;//round(($find['lat'] / 2), 2) * 2;
-                        $find['lng'] = $lon;//round(($find['lng'] / 2), 2) * 2;
+                        $find['lat'] = $lat; //round(($find['lat'] / 2), 2) * 2;
+                        $find['lng'] = $lon; //round(($find['lng'] / 2), 2) * 2;
 
                         $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
                         $find['accuracy'] = max(7000, $accuracy);
@@ -99,14 +99,14 @@ class FindController extends Controller
     {
         $filters = $request->all();
 
-        $validatedStatus = $request->input('status', 'gevalideerd');
+        $validatedStatus = $request->input('status', 'Gepubliceerd');
 
         if (empty($request->user())) {
-            $validatedStatus = 'gevalideerd';
+            $validatedStatus = 'Gepubliceerd';
         }
 
         // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
+        if ($request->has('myfinds') && ! empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
             $validatedStatus = '*';
         }
@@ -119,7 +119,7 @@ class FindController extends Controller
         $order_flow = 'ASC';
         $order_by = 'findDate';
 
-        if (!empty($order)) {
+        if (! empty($order)) {
             $first_char = substr($order, 0, 1);
 
             if ($first_char == '-') {
@@ -136,7 +136,7 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int                       $id
      * @return \Illuminate\Http\Response
      */
     public function show($id, Request $request)

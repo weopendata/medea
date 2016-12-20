@@ -11,18 +11,18 @@
         <br>Status: {{ find.validation }}
       </div>
       <div class="card-bar">
-        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.validation == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.validation == 'Gepubliceerd'">
           <i class="tag icon"></i>
           Classificeren
         </a>
-        <a class="btn" :href="uri" v-if="classificationCount&&find.validation == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="classificationCount&&find.validation == 'Gepubliceerd'">
           <i class="tag icon"></i>
           {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}} bekijken
         </a>
-        <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'in bewerking'">
+        <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'Klaar voor validatie'">
           Valideren
         </a>
-        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.validation == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.validation == 'Gepubliceerd'">
           Bekijken
         </a>
         <a class="btn" href="#mapview" @click="mapFocus" v-if="hasLocation">
@@ -55,14 +55,14 @@ export default {
   },
   computed: {
     editable () {
-      return ['revisie nodig', 'voorlopig'].indexOf(this.find.validation) !== -1
-      // Finder    if 'revisie nodig' or 'voorlopig'
-      // Validator if 'in bewerking'
+      return ['Aan te passen', 'Voorlopige versie'].indexOf(this.find.validation) !== -1
+      // Finder    if 'Aan te passen' or 'Voorlopige versie'
+      // Validator if 'Klaar voor validatie'
       // Admin     always
       var s = this.find.validation
       return this.user.email && (
-        (this.user.email === this.find.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) ||
-        (this.user.validator && s === 'in bewerking')
+        (this.user.email === this.find.email && ['Aan te passen', 'Voorlopige versie'].indexOf(s) !== -1) ||
+        (this.user.validator && s === 'Klaar voor validatie')
       )
     },
     classificationCount () {
@@ -101,7 +101,7 @@ export default {
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
         this.$root.fetch()
-        this.find.validation = 'verwijderd'
+        this.find.validation = 'Wordt verwijderd'
       });
     },
     mapFocus (accuracy) {
@@ -109,7 +109,7 @@ export default {
         return alert('LatLng is missing, this will never happen')
       }
       accuracy = parseInt(accuracy == 'city' ? 7000 : this.find.accuracy || 1)
-      
+
       this.$dispatch('mapFocus', {lat:parseFloat(this.find.lat), lng:parseFloat(this.find.lng)}, accuracy)
     }
   },

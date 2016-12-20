@@ -32,7 +32,7 @@
     <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks"></photo-validation>
     <p v-if="result" v-text="result"></p>
     <p v-if="!remove&&valid">
-      <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
+      <button @click="post('Gepubliceerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
         <i class="thumbs up icon"></i> Goedkeuren
       </button>
     </p>
@@ -40,10 +40,10 @@
       <b>De vondst kan alleen goedgekeurd worden als alle velden aangevinkt zijn.</b>
     </p>
     <p v-if="!remove&&!valid">
-      <button @click="post('revisie nodig')" class="ui orange big button">Terug naar detectorist sturen</button>
+      <button @click="post('Aan te passen')" class="ui orange big button">Terug naar detectorist sturen</button>
     </p>
     <p v-if="remove">
-      <button @click="post('verwijderd')" class="ui red big button">Afwijzen</button>
+      <button @click="post('Wordt verwijderd')" class="ui red big button">Afwijzen</button>
     </p>
   </div>
 </template>
@@ -153,7 +153,7 @@ export default {
     $('.ui.checkbox', this.$el).checkbox()
 
     // Fill in the previous validation feedback
-    if (this.json && this.validation.objectValidationStatus !== 'gevalideerd') {
+    if (this.json && this.validation.objectValidationStatus !== 'Gepubliceerd') {
       console.log('This find has been validated before and the status was', this.validation.objectValidationStatus)
       this.feedback = this.validation.feedback
       this.remarks = this.validation.remarks

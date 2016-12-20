@@ -90,11 +90,11 @@ new window.Vue({
       return title + ' (ID-' + find.identifier + ')'
     },
     relevant (find) {
-      if (find.validation == 'in bewerking') {
+      if (find.validation == 'Klaar voor validatie') {
         if (!this.user.validator) {
           console.warn('List: Security error, this user is not allowed to see this find')
         }
-      } else if (find.validation != 'gevalideerd' && !this.user.administrator) {
+      } else if (find.validation != 'Gepubliceerd' && !this.user.administrator) {
         console.warn('List: Security error, this user is not allowed to see this find')
       }
       return true
@@ -102,7 +102,7 @@ new window.Vue({
     fetch () {
       var model = inert(this.filterState)
       var type = model.type
-      if (model.status == 'gevalideerd') {
+      if (model.status == 'Gepubliceerd') {
         delete model.status
       }
       if (model.name) {

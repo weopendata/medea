@@ -8,10 +8,10 @@
         </button>
       </form>
     </div>
-    
+
     <div v-if="$root.user.email">
       <h3 class="facet-title">Favorieten</h3>
-      <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'in bewerking'}})" v-if="$root.user.validator">Te valideren vondsten</a>
+      <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="$root.user.validator">Te valideren vondsten</a>
       <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
       <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
     </div>
@@ -86,10 +86,10 @@ export default {
   computed: {
     statuses () {
       if (this.$root.user.administrator) {
-        return ['gevalideerd', 'in bewerking', 'revisie nodig', 'voorlopig', 'embargo', 'afgekeurd']
+        return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen', 'Voorlopige versie', 'Wordt verwijderd']
       }
       if (this.$root.user.validator) {
-        return ['gevalideerd', 'in bewerking', 'revisie nodig']
+        return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen']
       }
     },
     unnamed () {
@@ -110,10 +110,10 @@ export default {
         }
       }
       for (let key in this.model) {
-        this.model[key] = filter[key] || null 
+        this.model[key] = filter[key] || null
       }
       for (let key in filter) {
-        this.model[key] = filter[key] || null 
+        this.model[key] = filter[key] || null
       }
       console.log(inert(this.model))
       this.$root.fetch()

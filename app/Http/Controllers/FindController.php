@@ -54,10 +54,10 @@ class FindController extends Controller
             }
         }
 
-        $validated_status = $request->input('status', 'gevalideerd');
+        $validated_status = $request->input('status', 'Gepubliceerd');
 
         if (empty($request->user())) {
-            $validated_status = 'gevalideerd';
+            $validated_status = 'Gepubliceerd';
         }
 
         // Check if personal finds are set
@@ -159,10 +159,6 @@ class FindController extends Controller
         $user = $request->user();
 
         if (empty($user)) {
-            // Test code in order to test with PostMan requests
-            /*$userNode = $users->getUser('foo@bar.com');
-            $user = new \App\Models\Person();
-            $user->setNode($userNode);*/
             abort('401');
         }
 
@@ -185,8 +181,8 @@ class FindController extends Controller
         $input['object']['photograph'] = $images;
         $input['person'] = ['id' => $user->id];
 
-        if (! in_array($input['object']['objectValidationStatus'], ['voorlopig', 'in bewerking', 'revisie nodig'])) {
-            $input['object']['objectValidationStatus'] = 'in bewerking';
+        if (! in_array($input['object']['objectValidationStatus'], ['Voorlopige versie', 'Klaar voor validatie', 'Aan te passen'])) {
+            $input['object']['objectValidationStatus'] = 'Klaar voor validatie';
         }
 
         // Make find
@@ -295,11 +291,6 @@ class FindController extends Controller
             $user = $request->user();
 
             if (empty($user)) {
-                // Test code in order to test with PostMan requests
-                /*$users = new UserRepository();
-                $user_node = $users->getUser('foo@bar.com');
-                $user = new \App\Models\Person();
-                $user->setNode($user_node);*/
                 abort('401');
             }
 
@@ -406,11 +397,11 @@ class FindController extends Controller
     {
         $eventName = $action;
 
-        if ($status == 'voorlopig') {
+        if ($status == 'Voorlopige versie') {
             $eventName .= 'Draft';
-        } elseif ($status == 'in bewerking') {
+        } elseif ($status == 'Klaar voor validatie') {
             $eventName .= 'AndSubmit';
-        } elseif ($status == 'revisie nodig') {
+        } elseif ($status == 'Aan te passen') {
             $eventName .= 'ButNotSubmit';
         } else {
             $eventName += 'ButUnexpectedStatus';

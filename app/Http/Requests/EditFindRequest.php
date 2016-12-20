@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Illuminate\Http\Request as HttpRequest;
 use App\Repositories\FindRepository;
 use Illuminate\Support\Facades\Auth;
@@ -17,13 +16,13 @@ class EditFindRequest extends Request
      */
     public function authorize(HttpRequest $request, FindRepository $finds)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('/finds/' . $request->finds);
         }
 
         // Edit is available for these roles: status
-        //   Finder:    "voorlopig" or "revisie nodig"
-        //   Validator: "in bewerking"
+        //   Finder:    "Voorlopige versie" or "Aan te passen"
+        //   Validator: "Klaar voor validatie"
         //   Admin:     any role
         $user = $request->user();
 
@@ -37,9 +36,9 @@ class EditFindRequest extends Request
 
         $status = $this->find['object']['objectValidationStatus'];
 
-        return (($status == 'revisie nodig' || $status == 'voorlopig')
+        return (($status == 'Aan te passen' || $status == 'Voorlopige versie')
             && $user->id == $this->find['person']['identifier']
-           || $status == 'in bewerking' && $user->hasRole('validator'));
+           || $status == 'Klaar voor validatie' && $user->hasRole('validator'));
     }
 
     public function getFind()

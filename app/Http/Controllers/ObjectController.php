@@ -31,13 +31,19 @@ class ObjectController extends Controller
 
         $input['timestamp'] = date('c');
 
-        // Track the validation change with Piwik
-        $this->registerPiwikEvent($request->user()->id, $input['objectValidationStatus']);
+        $embargo = false;
 
-        $this->objects->setValidationStatus($objectId, $input['objectValidationStatus'], $input);
+        if (! empty($input['embargo'])) {
+            $embargo = $input['embargo'];
+        }
+
+        $this->objects->setValidationStatus($objectId, $input['objectValidationStatus'], $input['feedback'], $embargo);
 
         // Add a notification for the user
         $this->addNotification($objectId, $input);
+
+        // Track the validation change with Piwik
+        $this->registerPiwikEvent($request->user()->id, $input['objectValidationStatus']);
 
         return response()->json(['success' => true]);
     }
@@ -57,7 +63,7 @@ class ObjectController extends Controller
         // If the status is revision, then add a link to the edit page, if not set the link to the find URI
         $url = url('/finds/' . $this->objects->getRelatedFindEventId($objectId));
 
-        if ($input['objectValidationStatus'] == 'revisie nodig') {
+        if ($input['objectValidationStatus'] == 'Aan te passen') {
             $url .= '/edit';
         }
 
