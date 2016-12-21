@@ -26,7 +26,7 @@
       @endif
 
       <div class="right menu">
-        <a href="/about" class="item {{ Request::is('about') ? 'active' : '' }}">Over MEDEA</a>
+        <a href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}" class="item {{ Request::is('about') ? 'active' : '' }}">Over MEDEA</a>
         <a href="#" class="item {{ Request::is('help') ? 'active' : '' }}" onclick="startIntro();return false">Handleiding</a>
         @if (Auth::guest())
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
