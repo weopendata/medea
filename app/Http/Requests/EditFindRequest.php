@@ -17,7 +17,7 @@ class EditFindRequest extends Request
     public function authorize(HttpRequest $request, FindRepository $finds)
     {
         if (! Auth::check()) {
-            return redirect('/finds/' . $request->finds);
+            abort(401, 'Je hebt niet voldoende rechten om dit te doen.');
         }
 
         // Edit is available for these roles: status
@@ -36,7 +36,8 @@ class EditFindRequest extends Request
 
         $status = $this->find['object']['objectValidationStatus'];
 
-        return (($status == 'Aan te passen' || $status == 'Voorlopige versie')
+        return (
+            ($status == 'Aan te passen' || $status == 'Voorlopige versie')
             && $user->id == $this->find['person']['identifier']
            || $status == 'Klaar voor validatie' && $user->hasRole('validator'));
     }

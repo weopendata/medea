@@ -59,6 +59,10 @@ Route::group(['middleware' => 'web'], function () {
             Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
         });
 
+        Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::get('api/export', 'Api\ExportController@export');
+        });
+
         Route::get('settings', 'UserController@mySettings');
         Route::get('settings/{id}', 'UserController@userSettings');
     });
