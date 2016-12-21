@@ -168,13 +168,27 @@ class UserRepository extends BaseRepository
      *
      * @return array
      */
-    public function getAll($limit = 20, $offset = 0)
+    public function getAll($limit = 50, $offset = 0)
     {
         $client = $this->getClient();
 
-        $personLabel = $client->makeLabel($this->label);
+        $queryString = 'MATCH (n:person)
+        RETURN n
+        SKIP {offset}
+        LIMIT {limit}';
 
-        return $personLabel->getNodes();
+        $variables = ['limit' => $limit, 'offset' => $offset];
+
+        $cypherQuery = new Query($client, $queryString, $variables);
+        $results = $cypherQuery->getResultSet();
+
+        $userNodes = [];
+
+        foreach ($results as $result) {
+            $userNodes[] = $result->current();
+        }
+
+        return $userNodes;
     }
 
     /**
@@ -186,7 +200,7 @@ class UserRepository extends BaseRepository
      *
      * @return array
      */
-    public function getAllWithFields($fields, $limit = 20, $offset = 0)
+    public function getAllWithFields($fields, $limit = 50, $offset = 0)
     {
         $userNodes = $this->getAll($limit, $offset);
 
@@ -199,7 +213,6 @@ class UserRepository extends BaseRepository
             $personData = array_only($userNode->getProperties(), $fields);
 
             // Don't add the default administrator to the list
-
             $personData['id'] = $userNode->getId();
             $personData['finds'] = $person->getFindCount();
             $personData['hasPublicProfile'] = $person->hasPublicProfile();
@@ -208,6 +221,19 @@ class UserRepository extends BaseRepository
         }
 
         return $users;
+    }
+
+    public function countAllUsers()
+    {
+        $client = $this->getClient();
+
+        $queryString = 'MATCH (n:person)
+        RETURN count(distinct n)';
+
+        $cypherQuery = new Query($client, $queryString);
+        $results = $cypherQuery->getResultSet();
+
+        return $results->current()->current();
     }
 
     /**

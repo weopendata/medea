@@ -11,6 +11,7 @@ use App\Repositories\UserRepository;
 use App\Mailers\AppMailer;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
+use App\Helpers\Pager;
 
 class UserController extends Controller
 {
@@ -21,19 +22,39 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        // Get the total user count and the paging header
+        $totalUsers = $this->users->countAllUsers();
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
+
+        $linkHeader = [];
+
+        $queryString = $this->buildQueryString($request);
+
+        foreach ($pages as $rel => $pageInfo) {
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $pageInfo[0] . '&limit=' . $pageInfo[1] . '&' . $queryString . '>;rel=' . $rel;
+        }
+
+        $linkHeader = implode(', ', $linkHeader);
+
+        // If the user is an admin, use the members page
+        // to display some general platform info
         if (in_array('administrator', $request->user()->getRoles())) {
             $this->finds = new FindRepository();
             $stats = $this->finds->getStatistics();
 
-            return view('users.admin', [
+            return response()->view('users.admin', [
                 'stats' => $stats,
-                'users' => $this->users->getAllWithRoles()
-            ]);
+                'users' => $this->users->getAllWithRoles($limit, $offset)
+            ])->header('Link', $linkHeader);
         }
 
-        return view('users.index', [
-            'users' => $this->users->getAllWithFields(['firstName', 'lastName'])
-        ]);
+        return response()->view('users.index', [
+            'users' => $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset)
+        ])->header('Link', $linkHeader);
     }
 
     /**
