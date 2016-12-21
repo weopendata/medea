@@ -43,6 +43,7 @@ class FindApiRequest extends Request
      * @param boolean $personalFindsOnly
      * @param string  $status
      * @param boolean $embargo
+     * @param Person  $user
      *
      * @return boolean
      */
@@ -70,7 +71,7 @@ class FindApiRequest extends Request
             }
 
             if (! $this->userHasRoleIn($userRoles, $this->getRolesForEmbargo())
-                && $embargo
+                && $embargo != true
                 && ! $personalFindsOnly
             ) {
                 abort('403');

@@ -13,7 +13,11 @@
 		</thead>
 		@foreach ($users as $user)
 		<tr>
-			<td><a href="/persons/{{ $user['id'] }}">{{ $user['firstName'] }} {{ $user['lastName'] }}</a></td>
+			@if ($user['hasPublicProfile'] || \Auth::user()->id == $user['id'] || \Auth::user()->hasRole('administrator'))
+				<td><a href="/persons/{{ $user['id'] }}">{{ $user['firstName'] }} {{ $user['lastName'] }}</a></td>
+			@else
+				<td>{{ $user['firstName'] }} {{ $user['lastName'] }}</td>
+			@endif
 			<td>{{ $user['finds'] }}</td>
 		</tr>
 		@endforeach

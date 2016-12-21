@@ -39,7 +39,7 @@ class UserRepository extends BaseRepository
         // Label (= type) is already configured for Person
         $label = $this->getLabel();
 
-        $user_nodes = $label->getNodes("email", $email);
+        $user_nodes = $label->getNodes('email', $email);
 
         if ($user_nodes->count() > 0) {
             return $user_nodes->current();
@@ -57,7 +57,7 @@ class UserRepository extends BaseRepository
      */
     public function getByPasswordResetToken($token, $email)
     {
-        $users = $this->getLabel()->getNodes("email", $email);
+        $users = $this->getLabel()->getNodes('email', $email);
 
         if ($users->count() > 0) {
             $user = $users->current();
@@ -87,7 +87,7 @@ class UserRepository extends BaseRepository
         $label = $this->getLabel();
 
         // Get all of the Person node with the admin email
-        return $label->getNodes("email", $email)->count() > 0;
+        return $label->getNodes('email', $email)->count() > 0;
     }
 
     /**
@@ -105,7 +105,7 @@ class UserRepository extends BaseRepository
         if ($label->getNodes('token', $token)->count() > 0) {
             $user = $label->getNodes('token', $token)->current();
 
-            if (!empty($user)) {
+            if (! empty($user)) {
                 $user->setProperty('verified', true);
                 $user->setProperty('token', '');
                 $user->save();
@@ -132,7 +132,7 @@ class UserRepository extends BaseRepository
         if ($label->getNodes('token', $token)->count() > 0) {
             $user = $label->getNodes('token', $token)->current();
 
-            if (!empty($user)) {
+            if (! empty($user)) {
                 $person = new Person();
                 $person->setNode($user);
                 $person->delete();
@@ -149,7 +149,7 @@ class UserRepository extends BaseRepository
      *
      * @param Node    $classification
      * @param integer $personId
-     * @param string  $vote_type agree|disagree
+     * @param string  $vote_type      agree|disagree
      *
      * @return Relationship
      */
@@ -180,7 +180,7 @@ class UserRepository extends BaseRepository
     /**
      * Get all users with only a specific set of data points
      *
-     * @param array $fields
+     * @param array   $fields
      * @param integer $limit
      * @param integer $offset
      *
@@ -194,11 +194,15 @@ class UserRepository extends BaseRepository
 
         foreach ($userNodes as $userNode) {
             $person = new Person();
-            $person->setNode($userNode);
+            $person->setNode($this->getById($userNode->getId()));
 
             $personData = array_only($userNode->getProperties(), $fields);
+
+            // Don't add the default administrator to the list
+
             $personData['id'] = $userNode->getId();
             $personData['finds'] = $person->getFindCount();
+            $personData['hasPublicProfile'] = $person->hasPublicProfile();
 
             $users[] = $personData;
         }
@@ -242,7 +246,7 @@ class UserRepository extends BaseRepository
      */
     public function getAllWithSavedSearches()
     {
-        $query = "MATCH (n:person) where has (n.savedSearches) return n";
+        $query = 'MATCH (n:person) where has (n.savedSearches) return n';
 
         $cypherQuery = new Query($this->getClient(), $query);
 

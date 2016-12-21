@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Illuminate\Http\Request as HttpRequest;
 use App\Repositories\UserRepository;
 use App\Models\Person;
@@ -31,12 +30,12 @@ class ViewUserRequest extends Request
         $this->person->setNode($user);
 
         // The profile can be viewed when
-        // * The profile is set to be accessible
+        // * The profile is set to be publically accessible
         // * The logged in user is viewing his own profile
-        // * The user of the profile has set a certain role to allow to view the profile
+        // * The user of the profile has a role that allows to view the profile (e.g. administrator)
         // and the logged in user has a role that belongs to that set
-        return ($this->person->profileAccessLevel == 4 ||
-                    !empty($request->user()) && (
+        return ($this->person->hasPublicProfile() == 4 ||
+                    ! empty($request->user()) && (
                         $request->user()->id == $this->person->id ||
                         $request->user()->hasRole($this->person->getProfileAllowedRoles())
                     )
