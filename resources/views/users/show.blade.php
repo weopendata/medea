@@ -43,10 +43,11 @@
             </p>
         @endif
         @if (@$profile['showContactForm'])
-            <form class="ui form" style="max-width:25em">
+            <form action="/api/sendmessage" method="POST" class="ui form" style="max-width:25em">
+                <input type="hidden" name="user_id" value="{{ $profile['id'] }}">
                 <div class="field">
                     <label>Bericht aan {{ $profile['firstName'] }}</label>
-                    <textarea rows="3"></textarea>
+                    <textarea rows="3" name="message"></textarea>
                 </div>
                 <div class="field">
                     <button type="submit" class="ui small blue button">Verzenden</button>
