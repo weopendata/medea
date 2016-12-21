@@ -295,9 +295,21 @@ h4.required::after {
 .pull-right {
 	float: right;
 }
+
+/* Facet */
+
+.facets {
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
+	background-color: white;
+}
+.facet {
+	&+.facet {
+		border-top: 1px solid #ccc;
+	}
+}
 .facet-a {
 	display: block;
-	padding: 3px 5px;
+	padding: 3px 5px 3px 16px;
 	line-height: 1em;
 	color: #666;
 	&:hover {
@@ -314,16 +326,21 @@ h4.required::after {
 			color: red;
 		}
 	}
+	&:last-child {
+		margin-bottom: 10px;
+	}
 }
 .facet-title {
-	margin: 1rem 0 .5rem;
-	text-transform: uppercase;
+	margin: 0;
+	padding: 10px 5px;
 	font-size: 14px;
-	font-weight: 300;
-}
-.facet-options {
-	overflow: auto;
-	max-height: 160px;
+	cursor: pointer;
+	>.icon {
+		display: inline-block;
+		padding-left: 2px;
+		width: 18px;
+		text-align: center;
+	}
 }
 
 /* Admin - User panel*/

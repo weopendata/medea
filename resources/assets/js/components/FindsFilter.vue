@@ -9,52 +9,30 @@
       </form>
     </div>
 
-    <div v-if="$root.user.email">
-      <h3 class="facet-title">Favorieten</h3>
-      <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="$root.user.validator">Te valideren vondsten</a>
-      <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
-      <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
-    </div>
-
-    <div v-if="statuses" style="margin-top:1rem;">
-      <h3 class="facet-title">Validatie status</h3>
-      <div class="facet-options">
-        <a href="#" class="facet-a" :class="{active:model.status==opt}" @click.prevent="toggle('status', opt)" v-for="opt in statuses" v-text="opt"></a>
+    <div class="facets">
+      <div v-if="$root.user.email" class="facet">
+        <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
+        <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="$root.user.validator">Te valideren vondsten</a>
+        <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
+        <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
       </div>
-    </div>
 
-    <h3 class="facet-title">Categorie</h3>
-    <div class="facet-options">
-      <a href="#" class="facet-a" :class="{active:model.category==opt}" @click.prevent="toggle('category', opt)" v-for="opt in fields.object.category" v-text="opt"></a>
-    </div>
-
-    <h3 class="facet-title">Periode</h3>
-    <div class="facet-options">
-      <a href="#" class="facet-a" :class="{active:model.period==opt}" @click.prevent="toggle('period', opt)" v-for="opt in fields.classification.period" v-text="opt"></a>
-    </div>
-
-    <h3 class="facet-title">Materiaal</h3>
-    <div class="facet-options">
-      <a href="#" class="facet-a" :class="{active:model.objectMaterial==opt}" @click.prevent="toggle('objectMaterial', opt)" v-for="opt in fields.object.objectMaterial" v-text="opt"></a>
-    </div>
-
-    <h3 class="facet-title">Techniek</h3>
-    <div class="facet-options">
-      <a href="#" class="facet-a" :class="{active:model.technique==opt}" @click.prevent="toggle('technique', opt)" v-for="opt in fields.object.technique" v-text="opt"></a>
-    </div>
-
-    <h3 class="facet-title">Oppervlaktebehandeling</h3>
-    <div class="facet-options">
-      <a href="#" class="facet-a" :class="{active:model.modification==opt}" @click.prevent="toggle('modification', opt)" v-for="opt in modificationFields" v-text="opt"></a>
+      <facet label="Validatie status" prop="status" :options="statuses"></facet>
+      <facet label="Periode" prop="period" :options="fields.object.period"></facet>
+      <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
+      <facet label="Techniek" prop="technique" :options="fields.object.technique"></facet>
+      <facet label="Oppervlaktebehandeling" prop="modification" :options="modificationFields"></facet>
+      <facet label="Categorie" prop="category" :options="fields.object.category"></facet>
     </div>
   </div>
 </template>
 
 <script>
-import FindEvent from './FindEvent';
+import FindEvent from './FindEvent.vue';
+import Facet from './Facet.vue';
 import {inert} from '../const.js';
 
-var backupState = {myfinds: false}
+var backupState = { myfinds: false }
 
 
 var modificationFields = [
@@ -80,7 +58,15 @@ export default {
       name: '',
       fields: window.fields,
       modificationFields: modificationFields,
-      advanced: false
+      advanced: false,
+      show: {
+        category: true,
+        status: true,
+        period: null,
+        technique: null,
+        modification: null,
+        objectMaterial: true
+      }
     }
   },
   computed: {
@@ -152,6 +138,7 @@ export default {
     }
   },
   components: {
+    Facet,
     FindEvent
   }
 }
