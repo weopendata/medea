@@ -35,7 +35,16 @@
         @endif
     @endif
 
-    @if ($profile['showContactForm'] || $profile['showEmail'])
+    @if (count($errors) > 0 && $errors->has('message'))
+    <div class="alert alert-danger">
+       <div class="ui negative message">
+            <i class="close icon"></i>
+            <p>{{ $errors->first('message') }}</p>
+        </div>
+    </div>
+    @endif
+
+    @if (($profile['showContactForm'] || $profile['showEmail']) && empty(session('message')))
         <h3>Contact</h3>
         @if (@$profile['showEmail'])
             <p>
@@ -53,6 +62,11 @@
                 </div>
             </form>
         @endif
+    @elseif (! empty(session('message')))
+        <div class="ui positive message">
+            <i class="close icon"></i>
+            <p>{!! nl2br(session('message')) !!}</p>
+        </div>
     @endif
 
     <h3>Rollen:</h3>

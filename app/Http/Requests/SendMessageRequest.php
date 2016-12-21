@@ -42,4 +42,12 @@ class SendMessageRequest extends Request
             'message' => 'required|min:10',
         ];
     }
+
+    public function messages()
+    {
+        return  [
+            'min' => 'Het bericht moet minimaal 10 karakters bevatten.',
+            'required' => 'Lege berichten sturen is niet toegelaten.'
+        ];
+    }
 }

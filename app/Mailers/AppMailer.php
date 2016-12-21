@@ -156,6 +156,22 @@ class AppMailer
     }
 
     /**
+     * Send an email to a certain person through the platform
+     *
+     * @param  string $message
+     * @param  Person $user
+     * @return void
+     */
+    public function sendPlatformMessage($message, $user)
+    {
+        $this->to = $user->email;
+        $this->view = 'notifications.emails.privatemessage';
+        $this->data = ['message' => $message, 'user' => $user];
+        $this->subject = 'MEDEA - Nieuw bericht';
+        $this->deliver();
+    }
+
+    /**
      * Deliver the email.
      *
      * @return void
