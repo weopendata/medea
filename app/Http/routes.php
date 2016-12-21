@@ -63,6 +63,8 @@ Route::group(['middleware' => 'web'], function () {
             Route::get('api/export', 'Api\ExportController@export');
         });
 
+        Route::post('api/sendMessage', 'Api\MessageController@sendMessage');
+
         Route::get('settings', 'UserController@mySettings');
         Route::get('settings/{id}', 'UserController@userSettings');
     });

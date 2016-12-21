@@ -141,7 +141,7 @@ class Person extends Base implements Authenticatable
 
     public function __construct($properties = [])
     {
-        if (!empty($properties)) {
+        if (! empty($properties)) {
             parent::__construct($properties);
 
             $this->node->setProperty('token', str_random(40));
@@ -230,7 +230,7 @@ class Person extends Base implements Authenticatable
         ]);
 
         foreach ($addressProperties as $addressProperty) {
-            if (!empty($address[$addressProperty['key']])) {
+            if (! empty($address[$addressProperty['key']])) {
                 $node = $this->createValueNode(
                     $addressProperty['key'],
                     [$addressProperty['key'], $addressProperty['node_type']],
@@ -298,7 +298,7 @@ class Person extends Base implements Authenticatable
     /**
      * Set the token value for the "remember me" session.
      *
-     * @param  string  $value
+     * @param  string $value
      * @return void
      */
     public function setRememberToken($value)
@@ -378,7 +378,7 @@ class Person extends Base implements Authenticatable
      */
     public function hasRole($roles)
     {
-        if (!is_array($roles)) {
+        if (! is_array($roles)) {
             $roles = [$roles];
         }
 
@@ -465,11 +465,16 @@ class Person extends Base implements Authenticatable
     {
         $searches = $this->node->getProperty('savedSearches');
 
-        if (!is_null($searches)) {
+        if (! is_null($searches)) {
             return [];
         }
 
         return $searches;
+    }
+
+    public function isContactable()
+    {
+        return $this->showContactForm == true;
     }
 
     /**

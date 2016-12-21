@@ -20,17 +20,17 @@
         <h3>Over mij</h3>
         @if (!empty($profile['research']))
         <p>
-            <b>Onderzoek</b>: {{ nl2br($profile['research']) }}
+            <b>Onderzoek</b>: {!! nl2br($profile['research']) !!}
         </p>
         @endif
         @if (!empty($profile['bio']))
         <p>
-            <b>Bio</b>: {{ nl2br($profile['bio']) }}
+            <b>Bio</b>: {!! nl2br($profile['bio']) !!}
         </p>
         @endif
         @if (!empty($profile['expertise']))
         <p>
-            <b>Expertise</b>: {{ nl2br($profile['expertise']) }}
+            <b>Expertise</b>: {!! nl2br($profile['expertise']) !!}
         </p>
         @endif
     @endif
@@ -41,10 +41,9 @@
             <p>
                 Email: <a href="mailto:{{ $profile['email'] }}">{{ $profile['email'] }}</a>
             </p>
-        @endif
-        @if (@$profile['showContactForm'])
-            <form action="/api/sendmessage" method="POST" class="ui form" style="max-width:25em">
-                <input type="hidden" name="user_id" value="{{ $profile['id'] }}">
+        @elseif (@$profile['showContactForm'])
+            <form action="/api/sendMessage" method="POST" class="ui form" style="max-width:25em">
+                <input type="hidden" name="user_id" value="{{ $id }}">
                 <div class="field">
                     <label>Bericht aan {{ $profile['firstName'] }}</label>
                     <textarea rows="3" name="message"></textarea>
