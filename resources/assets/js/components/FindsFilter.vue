@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     statuses () {
-      if (this.$root.user.administrator) {
+      if (this.$root.user.administrator || this.model.myfinds) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen', 'Voorlopige versie', 'Wordt verwijderd']
       }
       if (this.$root.user.validator) {
