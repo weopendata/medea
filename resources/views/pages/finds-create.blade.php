@@ -57,9 +57,10 @@
         <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
       </select>
     </div>
-    <div class="required fluid field" :class="{error:validation.feedback.findDate}">
+    <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}">
       <label>Vondstdatum</label>
-      <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD" :max="today">
+      <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate">
+      <i class="delete icon" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'"></i>
     </div>
   </div>
   <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)" id="location-picker">

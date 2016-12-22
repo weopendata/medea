@@ -2,6 +2,9 @@
 export const GEO_ROUND_LAT = 0.1
 export const GEO_ROUND_LNG = 0.1
 
+const thisYear = new Date().getFullYear()
+const thisYearMonth = new Date().toJSON().slice(0, 7)
+
 // Remove reactivity
 export function inert (v) {
   return JSON.parse(JSON.stringify(v))
@@ -73,6 +76,41 @@ export function toMonth (d) {
 export function fromDate (d) {
   d = new Date(Date.parse(d))
   return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
+}
+
+export function validDate (s) {
+  s = s || ''
+
+  // Unknown
+  if (s === 'onbekend') {
+    return true
+  }
+
+  // Year only
+  if (/(20|19)[0-9][0-9]/.test(s) && s <= thisYear ) {
+    return true
+  }
+
+  // Year-month
+  if (/(20|19)[0-9][0-9]\-[0-1][0-9]/.test(s) && s <= thisYearMonth ) {
+    return true
+  }
+
+  // Year-month
+  if (s.length < 6) {
+    return false
+  }
+
+  // Year-month-day
+  const d = new Date(Date.parse(s))
+  d.setHours(12)
+  if (d.toJSON() && d.getFullYear() > 1900 && d <= new Date()) {
+    const format = d.toJSON().slice(0, 10)
+    if (format !== s) {
+      return format
+    }
+    return true
+  }
 }
 
 // Filesize

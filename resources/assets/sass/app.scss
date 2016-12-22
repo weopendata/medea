@@ -247,6 +247,26 @@ h4.required::after {
 	}
 }
 
+/* FindsCreate > clear form field */
+
+.field {
+	position: relative;
+	>.delete {
+		position: absolute;
+		left: 100%;
+		bottom: 0;
+		width: 36px;
+		height:  36px;
+		line-height: 34px;
+		cursor: pointer;
+		color: #900;
+		opacity: .5;
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+
 /* FindsCreate > feedback */
 
 .li-feedback {
