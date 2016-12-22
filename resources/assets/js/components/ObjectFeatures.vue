@@ -19,10 +19,6 @@
       &nbsp;
     </dd>
   </dl>
-  <dl>
-    <dt>Status</dt>
-    <dd>{{find.object.objectValidationStatus}}</dd>
-  </dl>
   <h4>Object</h4>
   <dl v-if="find.object.objectDescription">
     <dt-check v-if="validating" prop="objectDescription"></dt-check>
@@ -76,6 +72,10 @@
   <dl v-if="find.object.validated_at">
     <dt>Gevalideerd op</dt>
     <dd>{{find.object.validated_at | fromDate}}</dd>
+  </dl>
+  <dl>
+    <dt>Status</dt>
+    <dd>{{find.object.objectValidationStatus}}</dd>
   </dl>
 </template>
 
