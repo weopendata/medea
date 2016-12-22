@@ -118,6 +118,22 @@
     Het zwarte kader geeft aan welke locatie zichtbaar is voor bezoekers en andere detectoristen.
   </div>
   <div class="field" v-if="show.map&&step==1">
+    <div v-if="!HelpText.map" class="card-help">
+      <h1>Kaart</h1>
+      <p>
+        Deze kaart geeft aan waar de vondsten op deze pagina gedaan werden.
+        De lijst van vondsten hieronder bevat tot 20 vondsten per pagina.
+      </p>
+      <p>
+        <img src="/assets/img/help-area.png" height="40px"> Ruwe vondstlocatie
+      </p>
+      <p>
+        <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie (alleen bij eigen vondst)
+      </p>
+      <p>
+        <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
+      </p>
+    </div>
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
       <rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></rectangle>
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>

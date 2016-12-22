@@ -6,6 +6,7 @@ import {load, Map as GoogleMap, Marker, Rectangle, InfoWindow} from 'vue-google-
 import DevBar from './components/DevBar'
 
 import Notifications from './mixins/Notifications'
+import HelpText from './mixins/HelpText'
 import { inert, toPublicBounds } from './const.js'
 
 import parseLinkHeader from 'parse-link-header'
@@ -164,6 +165,9 @@ new window.Vue({
     },
     mapClick (f) {
       this.map.info = f.title
+      if (f.identifier && f.position) {
+        this.map.info += '<br><a href="/finds/' + f.identifier + '">Vondstfiche bekijken &rarr;</a>'
+      }
     },
     toggleMyfinds () {
       this.filterState.myfinds = this.filterState.myfinds ? false : 'yes'
@@ -229,6 +233,7 @@ new window.Vue({
         .filter(f => f.lat && f.accuracy == 1)
         .map(f => {
           return {
+            identifier: f.identifier,
             title: this.findTitle(f),
             position: { lat: parseFloat(f.lat), lng: parseFloat(f.lng) }
           }
@@ -262,7 +267,7 @@ new window.Vue({
       }
     }
   },
-  mixins: [Notifications],
+  mixins: [Notifications, HelpText],
   components: {
     DevBar,
     FindsFilter,

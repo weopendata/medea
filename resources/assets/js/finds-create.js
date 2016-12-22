@@ -11,6 +11,7 @@ import Step from './components/Step'
 import TextareaGrowing from './components/TextareaGrowing'
 
 import Ajax from './mixins/Ajax'
+import HelpText from './mixins/HelpText'
 import Notifications from './mixins/Notifications'
 
 import { EMPTY_CLS, toPublicBounds, validDate } from './const.js'
@@ -441,7 +442,7 @@ new window.Vue({
     }
   },
   el: 'body',
-  mixins: [Ajax, Notifications],
+  mixins: [Ajax, Notifications, HelpText],
   components: {
     DevBar,
     Step,

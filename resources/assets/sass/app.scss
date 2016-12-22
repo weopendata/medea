@@ -193,6 +193,17 @@ dd {
 	margin-top: 1.5em;
 	height: 50vh;
 }
+.mapview .card-help {
+	position: absolute;
+	z-index: 3;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 24px;
+	overflow: auto;
+	background-color: white;
+}
 
 /* FindsList > Empty state */
 
@@ -319,6 +330,7 @@ h4.required::after {
 /* Facet */
 
 .facets {
+	margin-bottom: 2em;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
 	background-color: white;
 }
