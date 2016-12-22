@@ -11,9 +11,10 @@ import Step from './components/Step'
 import TextareaGrowing from './components/TextareaGrowing'
 
 import Ajax from './mixins/Ajax'
+import HelpText from './mixins/HelpText'
 import Notifications from './mixins/Notifications'
 
-import { EMPTY_CLS, toPublicBounds } from './const.js'
+import { EMPTY_CLS, toPublicBounds, validDate } from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -233,17 +234,26 @@ new window.Vue({
     markerNeeded () {
       return this.map.zoom < 21 - Math.log2(this.accuracy)
     },
+
+    // Input validation
+    validFindDate () {
+      return validDate(this.find.findDate)
+    },
+
+    // Global form validation
     toValidate () {
       return this.find.object.objectValidationStatus === 'Klaar voor validatie'
     },
     submittable () {
       return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)
     },
+
+    // Step 1
     step1valid () {
       return this.hasFindDetails
     },
     hasFindDetails () {
-      return this.hasFindSpot && this.find.findDate
+      return this.hasFindSpot && this.validFindDate
     },
     hasFindSpot () {
       return this.find.findSpot.location.lat && this.find.findSpot.location.lng
@@ -252,6 +262,7 @@ new window.Vue({
       return this.find.findSpot.findSpotTitle || this.find.findSpot.location.address.locationAddressLocality || this.find.findSpot.location.address.locationAddressStreet || this.find.findSpot.location.address.line
     },
 
+    // Step 2
     step2valid () {
       return this.hasImages
     },
@@ -259,6 +270,7 @@ new window.Vue({
       return this.find.object.photograph.length > 1
     },
 
+    // Step 3
     step3valid () {
       return this.hasDimensions
     },
@@ -274,6 +286,13 @@ new window.Vue({
       var elem = document.getElementById('step' + i)
       if (elem) {
         this.$nextTick(() => elem.scrollIntoView())
+      }
+    },
+    blurDate() {
+      if (this.validFindDate && typeof this.validFindDate === 'string') {
+        this.$nextTick(() => {
+          this.find.findDate = this.validFindDate
+        })
       }
     },
     setMarker (event) {
@@ -423,7 +442,7 @@ new window.Vue({
     }
   },
   el: 'body',
-  mixins: [Ajax, Notifications],
+  mixins: [Ajax, Notifications, HelpText],
   components: {
     DevBar,
     Step,

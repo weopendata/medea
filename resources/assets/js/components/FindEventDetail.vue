@@ -30,6 +30,12 @@
           </div>
         </div>
       </div>
+      <div class="card-textual ui form">
+        <div class="field">
+          <label>Citeer deze vondstfiche</label>
+          <input type="text" :value="cite" readonly @click="selectThis">
+        </div>
+      </div>
       <div class="card-bar text-right" v-if="editable">
         <a class="btn" href="/finds/{{find.identifier}}/edit">
           <i class="pencil icon"></i>
@@ -107,6 +113,18 @@ export default {
     }
   },
   computed: {
+    finder () {
+      return window.publicUserInfo
+    },
+    cite () {
+      const d = new Date()
+      d.setHours(12)
+      return (this.finder.name || '')
+        + ' (' + this.find.created_at.slice(0, 10) + '). ' +
+        this.findTitle +
+        '. Geraadpleegd op ' + d.toJSON().slice(0, 10) + 
+        ' via http://vondsten.be/id/' + this.find.identifier
+    },
     showRemarks () {
       return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.user.email === this.find.person.email
     },
@@ -140,6 +158,11 @@ export default {
   methods: {
     imgRemark (index) {
       this.$broadcast('imgRemark', index)
+    },
+    selectThis (evt) {
+      if (evt && evt.target) {
+        evt.target.select()
+      }
     }
   },
   events: {
