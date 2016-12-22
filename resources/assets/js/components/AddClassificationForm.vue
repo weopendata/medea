@@ -4,6 +4,7 @@
       <div class="field">
         <label>Type</label>
         <input type="text" v-model="cls.productionClassificationType" placeholder="Voorbeeld: 2.1" list="types">
+        <div class="help-block">Welk type classificatie doe je?</div>
       </div>
       <div class="field">
         <label>Periode</label>
@@ -11,10 +12,12 @@
           <option>onbekend</option>
           <option v-for="opt in fields.culturepeople" :value="opt" v-text="opt"></option>
         </select>
+        <div class="help-block">Uit welke archeologische periode komt het object?</div>
       </div>
       <div class="field">
         <label>Heerser</label>
         <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
+        <div class="help-block">Alleen voor munten: Welke heerser was destijds aan de macht?</div>
       </div>
     </div>
     <div class="two fields">
@@ -29,7 +32,11 @@
     </div>
     <div class="field">
       <label for="description">Referenties</label>
-      <input type="text" v-model="pub.publicationTitle" placeholder="Vul een verwijzing in naar een publicatie (bibliografische referentie, URL, DOI, ...)" v-for="pub in cls.publication" @input="pubCheck" track-by="$index">
+      <input type="text" v-model="pub.publicationTitle" placeholder="bibliografische referentie, URL, DOI, ..." v-for="pub in cls.publication" @input="pubCheck" track-by="$index">
+      <div class="help-block">
+        Vul verwijzingen in naar publicaties die je tot deze classificatie gebracht hebben.
+        <br>
+      </div>
     </div>
     <div class="field">
       <label for="description">Opmerkingen</label>

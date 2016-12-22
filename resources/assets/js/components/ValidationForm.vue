@@ -94,7 +94,7 @@ export default {
       this.result = data.success ? 'Status van de vondst: ' + this.status : 'Er ging iets fout'
       if (data.success) {
         setTimeout(function () {
-          window.location.href = '/finds?status=in%20bewerking'
+          window.location.href = '/finds?status=Klaar voor validatie'
         }, 1000)
       }
     },
