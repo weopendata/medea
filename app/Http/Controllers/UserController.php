@@ -23,22 +23,12 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // Get the total user count and the paging header
-        $totalUsers = $this->users->countAllUsers();
+        $linkHeader = $this->makeLinkHeader($request);
 
         $limit = $request->input('limit', 50);
         $offset = $request->input('offset', 0);
-
-        $pages = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
-
-        $linkHeader = [];
-
-        $queryString = $this->buildQueryString($request);
-
-        foreach ($pages as $rel => $pageInfo) {
-            $linkHeader[] = '<' . $request->url() . '?offset=' . $pageInfo[0] . '&limit=' . $pageInfo[1] . '&' . $queryString . '>;rel=' . $rel;
-        }
-
-        $linkHeader = implode(', ', $linkHeader);
+        $sortBy = $request->input('sortBy', 'created_at');
+        $sortOrder = $request->input('sortOrder', 'DESC');
 
         // If the user is an admin, use the members page
         // to display some general platform info
@@ -48,12 +38,12 @@ class UserController extends Controller
 
             return response()->view('users.admin', [
                 'stats' => $stats,
-                'users' => $this->users->getAllWithRoles($limit, $offset)
+                'users' => $this->users->getAllWithRoles($limit, $offset, $sortBy, $sortOrder)
             ])->header('Link', $linkHeader);
         }
 
         return response()->view('users.index', [
-            'users' => $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset)
+            'users' => $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset, $sortBy, $sortOrder)
         ])->header('Link', $linkHeader);
     }
 
@@ -111,10 +101,8 @@ class UserController extends Controller
     {
         return [
             0 => 'Alleen ik',
-            1 => 'Onderzoekers',
-            2 => 'Onderzoekers en overheid',
-            3 => 'Geregistreerde gebruikers',
-            4 => 'Iedereen (publiek)'
+            1 => 'Voor alle geregistreerde gebruikers',
+            4 => 'Iedereen (ook voor bezoekers)'
         ];
     }
 
@@ -217,5 +205,25 @@ class UserController extends Controller
             'roles' => $person->getRoles(),
             'user' => $fullUser,
         ]);
+    }
+
+    private function makeLinkHeader($request)
+    {
+        $totalUsers = $this->users->countAllUsers();
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
+
+        $linkHeader = [];
+
+        $queryString = $this->buildQueryString($request);
+
+        foreach ($pages as $rel => $pageInfo) {
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $pageInfo[0] . '&limit=' . $pageInfo[1] . '&' . $queryString . '>;rel=' . $rel;
+        }
+
+        return implode(', ', $linkHeader);
     }
 }

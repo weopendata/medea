@@ -165,19 +165,31 @@ class UserRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
+     * @param string  $orderBy   The field to sort by (firstName|created_at)
+     * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
-    public function getAll($limit = 50, $offset = 0)
+    public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
         $client = $this->getClient();
 
-        $queryString = 'MATCH (n:person)
-        RETURN n
-        SKIP {offset}
-        LIMIT {limit}';
+        $variables = [];
 
-        $variables = ['limit' => $limit, 'offset' => $offset];
+        $queryString = 'MATCH (n:person)
+        RETURN n ';
+
+        if (! empty($sortBy)) {
+            $queryString .= ' ORDER BY LOWER({sortBy}) DESC';
+
+            $variables['sortBy'] = 'n.' . $sortBy;
+            $variables['sortOrder'] = $sortOrder;
+        }
+
+        $queryString .= ' SKIP {offset} LIMIT {limit}';
+
+        $variables['offset'] = $offset;
+        $variables['limit'] = $limit;
 
         $cypherQuery = new Query($client, $queryString, $variables);
         $results = $cypherQuery->getResultSet();
@@ -197,12 +209,14 @@ class UserRepository extends BaseRepository
      * @param array   $fields
      * @param integer $limit
      * @param integer $offset
+     * @param string  $orderBy   The field to sort by
+     * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
-    public function getAllWithFields($fields, $limit = 50, $offset = 0)
+    public function getAllWithFields($fields, $limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
-        $userNodes = $this->getAll($limit, $offset);
+        $userNodes = $this->getAll($limit, $offset, $sortBy, $sortOrder);
 
         $users = [];
 
@@ -241,27 +255,28 @@ class UserRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
+     * @param string  $sortBy    The field to sort by
+     * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
-    public function getAllWithRoles()
+    public function getAllWithRoles($limit, $offset, $sortBy = null, $sortOrder = 'DESC')
     {
-        $client = $this->getClient();
-
-        $findLabel = $client->makeLabel($this->label);
-
-        $findNodes = $findLabel->getNodes();
+        $userNodes = $this->getAll($limit, $offset, $sortBy, $sortOrder);
 
         $data = [];
-        foreach ($findNodes as $findNode) {
+
+        foreach ($userNodes as $userNode) {
             $person = new Person();
-            $person->setNode($findNode);
-            $personData = array_only($findNode->getProperties(), ['firstName', 'lastName', 'verified']);
-            $personData['id'] = $findNode->getId();
+            $person->setNode($userNode);
+
+            $personData = array_only($userNode->getProperties(), ['firstName', 'lastName', 'verified']);
+            $personData['id'] = $userNode->getId();
             $personData['personType'] = $person->getRoles();
 
             $data[] = $personData;
         }
+
         return $data;
     }
 
