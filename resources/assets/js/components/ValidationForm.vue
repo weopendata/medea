@@ -46,9 +46,6 @@
     <p v-if="remove">
       <button @click="post('Wordt verwijderd')" class="ui red big button">Afwijzen</button>
     </p>
-    <pre v-text="imgRemarks|json"></pre>
-    <pre v-text="feedback|json"></pre>
-    <pre v-text="validation|json"></pre>
   </div>
 </template>
 

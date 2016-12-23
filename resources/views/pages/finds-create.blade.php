@@ -36,8 +36,6 @@
     <li class="li-feedback" v-if="f.objectDescription">Beschrijving?</li>
   </ul>
 </div>
-  <pre v-text="f|json"></pre>
-  <pre v-text="validationList|json"></pre>
 
 <step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}" data-step="1" data-intro="Er zijn 5 stappen. Vul de velden in waarvan je zeker bent.">
   <div class="field" style="max-width: 16em">
