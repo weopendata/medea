@@ -485,3 +485,21 @@ h4.required::after {
 	border-bottom-right-radius: 4px;
 	width: 100%;
 }
+
+.modals {
+	position: fixed;
+	background: rgba(0, 0, 0, .5);
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	overflow: auto;
+	z-index: 3;
+	padding: 3em 0;
+	>.modal {
+		margin: 0 auto;
+		padding: 1em;
+		background: white;
+		max-width: 40em;
+	}
+}

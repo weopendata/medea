@@ -108,6 +108,11 @@ medeaUser.email = '{{ Auth::user()->email }}';
 @show
 
 <script type="text/javascript">
+Vue.config.devtools = true
+Vue.config.debug = true
+</script>
+
+<script type="text/javascript">
 $('nav .ui.dropdown').dropdown()
 </script>
 
