@@ -119,7 +119,7 @@ export default {
       if (!this.find.lat) {
         return alert('LatLng is missing, this will never happen')
       }
-      accuracy = parseInt(accuracy == 'city' ? 7000 : this.find.accuracy || 1)
+      accuracy = parseInt(accuracy == 'city' ? 7000 : this.find.accuracy || 1) * 2
 
       this.$dispatch('mapFocus', {lat:parseFloat(this.find.lat), lng:parseFloat(this.find.lng)}, accuracy)
     }
