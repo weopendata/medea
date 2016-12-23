@@ -58,7 +58,7 @@
   <dl v-if="find.object.period">
     <dt-check v-if="validating" prop="period"></dt-check>
     <dt>Periode</dt>
-    <dd>{{find.object.period}}</dd>
+    <dd>{{periodOverruled || find.object.period}}</dd>
   </dl>
   <h4>Details</h4>
   <dl v-if="find.updated_at!==find.created_at">
@@ -83,11 +83,24 @@
 import DtCheck from './DtCheck.vue'
 import {fromDate} from '../const.js'
 
+function sameValues(array) {
+  return !!array.reduce((a, b) => a === b ? a : NaN )
+}
+
 export default {
   props: ['find', 'feedback', 'validating'],
   computed: {
     finder () {
       return window.publicUserInfo
+    },
+    periodOverruled () {
+      const periods = (this.find.object.productionEvent.productionClassification || [])
+        .map(c => c.productionClassificationCulturePeople)
+        .filter(Boolean)
+      if (periods.length > 1 && !sameValues(periods)) {
+        return 'onzeker'
+      }
+      return periods[0]
     }
   },
   attached () {

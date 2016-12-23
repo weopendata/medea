@@ -103,7 +103,7 @@ export function validDate (s) {
 
   // Year-month-day
   const d = new Date(Date.parse(s))
-  d.setHours(12)
+  d.setHours(3)
   if (d.toJSON() && d.getFullYear() > 1900 && d <= new Date()) {
     const format = d.toJSON().slice(0, 10)
     if (format !== s) {

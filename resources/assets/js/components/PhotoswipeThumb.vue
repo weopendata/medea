@@ -1,5 +1,5 @@
 <template>
-  <img :src="image.resized" @click="trigger(index)">
+  <img :src="image.resized" @click="trigger(index)" :title="'Foto '+(image.identifier||'nieuw')">
 </template>
 
 <script>

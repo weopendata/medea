@@ -214,16 +214,19 @@ new window.Vue({
         this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 1
       }
     },
+
+    // Feedback by validator person
     f () {
-      return this.validation.feedback
+      return this.validation.feedback || {}
     },
     validation () {
+      console.log(this.validationList[0])
       return this.validationList[0] || {
         feedback: {}
       }
     },
     validationList () {
-      return JSON.parse(this.find.object.feedback).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+      return JSON.parse(this.find.object.feedback).filter(f => f.timestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
     },
     hasFeedback () {
       return this.validationList.length > 0
@@ -290,9 +293,7 @@ new window.Vue({
     },
     blurDate() {
       if (this.validFindDate && typeof this.validFindDate === 'string') {
-        this.$nextTick(() => {
-          this.find.findDate = this.validFindDate
-        })
+        this.find.findDate = this.validFindDate
       }
     },
     setMarker (event) {

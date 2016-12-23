@@ -29,10 +29,10 @@
       </p>
     </div>
     <div class="card-bar card-bar-border">
-      <span v-if="user.vondstexpert">
+      <span v-if="$root.user.vondstexpert">
         <button class="btn" :class="{green:cls.me==='agree'}" @click.stop="agree"><i class="thumbs up icon"></i></button>
         <button class="btn" :class="{red:cls.me==='disagree'}" @click.stop="disagree"><i class="thumbs down icon"></i></button>
-      </span>{{cls.me}}
+      </span>
       <span class="cls-creator" v-if="creator||cls.created_at">
         Opgesteld
         <span v-if="creator">door {{creator}}</span>

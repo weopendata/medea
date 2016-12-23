@@ -1,7 +1,7 @@
 <template>
   <div class="ui right labeled input">
     <input type="number" v-model="model" step="1" max="2020" :placeholder="placeholder||'Vul jaartal in'">
-    <button class="ui button label" @click.prevent.stop="model=-model" v-text="model<0?'v.C.':'n.C.'"></button>
+    <button class="ui button label" @click.prevent.stop="model=-model" v-text="model<0?'v.C.':'n.C.'" data-tooltip="Klik om te wisselen tussen 'voor Christus' en 'na Christus'" data-position="top right" data-green=""></button>
   </div>
 </template>
 
