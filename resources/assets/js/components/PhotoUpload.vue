@@ -1,7 +1,11 @@
 <template>
   <div class="photo-upload">
-    <div class="photo-upload-img" v-for="image in photograph" @click="rm($index)">
+    <div class="photo-upload-img" v-for="image in photograph" @click="rm($index)" :class="{'photo-error':feedback[image.identifier]}">
       <img :src="image.src">
+      <ul v-if="feedback[image.identifier]">
+        <li v-for="remark in imgRemarks[image.identifier]">{{ remark }}</li>
+      </ul>
+      <p v-if="feedback[image.identifier]&&!imgRemarks[image.identifier].length">Gelieve deze afbeelding te wijzigen.</p>
     </div>
     <div v-for="msg in warnings" class="ui warning message visible" v-text="msg"></div>
     <div class="photo-upload-cover">
@@ -22,6 +26,14 @@ export default {
   data () {
     return {
       warnings: []
+    }
+  },
+  computed: {
+    feedback () {
+      return this.$parent.$parent.f
+    },
+    imgRemarks () {
+      return this.$parent.$parent.validation.imgRemarks
     }
   },
   attached () {
@@ -181,5 +193,9 @@ export default {
         transform: scale(2);
       }
     }
+  }
+  .photo-error {
+    border: 2px solid red;
+    padding: 1em;
   }
 </style>

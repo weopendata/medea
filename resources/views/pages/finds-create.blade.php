@@ -16,7 +16,7 @@
   <div class="header">
     Opmerking van de validator:
   </div>
-  <div style="white-space:pre-wrap">@{{validation.remarks}}</div>
+  <div style="white-space:pre-wrap">@{{validation.remarks | json}}</div>
 </div>
 
 <div class="ui visible warning message" v-if="hasFeedback">
@@ -36,6 +36,8 @@
     <li class="li-feedback" v-if="f.objectDescription">Beschrijving?</li>
   </ul>
 </div>
+  <pre v-text="f|json"></pre>
+  <pre v-text="validationList|json"></pre>
 
 <step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}" data-step="1" data-intro="Er zijn 5 stappen. Vul de velden in waarvan je zeker bent.">
   <div class="field" style="max-width: 16em">
@@ -185,7 +187,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   </li>
   </ul>
   <div class="field cleared">
-    <div :is="'photo-upload'" :photograph.sync="find.object.photograph">
+    <div is="photo-upload" :photograph.sync="find.object.photograph">
       <label>Foto's</label>
       <input type="file">
     </div>

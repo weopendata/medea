@@ -22,7 +22,7 @@
           <div class="column scrolling" :class="{'fe-validating':validating}">
             <div class="fe-imglist">
               <div class="fe-img" v-for="image in find.object.photograph">
-                <dt-check v-if="validating" :prop="image.identifier" @change="imgRemark($index)"></dt-check>
+                <dt-check v-if="validating" :prop="image.identifier" @change="$broadcast('imgRemark', image.identifier)"></dt-check>
                 <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
                 <i class="magnify icon"></i>
               </div>
@@ -156,9 +156,6 @@ export default {
     }
   },
   methods: {
-    imgRemark (index) {
-      this.$broadcast('imgRemark', index)
-    },
     selectThis (evt) {
       if (evt && evt.target) {
         evt.target.select()
