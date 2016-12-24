@@ -43,26 +43,45 @@
       <label>Vinder</label>
       <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder">
     </div>
+
     <div class="required field" :class="{error:validation.feedback.objectCategory}">
       <label>Categorie</label>
       <select class="ui search dropdown category" v-model="find.object.objectCategory">
         <option>onbekend</option>
         <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
       </select>
+      <div class="ui message">
+        <p>
+          Kies hier tot welke categorie object je vondst behoort. Als je de categorie niet terugvindt, vul dan ‘andere’ in (onderaan de lijst). Als je het niet weet, laat dan ‘onbekend’ staan.
+        </p>
+      </div>
     </div>
+
     <div class="required field" :class="{error:validation.feedback.period}">
       <label>Datering per periode</label>
       <select class="ui search dropdown category" v-model="find.object.period">
         <option>onbekend</option>
         <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
       </select>
+      <div class="ui message">
+        <p>
+          Kies hier tot welke periode je vondst volgens jou behoort. Als je het niet weet, laat dan ‘onbekend’ staan.
+        </p>
+      </div>
     </div>
+
     <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}">
       <label>Vondstdatum</label>
       <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate">
       <i class="delete icon" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'"></i>
     </div>
+    <div class="ui message">
+      <p>
+        Vul hier de datum in waarop je de vondst gedaan hebt.
+      </p>
+    </div>
   </div>
+
   <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)" id="location-picker">
     <label>Vondstlocatie verfijnen</label>
     <button type="button" v-if="!show.spotdescription" @click.prevent="show.spotdescription=1" class="ui button">Beschrijving</button>
@@ -81,6 +100,11 @@
         <option value="{{$type}}">{{$type}}</option>
         @endforeach
       </select>
+      <div class="ui message">
+      <p>
+        Kies het type vindplaats. Als je het niet weet, laat dit veld dan leeg.
+      </p>
+    </div>
     </div>
   </div>
   <div class="field" v-if="show.place">
@@ -208,6 +232,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
         <option value="{{$material}}">{{$material}}</option>
         @endforeach
       </select>
+      <div class="ui message">
+        <p>
+          Kies hier het voornaamste materiaal waaruit je vondst bestaat. Let wel: brons, messing, e.d. vallen onder de categorie ‘koperlegering’. Als je het niet weet, vul dan ‘onbekend’ in.
+        </p>
+      </div>
     </div>
   </div>
   <div class="field" v-if="!show.technique">
@@ -223,6 +252,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
         <option value="{{$technique}}">{{$technique}}</option>
         @endforeach
       </select>
+      <div class="ui message">
+        <p>
+          Kies hier welke techniek gebruikt werd om het object te vervaardigen. Weet je het niet, laat dit veld dan leeg.
+        </p>
+      </div>
     </div>
     <div class="field" :class="{error:validation.feedback.modificationTechniqueType}">
       <label>Oppervlaktebehandeling</label>
@@ -241,14 +275,25 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
         <option>email (groeven)</option>
         <option>andere</option>
       </select>
+      <div class="ui message">
+        <p>
+          Kies hier welke oppervlaktebehandeling gebruikt werd om het object te vervaardigen. Weet je het niet, laat dit veld dan leeg.
+        </p>
+      </div>
     </div>
   </div>
   <div class="field" :class="{error:validation.feedback.objectInscriptionNote}" v-show="show.technique">
     <label>Opschrift</label>
     <input type="text" v-model="inscription" placeholder="-- geen opschrift --">
+    <div class="ui message">
+      <p>Als de vondst een inscriptie heeft, kun je die hier neerschrijven.</p>
+    </div>
   </div>
 
   <h4 class="required">Dimensies</h4>
+  <div class="ui message">
+    <p>Vul hier de afmetingen van je vondst in, liefst met millimeterprecisie. Kies voor de maximale afmetingen, en vul minstens twee dimensies in. Bij de knop ‘alle dimensies tonen’ kun je andere maten kiezen.</p>
+  </div>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
     <div class="field" v-if="show.lengte">
       <label>Lengte</label>
@@ -318,19 +363,22 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 <div class="grouped fields">
   <h3>5. Klaar met vondstfiche</h3>
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
-    <label>Beschrijving van het object</label>
+    <label>Bijkomende opmerkingen</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
     <p>
-      Dit is een vrije beschrijving van het object.
+      Voeg hier belangrijke informatie over de vondst toe die niet eerder in het formulier aan bod kwam.
     </p>
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
+  <div class="ui message">
+    <p>Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd gepubliceerd kan worden door een validator. Deze krijgt je identiteit exacte vondstlocatie niet te zien. Na publicatie kunnen experten publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. Let wel: na versturen kun je de meeste velden niet meer wijzigen, tussenkomst van de databeheerder. Als je niet klaar bent met deze dan voor om ze tijdelijk op te slaan als een voorlopige versie.</p>
+  </div>
 
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">
     <div class="ui radio checkbox">
       <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Klaar voor validatie">
-      <label>Vondstfiche is klaar voor validatie</label>
+      <label>Vondstfiche is klaar voor validatie.</label>
     </div>
   </div>
   <div class="field" v-if="currentStatus=='Voorlopige versie'">

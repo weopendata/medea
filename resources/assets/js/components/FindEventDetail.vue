@@ -122,8 +122,8 @@ export default {
       return (this.finder.name || '')
         + ' (' + this.find.created_at.slice(0, 10) + '). ' +
         this.findTitle +
-        '. Geraadpleegd op ' + d.toJSON().slice(0, 10) + 
-        ' via http://vondsten.be/id/' + this.find.identifier
+        '. Geraadpleegd op ' + d.toJSON().slice(0, 10) +
+        ' via ' + window.location.href
     },
     showRemarks () {
       return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.user.email === this.find.person.email

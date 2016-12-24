@@ -35,7 +35,7 @@
       <input-publication v-for="(index, pub) in cls.publication" :model="pub" :index="index"></input-publication>
       <div class="help-block">
         <button type="button" class="ui gray button" @click="addPublication">Toevoegen</button>
-        <br>Vul verwijzingen in naar publicaties die je tot deze classificatie gebracht hebben. 
+        <br>Vul verwijzingen in naar publicaties die je tot deze classificatie gebracht hebben.
         <br>
       </div>
     </div>
@@ -57,7 +57,12 @@
             </div>
             <div class="field">
               <label>Type</label>
-              <input type="text" v-model="editing.publicationType">
+              <select class="ui dropdown" v-model="editing.publicationType">
+                <option>boek</option>
+                <option>tijdschriftartikel</option>
+                <option>boekbijdrage</option>
+                <option>internetbron</option>
+              </select>
             </div>
           </div>
           <div class="two fields">
@@ -80,7 +85,7 @@
               <input type="text" v-model="editing.publicationPages">
             </div>
             <div class="field">
-              <label>Welk volume van de publicatie?</label>
+              <label>Hoe groot is de publicatie (aantal pagina's)</label>
               <input type="text" v-model="editing.publicationVolume">
             </div>
           </div>
@@ -127,7 +132,7 @@ const TYPE_PUBLISHER = 'publisher'
 
 function fromPublication (p) {
   p = inert(p)
-  var actors = ((p.publicationCreation || {}).publicationCreationActor || [])
+  var actors = ((p.publicationCreations || {}).publicationCreationActor || [])
   return Object.assign(p, {
     author: (actors.find(a => a.publicationCreationActorType === TYPE_AUTHOR) || {}).publicationCreationActorName,
     coauthor: (actors.find(a => a.publicationCreationActorType === TYPE_COAUTHOR) || {}).publicationCreationActorName,
@@ -138,7 +143,7 @@ function fromPublication (p) {
 function toPublication (p) {
   p = inert(p)
   return Object.assign(p, {
-    publicationCreation: {
+    publicationCreations:
       publicationCreationActor: [p.author && {
         publicationCreationActorName: p.author,
         publicationCreationActorType: TYPE_AUTHOR
