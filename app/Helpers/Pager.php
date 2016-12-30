@@ -20,9 +20,9 @@ class Pager
             $last_full_page = round($total_rows / $limit, 0);
 
             if ($last_page - $last_full_page > 0) {
-                $paging['last'] = [($last_full_page) * $limit, $limit];
+                $paging['last'] = [(int) ($last_full_page) * $limit, $limit];
             } else {
-                $paging['last'] = [($last_full_page - 1) * $limit, $limit];
+                $paging['last'] = [(int) ($last_full_page - 1) * $limit, $limit];
             }
         }
         if ($offset > 0 && $total_rows > 0) {
