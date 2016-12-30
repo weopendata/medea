@@ -461,7 +461,5 @@ window.initialFind = {!! json_encode($find) !!};
 console.log('finds.edit:', window.initialFind)
 @endif
 </script>
-<link href="https://unpkg.com/select2@4.0.3/dist/css/select2.min.css" rel="stylesheet" type="text/css">
-<script src="https://unpkg.com/select2@4.0.3"></script>
 <script src="{{ asset('js/finds-create.js') }}"></script>
 @endsection

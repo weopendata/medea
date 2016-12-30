@@ -66,8 +66,6 @@ window.fields = {!! json_encode($fields) !!};
 window.publicUserInfo = {!! json_encode($publicUserInfo) !!};
 @endif
 </script>
-<link href="https://unpkg.com/select2@4.0.3/dist/css/select2.min.css" rel="stylesheet" type="text/css">
-<script src="https://unpkg.com/select2@4.0.3"></script>
 <script src="{{ asset('js/finds-detail.js') }}"></script>
 <script src="{{ asset('assets/js/photoswipe.min.js') }}"></script>
 <link href="{{ asset('assets/css/photoswipe.min.css') }}" rel="stylesheet" type="text/css">
