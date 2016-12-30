@@ -145,7 +145,7 @@ export default {
     findTitle () {
       // Not showing undefined and onbekend in title
       var title = [
-        this.find.object.objectCategory,
+        this.find.object.objectCategory || 'ongeïdentificeerd',
         this.find.object.period,
         this.find.object.objectMaterial
       ].filter(f => f && f !== 'onbekend').join(', ')

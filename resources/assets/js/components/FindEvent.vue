@@ -88,13 +88,9 @@ export default {
         this.find.period,
         this.find.material
       ].filter(f => f && f !== 'onbekend').join(', ')*/
-      var title = this.find.category
 
-      if (! title) {
-        title = 'ongeïdentificeerd'
-      }
-
-      var slug = [
+      var title = [
+        this.find.category || 'ongeïdentificeerd',
         this.find.period,
         this.find.material
       ].filter(f => f && f !== 'onbekend').join(', ')
