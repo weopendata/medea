@@ -33,11 +33,19 @@ class ClassificationController extends Controller
     {
         $classification = $request->json()->all();
 
+        // Parse the publications that already exist in the platform from the classification
+        // they'll need to be linked, not added as will be the case if they are passed to the
+        // object repository
+        list($classification, $referencedPublications) = $this->parsePublications($classification);
+
         $classification_node = $this->objects->addClassification($objectId, $classification);
 
         if (empty($classification_node)) {
             return response()->json(['errors' => ['message' => 'Something has gone wrong, make sure the object exists.']], 404);
         }
+
+        // Add the referenced publications to the classification node
+        $this->classifications->linkPublications($referencedPublications);
 
         // Track the classification
         $this->registerPiwikEvent($request->user()->id, 'Created');
@@ -46,6 +54,30 @@ class ClassificationController extends Controller
         $this->addNotification($objectId);
 
         return response()->json(['success' => true]);
+    }
+
+    private function parsePublications($classification)
+    {
+        $referencedPublications = [];
+
+        if (! empty($classification['publication'])) {
+            $newPublications = [];
+
+            foreach ($classification['publication'] as $publication) {
+                if (! empty($publication['identifier'])) {
+                    $newPublications[] = $publication;
+                } else {
+                    $referencedPublications[] = $publication['identifier'];
+                }
+            }
+
+            $classification['publication'] = $newPublications;
+        }
+
+        return [
+            $classification,
+            $referencedPublications
+        ];
     }
 
     /**

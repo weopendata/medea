@@ -72,16 +72,15 @@ class Publication extends Base
     protected $properties = [
     ];
 
-    public function createPublicationCreation($publicationCreations)
+    public function createPublicationCreation($publicationCreation)
     {
-        dd($publicationCreations);
         $client = self::getClient();
 
         $generalId = $this->getGeneralId();
 
         // Create a publicationCreation (E65)
         $pubCreationNode = $client->makeNode();
-        $pubCreationNode->setProperty('name', 'publicationCreations');
+        $pubCreationNode->setProperty('name', 'publicationCreation');
         $pubCreationNode->save();
         $pubCreationNode->addLabels([
             self::makeLabel('E65'),
@@ -89,53 +88,78 @@ class Publication extends Base
             self::makeLabel($generalId)
             ]);
 
-        foreach ($publicationCreations as $publicationCreation) {
-            // Create a publicationCreationActor (E39)
-            $pubCreationActorNode = $client->makeNode();
-            $pubCreationActorNode->setProperty('name', 'publicationCreationActor');
-            $pubCreationActorNode->save();
-            $pubCreationActorNode->addLabels([
-                self::makeLabel('E39'),
-                self::makeLabel('publicationCreationActor'),
+        // Create a publicationCreationActor (E39)
+        $pubCreationActorNode = $client->makeNode();
+        $pubCreationActorNode->setProperty('name', 'publicationCreationActor');
+        $pubCreationActorNode->save();
+        $pubCreationActorNode->addLabels([
+            self::makeLabel('E39'),
+            self::makeLabel('publicationCreationActor'),
+            self::makeLabel($generalId)
+            ]);
+
+        // Link the actor with the publicationCreation
+        $pubCreationNode->relateTo($pubCreationActorNode, 'P14')->save();
+
+        // Create the type and name of the actor
+        $actorNameNode = $this->createValueNode(
+            'publicationCreationActorName',
+            ['E82', $generalId, 'publicationCreationActorName'],
+            $publicationCreation['publicationCreationActor']['publicationCreationActorName']
+        );
+
+        $actorTypeNode = $this->createValueNode(
+            'publicationCreationActorType',
+            ['E55', $generalId, 'publicationCreationActorType'],
+            $publicationCreation['publicationCreationActor']['publicationCreationActorType']
+        );
+
+        $pubCreationActorNode->relateTo($actorNameNode, 'P131')->save();
+        $pubCreationActorNode->relateTo($actorTypeNode, 'P141')->save();
+
+        // Save optional data (publicationCreationTimeSpan, publicationCreationLocation)
+        if (! empty($publicationCreation['publicationCreation']['publicationCreationTimeSpan'])) {
+            $pubCreationTsNode = $this->makeNode();
+            $pubCreationTsNode->setProperty('name', 'publicationCreationTimeSpan');
+            $pubCreationTsNode->save();
+            $pubCreationTsNode->addLabels([
+                self::makeLabel('E53'),
+                self::makeLabel('publicationCreationTimeSpan'),
                 self::makeLabel($generalId)
-                ]);
+            ]);
 
-            // Link the actor with the publicationCreation
-            $pubCreationNode->relateTo($pubCreationActorNode, 'P14')->save();
+            $pubCreationNode->relateTo($pubCreationTsNode, 'P4')->save();
 
-            // Create the type and name of the actor
-            $actorNameNode = $this->createValueNode(
-                'publicationCreationActorName',
-                ['E82', $generalId, 'publicationCreationActorName'],
-                $publicationCreation['publicationCreationActor']['publicationCreationActorName']
+            $dateNode = $this->createValueNode(
+                'date',
+                ['E50', $generalId, 'date'],
+                $publicationCreation['publicationCreation']['publicationCreationTimeSpan']
             );
 
-            $actorTypeNode = $this->createValueNode(
-                'publicationCreationActorType',
-                ['E55', $generalId, 'publicationCreationActorType'],
-                $publicationCreation['publicationCreationActor']['publicationCreationActorType']
-            );
-
-            $pubCreationActorNode->relateTo($actorNameNode, 'P131')->save();
-            $pubCreationActorNode->relateTo($actorTypeNode, 'P141')->save();
-
-            // Save optional data (publicationCreationTimeSpan, publicationCreationLocation)
-            if (! empty($publicationCreation['publicationCreation']['publicationCreationTimeSpan'])) {
-                $pubCreationTsNode = $this->makeNode();
-                $pubCreationTsNode->setProperty('name', 'publicationCreationTimeSpan');
-
-                $pubCreationNode->relateTo($pubCreationTsNode, 'P4')->save();
-
-                $dateNode = $this->createValueNode(
-                    'date',
-                    ['E50', $generalId, 'date'],
-                    $publicationCreation['publicationCreation']['publicationCreationTimeSpan']
-                );
-
-                $pubCreationTsNode->relateTo($dateNode, 'P78')->save();
-            }
-
-            return $publicationCreation;
+            $pubCreationTsNode->relateTo($dateNode, 'P78')->save();
         }
+
+        if (! empty($publicationCreation['publicationCreation']['publicationCreationLocation'])) {
+            $pubCreationLocation = $this->makeNode();
+            $pubCreationLocation->setProperty('name', 'publicationCreationLocation');
+            $pubCreationLocation->save();
+            $pubCreationLocation->addLabels([
+                self::makeLabel('E53'),
+                self::makeLabel('publicationCreationLocation'),
+                self::makeLabel($generalId)
+            ]);
+
+            $pubCreationNode->relateTo($pubCreationLocation, 'P7')->save();
+
+            $locationAppellation = $this->createValueNode(
+                'publicationCreationLocationAppellation',
+                ['E44', $generalId, 'publicationCreationLocationAppellation'],
+                $publicationCreation['publicationCreation']['publicationCreationLocation']['publicationCreationLocationAppellation']
+            );
+
+            $pubCreationLocation->relateTo($locationAppellation, 'P78')->save();
+        }
+
+        return $pubCreationNode;
     }
 }
