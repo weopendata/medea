@@ -1,6 +1,6 @@
 <template>
-  <div class="ui action input" v-if="model.identifier">
-    <input type="text" :value="model.publicationTitle || ('Publicatie ' + model.identifier)" readonly>
+  <div class="ui action input" v-if="model.identifier" :class="{error:model.error}">
+    <input type="text" :value="fetchedPub.publicationTitle || ('Publicatie ' + fetchedPub.identifier)" readonly>
     <button type="button" class="ui basic icon button" @click="$parent.rmPublication(index)">
       <i class="unlinkify icon"></i>
     </button>
@@ -20,6 +20,30 @@ export default {
   computed: {
     title () {
       return this.model.publicationTitle
+    },
+    fetchedPub () {
+      if (!this.model.fetching) {
+        this.model.fetching = true
+        this.fetch(this.model.identifier)
+      }
+      if (!this.model.fetched) {
+        return {}
+      }
+      return this.model
+    }
+  },
+  methods: {
+    fetch (id) {
+
+      this.$http.get('/api/publications/' + id).then(function ({ data }) {
+        Object.assign(this.model, data, {
+          fetched: true
+        })
+      }, function () {
+        Object.assign(this.model, {
+          error: true
+        })
+      })
     }
   }
 }
