@@ -6,7 +6,7 @@ new window.Vue({
   el: 'body',
   data () {
     return {
-      users: window.users && window.users.sort((a, b) => b.id - a.id),
+      users: window.users,
       user: window.medeaUser
     }
   },

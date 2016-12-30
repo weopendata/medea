@@ -45,11 +45,13 @@ class UserController extends Controller
             ]);
         }
 
+        $users = $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset, $sortBy, $sortOrder);
+
         return response()->view('users.index', [
             'paging' => $paging,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
-            'users' => $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset, $sortBy, $sortOrder)
+            'users' => $users
         ]);
     }
 
@@ -243,7 +245,6 @@ class UserController extends Controller
         $pageInfo = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
         $url = $request->url();
         $queryString = $this->buildQueryString($request);
-
 
         if ($offset > 0) {
             $pageInfo['first'] = [0, 0];

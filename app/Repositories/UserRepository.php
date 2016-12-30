@@ -165,7 +165,7 @@ class UserRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
-     * @param string  $orderBy   The field to sort by (firstName|created_at)
+     * @param string  $sortBy    The field to sort by (firstName|created_at)
      * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
@@ -177,13 +177,26 @@ class UserRepository extends BaseRepository
         $variables = [];
 
         $queryString = 'MATCH (n:person)
-        RETURN n ';
+        RETURN n, n.firstName ';
 
         if (! empty($sortBy)) {
-            $queryString .= ' ORDER BY LOWER({sortBy}) DESC';
+            // Statements in functions don't seem to work with the jadell library
+            if ($sortBy == 'firstName') {
+                $orderBy = 'LOWER(n.firstName)';
+            } elseif ($sortBy == 'lastName') {
+                $orderBy = 'LOWER(n.lastName)';
+            } else {
+                $orderBy = 'n.created_at';
+            }
 
-            $variables['sortBy'] = 'n.' . $sortBy;
-            $variables['sortOrder'] = $sortOrder;
+            // Don't allow injection
+            if ($sortOrder == 'ASC') {
+                $sortOrder = 'ASC';
+            } else {
+                $sortOrder = 'DESC';
+            }
+
+            $queryString .= ' ORDER BY ' . $orderBy . ' ' . $sortOrder;
         }
 
         $queryString .= ' SKIP {offset} LIMIT {limit}';
@@ -209,7 +222,7 @@ class UserRepository extends BaseRepository
      * @param array   $fields
      * @param integer $limit
      * @param integer $offset
-     * @param string  $orderBy   The field to sort by
+     * @param string  $sortBy    The field to sort by
      * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
