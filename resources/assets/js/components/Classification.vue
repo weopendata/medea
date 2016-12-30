@@ -10,15 +10,15 @@
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
         Referentie:
-        <a :href="singlePub.href" v-if="singlePub.href" v-text="singlePub.href"></a>
-        <span v-else v-text="singlePub.text"></span>
+        <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationTitle"></a>
+          <span v-else>{{ singlePub.publicationTitle }}</span>
       </p>
       <p v-if="multiPub">
         Referenties:
         <span v-for="pub in pubs">
           <br>
-          <a :href="pub.href" v-if="pub.href" v-text="pub.href"></a>
-          <span v-else v-text="pub.text"></span>
+          <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationTitle"></a>
+          <span v-else>{{ pub.publicationTitle }}</span>
         </span>
       </p>
       <p v-if="cls.agree">
@@ -62,7 +62,7 @@ export default {
       return this.pubs && this.pubs.length === 1 && this.pubs[0]
     },
     pubs () {
-      return this.cls.publication && this.cls.publication.map(p => urlify(p.publicationTitle)).filter(Boolean)
+      return this.cls.publication || []
     }
   },
   methods: {
