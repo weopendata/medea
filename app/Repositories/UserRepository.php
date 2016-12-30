@@ -188,8 +188,8 @@ class UserRepository extends BaseRepository
 
         $queryString .= ' SKIP {offset} LIMIT {limit}';
 
-        $variables['offset'] = $offset;
-        $variables['limit'] = $limit;
+        $variables['offset'] = (int) $offset;
+        $variables['limit'] = (int) $limit;
 
         $cypherQuery = new Query($client, $queryString, $variables);
         $results = $cypherQuery->getResultSet();
@@ -217,7 +217,6 @@ class UserRepository extends BaseRepository
     public function getAllWithFields($fields, $limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
         $userNodes = $this->getAll($limit, $offset, $sortBy, $sortOrder);
-
         $users = [];
 
         foreach ($userNodes as $userNode) {

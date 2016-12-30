@@ -22,8 +22,8 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        // Get the total user count and the paging header
-        $linkHeader = $this->makeLinkHeader($request);
+        // Get the total user count and the paging info
+        $paging = $this->calculatePagingInfo($request);
 
         $limit = $request->input('limit', 50);
         $offset = $request->input('offset', 0);
@@ -37,14 +37,20 @@ class UserController extends Controller
             $stats = $this->finds->getStatistics();
 
             return response()->view('users.admin', [
+                'paging' => $paging,
                 'stats' => $stats,
+                'sortBy' => $sortBy,
+                'sortOrder' => $sortOrder,
                 'users' => $this->users->getAllWithRoles($limit, $offset, $sortBy, $sortOrder)
-            ])->header('Link', $linkHeader);
+            ]);
         }
 
         return response()->view('users.index', [
+            'paging' => $paging,
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
             'users' => $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset, $sortBy, $sortOrder)
-        ])->header('Link', $linkHeader);
+        ]);
     }
 
     /**
@@ -225,5 +231,26 @@ class UserController extends Controller
         }
 
         return implode(', ', $linkHeader);
+    }
+
+    private function calculatePagingInfo($request)
+    {
+        $totalUsers = $this->users->countAllUsers();
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $pageInfo = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
+        $url = $request->url();
+        $queryString = $this->buildQueryString($request);
+
+
+        if ($offset > 0) {
+            $pageInfo['first'] = [0, 0];
+        }
+
+        return array_map(function ($info) use ($url, $queryString) {
+            return $url . '?offset=' . $info[0] . '&limit=' . $info[1] . '&' . $queryString;
+        }, $pageInfo);
     }
 }

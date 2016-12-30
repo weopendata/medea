@@ -513,3 +513,23 @@ h4.required::after {
 		max-width: 40em;
 	}
 }
+
+/* Table */
+
+.th-sortable>a::after {
+  display: inline-block;
+  vertical-align: middle;
+  content: ' ';
+  width: 20px;
+  height: 19px;
+  opacity: .2;
+  background: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==) no-repeat center right;
+}
+.th-sortable.down>a::after {
+  opacity: 1;
+  background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=);
+}
+.th-sortable.up>a::after {
+  opacity: 1;
+  background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==);
+}
