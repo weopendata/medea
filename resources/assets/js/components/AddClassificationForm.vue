@@ -6,7 +6,7 @@
         <input type="text" v-model="cls.productionClassificationType" placeholder="Voorbeeld: 2.1" list="types">
         <div class="help-block">Welk type classificatie doe je?</div>
       </div>
-      <div class="field">
+      <div class="field" @change="limitDateRange">
         <label>Periode</label>
         <select class="ui search fluid dropdown" v-model="cls.productionClassificationCulturePeople">
           <option>onbekend</option>
@@ -20,12 +20,12 @@
         <div class="help-block">Alleen voor munten: Welke heerser was destijds aan de macht?</div>
       </div>
     </div>
-    <div class="two fields">
+    <div class="two fields" @change="limitPeriod">
       <div class="field">
         <label>Datering vanaf</label>
         <input-date :model.sync="cls.startDate">
       </div>
-      <div class="field">
+      <div class="field" :class="{error: validRange}">
         <label>Datering tot</label>
         <input-date :model.sync="cls.endDate">
       </div>
@@ -194,6 +194,19 @@ function toPublication (p) {
   })
 }
 
+const dateRanges = [
+  { period: 'Bronstijd', min: -2000, max: -800 },
+  { period: 'IJzertijd', min: -800, max: -57 },
+  { period: 'Romeins', min: -57, max: 400 },
+  { period: 'vroegmiddeleeuws', min: 400, max: 900 },
+  { period: 'volmiddeleeuws', min: 900, max: 1200 },
+  { period: 'laatmiddeleeuws', min: 1200, max: 1500 },
+  { period: 'post-middeleeuws', min: 1500, max: 1800 },
+  { period: 'modern', min: 1800, max: new Date().getFullYear() },
+  { period: 'Wereldoorlog I', min: 1914, max: 1918 },
+  { period: 'Wereldoorlog II', min: 1940, max: 1945 }
+]
+
 export default {
   props: ['cls'],
   data () {
@@ -203,7 +216,35 @@ export default {
       types: ['2.1', '2.2', '2.3']
     }
   },
+  computed: {
+    validRange () {
+      return parseInt(this.cls.startDate) > parseInt(this.cls.endDate)
+    }
+  },
   methods: {
+    limitDateRange () {
+      const period = this.cls.productionClassificationCulturePeople
+      const range = dateRanges.find(r => r.period === period)
+      if (range) {
+        if (range.min && (!this.cls.startDate || this.cls.startDate < range.min || this.cls.startDate >= range.max)) {
+          this.cls.startDate = range.min
+        }
+        if (range.max && (!this.cls.endDate || this.cls.endDate > range.max || this.cls.endDate <= range.min)) {
+          this.cls.endDate = range.max
+        }
+      }
+    },
+    limitPeriod () {
+      if (!this.cls.startDate || !this.cls.endDate) {
+        return
+      }
+      const year = (parseInt(this.cls.startDate) + parseInt(this.cls.endDate)) / 2
+      const range = dateRanges.find(r => r.min < year && r.max > year)
+      if (range) {
+        this.cls.productionClassificationCulturePeople = range.period
+      }
+      console.log('set', year, range && range.period)
+    },
     pubCheck () {
       var empties = 0;
       for (var i = 0; i < this.cls.publication.length; i++) {
