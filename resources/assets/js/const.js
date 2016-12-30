@@ -48,7 +48,7 @@ export const EMPTY_CLS = {
 	productionClassificationType: '',
 	startDate: '',
 	endDate: '',
-	publication: [{ publicationTitle: '' }],
+	publication: [],
 }
 
 export function urlify (u) {
