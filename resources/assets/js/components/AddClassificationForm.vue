@@ -30,11 +30,12 @@
         <input-date :model.sync="cls.endDate">
       </div>
     </div>
-    <div class="field">
+    <div class="field field-publications">
       <label for="description">Referenties</label>
       <input-publication v-for="(index, pub) in cls.publication" :model="pub" :index="index"></input-publication>
       <div class="help-block">
-        <button type="button" class="ui gray button" @click="addPublication">Toevoegen</button>
+        <button type="button" class="ui gray button" @click="addPublication">Publicatie aanmaken</button>
+        <select-publication :model="pub" :index="index"></select-publication>
         <br>Vul verwijzingen in naar publicaties die je tot deze classificatie gebracht hebben.
         <br>
       </div>
@@ -44,8 +45,8 @@
       <textarea-growing id="description" :model.sync="cls.productionClassificationDescription"></textarea-growing>
     </div>
 
-    <div class="ui dimmer modals page transition visible active" v-if="editing">
-      <div class="ui modal transition visible active">
+    <div class="ui dimmer modals page transition visible active" v-if="editing" @click="closePublication">
+      <div class="ui modal transition visible active" @click.stop>
         <div class="header">
           <h2>Publicatie bewerken</h2>
         </div>
@@ -133,6 +134,7 @@
 import TextareaGrowing from './TextareaGrowing';
 import InputDate from './InputDate';
 import InputPublication from './InputPublication.vue'
+import SelectPublication from './SelectPublication.vue'
 
 import { inert } from '../const.js'
 
@@ -226,20 +228,32 @@ export default {
       this.editing = fromPublication(pub)
       this.editingIndex = index
     },
-    savePublication () {
-      this.$set('cls.publication[editingIndex]', toPublication(this.editing))
+    closePublication () {
       this.editing = null
       this.editingIndex = -1
     },
-    addPublication () {
-      const pub = { }
+    savePublication () {
+      this.$set('cls.publication[editingIndex]', toPublication(this.editing))
+      this.closePublication()
+    },
+    addPublication (pub) {
+      pub = pub || {}
       this.cls.publication.push(pub)
       this.editPublication(pub, this.cls.publication.length - 1)
     },
-    rmPublication () {
+    rmPublication (index) {
+      if (typeof index === 'number') {
+        this.editingIndex = index
+      }
       this.cls.publication.splice(this.editingIndex, 1)
       this.editing = null
       this.editingIndex = -1
+    },
+    keydown (evt) {
+      evt = evt || window.event;
+      if (evt.keyCode == 27) {
+        this.closePublication()
+      }
     }
   },
   attached () {
@@ -248,9 +262,16 @@ export default {
     }
     // $('select.ui.dropdown').dropdown()
   },
+  created: function() {
+    window.addEventListener('keydown',this.keydown);
+  },
+  destroyed: function() {
+    window.removeEventListener('keydown', this.keydown);
+  },
   components: {
     InputDate,
     InputPublication,
+    SelectPublication,
     TextareaGrowing
   }
 }

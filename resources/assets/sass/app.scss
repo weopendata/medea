@@ -17,6 +17,7 @@
 @import "../../../node_modules/semantic-ui-css/components/input";
 @import "../../../node_modules/semantic-ui-css/components/checkbox";
 // Fancy select
+@import "../../../node_modules/semantic-ui-css/components/search";
 @import "../../../node_modules/semantic-ui-css/components/dropdown";
 @import "../../../node_modules/semantic-ui-css/components/transition";
 @import "../../../node_modules/semantic-ui-css/components/step";
@@ -321,6 +322,14 @@ h4.required::after {
 }
 .wrapper-white {
 	background: white;
+}
+
+/* FindDetail > Form Classification*/
+
+.field-publications {
+	.input+.input {
+		margin-top: .5rem;
+	}
 }
 
 /* Utils */
