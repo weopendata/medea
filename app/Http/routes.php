@@ -45,6 +45,7 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
 
         Route::get('api/publications', 'Api\PublicationController@search');
+        Route::get('api/publications/{id}', 'Api\PublicationController@getById');
 
         Route::group(['middleware' => 'roles:validator|detectorist'], function () {
             Route::post('objects/{id}/validation', 'ObjectController@validation');

@@ -15,6 +15,11 @@ class PublicationController extends Controller
         $this->publications = $publications;
     }
 
+    public function getById($id)
+    {
+        return response()->json($this->publications->expandValues($id));
+    }
+
     /**
      * Search for publications with a certain string
      * return an array of publications with their title and id

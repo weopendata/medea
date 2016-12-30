@@ -45,7 +45,7 @@ class ClassificationController extends Controller
         }
 
         // Add the referenced publications to the classification node
-        $this->classifications->linkPublications($referencedPublications);
+        $this->classifications->linkPublications($classification_node, $referencedPublications);
 
         // Track the classification
         $this->registerPiwikEvent($request->user()->id, 'Created');
@@ -64,7 +64,7 @@ class ClassificationController extends Controller
             $newPublications = [];
 
             foreach ($classification['publication'] as $publication) {
-                if (! empty($publication['identifier'])) {
+                if (empty($publication['identifier'])) {
                     $newPublications[] = $publication;
                 } else {
                     $referencedPublications[] = $publication['identifier'];

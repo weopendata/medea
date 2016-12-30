@@ -29,10 +29,9 @@ class ObjectRepository extends BaseRepository
     /**
      * Add a classification to an object
      *
-     * @param $objectId             integer The id of the object
-     * @param $classification array   The configuration of the classification
-     *
-     * @return Node
+     * @param  integer $objectId       The id of the object
+     * @param  array   $classification The configuration of the classification
+     * @return Node    The classification Node
      */
     public function addClassification($objectId, $classification)
     {
@@ -61,7 +60,7 @@ class ObjectRepository extends BaseRepository
                 $object->relateTo($production_event, 'P108')->save();
             }
 
-            return $object;
+            return $prodClassification->getNode();
         }
 
         return null;

@@ -37,12 +37,14 @@ class ClassificationRepository extends BaseRepository
      */
     public function linkPublications($classification, $publications)
     {
+        $publicationsRepo = app()->make('App\Repositories\PublicationRepository');
+
         foreach ($publications as $publicationId) {
-            $publication = $this->getById($publicationId);
+            $publication = $publicationsRepo->getById($publicationId);
 
             if (! empty($publication)) {
-                $classification->relateTo($publication, 'P108');
-                $publication->relateTo($classification, 'P67');
+                $classification->relateTo($publication, 'P108')->save();
+                $publication->relateTo($classification, 'P67')->save();
             }
         }
     }

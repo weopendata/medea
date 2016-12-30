@@ -40,7 +40,8 @@ export default {
   methods: {
     addPublication (id) {
       this.$parent.cls.publication.push({
-        identifier: id
+        identifier: id,
+        publicationTitle: ''
       })
     }
   },

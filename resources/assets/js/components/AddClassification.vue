@@ -34,15 +34,7 @@ export default {
   },
   methods: {
     formdata () {
-      var cls = JSON.parse(JSON.stringify(this.cls))
-
-      // Remove empty publications
-      for (var i = cls.publication.length - 1; i >= 0; i--) {
-        if (!cls.publication[i].publicationTitle.length) {
-          cls.publication.splice(i, 1)
-        }
-      }
-      return cls
+      return this.cls
     },
     submitSuccess ({data}) {
       this.$root.fetch()

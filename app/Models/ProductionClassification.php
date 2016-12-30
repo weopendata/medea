@@ -14,7 +14,7 @@ class ProductionClassification extends Base
         'P108' => [
             'key' => 'publication',
             'model_name' => 'Publication',
-            'cascade_delete' => true,
+            'cascade_delete' => false,
             'required' => false,
             'plural' => true,
             'reverse_relationship' => 'P67'
