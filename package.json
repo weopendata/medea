@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "dev": "gulp && gulp watch",
-    "build": "gulp"
+    "build": "gulp",
+    "postinstall" : "gulp"
   },
   "devDependencies": {
     "babel-core": "6.7.7",

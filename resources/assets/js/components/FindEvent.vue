@@ -81,14 +81,6 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-      // formule: categorie (OF: 'ongeïdentificeerd'), datering, materiaal (MEDEA-ID)
-      // Not showing undefined and onbekend in title
-      /*var title = [
-        this.find.category,
-        this.find.period,
-        this.find.material
-      ].filter(f => f && f !== 'onbekend').join(', ')*/
-
       var title = [
         this.find.category || 'ongeïdentificeerd',
         this.find.period,

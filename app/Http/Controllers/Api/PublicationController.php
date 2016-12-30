@@ -24,7 +24,7 @@ class PublicationController extends Controller
      */
     public function search(Request $request)
     {
-        $searchString = $request->input('searchString');
+        $searchString = $request->input('query');
 
         $searchHits = [];
 
