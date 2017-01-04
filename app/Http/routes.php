@@ -44,6 +44,9 @@ Route::group(['middleware' => 'web'], function () {
         Route::get('api/notifications', 'Api\NotificationController@index');
         Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
 
+        Route::get('api/publications', 'Api\PublicationController@search');
+        Route::get('api/publications/{id}', 'Api\PublicationController@getById');
+
         Route::group(['middleware' => 'roles:validator|detectorist'], function () {
             Route::post('objects/{id}/validation', 'ObjectController@validation');
         });
@@ -58,6 +61,12 @@ Route::group(['middleware' => 'web'], function () {
             Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
             Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
         });
+
+        Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::get('api/export', 'Api\ExportController@export');
+        });
+
+        Route::post('api/sendMessage', 'Api\MessageController@sendMessage');
 
         Route::get('settings', 'UserController@mySettings');
         Route::get('settings/{id}', 'UserController@userSettings');

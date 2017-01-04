@@ -57,7 +57,7 @@ class AppMailer
     /**
      * Deliver a password reset link.
      *
-     * @param Person $user
+     * @param  Person $user
      * @return void
      */
     public function sendResetLinkEmail(Person $user)
@@ -87,7 +87,7 @@ class AppMailer
     /**
      * Deliver a registration email to the admin
      *
-     * @param Person $user
+     * @param  Person $user
      * @return void
      */
     public function sendRegistrationToAdmin(Person $user)
@@ -111,7 +111,7 @@ class AppMailer
     /**
      * Send a confirmation of registration email
      *
-     * @param Person $user
+     * @param  Person $user
      * @return void
      */
     public function sendRegistrationConfirmation(Person $user)
@@ -126,7 +126,7 @@ class AppMailer
     /**
      * Send a denial of registration email of the acceptance of the user account to that user
      *
-     * @param Person $user
+     * @param  Person $user
      * @return void
      */
     public function sendRegistrationDenial(Person $user)
@@ -135,6 +135,39 @@ class AppMailer
         $this->view = 'auth.emails.registrationdenial';
         $this->data = compact('user');
         $this->subject = 'Uw registratie werd niet goedgekeurd';
+        $this->deliver();
+    }
+
+    /**
+     * Send a notification about the validation status of the user's find
+     *
+     * @param  Person  $user
+     * @param  string  $title  The title of the find
+     * @param  integer $findId The ID of the find
+     * @return void
+     */
+    public function sendFindStatusUpdate(Person $user, $title, $findId)
+    {
+        $this->to = $user->email;
+        $this->view = 'notifications.emails.statuschanged';
+        $this->data = ['user' => $user, 'title' => $title, 'findId' => $findId];
+        $this->subject = 'Uw vondst werd behandeld door een validator';
+        $this->deliver();
+    }
+
+    /**
+     * Send an email to a certain person through the platform
+     *
+     * @param  string $message
+     * @param  Person $user
+     * @return void
+     */
+    public function sendPlatformMessage($message, $user)
+    {
+        $this->to = $user->email;
+        $this->view = 'notifications.emails.privatemessage';
+        $this->data = ['message' => $message, 'user' => $user];
+        $this->subject = 'MEDEA - Nieuw bericht';
         $this->deliver();
     }
 
@@ -156,7 +189,7 @@ class AppMailer
             $email = new Email();
 
             $email->addTo($this->to)
-            ->setFrom("no-reply@medea.weopendata.com")
+            ->setFrom('no-reply@medea.weopendata.com')
             ->setSubject($this->subject)
             ->setHtml($html);
 

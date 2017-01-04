@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
 use Illuminate\Http\Request as HttpRequest;
 
 class ShowFindRequest extends FindApiRequest
@@ -29,8 +28,8 @@ class ShowFindRequest extends FindApiRequest
         // Check if the person is allowed to view the find, we need properties
         // from the find in order to do this, hence the fetch first, validation later
         // Apply the same middleware logic as done in the finds API request
-        $personalFind = !empty($user)
-                        && !empty($this->find['person']['identifier'])
+        $personalFind = ! empty($user)
+                        && ! empty($this->find['person']['identifier'])
                         && $this->find['person']['identifier'] == $user->id;
 
         $embargo = $this->find['object']['embargo'];

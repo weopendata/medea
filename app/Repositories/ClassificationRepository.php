@@ -27,4 +27,25 @@ class ClassificationRepository extends BaseRepository
             return null;
         }
     }
+
+    /**
+     * Link publications to a classification
+     *
+     * @param  Node  $classification
+     * @param  array $publications   An array of IDs of publications
+     * @return array
+     */
+    public function linkPublications($classification, $publications)
+    {
+        $publicationsRepo = app()->make('App\Repositories\PublicationRepository');
+
+        foreach ($publications as $publicationId) {
+            $publication = $publicationsRepo->getById($publicationId);
+
+            if (! empty($publication)) {
+                $classification->relateTo($publication, 'P108')->save();
+                $publication->relateTo($classification, 'P67')->save();
+            }
+        }
+    }
 }

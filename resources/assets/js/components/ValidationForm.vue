@@ -29,21 +29,22 @@
         </div>
       </div>
     </div>
-    <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks"></photo-validation>
+    <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks" v-if="remark!==false"></photo-validation>
     <p v-if="result" v-text="result"></p>
     <p v-if="!remove&&valid">
-      <button @click="post('gevalideerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
+      <button @click="post('Gepubliceerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
         <i class="thumbs up icon"></i> Goedkeuren
       </button>
     </p>
     <p v-if="!remove&&!valid">
       <b>De vondst kan alleen goedgekeurd worden als alle velden aangevinkt zijn.</b>
+      <a href="#" @click.prevent="checkAll">Alles aanvinken</a>
     </p>
     <p v-if="!remove&&!valid">
-      <button @click="post('revisie nodig')" class="ui orange big button">Terug naar detectorist sturen</button>
+      <button @click="post('Aan te passen')" class="ui orange big button">Terug naar detectorist sturen</button>
     </p>
     <p v-if="remove">
-      <button @click="post('verwijderd')" class="ui red big button">Afwijzen</button>
+      <button @click="post('Wordt verwijderd')" class="ui red big button">Afwijzen</button>
     </p>
   </div>
 </template>
@@ -89,12 +90,20 @@ export default {
     }
   },
   methods: {
+    checkAll() {
+      for (const key in this.imgRemarks) {
+        this.imgRemarks[key] = false
+      }
+      for (const key in this.feedback) {
+        this.feedback[key] = false
+      }
+    },
     submitSuccess ({data}) {
       console.log('Validation', data)
       this.result = data.success ? 'Status van de vondst: ' + this.status : 'Er ging iets fout'
       if (data.success) {
         setTimeout(function () {
-          window.location.href = '/finds?status=in%20bewerking'
+          window.location.href = '/finds?status=Klaar voor validatie'
         }, 1000)
       }
     },
@@ -125,12 +134,6 @@ export default {
       }
       console.log('Submitting', JSON.parse(JSON.stringify(data)))
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
-
-      // Tracking
-      _paq.push(['trackEvent', 'Validation', status, this.obj]);
-      if (this.embargo) {
-        _paq.push(['trackEvent', 'Validation', 'Embargo', this.obj]);
-      }
     }
   },
   events: {
@@ -159,11 +162,32 @@ export default {
     $('.ui.checkbox', this.$el).checkbox()
 
     // Fill in the previous validation feedback
-    if (this.json && this.validation.objectValidationStatus !== 'gevalideerd') {
+    if (this.json && this.validation && this.validation.objectValidationStatus !== 'Gepubliceerd') {
       console.log('This find has been validated before and the status was', this.validation.objectValidationStatus)
-      this.feedback = this.validation.feedback
       this.remarks = this.validation.remarks
-      this.imgRemarks = this.validation.imgRemarks
+
+      const photograph = this.$parent.find.object.photograph
+      const feedback = {}
+      const imgRemarks = {}
+
+      // Only load remarks of existing images
+      for (var i = 0; i < photograph.length; i++) {
+        const id = photograph[i].identifier
+        if (this.validation.feedback[id]) {
+          feedback[id] = this.validation.feedback[id]
+          imgRemarks[id] = this.validation.imgRemarks[id]
+        }
+      }
+
+      // Also load feedback, but not of images
+      for (const key in this.validation.feedback) {
+        if (isNaN(parseInt(key))) {
+          feedback[key] = this.validation.feedback[key]
+        }
+      }
+
+      this.feedback = feedback
+      this.imgRemarks = imgRemarks
     }
   },
   components: {

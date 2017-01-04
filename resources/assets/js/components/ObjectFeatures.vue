@@ -10,15 +10,14 @@
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
   </dl>
-  <dl v-if="finder">
+  <dl v-if="finder&&finder.name">
     <dt-check v-if="validating" prop="finder.name"></dt-check>
     <dt>Vinder</dt>
-    <dd v-if="finder.id"><a :href="'/persons/'+finder.id" v-text="finder.name"></a></dd>
-    <dd v-else v-text="finder.name"></dd>
-  </dl>
-  <dl>
-    <dt>Status</dt>
-    <dd>{{find.object.objectValidationStatus}}</dd>
+    <dd>
+      <a v-if="finder.id" :href="'/persons/'+finder.id" v-text="finder.name"></a>
+      <span v-else v-text="finder.name"></span>
+      &nbsp;
+    </dd>
   </dl>
   <h4>Object</h4>
   <dl v-if="find.object.objectDescription">
@@ -59,7 +58,7 @@
   <dl v-if="find.object.period">
     <dt-check v-if="validating" prop="period"></dt-check>
     <dt>Periode</dt>
-    <dd>{{find.object.period}}</dd>
+    <dd>{{periodOverruled || find.object.period}}</dd>
   </dl>
   <h4>Details</h4>
   <dl v-if="find.updated_at!==find.created_at">
@@ -70,17 +69,38 @@
     <dt>Toegevoegd op</dt>
     <dd>{{find.created_at | fromDate}}</dd>
   </dl>
+  <dl v-if="find.object.validated_at">
+    <dt>Gevalideerd op</dt>
+    <dd>{{find.object.validated_at | fromDate}}</dd>
+  </dl>
+  <dl>
+    <dt>Status</dt>
+    <dd>{{find.object.objectValidationStatus}}</dd>
+  </dl>
 </template>
 
 <script>
 import DtCheck from './DtCheck.vue'
 import {fromDate} from '../const.js'
 
+function sameValues(array) {
+  return !!array.reduce((a, b) => a === b ? a : NaN )
+}
+
 export default {
   props: ['find', 'feedback', 'validating'],
   computed: {
     finder () {
       return window.publicUserInfo
+    },
+    periodOverruled () {
+      const periods = (this.find.object.productionEvent.productionClassification || [])
+        .map(c => c.productionClassificationCulturePeople)
+        .filter(Boolean)
+      if (periods.length > 1 && !sameValues(periods)) {
+        return 'onzeker'
+      }
+      return periods[0]
     }
   },
   attached () {

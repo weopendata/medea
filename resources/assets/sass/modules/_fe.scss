@@ -53,8 +53,8 @@
 	}
 }
 $magnify-color: black;
-$magnify-size: 1.4em;
-$magnify-margin: -.5 * $magnify-size;
+$magnify-size: 24px;
+$magnify-margin: 0;
 .fe-imglist {
 	margin: -.5rem;
 	.fe-img {
@@ -64,29 +64,40 @@ $magnify-margin: -.5 * $magnify-size;
 		max-width: 50%;
 		vertical-align: top;
 		cursor: zoom-in;
+		// img {
+		// 	position: relative;
+		// 	transition: transform .2s;
+		// }
+		&:hover img {
+			// z-index: 1;
+			// transform: scale(1.1);
+			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+		}
 		&:hover .magnify {
-			transform: scale(1.2);
-			background: $magnify-color;
-			box-shadow: 0 0 10px 5px $magnify-color;
+			opacity: 0;
 		}
 	}
 	.magnify {
-		transition: background .3s, box-shadow .3s, transform .3s;
+		transition: opacity .3s;
 		position: absolute;
-		top: 50%;
-		left: 50%;
+		z-index: 2;
+		top: .5rem;
+		right: .5rem;
 		margin: $magnify-margin 0 0 $magnify-margin;
-		border-radius: 50%;
-		padding: .05em 0 0 .15em;
+		border-radius: 2px;
+		padding: 0 0 0 2px;
 		width: $magnify-size;
 		height: $magnify-size;
 		line-height: $magnify-size;
-		font-size: 2rem;
+		font-size: 16px;
 		text-align: center;
-		background: transparentize($magnify-color, .5);
+		background: black;
 		color: white;
-		box-shadow: 0 0 10px 5px transparentize($magnify-color, .5);
+		opacity: .3;
 		pointer-events: none;
+	}
+	.fe-check {
+		margin-right: .5rem;
 	}
 }
 .scrolling.column {
@@ -160,6 +171,10 @@ dl {
 	padding-left: 52px!important;
 	.img {
 		display: block;
+	}
+	.fe-img {
+		margin-right: 5em;
+
 	}
 }
 @media only screen and (max-width: 767px) {

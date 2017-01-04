@@ -4,69 +4,78 @@
 
 @section('content')
 <div class="ui container">
-	<h1>
-		{{ $profile['firstName'] }} {{ $profile['lastName'] }}
-		@if (in_array('detectorist', $roles))
-		<small>
-			Metaaldetectorist: {{ $findCount }} vondst{{ $findCount == 1 ? '' : 'en' }}
-		</small>
-		@endif
-	</h1>
-	<p>
-		Lid van MEDEA sinds {{ $profile['created_at'] }}
-	</p>
+    <h1>
+        {{ $profile['firstName'] }} {{ $profile['lastName'] }}
+        @if (in_array('detectorist', $roles))
+        <small>
+            Metaaldetectorist: {{ $findCount }} vondst{{ $findCount == 1 ? '' : 'en' }}
+        </small>
+        @endif
+    </h1>
+    <p>
+        Lid van MEDEA sinds {{ $profile['created_at'] }}
+    </p>
 
-	@if (!empty($profile['expertise']) || !empty($profile['bio']) || !empty($profile['research']))
-		<h3>Over mij</h3>
-		@if (!empty($profile['research']))
-		<p>
-			<b>Onderzoek</b>: {{ nl2br($profile['research']) }}
-		</p>
-		@endif
-		@if (!empty($profile['bio']))
-		<p>
-			<b>Bio</b>: {{ nl2br($profile['bio']) }}
-		</p>
-		@endif
-		@if (!empty($profile['expertise']))
-		<p>
-			<b>Expertise</b>: {{ nl2br($profile['expertise']) }}
-		</p>
-		@endif
-	@endif
+    @if (!empty($profile['expertise']) || !empty($profile['bio']) || !empty($profile['research']))
+        <h3>Over mij</h3>
+        @if (!empty($profile['research']))
+        <p>
+            <b>Onderzoek</b>: {!! nl2br($profile['research']) !!}
+        </p>
+        @endif
+        @if (!empty($profile['bio']))
+        <p>
+            <b>Bio</b>: {!! nl2br($profile['bio']) !!}
+        </p>
+        @endif
+        @if (!empty($profile['expertise']))
+        <p>
+            <b>Expertise</b>: {!! nl2br($profile['expertise']) !!}
+        </p>
+        @endif
+    @endif
 
-	@if ($profile['showContactForm'] || $profile['showEmail'])
-		<h3>Contact</h3>
-		@if (@$profile['showEmail'])
-			<p>
-				Email: <a href="mailto:{{ $profile['email'] }}">{{ $profile['email'] }}</a>
-			</p>
-		@endif
-		@if (@$profile['showContactForm'])
-			<form class="ui form" style="max-width:25em">
-				<div class="field">
-					<label>Bericht aan {{ $profile['firstName'] }}</label>
-					<textarea rows="3"></textarea>
-				</div>
-				<div class="field">
-					<button type="submit" class="ui small blue button">Verzenden</button>
-				</div>
-			</form>
-		@endif
-	@endif
+    @if (count($errors) > 0 && $errors->has('message'))
+    <div class="alert alert-danger">
+       <div class="ui negative message">
+            <i class="close icon"></i>
+            <p>{{ $errors->first('message') }}</p>
+        </div>
+    </div>
+    @endif
+
+    @if (($profile['showContactForm'] || $profile['showEmail']) && empty(session('message')))
+        <h3>Contact</h3>
+        @if (@$profile['showEmail'])
+            <p>
+                Email: <a href="mailto:{{ $profile['email'] }}">{{ $profile['email'] }}</a>
+            </p>
+        @elseif (@$profile['showContactForm'])
+            <form action="/api/sendMessage" method="POST" class="ui form" style="max-width:25em">
+                <input type="hidden" name="user_id" value="{{ $id }}">
+                <div class="field">
+                    <label>Bericht aan {{ $profile['firstName'] }}</label>
+                    <textarea rows="3" name="message"></textarea>
+                </div>
+                <div class="field">
+                    <button type="submit" class="ui small blue button">Verzenden</button>
+                </div>
+            </form>
+        @endif
+    @elseif (! empty(session('message')))
+        <div class="ui positive message">
+            <i class="close icon"></i>
+            <p>{!! nl2br(session('message')) !!}</p>
+        </div>
+    @endif
+
+    <h3>Rollen:</h3>
+    <ul>
+        @foreach($roles as $role)
+            <li>{{ $role }}</li>
+        @endforeach
+    </ul>
 </div>
-
-@if (Auth::user()->hasRole('administrator'))
-	<p>&nbsp;</p>
-	<p>&nbsp;</p>
-	<p>&nbsp;</p>
-	<p>&nbsp;</p>
-	<p style="float:right">
-		<a href="/settings/{{$id}}" class="ui blue button">Aanpassen</a>
-	</p>
-	<h3>Alleen voor administrator:</h3>
-	<pre style="padding: 1em;">{!! json_encode($profile, JSON_PRETTY_PRINT) !!}</pre>
-@endif
 @endsection
 
 

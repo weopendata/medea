@@ -1,17 +1,12 @@
-import Vue from 'vue/dist/vue.min.js'
-import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
 import Notifications from './mixins/Notifications'
-
-Vue.use(VueResource)
-Vue.config.debug = true
 
 var email = window.user.email
 var id = window.user.id
 delete window.user.email
 
-new Vue({
+new window.Vue({
   el: 'body',
   data () {
     return {

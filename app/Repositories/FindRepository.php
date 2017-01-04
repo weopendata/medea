@@ -64,9 +64,9 @@ class FindRepository extends BaseRepository
         $find = parent::expandValues($findId);
 
         // Add the vote of the user
-        if (!empty($user)) {
+        if (! empty($user)) {
             // Get the vote of the user for the find
-            $query = "MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = {userId} AND id(find) = {findId} RETURN r";
+            $query = 'MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = {userId} AND id(find) = {findId} RETURN r';
 
             $variables = [];
             $variables['userId'] = (int) $user->id;
@@ -108,7 +108,7 @@ class FindRepository extends BaseRepository
      */
     public function getAllWithFilter(
         $filters,
-        $limit = 50,
+        $limit = 20,
         $offset = 0,
         $orderBy = 'findDate',
         $orderFlow = 'ASC',
@@ -117,6 +117,7 @@ class FindRepository extends BaseRepository
         extract($this->prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus));
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
+
         $data = $this->parseApiResults($cypherQuery->getResultSet());
 
         $count = $this->getCount($query, $variables);
@@ -128,7 +129,7 @@ class FindRepository extends BaseRepository
      * Get a heatmap count for a filtered search
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      *
-     * @param  array $filters
+     * @param  array  $filters
      * @param  string $validationStatus
      * @return array
      */
@@ -136,12 +137,23 @@ class FindRepository extends BaseRepository
     {
         extract($this->getQueryStatements($filters, '', '', $validationStatus));
 
-        $query = "MATCH $initialStatement, $matchstatement, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
+        $withStatement = implode(', ', $withStatement);
+
+        $fullMatchStatement = $initialStatement;
+
+        if (! empty($fullMatchStatement)) {
+            $fullMatchStatement .= ', ' . $matchStatement;
+            $fullMatchStatement = trim($fullMatchStatement);
+        }
+
+        $fullMatchStatement = rtrim($fullMatchStatement, ',');
+
+        $query = "MATCH $fullMatchStatement, (find:E10)-[P7]->(findSpot:E27)-[P53]->(location:E53)
         WITH $withStatement, location
         WHERE $whereStatement
         RETURN count(distinct find) as findCount, location.geoGrid as centre";
 
-        if (!empty($startStatement)) {
+        if (! empty($startStatement)) {
             $query = $startStatement . $query;
         }
 
@@ -164,42 +176,63 @@ class FindRepository extends BaseRepository
      *
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      *
-     * @param  array $filters
+     * @param  array   $filters
      * @param  integer $limit
      * @param  integer $offset
-     * @param  string $orderBy
-     * @param  string $orderFlow
-     * @param  string $validationStatus
+     * @param  string  $orderBy
+     * @param  string  $orderFlow
+     * @param  string  $validationStatus
      * @return array
      */
     private function prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus)
     {
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
 
-        // May be deleted if the new query is found sufficient
-        /*$query = "MATCH $initialStatement, $matchstatement
-        WITH $withStatement
-        ORDER BY $orderStatement
-        WHERE $whereStatement
-        RETURN distinct find
-        SKIP $offset
-        LIMIT $limit";*/
+        $withProperties = [
+           'distinct find',
+           'validation',
+           'findDate',
+           'locality',
+           'person',
+           'count(distinct pClass) as pClassCount',
+           'lat',
+           'lng',
+           'material',
+           'category',
+           'period',
+           'photograph',
+           'location',
+        ];
 
-        $query = "MATCH (find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)
-        OPTIONAL MATCH (object:E22)-[P108]-(productionEvent:E12)-[P41]-(pClass:E17)
+        $withStatements = array_merge($withStatement, $withProperties);
+        $withStatements = array_unique($withStatements);
+
+        $withStatement = implode(', ', $withStatements);
+
+        $fullMatchStatement = $initialStatement;
+
+        if (! empty($fullMatchStatement)) {
+            $fullMatchStatement .= ', ' . $matchStatement;
+            $fullMatchStatement = trim($fullMatchStatement);
+        }
+
+        $fullMatchStatement = rtrim($fullMatchStatement, ',');
+
+        $query = "MATCH $fullMatchStatement
+        OPTIONAL MATCH (object:E22)-[producedBy:P108]-(productionEvent:E12)-[P41]-(pClass:E17)
         OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53)-[P89]-(address:E53), (address:E53)-[localityRel:P87]-(locality:locationAddressLocality), (location:E53)-[latRel:P87]-(lat:E47{name:\"lat\"}), (location:E53)-[lngRel:P87]-(lng:E47{name:\"lng\"})
         OPTIONAL MATCH (object:E22)-[P45]-(material:E57)
         OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
         OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
         OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
-        WITH find, validation, findDate, locality, person, count(distinct pClass) as pClassCount, lat, lng, material, category, period, photograph
-        ORDER BY $orderStatement
+        WITH $withStatement
         WHERE $whereStatement
-        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, pClassCount as classificationCount, lat.value as lat, lng.value as lon, material.value as material, category.value as category, period.value as period, photograph.resized as photograph
+        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy, location.geoGrid as grid
+        ORDER BY $orderStatement
         SKIP $offset
         LIMIT $limit";
 
-        if (!empty($startStatement)) {
+        if (! empty($startStatement)) {
             $query = $startStatement . $query;
         }
 
@@ -219,7 +252,7 @@ class FindRepository extends BaseRepository
 
         $startStatement = '';
 
-        if (!empty($filters['query'])) {
+        if (! empty($filters['query'])) {
             // Replace the whitespace with the lucene syntax for white spaces text queries
             $query = preg_replace('#\s+#', ' AND ', $filters['query']);
 
@@ -227,7 +260,7 @@ class FindRepository extends BaseRepository
         }
 
         // Non personal find statement
-        $initialStatement = "(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)";
+        $initialStatement = '(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)';
 
         // Check on validationstatus
         if ($validationStatus == '*') {
@@ -237,54 +270,49 @@ class FindRepository extends BaseRepository
             $variables['validationStatus'] = $validationStatus;
         }
 
-        $withStatement = "find, validation";
+        $withStatement = ['distinct find', 'validation', 'person'];
 
-        $orderStatement = 'find.id DESC';
+        // In our query find.id is aliased as identifier
+        $orderStatement = 'identifier ' . $orderFlow;
 
         if ($orderBy == 'period') {
-            $matchStatements[] = "(object:E22)-[P42]-(period:E55)";//"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)";
-            $withStatement .= ", period";
+            $matchStatements[] = '(object:E22)-[P42]-(period:E55)';
+            $withStatement[] = 'period';
             $orderStatement = "period.value $orderFlow";
-        } else {
-            $matchStatements[] = "(find:E10)-[P4]-(findDate:E52)";
-            $withStatement .= ", findDate";
+        } elseif ($orderBy == 'findDate') {
+            //$matchStatements[] = "(find:E10)-[P4]-(findDate:E52)"; // Is already part of the initial statement
+            $withStatement[] = 'findDate';
             $orderStatement = "findDate.value $orderFlow";
         }
 
         foreach ($filterProperties as $property => $config) {
-            if (!empty($filters[$property])) {
+            if (! empty($filters[$property])) {
                 $matchStatements[] = $config['match'];
                 $whereStatements[] = $config['where'];
                 $variables[$config['nodeName']] = $filters[$property];
 
-                if (!empty($config['with'])) {
-                    $withStatement .= ', ' . $config['with'];
+                if (! empty($config['with'])) {
+                    $withStatement[] = $config['with'];
                 }
             }
         }
 
-        if (!empty($email)) {
-            $initialStatement = "(person:E21)-[P29]->(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation)";
-            $withStatement .= ", person";
-
+        if (! empty($email)) {
             if ($validationStatus == '*') {
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
             } else {
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
                 $variables['validationStatus'] = $validationStatus;
             }
-            // Can be deleted
-            //$withStatement .= "find, validation";
         }
 
-        $matchstatement = implode(', ', $matchStatements);
+        $matchStatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
-        //$withStatement .= ", count(distinct find) as findCount";
 
         return compact(
             'startStatement',
             'initialStatement',
-            'matchstatement',
+            'matchStatement',
             'whereStatement',
             'withStatement',
             'orderStatement',
@@ -306,27 +334,27 @@ class FindRepository extends BaseRepository
     {
         return [
             'objectMaterial' => [
-                'match' => "(object:E22)-[P45]-(material:E57)",
-                'where' => "material.value = {material}",
+                'match' => '(object:E22)-[P45]-(material:E57)',
+                'where' => 'material.value = {material}',
                 'nodeName' => 'material',
                 'with' => 'material',
             ],
             'technique' => [
-                'match' => "(object:E22)-[P108]-(pEvent:E12)-[P33]-(technique:E29)-[techniqueType:P2]-(type:E55)",
-                'where' => "type.value = {technique}",
+                'match' => '(object:E22)-[producedBy:P108]-(pEvent:E12)-[P33]-(techniqueNode:E29)-[hasTechniquetype:P2]-(technique:E55)',
+                'where' => 'technique.value = {technique}',
                 'nodeName' => 'technique',
-                'with' => 'type',
+                'with' => 'technique',
             ],
             'category' => [
-                'match' => "(object:E22)-[categoryType:P2]-(category:E55)",
-                'where' => "category.value = {category}",
+                'match' => '(object:E22)-[categoryType:P2]-(category:E55)',
+                'where' => 'category.value = {category}',
                 'nodeName' => 'category',
                 'with' => 'category',
             ],
             'period' => [
-                'match' => "(object:E22)-[P42]-(period:E55)",
+                'match' => '(object:E22)-[P42]-(period:E55)',
                 //"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)",
-                'where' => "period.value = {period}",
+                'where' => 'period.value = {period}',
                 'nodeName' => 'period',
                 'with' => 'period',
             ],
@@ -336,8 +364,8 @@ class FindRepository extends BaseRepository
                 'nodeName' => 'findSpotType',
                 'with' => 'findSpotType',
             ],
-            'modificationTechniqueType' => [
-                'match' => '(object:E22)-[P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
+            'modification' => [
+                'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
                     'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
                     'nodeName' => 'modificationTechniqueType',
                     'with' => 'modificationTechniqueType'
@@ -372,9 +400,8 @@ class FindRepository extends BaseRepository
         RETURN count
         UNION ALL
         MATCH (object:E22)-[objectVal:P2]->(validation)
-        WITH count(distinct object) as count, validation
-        WHERE validation.name = 'objectValidationStatus' AND validation.value='gevalideerd'
-        RETURN count";
+        WHERE validation.name = 'objectValidationStatus' AND validation.value='Gepubliceerd'
+        RETURN count(distinct object) as count";
 
         $cypherQuery = new Query($this->getClient(), $countQuery);
 
@@ -393,8 +420,8 @@ class FindRepository extends BaseRepository
      * Get the count of a query by replacing the RETURN statement
      * This function assumes that find is declared in the query
      *
-     * @param  string $query     A cypher query string
-     * @param  array  $variables The variables and their variables for the query
+     * @param string $query     A cypher query string
+     * @param array  $variables The variables and their variables for the query
      *
      * @return integer
      */
@@ -434,10 +461,49 @@ class FindRepository extends BaseRepository
             foreach ($result as $key => $val) {
                 if (! is_object($val)) {
                     $tmp[$key] = $val;
+                } elseif ($key == 'photograph' && $val->count()) {
+                    $tmp[$key] = $val->current();
                 }
             }
 
             $data[] = $tmp;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get the exportable data points of a find event
+     *
+     * @param  integer $findId
+     * @return array
+     */
+    public function getExportableData($findId)
+    {
+        $query = 'MATCH (find:E10)-[P12]-(object:E22)
+        OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"})
+        OPTIONAL MATCH (find:E10)-[P29]-(person:person)
+        OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"})
+        OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"})
+        OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"})
+        WITH distinct find, category, period, material, person, lat, lng, location
+        WHERE id(find) = {findId}
+        RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
+        person.showNameOnPublicFinds as showName, person.lastName as lastName, person.firstName as firstName, person.detectoristNumber as detectoristNumber, lat.value as latitude,
+        lng.value as longitude, location.accuracy as accuracy, find.created_at as created_at';
+
+        $variables = [];
+        $variables['findId'] = $findId;
+
+        $cypherQuery = new Query($this->getClient(), $query, $variables);
+        $results = $cypherQuery->getResultSet();
+
+        $result = $results->current();
+
+        $data = [];
+
+        foreach ($result as $key => $value) {
+            $data[$key] = $value;
         }
 
         return $data;

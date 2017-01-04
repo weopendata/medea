@@ -8,28 +8,28 @@
 
 @section('content')
   <div class="hero">
-    <div class="ui container">
+    <form method="GET" action="/finds" class="ui container">
       <p class="lead" data-step="1" data-intro="Deze intro zal je begeleiden bij het registreren van een vondst.">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
       <p>
-        Verken <b>{{ $stats['finds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
+        Verken <b>{{ $stats['validatedFinds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
       </p>
       <p>
-        <div class="ui action input" style="width: 30%;">
-          <input type="text" placeholder="Search...">
+        <span class="ui action input" style="width: 30%;">
+          <input type="text" placeholder="Search..." name="query">
           <button class="ui blue icon button">
             <i class="search icon"></i>
           </button>
-        </div>
+        </span>
       </p>
       <p>
         @if (Auth::guest())
         <a href="/login" class="ui green button"><i class="sign in icon"></i> Log in </a>
         <a href="#register" class="ui green button"><i class="edit icon"></i> Word lid </a>
         @else
-        <a href="/finds" class="ui green button"><i class="sign in icon"></i> Vondsten doorzoeken</a>
+        <button type="submit" class="ui green button"><i class="sign in icon"></i> Vondsten doorzoeken</button>
         @endif
       </p>
-    </div>
+    </form>
   </div>
 {!! Form::open(array(
 'action' => 'Auth\AuthController@register',
@@ -49,6 +49,11 @@
     <h2 id="register">Registreren</h2>
   </div>
   <h3>Contactgegevens</h3>
+  <div class="ui message">
+    <p>
+      Vul hier je naam en emailadres in, en kies een wachtwoord om in te loggen. Deze gegevens zullen niet gedeeld worden met derden zonder je expliciete toestemming (zie sectie ‘Privacy’ onderaan).
+    </p>
+  </div>
   <div class="two fields">
     <div class="field" :class="{error:errors.firstName}">
       <label for="firstName">Voornaam</label>
@@ -90,7 +95,7 @@
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
       <label>
         <b>Registrator</b>
-        <br>Je kan vondsten van anderen documenteren en publiceren in het kader van een bestaande collectie of project.
+        <br>Je kan vondsten van anderen documenteren en publiceren in het kader van een bestaande collectie (bijv. van een heemkundige kring) of project. Beschrijf deze collectie of dit project kort in het veld ‘project’ hieronder. Een MEDEA-medewerker neemt contact met je op om concrete afspraken te maken.
       </label>
     </div>
   </div>
@@ -99,7 +104,7 @@
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.validator">
       <label>
         <b>Validator</b>
-        <br>Je gaat na of gemelde vondsten in orde zijn voor publicatie.
+        <br>Je bent bereid om je als vrijwilliger in te zetten voor de vlotte werking van MEDEA. Je gaat na of gemelde vondstfiches in orde zijn voor publicatie. Een MEDEA-medewerker zal contact met je opnemen om concrete afspraken te maken.
       </label>
     </div>
   </div>
@@ -144,6 +149,9 @@
   </div>
   <div class="field" v-if="roles.detectorist">
     <label for="email">Erkenningsnummer</label>
+    <div class="ui message">
+      Als je een erkend detectorist bent, vul dan hier je erkenningsnummer in. Een erkenning is verplicht voor detectorgebruikers sinds 1 april 2016. Deze informatie zal niet met derden gedeeld worden zonder je expliciete toestemming.
+    </div>
     <div class="ui labeled input double-labeled">
       <div class="ui default label">
         OE/ERK/Metaaldetectorist/

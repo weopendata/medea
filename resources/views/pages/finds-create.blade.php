@@ -16,7 +16,7 @@
   <div class="header">
     Opmerking van de validator:
   </div>
-  <div style="white-space:pre-wrap">@{{validation.remarks}}</div>
+  <div style="white-space:pre-wrap">@{{validation.remarks | json}}</div>
 </div>
 
 <div class="ui visible warning message" v-if="hasFeedback">
@@ -38,30 +38,50 @@
 </div>
 
 <step number="1" title="Algemene vondstgegevens" class="required" :class="{completed:step1valid}" data-step="1" data-intro="Er zijn 5 stappen. Vul de velden in waarvan je zeker bent.">
-  <div class="field" style="max-width: 16em">
+  <div class="field">
     <div class="required field" v-if="user.registrator&&debugging">
       <label>Vinder</label>
-      <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder">
+      <input type="text" v-model="find.finderName" value="John Doe" placeholder="Naam van de vinder" style="max-width: 16em">
     </div>
+
     <div class="required field" :class="{error:validation.feedback.objectCategory}">
       <label>Categorie</label>
-      <select class="ui search dropdown category" v-model="find.object.objectCategory">
+      <select class="ui search dropdown category" v-model="find.object.objectCategory" style="max-width: 16em">
         <option>onbekend</option>
         <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
       </select>
+      <div class="ui message" v-if="!HelpText.create">
+        <p>
+          Kies hier tot welke categorie object je vondst behoort. Als je de categorie niet terugvindt, vul dan ‘andere’ in (onderaan de lijst). Als je het niet weet, laat dan ‘onbekend’ staan.
+        </p>
+      </div>
     </div>
+
     <div class="required field" :class="{error:validation.feedback.period}">
       <label>Datering per periode</label>
-      <select class="ui search dropdown category" v-model="find.object.period">
+      <select class="ui search dropdown category" v-model="find.object.period" style="max-width: 16em">
         <option>onbekend</option>
         <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
       </select>
+      <div class="ui message" v-if="!HelpText.create">
+        <p>
+          Kies hier tot welke periode je vondst volgens jou behoort. Als je het niet weet, laat dan ‘onbekend’ staan.
+        </p>
+      </div>
     </div>
-    <div class="required fluid field" :class="{error:validation.feedback.findDate}">
+
+    <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}" style="max-width: 16em">
       <label>Vondstdatum</label>
-      <input type="date" v-model="find.findDate" placeholder="YYYY-MM-DD" :max="today">
+      <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate">
+      <i class="delete icon" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'"></i>
+    </div>
+    <div class="ui message" v-if="!HelpText.create">
+      <p>
+        Vul hier de datum in waarop je de vondst gedaan hebt.
+      </p>
     </div>
   </div>
+
   <div class="field" v-if="show.map&&(!show.spotdescription||!show.place||!show.address)" id="location-picker">
     <label>Vondstlocatie verfijnen</label>
     <button type="button" v-if="!show.spotdescription" @click.prevent="show.spotdescription=1" class="ui button">Beschrijving</button>
@@ -81,6 +101,11 @@
         @endforeach
       </select>
     </div>
+  </div>
+  <div class="ui message" v-if="!HelpText.create">
+    <p>
+      Kies het type vindplaats. Als je het niet weet, laat dit veld dan leeg.
+    </p>
   </div>
   <div class="field" v-if="show.place">
     <label>Plaatsnaam</label>
@@ -113,14 +138,37 @@
       </button>
     </div>
   </div>
-  <div class="field" v-if="show.map">
-    Het zwarte kader geeft aan welke locatie zichtbaar is voor bezoekers en andere detectoristen.
+  <div class="ui message" v-if="!HelpText.create">
+    <p v-if="!show.map">
+      Vul eerst de gemeente of stad in en klik vervolgens op "Aanduiden op kaart".
+    </p>
+    <p v-else>
+      Het zwarte kader geeft aan welke locatie zichtbaar is voor bezoekers en andere detectoristen.
+    </p>
   </div>
   <div class="field" v-if="show.map&&step==1">
+    <div v-if="!HelpText.map" class="card-help">
+      <h1>Kaart</h1>
+      <p>
+        Deze kaart geeft aan waar de vondsten op deze pagina gedaan werden.
+        De lijst van vondsten hieronder bevat tot 20 vondsten per pagina.
+      </p>
+      <p>
+        <img src="/assets/img/help-area.png" height="40px"> Ruwe vondstlocatie
+      </p>
+      <p>
+        <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie (alleen bij eigen vondst)
+      </p>
+      <p>
+        <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
+      </p>
+    </div>
     <map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
       <rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></rectangle>
       <marker v-if="marker.visible&&markerNeeded"  :position.sync="latlng" :clickable.sync="true" :draggable.sync="true"></marker>
       <circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></circle>
+      <div class="gm-panel" style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;" @click="showHelp('map')">Help</div>
+
     </map>
   </div>
   <div class="fields" v-if="show.co||show.map">
@@ -140,6 +188,11 @@
       <label>&nbsp;</label>
       <button v-if="show.map" @click.prevent="reverseGeocode" class="ui button">Omzetten naar adres</button>
     </div>
+  </div>
+  <div class="ui message" v-if="(show.co||show.map)&&!HelpText.create">
+    <p>
+      Nadat je de marker op de kaart verplaatst hebt, of wijzigingen hebt gemaakt aan de coördinaten kan je klikken op "Omzetten naar adres". Dan zal het adres boven de kaart overschreven worden met de locatie die aangeduid staat.
+    </p>
   </div>
   <p>
     <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)">Bevestig locatie</button>
@@ -168,7 +221,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   </li>
   </ul>
   <div class="field cleared">
-    <div :is="'photo-upload'" :photograph.sync="find.object.photograph">
+    <div is="photo-upload" :photograph.sync="find.object.photograph">
       <label>Foto's</label>
       <input type="file">
     </div>
@@ -193,6 +246,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
       </select>
     </div>
   </div>
+  <div class="ui message" v-if="!HelpText.create">
+    <p>
+      Kies hier het voornaamste materiaal waaruit je vondst bestaat. Let wel: brons, messing, e.d. vallen onder de categorie ‘koperlegering’. Als je het niet weet, vul dan ‘onbekend’ in.
+    </p>
+  </div>
   <div class="field" v-if="!show.technique">
     <button @click.prevent="show.technique=1" class="ui button">Techniek, behandeling, opschrift</button>
   </div>
@@ -206,6 +264,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
         <option value="{{$technique}}">{{$technique}}</option>
         @endforeach
       </select>
+      <div class="ui message" v-if="!HelpText.create">
+        <p>
+          Kies hier welke techniek gebruikt werd om het object te vervaardigen. Weet je het niet, laat dit veld dan leeg.
+        </p>
+      </div>
     </div>
     <div class="field" :class="{error:validation.feedback.modificationTechniqueType}">
       <label>Oppervlaktebehandeling</label>
@@ -224,11 +287,19 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
         <option>email (groeven)</option>
         <option>andere</option>
       </select>
+      <div class="ui message" v-if="!HelpText.create">
+        <p>
+          Kies hier welke oppervlaktebehandeling gebruikt werd om het object te vervaardigen. Weet je het niet, laat dit veld dan leeg.
+        </p>
+      </div>
     </div>
   </div>
   <div class="field" :class="{error:validation.feedback.objectInscriptionNote}" v-show="show.technique">
     <label>Opschrift</label>
     <input type="text" v-model="inscription" placeholder="-- geen opschrift --">
+    <div class="ui message" v-if="!HelpText.create">
+      <p>Als de vondst een inscriptie heeft, kun je die hier neerschrijven.</p>
+    </div>
   </div>
 
   <h4 class="required">Dimensies</h4>
@@ -271,6 +342,9 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
     <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
   </div>
+  <div class="ui message" v-if="!HelpText.create">
+    <p>Vul hier de afmetingen van je vondst in, liefst met millimeterprecisie. Kies voor de maximale afmetingen, en vul minstens twee dimensies in. Bij de knop ‘alle dimensies tonen’ kun je andere maten kiezen.</p>
+  </div>
   <p>
     <button class="ui green button" @click.prevent="toStep(4)">Volgende stap</button>
   </p>
@@ -301,35 +375,38 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 <div class="grouped fields">
   <h3>5. Klaar met vondstfiche</h3>
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
-    <label>Beschrijving van het object</label>
+    <label>Bijkomende opmerkingen</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
     <p>
-      Dit is een vrije beschrijving van het object.
+      Voeg hier belangrijke informatie over de vondst toe die niet eerder in het formulier aan bod kwam.
     </p>
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
-    
+  <div class="ui message" v-if="!HelpText.create">
+    <p>Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd gepubliceerd kan worden door een validator. Deze krijgt je identiteit exacte vondstlocatie niet te zien. Na publicatie kunnen experten publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. Let wel: na versturen kun je de meeste velden niet meer wijzigen, tussenkomst van de databeheerder. Als je niet klaar bent met deze dan voor om ze tijdelijk op te slaan als een voorlopige versie.</p>
+  </div>
+
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
   <div class="field">
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="in bewerking">
-      <label>Vondstfiche is klaar voor validatie</label>
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Klaar voor validatie">
+      <label>Vondstfiche is klaar voor validatie.</label>
     </div>
   </div>
-  <div class="field" v-if="currentStatus=='voorlopig'">
+  <div class="field" v-if="currentStatus=='Voorlopige versie'">
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="voorlopig">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Voorlopige versie">
       <label>Vondstfiche is een voorlopige versie. Ik vul ze later aan.</label>
     </div>
   </div>
   <div class="field" v-else>
     <div class="ui radio checkbox">
-      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="revisie nodig">
+      <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Voorlopige versie">
       <label>Vondstfiche bewaren maar nog niet laten valideren. Ik vul ze later aan.</label>
     </div>
   </div>
   </div>
-  <p v-if="currentStatus!='voorlopig'&&currentStatus!='revisie nodig'">
+  <p v-if="currentStatus!='Voorlopige versie'&&currentStatus!='Aan te passen'">
     Huidige status: @{{currentStatus}}
   </p>
 </div>
@@ -342,9 +419,12 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <p v-if="submitting&&!toValidate" style="color:#090">
     Bedankt, jouw vondstfiche wordt bewaard.
   </p>
-  <div class="field">
+  <div v-if="!submitting" class="field">
     <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
     <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+  </div>
+  <div v-else>
+    <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
   </div>
 </div>
 <div class="field" v-if="!submittable">
@@ -352,6 +432,19 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     Niet alle verplichte velden zijn ingevuld.
   </p>
 </div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div class="ui message" v-if="!HelpText.create">
+  <p>
+    Deze helpteksten hebben je hopelijk op weg geholpen. Hieronder kan je ze uitschakelen. Het is steeds mogelijk om ze terug te tonen.
+  </p>
+  <p>
+    <button class="ui green button" @click="hideHelp('create')">OK, helptekst verbergen</button>
+  </p>
+</div>
+<p v-else>
+  <button class="ui green button" @click="showHelp('create')">Helptekst tonen</button>
+</p>
 
 {!! Form::close() !!}
 <p>&nbsp;</p>

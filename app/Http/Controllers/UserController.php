@@ -6,13 +6,12 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
-use App\Http\Controllers\Controller;
 use App\Repositories\FindRepository;
 use App\Repositories\UserRepository;
 use App\Mailers\AppMailer;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
-use Illuminate\Support\Facades\Validator;
+use App\Helpers\Pager;
 
 class UserController extends Controller
 {
@@ -23,26 +22,44 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        // Get the total user count and the paging info
+        $paging = $this->calculatePagingInfo($request);
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+        $sortBy = $request->input('sortBy', 'created_at');
+        $sortOrder = $request->input('sortOrder', 'DESC');
+
+        // If the user is an admin, use the members page
+        // to display some general platform info
         if (in_array('administrator', $request->user()->getRoles())) {
             $this->finds = new FindRepository();
             $stats = $this->finds->getStatistics();
 
-            return view('users.admin', [
+            return response()->view('users.admin', [
+                'paging' => $paging,
                 'stats' => $stats,
-                'users' => $this->users->getAllWithRoles()
+                'sortBy' => $sortBy,
+                'sortOrder' => $sortOrder,
+                'users' => $this->users->getAllWithRoles($limit, $offset, $sortBy, $sortOrder)
             ]);
         }
 
-        return view('users.index', [
-            'users' => $this->users->getAllWithFields(['firstName', 'lastName'])
+        $users = $this->users->getAllWithFields(['firstName', 'lastName'], $limit, $offset, $sortBy, $sortOrder);
+
+        return response()->view('users.index', [
+            'paging' => $paging,
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
+            'users' => $users
         ]);
     }
 
     /**
      * Show a users profile
      *
-     * @param  int $userId The id of the user to show the profile of
-     * @param  ViewUserRequest $request The form request that handles auth
+     * @param int             $userId  The id of the user to show the profile of
+     * @param ViewUserRequest $request The form request that handles auth
      *
      * @return View
      */
@@ -64,7 +81,7 @@ class UserController extends Controller
         // Get the user
         $userNode = $this->users->getById($userId);
 
-        if (!empty($userNode)) {
+        if (! empty($userNode)) {
             $person = new Person();
             $person->setNode($userNode);
             $person->update($request->input());
@@ -91,19 +108,17 @@ class UserController extends Controller
     public function getProfileAccessLevels()
     {
         return [
-            0 => "Alleen ik",
-            1 => "Onderzoekers",
-            2 => "Onderzoekers en overheid",
-            3 => "Geregistreerde gebruikers",
-            4 => "Iedereen (publiek)"
+            0 => 'Alleen ik',
+            1 => 'Voor alle geregistreerde gebruikers',
+            4 => 'Iedereen (ook voor bezoekers)'
         ];
     }
 
     /**
      * Remove a user
      *
-     * @param  int $userId
-     * @param  DeleteUserRequest $request
+     * @param int               $userId
+     * @param DeleteUserRequest $request
      *
      * @return Response
      */
@@ -126,7 +141,7 @@ class UserController extends Controller
     /**
      * Return the personal settings view
      *
-     * @param  Request $request
+     * @param Request $request
      *
      * @return
      */
@@ -167,7 +182,7 @@ class UserController extends Controller
      */
     public function userSettings($userId, Request $request)
     {
-        if (empty($request->user()) || !$request->user()->hasRole('administrator')) {
+        if (empty($request->user()) || ! $request->user()->hasRole('administrator')) {
             return redirect('/');
         }
 
@@ -198,5 +213,45 @@ class UserController extends Controller
             'roles' => $person->getRoles(),
             'user' => $fullUser,
         ]);
+    }
+
+    private function makeLinkHeader($request)
+    {
+        $totalUsers = $this->users->countAllUsers();
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
+
+        $linkHeader = [];
+
+        $queryString = $this->buildQueryString($request);
+
+        foreach ($pages as $rel => $pageInfo) {
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $pageInfo[0] . '&limit=' . $pageInfo[1] . '&' . $queryString . '>;rel=' . $rel;
+        }
+
+        return implode(', ', $linkHeader);
+    }
+
+    private function calculatePagingInfo($request)
+    {
+        $totalUsers = $this->users->countAllUsers();
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $pageInfo = Pager::calculatePagingInfo($limit, $offset, $totalUsers);
+        $url = $request->url();
+        $queryString = $this->buildQueryString($request);
+
+        if ($offset > 0) {
+            $pageInfo['first'] = [0, 0];
+        }
+
+        return array_map(function ($info) use ($url, $queryString) {
+            return $url . '?offset=' . $info[0] . '&limit=' . $info[1] . '&' . $queryString;
+        }, $pageInfo);
     }
 }

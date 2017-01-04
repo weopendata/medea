@@ -6,25 +6,25 @@
     <div class="equal width fields">
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="meetschaal">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="meetschaal">
           <label>geen meetschaal in beeld</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="onvoldoende ingezoomd">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="onvoldoende ingezoomd">
           <label>onvoldoende ingezoomd</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="teveel ingezoomd">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="teveel ingezoomd">
           <label>teveel ingezoomd</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="achtergrond is ongeschikt">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="achtergrond is ongeschikt">
           <label>achtergrond ongeschikt</label>
         </div>
       </div>
@@ -32,31 +32,31 @@
     <div class="equal width fields">
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="extra foto's nodig">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="extra foto's nodig">
           <label>extra foto's nodig</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="te kleine resolutie">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="te kleine resolutie">
           <label>te kleine resolutie</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="onscherp">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="onscherp">
           <label>onscherp</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="onderbelicht">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="onderbelicht">
           <label>onderbelicht</label>
         </div>
       </div>
       <div class="field">
         <div class="ui checkbox">
-          <input type="checkbox" tabindex="0" class="hidden" v-model="model" value="overbelicht">
+          <input type="checkbox" tabindex="0" class="hidden" v-model="$parent.imgRemarks[index]" value="overbelicht">
           <label>overbelicht</label>
         </div>
       </div>
@@ -66,12 +66,7 @@
 
 <script>
 export default {
-  props: {
-    'index': true,
-    'model': {
-      default: []
-    }
-  },
+  props: ['index'],
   computed: {
     num () {
       return parseInt(this.index) + 1

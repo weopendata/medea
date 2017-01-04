@@ -17,6 +17,7 @@
 @import "../../../node_modules/semantic-ui-css/components/input";
 @import "../../../node_modules/semantic-ui-css/components/checkbox";
 // Fancy select
+@import "../../../node_modules/semantic-ui-css/components/search";
 @import "../../../node_modules/semantic-ui-css/components/dropdown";
 @import "../../../node_modules/semantic-ui-css/components/transition";
 @import "../../../node_modules/semantic-ui-css/components/step";
@@ -27,12 +28,38 @@
 @import "../../../node_modules/semantic-ui-css/components/item";
 @import "./modules/material";
 @import "./modules/fe";
+@import "./modules/cms";
 @import "./introjs.min";
 
 /* FindsList */
 
 .column img {
 	max-width: 100%;
+}
+.list-right>.items {
+	transition: opacity .2s;
+}
+.fetching .list-right>.items {
+	opacity: 0.5;
+	transition: opacity .6s;
+}
+.paging {
+	overflow: auto;
+	min-height: 2em;
+}
+.paging>.button {
+	position: relative;
+	z-index: 1;
+}
+.paging-current {
+	line-height: 2.5em;
+	@media (min-width: 450px) {
+		position: absolute;
+		width: 100%;
+		left: 0;
+		right: 0;
+		text-align: center;
+	}
 }
 
 /* Base */
@@ -167,6 +194,21 @@ dd {
 	margin-top: 1.5em;
 	height: 50vh;
 }
+.mapview .card-help {
+	position: absolute;
+	z-index: 3;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 24px;
+	overflow: auto;
+	background-color: white;
+}
+.help-block {
+	margin-top: 5px;
+	color: #888;
+}
 
 /* FindsList > Empty state */
 
@@ -197,6 +239,7 @@ h2 {
 	}
 	.field,
 	.fields,
+	.message,
 	h4,
 	ul,
 	p {
@@ -218,6 +261,26 @@ h4.required::after {
 	}
 	h3::after {
 		color: #090;
+	}
+}
+
+/* FindsCreate > clear form field */
+
+.field {
+	position: relative;
+	>.delete {
+		position: absolute;
+		left: 100%;
+		bottom: 0;
+		width: 36px;
+		height:  36px;
+		line-height: 34px;
+		cursor: pointer;
+		color: #900;
+		opacity: .5;
+		&:hover {
+			opacity: 1;
+		}
 	}
 }
 
@@ -261,6 +324,14 @@ h4.required::after {
 	background: white;
 }
 
+/* FindDetail > Form Classification*/
+
+.field-publications {
+	.input+.input {
+		margin-top: .5rem;
+	}
+}
+
 /* Utils */
 
 .text-right {
@@ -269,9 +340,22 @@ h4.required::after {
 .pull-right {
 	float: right;
 }
+
+/* Facet */
+
+.facets {
+	margin-bottom: 2em;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
+	background-color: white;
+}
+.facet {
+	&+.facet {
+		border-top: 1px solid #ccc;
+	}
+}
 .facet-a {
 	display: block;
-	padding: 3px 5px;
+	padding: 3px 5px 3px 16px;
 	line-height: 1em;
 	color: #666;
 	&:hover {
@@ -288,16 +372,21 @@ h4.required::after {
 			color: red;
 		}
 	}
+	&:last-child {
+		margin-bottom: 10px;
+	}
 }
 .facet-title {
-	margin: 1rem 0 .5rem;
-	text-transform: uppercase;
+	margin: 0;
+	padding: 10px 5px;
 	font-size: 14px;
-	font-weight: 300;
-}
-.facet-options {
-	overflow: auto;
-	max-height: 160px;
+	cursor: pointer;
+	>.icon {
+		display: inline-block;
+		padding-left: 2px;
+		width: 18px;
+		text-align: center;
+	}
 }
 
 /* Admin - User panel*/
@@ -405,4 +494,42 @@ h4.required::after {
 	border-color: #0c0;
 	border-bottom-right-radius: 4px;
 	width: 100%;
+}
+
+.modals {
+	position: fixed;
+	background: rgba(0, 0, 0, .5);
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+	overflow: auto;
+	z-index: 3;
+	padding: 3em 0;
+	>.modal {
+		margin: 0 auto;
+		padding: 1em;
+		background: white;
+		max-width: 40em;
+	}
+}
+
+/* Table */
+
+.th-sortable>a::after {
+  display: inline-block;
+  vertical-align: middle;
+  content: ' ';
+  width: 20px;
+  height: 19px;
+  opacity: .2;
+  background: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==) no-repeat center right;
+}
+.th-sortable.down>a::after {
+  opacity: 1;
+  background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=);
+}
+.th-sortable.up>a::after {
+  opacity: 1;
+  background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==);
 }

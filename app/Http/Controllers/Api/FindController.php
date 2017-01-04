@@ -54,43 +54,43 @@ class FindController extends Controller
         $count = $result['count'];
 
         // If a user is a researcher or personal finds have been set, return the exact
-        // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
+        // find location, if not, round up to 2 digits, which lowers the accuracy to about 10 km
         if (empty($filters['myfinds'])) {
-            $adjustedFinds = [];
+            $adjusted_finds = [];
 
             $user = $request->user();
 
             foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-                    && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['findSpot']['location']['lat'])) {
-                        $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
-                        $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
-                        $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
-                        $find['findSpot']['location']['accuracy'] = max(2000, $accuracy);
+                if (empty($user) || (! empty($find['finderId']) && $find['finderId'] != $user->id)
+                    && ! in_array('onderzoeker', $user->getRoles())) {
+                    if (! empty($find['grid']) || ! empty($find['lat'])) {
+                        list($lat, $lon) = explode(',', $find['grid']);
+
+                        $find['lat'] = $lat; //round(($find['lat'] / 2), 2) * 2;
+                        $find['lng'] = $lon; //round(($find['lng'] / 2), 2) * 2;
+
+                        $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
+                        $find['accuracy'] = max(7000, $accuracy);
                     }
                 }
 
-                $adjustedFinds[] = $find;
+                $adjusted_finds[] = $find;
             }
 
-            $finds = $adjustedFinds;
+            $finds = $adjusted_finds;
         }
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
-        $linkHeader = '';
+        $linkHeader = [];
 
-        $queryString = $this->buildQueryString($request);
+        $query_string = $this->buildQueryString($request);
 
         foreach ($pages as $rel => $page_info) {
-            if (!empty($queryString)) {
-                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $queryString . ';rel=' . $rel . ';';
-            } else {
-                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
-            }
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . '>;rel=' . $rel;
         }
-        $linkHeader = rtrim($linkHeader, ';');
+
+        $linkHeader = implode(', ', $linkHeader);
 
         return response()->json($finds)->header('Link', $linkHeader);
     }
@@ -99,14 +99,14 @@ class FindController extends Controller
     {
         $filters = $request->all();
 
-        $validatedStatus = $request->input('status', 'gevalideerd');
+        $validatedStatus = $request->input('status', 'Gepubliceerd');
 
         if (empty($request->user())) {
-            $validatedStatus = 'gevalideerd';
+            $validatedStatus = 'Gepubliceerd';
         }
 
         // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
+        if ($request->has('myfinds') && ! empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
             $validatedStatus = '*';
         }
@@ -119,12 +119,14 @@ class FindController extends Controller
         $order_flow = 'ASC';
         $order_by = 'findDate';
 
-        if (!empty($order)) {
+        if (! empty($order)) {
             $first_char = substr($order, 0, 1);
 
             if ($first_char == '-') {
                 $order_flow = 'DESC';
                 $order_by = substr($order, 1, strlen($order));
+            } else {
+                $order_by = $order;
             }
         }
 
@@ -134,7 +136,7 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int                       $id
      * @return \Illuminate\Http\Response
      */
     public function show($id, Request $request)

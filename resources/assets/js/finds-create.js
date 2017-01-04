@@ -1,6 +1,3 @@
-import Vue from 'vue/dist/vue.min.js'
-import VueResource from 'vue-resource/dist/vue-resource.min.js'
-
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 import extend from 'deep-extend';
 import {load, Map, Marker, Circle, Rectangle} from 'vue-google-maps'
@@ -14,9 +11,10 @@ import Step from './components/Step'
 import TextareaGrowing from './components/TextareaGrowing'
 
 import Ajax from './mixins/Ajax'
+import HelpText from './mixins/HelpText'
 import Notifications from './mixins/Notifications'
 
-import {EMPTY_CLS} from './const.js'
+import { EMPTY_CLS, toPublicBounds, validDate } from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -96,11 +94,7 @@ function toTreatment (tech) {
   } || undefined
 }
 
-const GEO_ROUND = 0.01
-
-Vue.use(VueResource)
-Vue.config.debug = true
-new Vue({
+new window.Vue({
   data () {
     var initialFind = {
       findDate: new Date().toISOString().slice(0, 10),
@@ -122,7 +116,7 @@ new Vue({
       },
       object: {
         feedback: null,
-        objectValidationStatus: 'voorlopig',
+        objectValidationStatus: 'Voorlopige versie',
         objectDescription: null,
         objectCategory: 'onbekend',
         objectMaterial: null,
@@ -201,14 +195,7 @@ new Vue({
   },
   computed: {
     publicBounds () {
-      var pubLat = Math.round(this.latlng.lat / GEO_ROUND) * GEO_ROUND
-      var pubLng = Math.round(this.latlng.lng / GEO_ROUND) * GEO_ROUND
-      return {
-        north: pubLat + GEO_ROUND / 2,
-        south: pubLat - GEO_ROUND / 2,
-        east: pubLng + GEO_ROUND / 2,
-        west: pubLng - GEO_ROUND / 2
-      }
+      return toPublicBounds(this.latlng)
     },
     latlng: {
       get: function () {
@@ -227,16 +214,19 @@ new Vue({
         this.find.findSpot.location.accuracy = parseInt(parseFloat(num.toPrecision(2))) || 1
       }
     },
+
+    // Feedback by validator person
     f () {
-      return this.validation.feedback
+      return this.validation.feedback || {}
     },
     validation () {
+      console.log(this.validationList[0])
       return this.validationList[0] || {
         feedback: {}
       }
     },
     validationList () {
-      return JSON.parse(this.find.object.feedback).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+      return JSON.parse(this.find.object.feedback).filter(f => f.timestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
     },
     hasFeedback () {
       return this.validationList.length > 0
@@ -247,17 +237,26 @@ new Vue({
     markerNeeded () {
       return this.map.zoom < 21 - Math.log2(this.accuracy)
     },
+
+    // Input validation
+    validFindDate () {
+      return validDate(this.find.findDate)
+    },
+
+    // Global form validation
     toValidate () {
-      return this.find.object.objectValidationStatus === 'in bewerking'
+      return this.find.object.objectValidationStatus === 'Klaar voor validatie'
     },
     submittable () {
       return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)
     },
+
+    // Step 1
     step1valid () {
       return this.hasFindDetails
     },
     hasFindDetails () {
-      return this.hasFindSpot && this.find.findDate
+      return this.hasFindSpot && this.validFindDate
     },
     hasFindSpot () {
       return this.find.findSpot.location.lat && this.find.findSpot.location.lng
@@ -266,6 +265,7 @@ new Vue({
       return this.find.findSpot.findSpotTitle || this.find.findSpot.location.address.locationAddressLocality || this.find.findSpot.location.address.locationAddressStreet || this.find.findSpot.location.address.line
     },
 
+    // Step 2
     step2valid () {
       return this.hasImages
     },
@@ -273,6 +273,7 @@ new Vue({
       return this.find.object.photograph.length > 1
     },
 
+    // Step 3
     step3valid () {
       return this.hasDimensions
     },
@@ -288,6 +289,11 @@ new Vue({
       var elem = document.getElementById('step' + i)
       if (elem) {
         this.$nextTick(() => elem.scrollIntoView())
+      }
+    },
+    blurDate() {
+      if (this.validFindDate && typeof this.validFindDate === 'string') {
+        this.find.findDate = this.validFindDate
       }
     },
     setMarker (event) {
@@ -407,19 +413,6 @@ new Vue({
     },
     submitSuccess (res) {
       const newStatus = this.find.object.objectValidationStatus
-      var eventName = this.find.identifier ? 'Update' : 'Create'
-      if (newStatus === 'voorlopig') {
-        eventName += 'Draft'
-      } else if (newStatus === this.currentStatus) {
-
-      } else if (newStatus === 'in bewerking') {
-        eventName += 'AndSubmit'
-      } else if (newStatus === 'revisie nodig') {
-        eventName += 'ButNotSubmit'
-      } else {
-        eventName += 'ButUnexpectedStatus'
-      }
-      _paq.push(['trackEvent', 'FindEvent', eventName, res.data.id || 0]);
       window.location.href = res.data.url || this.redirectTo
     }
   },
@@ -450,7 +443,7 @@ new Vue({
     }
   },
   el: 'body',
-  mixins: [Ajax, Notifications],
+  mixins: [Ajax, Notifications, HelpText],
   components: {
     DevBar,
     Step,

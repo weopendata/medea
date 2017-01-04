@@ -39,7 +39,7 @@ class UserRepository extends BaseRepository
         // Label (= type) is already configured for Person
         $label = $this->getLabel();
 
-        $user_nodes = $label->getNodes("email", $email);
+        $user_nodes = $label->getNodes('email', $email);
 
         if ($user_nodes->count() > 0) {
             return $user_nodes->current();
@@ -57,7 +57,7 @@ class UserRepository extends BaseRepository
      */
     public function getByPasswordResetToken($token, $email)
     {
-        $users = $this->getLabel()->getNodes("email", $email);
+        $users = $this->getLabel()->getNodes('email', $email);
 
         if ($users->count() > 0) {
             $user = $users->current();
@@ -87,7 +87,7 @@ class UserRepository extends BaseRepository
         $label = $this->getLabel();
 
         // Get all of the Person node with the admin email
-        return $label->getNodes("email", $email)->count() > 0;
+        return $label->getNodes('email', $email)->count() > 0;
     }
 
     /**
@@ -105,7 +105,7 @@ class UserRepository extends BaseRepository
         if ($label->getNodes('token', $token)->count() > 0) {
             $user = $label->getNodes('token', $token)->current();
 
-            if (!empty($user)) {
+            if (! empty($user)) {
                 $user->setProperty('verified', true);
                 $user->setProperty('token', '');
                 $user->save();
@@ -132,7 +132,7 @@ class UserRepository extends BaseRepository
         if ($label->getNodes('token', $token)->count() > 0) {
             $user = $label->getNodes('token', $token)->current();
 
-            if (!empty($user)) {
+            if (! empty($user)) {
                 $person = new Person();
                 $person->setNode($user);
                 $person->delete();
@@ -149,7 +149,7 @@ class UserRepository extends BaseRepository
      *
      * @param Node    $classification
      * @param integer $personId
-     * @param string  $vote_type agree|disagree
+     * @param string  $vote_type      agree|disagree
      *
      * @return Relationship
      */
@@ -165,40 +165,83 @@ class UserRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
+     * @param string  $sortBy    The field to sort by (firstName|created_at)
+     * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
-    public function getAll($limit = 50, $offset = 0)
+    public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
         $client = $this->getClient();
 
-        $personLabel = $client->makeLabel($this->label);
+        $variables = [];
 
-        return $personLabel->getNodes();
+        $queryString = 'MATCH (n:person)
+        RETURN n, n.firstName ';
+
+        if (! empty($sortBy)) {
+            // Statements in functions don't seem to work with the jadell library
+            if ($sortBy == 'firstName') {
+                $orderBy = 'LOWER(n.firstName)';
+            } elseif ($sortBy == 'lastName') {
+                $orderBy = 'LOWER(n.lastName)';
+            } else {
+                $orderBy = 'n.created_at';
+            }
+
+            // Don't allow injection
+            if ($sortOrder == 'ASC') {
+                $sortOrder = 'ASC';
+            } else {
+                $sortOrder = 'DESC';
+            }
+
+            $queryString .= ' ORDER BY ' . $orderBy . ' ' . $sortOrder;
+        }
+
+        $queryString .= ' SKIP {offset} LIMIT {limit}';
+
+        $variables['offset'] = (int) $offset;
+        $variables['limit'] = (int) $limit;
+
+        $cypherQuery = new Query($client, $queryString, $variables);
+        $results = $cypherQuery->getResultSet();
+
+        $userNodes = [];
+
+        foreach ($results as $result) {
+            $userNodes[] = $result->current();
+        }
+
+        return $userNodes;
     }
 
     /**
      * Get all users with only a specific set of data points
      *
-     * @param array $fields
+     * @param array   $fields
      * @param integer $limit
      * @param integer $offset
+     * @param string  $sortBy    The field to sort by
+     * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
-    public function getAllWithFields($fields, $limit = 50, $offset = 0)
+    public function getAllWithFields($fields, $limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
-        $userNodes = $this->getAll($limit, $offset);
-
+        $userNodes = $this->getAll($limit, $offset, $sortBy, $sortOrder);
         $users = [];
 
         foreach ($userNodes as $userNode) {
             $person = new Person();
-            $person->setNode($userNode);
+            $person->setNode($this->getById($userNode->getId()));
 
             $personData = array_only($userNode->getProperties(), $fields);
+
+            // Don't add the default administrator to the list
             $personData['id'] = $userNode->getId();
             $personData['finds'] = $person->getFindCount();
+            $personData['hasPublicProfile'] = $person->hasPublicProfile();
 
             $users[] = $personData;
         }
@@ -206,32 +249,46 @@ class UserRepository extends BaseRepository
         return $users;
     }
 
+    public function countAllUsers()
+    {
+        $client = $this->getClient();
+
+        $queryString = 'MATCH (n:person)
+        RETURN count(distinct n)';
+
+        $cypherQuery = new Query($client, $queryString);
+        $results = $cypherQuery->getResultSet();
+
+        return $results->current()->current();
+    }
+
     /**
      * Get all the bare nodes of a findEvent
      *
      * @param integer $limit
      * @param integer $offset
+     * @param string  $sortBy    The field to sort by
+     * @param string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
-    public function getAllWithRoles()
+    public function getAllWithRoles($limit, $offset, $sortBy = null, $sortOrder = 'DESC')
     {
-        $client = $this->getClient();
-
-        $findLabel = $client->makeLabel($this->label);
-
-        $findNodes = $findLabel->getNodes();
+        $userNodes = $this->getAll($limit, $offset, $sortBy, $sortOrder);
 
         $data = [];
-        foreach ($findNodes as $findNode) {
+
+        foreach ($userNodes as $userNode) {
             $person = new Person();
-            $person->setNode($findNode);
-            $personData = array_only($findNode->getProperties(), ['firstName', 'lastName', 'verified']);
-            $personData['id'] = $findNode->getId();
+            $person->setNode($userNode);
+
+            $personData = array_only($userNode->getProperties(), ['firstName', 'lastName', 'verified']);
+            $personData['id'] = $userNode->getId();
             $personData['personType'] = $person->getRoles();
 
             $data[] = $personData;
         }
+
         return $data;
     }
 
@@ -242,7 +299,7 @@ class UserRepository extends BaseRepository
      */
     public function getAllWithSavedSearches()
     {
-        $query = "MATCH (n:person) where has (n.savedSearches) return n";
+        $query = 'MATCH (n:person) where has (n.savedSearches) return n';
 
         $cypherQuery = new Query($this->getClient(), $query);
 

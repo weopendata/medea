@@ -1,6 +1,31 @@
 # MEDEA
 The goal of the MEDEA projects is to bring together find experts, researchers and detectorists and let them collaborate on historical finds.
 
+## Flow
+
+Onboarding
+[x] Visit homepage
+[x] Visit login, click register now
+[x] Fill in details, role, click register
+[x] Send email to admin about new user
+[x] Fail to login before admin approval
+[x] Allow admin to approve using confirmation link in email
+[x] Allow admin to approve in member list
+
+List of finds
+[x] Show only my finds
+[x] Filter by category
+[x] Filter by period
+[x] Filter by material
+[x] Filter by technique
+[x] Filter by technique
+[x] Filter by multiple properties
+
+Create a find
+[x] Add visible properties
+
+Validate a find
+
 ## Requirements
 
 * Database: Neo4j 2.2.x (higher or lower versions will most likely break the application)
@@ -14,29 +39,49 @@ To enable full text search, we'll need to enable the legacy indexes. This means 
 [Credit where credit is due](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/)
 
 1. Create a POST request, as mentioned in the [link](http://jexp.de/blog/2014/03/full-text-indexing-fts-in-neo4j-2-0/) Don't forget to add the extra lower case analyzer.
+```
+curl -XPOST http://neo4j:{password}@localhost:7474/db/data/index/node/ --header "Content-Type: application/json" -d '{
+  "name" : "node_auto_index",
+  "config" : {
+    "type" : "fulltext",
+    "provider" : "lucene",
+    "to_lower_case" : "true"
+  }
+}'
+```
 2. Edit the conf/neo4j.properties file and add/edit the following lines:
-    ```
-        node_auto_indexing=true
-        node_keys_indexable=fulltext_description
-    ```
+```
+node_auto_indexing=true
+node_keys_indexable=fulltext_description
+```
 
 3. Make sure the analyzer has to_lower_case, open up the bin/shell of neo4j and run:
 
-    ```
-        index --get-config node_auto_index
-    ```
+```
+index --get-config node_auto_index
+```
 
 This should return:
 
-    ```
-        {
-            "provider": "lucene",
-            "to_lower_case": "true",
-            "type": "fulltext"
-        }
-    ```
+```
+{
+    "provider": "lucene",
+    "to_lower_case": "true",
+    "type": "fulltext"
+}
+```
+
+Finally, run this query in neo4j to start indexing:
+
+    MATCH (n)
+    WHERE has(n.fulltext_description)
+    SET n.fulltext_description=n.fulltext_description
 
 ## Development documentation
+
+## Export/Import data
+
+https://github.com/jexp/neo4j-shell-tools
 
 ### Migration
 
@@ -70,6 +115,16 @@ LEFT JOIN piwik_log_visit ON piwik_log_link_visit_action.idvisit = piwik_log_vis
 LEFT JOIN piwik_log_action as url ON piwik_log_link_visit_action.idaction_url = url.idaction
 LEFT JOIN piwik_log_action as act2 ON piwik_log_link_visit_action.idaction_name = act2.idaction
 LEFT JOIN piwik_log_action as act3 ON piwik_log_link_visit_action.idaction_event_action = act3.idaction
-LEFT JOIN piwik_log_action as cat ON piwik_log_link_visit_action.idaction_event_category = cat.idaction  
+LEFT JOIN piwik_log_action as cat ON piwik_log_link_visit_action.idaction_event_category = cat.idaction
 ORDER BY `piwik_log_link_visit_action`.`server_time`  ASC;
 ```
+
+    scp medea.weopendata.com:/tmp/result.csv .
+
+## Trivia
+
+### Open files
+When booting the Neo4j, you might get a warning telling you that the amount of open files is limited and should be booted to a safe number, say 40000.
+Following the documentation of Neo4j might not work, but adding the number of open files to the system config files for the sudo or neo4j user.
+
+If this is the case, add "ulimit -n 40000" to in the do_start() function of the neo4j-service, this should boot the application with the preferred amount of open files.

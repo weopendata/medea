@@ -51,7 +51,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        if (!empty($request->input('email'))) {
+        if (! empty($request->input('email'))) {
             $email = $request->input('email');
             $password = $request->input('password');
 
@@ -61,9 +61,9 @@ class AuthController extends Controller
             $user = new Person();
             $user->setNode($user_node);
 
-            if (!empty($user_node)) {
+            if (! empty($user_node)) {
                 // Check password and verification
-                if (!$user->verified) {
+                if (! $user->verified) {
                     $message_bag = new MessageBag();
                     return redirect()->back()->with('errors', $message_bag->add('email', 'Dit emailadres is nog niet geverifieerd.'));
                 } elseif (Hash::check($password, $user->password)) {
@@ -107,7 +107,7 @@ class AuthController extends Controller
         }
 
         // Check if the user already exists
-        if (!$this->users->userExists($input['email'])) {
+        if (! $this->users->userExists($input['email'])) {
             // Rework the input slightly to match the expected graph format
             $input = $this->restructureUserInput($input);
 
@@ -127,7 +127,7 @@ class AuthController extends Controller
             $input['email']
         ];
 
-        if (!empty($input['phone'])) {
+        if (! empty($input['phone'])) {
             $input['personContacts'][] = $input['phone'];
         }
 
@@ -138,25 +138,24 @@ class AuthController extends Controller
      * Register a login/logout event
      *
      * @param integer $userId
-     * @param string $action
+     * @param string  $action
      * @return
      */
     private function registerPiwikEvent($userId, $action)
     {
-        if (!empty(env('PIWIK_SITE_ID')) && !empty(env('PIWIK_URI'))) {
+        if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {
             PiwikTracker::$URL = env('PIWIK_URI');
             $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
 
             $piwikTracker->setUserId($userId);
             $piwikTracker->doTrackEvent('User', $action, $userId);
         }
-
     }
 
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param  array                                      $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)

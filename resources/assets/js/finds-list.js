@@ -1,5 +1,3 @@
-import Vue from 'vue/dist/vue.min.js'
-import VueResource from 'vue-resource/dist/vue-resource.min.js'
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
@@ -8,22 +6,34 @@ import {load, Map as GoogleMap, Marker, Rectangle, InfoWindow} from 'vue-google-
 import DevBar from './components/DevBar'
 
 import Notifications from './mixins/Notifications'
-import {findTitle, inert} from './const.js'
+import HelpText from './mixins/HelpText'
+import { inert, toPublicBounds } from './const.js'
 
-import parseLink from 'parse-link-header'
+import parseLinkHeader from 'parse-link-header'
 
 const HEATMAP_RADIUS = 0.05
-const GEO_ROUND = 0.01
 
-Vue.use(VueResource)
-Vue.config.debug = true
-new Vue({
+// Parse link header
+function getPaging (header) {
+  if (typeof header === 'function') {
+    return parseLinkHeader(header('link')) || {}
+  }
+  if (typeof header === 'string') {
+    return parseLinkHeader(header) || {}
+  }
+  return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0]) || {}
+}
+
+let listQuery, heatmapQuery
+
+new window.Vue({
   el: 'body',
   data () {
     return {
-      paging: window.link ? parseLink(window.link) : {},
+      paging: getPaging(window.link),
       finds: window.initialFinds || [],
-      filterState: window.filterState || {myfinds: false},
+      fetching: false,
+      filterState: window.filterState || console.error('filterState warning') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -70,20 +80,30 @@ new Vue({
     }
   },
   methods: {
+    findTitle (find) {
+      // Not showing undefined and onbekend in title
+      var title = [
+      find.category,
+      find.period,
+      find.material
+      ].filter(f => f && f !== 'onbekend').join(', ')
+
+      return title + ' (ID-' + find.identifier + ')'
+    },
     relevant (find) {
-      if (find.object.objectValidationStatus == 'in bewerking') {
+      if (find.validation == 'Klaar voor validatie') {
         if (!this.user.validator) {
-          console.warn('Security error, this user is not allowed to see this find')
+          console.warn('List: Security error, this user is not allowed to see this find')
         }
-      } else if (find.object.objectValidationStatus != 'gevalideerd' && !this.user.administrator) {
-        console.warn('Security error, this user is not allowed to see this find')
+      } else if (find.validation != 'Gepubliceerd' && !this.user.administrator) {
+        console.warn('List: Security error, this user is not allowed to see this find')
       }
       return true
     },
-    fetch (cause) {
+    fetch () {
       var model = inert(this.filterState)
       var type = model.type
-      if (model.status == 'gevalideerd') {
+      if (model.status == 'Gepubliceerd') {
         delete model.status
       }
       if (model.name) {
@@ -99,38 +119,55 @@ new Vue({
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
       }).filter(Boolean).join('&')
       query = query ? '/finds?' + query : '/finds?'
-      window.history.pushState({}, document.title, query)
-      console.log('fetch')
-      if (cause !== 'heatmap' && this.query === query) {
-        return
+
+      // Do not fetch same query twice
+      if (listQuery !== query) {
+        this.fetching = true
+        this.$http.get('/api' + query)
+          .then(function (res) {
+            this.paging = getPaging(res.headers)
+            this.finds = res.data
+            this.fetching = false
+          })
+          .catch(function () {
+            this.paging = {}
+            this.finds = []
+            console.error('List: could not fetch finds')
+          })
+
+        // Do not push state on first load
+        if (listQuery) {
+          window.history.pushState({}, document.title, query)
+        }
+        listQuery = query
       }
-      this.query = query
-      this.$http.get('/api' + query).then(this.fetchSuccess, function () {
-        console.error('could not fetch findevents')
-      })
-      if (type === 'heatmap') {
-        console.log('loading heatmap')
-        this.$http.get('/api' + query + '&type=heatmap').then(this.heatmapSuccess, function () {
-          console.error('could not fetch heatmap')
-        })
+
+      // Do not fetch same query twice
+      if (type === 'heatmap' && heatmapQuery !== query) {
+        heatmapQuery = query
+        this.$http.get('/api' + query + '&type=heatmap')
+          .then(({ data }) => this.rawmap = data)
+          .catch(function () {
+            this.rawmap = []
+            console.error('List: could not fetch finds heatmap')
+          })
       }
-    },
-    fetchSuccess (res) {
-      this.paging = parseLink(res.headers('link'))
-      this.finds = res.data
-    },
-    heatmapSuccess (res) {
-      this.rawmap = res.data
     },
     mapToggle (v) {
       if (this.filterState.type === v) {
         this.$set('filterState.type', false)
       } else {
         this.$set('filterState.type', v)
+        if (v === 'heatmap') {
+          this.fetch('heatmap')
+        }
       }
     },
     mapClick (f) {
       this.map.info = f.title
+      if (f.identifier && f.position) {
+        this.map.info += '<br><a href="/finds/' + f.identifier + '">Vondstfiche bekijken &rarr;</a>'
+      }
     },
     toggleMyfinds () {
       this.filterState.myfinds = this.filterState.myfinds ? false : 'yes'
@@ -154,14 +191,13 @@ new Vue({
         savedSearches: this.user.savedSearches
       })
       .then(function () {
-        console.log('Searches saved')
+        console.log('List: searches saved')
       }).catch(function () {
-        console.warn('Something went wrong')
+        console.warn('List: something went wrong')
       })
     }
   },
   ready () {
-    console.log(JSON.parse(JSON.stringify(window.initialFinds)))
     if (!this.finds || !this.finds.length) {
       this.fetch()
     }
@@ -194,23 +230,24 @@ new Vue({
   filters: {
     markable (finds) {
       return finds
-        .filter(f => f.findSpot && f.findSpot.location && f.findSpot.location.lat)
+        .filter(f => f.lat && f.accuracy == 1)
         .map(f => {
-          let pubLat = Math.round(f.findSpot.location.lat / GEO_ROUND) * GEO_ROUND
-          let pubLng = Math.round(f.findSpot.location.lng / GEO_ROUND) * GEO_ROUND
           return {
-          identifier: f.identifier,
-          title: findTitle(f),
-          accuracy: f.findSpot.location.accuracy || 2000,
-          position: {lat: f.findSpot.location.lat, lng: f.findSpot.location.lng},
-          bounds: {
-            north: pubLat + GEO_ROUND / 2,
-            south: pubLat - GEO_ROUND / 2,
-            east: pubLng + GEO_ROUND / 2,
-            west: pubLng - GEO_ROUND / 2
+            identifier: f.identifier,
+            title: this.findTitle(f),
+            position: { lat: parseFloat(f.lat), lng: parseFloat(f.lng) }
           }
-        }
-      })
+        })
+    },
+    rectangable (finds) {
+      return finds
+        .filter(f => f.lat)
+        .map(f => {
+          return {
+            title: this.findTitle(f),
+            bounds: toPublicBounds(f)
+          }
+        })
     }
   },
   watch: {
@@ -220,17 +257,17 @@ new Vue({
         this.loaded = true
       }
       if (type === 'heatmap') {
-        this.fetch('heatmap')
+        this.fetch()
       }
     },
     'user': {
       deep: true,
       handler (user) {
-        localStorage.debugUser = JSON.stringify(user) 
+        localStorage.debugUser = JSON.stringify(user)
       }
     }
   },
-  mixins: [Notifications],
+  mixins: [Notifications, HelpText],
   components: {
     DevBar,
     FindsFilter,

@@ -3,19 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\FindEvent;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\ListValueRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
-use Illuminate\Support\MessageBag;
 use App\Helpers\Pager;
-use App\Http\Middleware\FindApi;
 use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Models\Person;
+use PiwikTracker;
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -39,7 +37,7 @@ class FindController extends Controller
     {
         $filters = $request->all();
 
-        $limit = $request->input('limit', 50);
+        $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
         $order = $request->input('order', null);
@@ -47,7 +45,7 @@ class FindController extends Controller
         $order_flow = 'ASC';
         $order_by = 'findDate';
 
-        if (!empty($order)) {
+        if (! empty($order)) {
             $first_char = substr($order, 0, 1);
 
             if ($first_char == '-') {
@@ -56,14 +54,14 @@ class FindController extends Controller
             }
         }
 
-        $validated_status = $request->input('status', 'gevalideerd');
+        $validated_status = $request->input('status', 'Gepubliceerd');
 
         if (empty($request->user())) {
-            $validated_status = 'gevalideerd';
+            $validated_status = 'Gepubliceerd';
         }
 
         // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
+        if ($request->has('myfinds') && ! empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
             $validated_status = '*';
         }
@@ -75,19 +73,15 @@ class FindController extends Controller
 
         $pages = Pager::calculatePagingInfo($limit, $offset, $count);
 
-        $linkHeader = '';
+        $linkHeader = [];
 
         $query_string = $this->buildQueryString($request);
 
         foreach ($pages as $rel => $page_info) {
-            if (!empty($query_string)) {
-                 $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . ';rel=' . $rel . ';';
-            } else {
-                $linkHeader .= $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . ';rel=' . $rel . ';';
-            }
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . '>;rel=' . $rel;
         }
 
-        $linkHeader = rtrim($linkHeader, ';');
+        $linkHeader = implode(', ', $linkHeader);
 
         // If a user is a researcher or personal finds have been set, return the exact
         // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
@@ -97,13 +91,16 @@ class FindController extends Controller
             $user = $request->user();
 
             foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-                    && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['findSpot']['location']['lat'])) {
-                        $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
-                        $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
-                        $accuracy = isset($find['findSpot']['location']['accuracy']) ? $find['findSpot']['location']['accuracy'] : 1;
-                        $find['findSpot']['location']['accuracy'] = max(2000, $accuracy);
+                if (empty($user) || (! empty($find['finderId']) && $find['finderId'] != $user->id)
+                    && ! in_array('onderzoeker', $user->getRoles())) {
+                    if (! empty($find['grid']) || ! empty($find['lat'])) {
+                        list($lat, $lon) = explode(',', $find['grid']);
+
+                        $find['lat'] = $lat; //round(($find['lat'] / 2), 2) * 2;
+                        $find['lng'] = $lon; //round(($find['lng'] / 2), 2) * 2;
+
+                        $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
+                        $find['accuracy'] = max(7000, $accuracy);
                     }
                 }
 
@@ -116,13 +113,16 @@ class FindController extends Controller
         return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
-                'query' => '',
+                'limit' => $request->input('limit', null),
+                'offset' => $request->input('offset', null),
+                'query' => $request->input('query', ''),
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),
+                'modification' => $request->input('modification', '*'),
                 'status' => $validated_status,
                 'showmap' => $request->input('showmap', null)
             ],
@@ -148,7 +148,7 @@ class FindController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -159,17 +159,13 @@ class FindController extends Controller
         $user = $request->user();
 
         if (empty($user)) {
-            // Test code in order to test with PostMan requests
-            /*$userNode = $users->getUser('foo@bar.com');
-            $user = new \App\Models\Person();
-            $user->setNode($userNode);*/
             abort('401');
         }
 
         $images = [];
 
         // Check for images, they need special processing before the Neo4j writing is initiated
-        if (!empty($input['object']['photograph'])) {
+        if (! empty($input['object']['photograph'])) {
             foreach ($input['object']['photograph'] as $image) {
                 list($name, $name_small, $width, $height) = $this->processImage($image);
 
@@ -185,13 +181,16 @@ class FindController extends Controller
         $input['object']['photograph'] = $images;
         $input['person'] = ['id' => $user->id];
 
-        if (!in_array($input['object']['objectValidationStatus'], ['voorlopig', 'in bewerking', 'revisie nodig'])) {
-            $input['object']['objectValidationStatus'] = 'in bewerking';
+        if (! in_array($input['object']['objectValidationStatus'], ['Voorlopige versie', 'Klaar voor validatie', 'Aan te passen'])) {
+            $input['object']['objectValidationStatus'] = 'Klaar voor validatie';
         }
 
         // Make find
         try {
             $findId = $this->finds->store($input);
+
+            // Log the create event
+            $this->registerPiwikEvent($user->id, 'Create', $input['object']['objectValidationStatus']);
 
             return response()->json(['id' => $findId, 'url' => '/finds/' . $findId]);
         } catch (\Exception $ex) {
@@ -216,9 +215,9 @@ class FindController extends Controller
         $find = $request->getFind();
 
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
-        if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-            && !in_array('onderzoeker', $user->getRoles())) {
-            if (!empty($find['findSpot']['location']['lat'])) {
+        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && ! in_array('onderzoeker', $user->getRoles())) {
+            if (! empty($find['findSpot']['location']['lat'])) {
                 $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
                 $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
             }
@@ -231,7 +230,7 @@ class FindController extends Controller
 
         $publicUserInfo = [];
 
-        if (!empty($findUser)) {
+        if (! empty($findUser)) {
             $person = new Person();
             $person->setNode($findUser);
 
@@ -241,7 +240,7 @@ class FindController extends Controller
 
             // Should there be a link to the profile page
             if ($person->profileAccessLevel == 4 ||
-                !empty($request->user()) && (
+                ! empty($request->user()) && (
                     $request->user()->id == $person->id ||
                     $request->user()->hasRole($person->getProfileAllowedRoles())
                 )
@@ -279,31 +278,26 @@ class FindController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $findId
+     * @param  int                       $findId
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $findId)
     {
         $find_node = $this->finds->getById($findId);
 
-        if (!empty($find_node)) {
+        if (! empty($find_node)) {
             $input = $request->json()->all();
 
             $user = $request->user();
 
             if (empty($user)) {
-                // Test code in order to test with PostMan requests
-                /*$users = new UserRepository();
-                $user_node = $users->getUser('foo@bar.com');
-                $user = new \App\Models\Person();
-                $user->setNode($user_node);*/
                 abort('401');
             }
 
             $images = [];
 
             // Check for images, they need special processing before the Neo4j writing is initiated
-            if (!empty($input['object']['photograph'])) {
+            if (! empty($input['object']['photograph'])) {
                 foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {
                         list($name, $name_small, $width, $height) = $this->processImage($image);
@@ -317,7 +311,6 @@ class FindController extends Controller
                     } else {
                         $images[] = $image;
                     }
-
                 }
             }
 
@@ -329,6 +322,8 @@ class FindController extends Controller
 
             try {
                 $find->update($input);
+
+                $this->registerPiwikEvent($user->id, 'Update', @$input['object']['objectValidationStatus']);
 
                 return response()->json(['url' => '/finds/' . $findId, 'id' => $findId]);
             } catch (\Exception $ex) {
@@ -347,7 +342,7 @@ class FindController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $findId
+     * @param  int                       $findId
      * @return \Illuminate\Http\Response
      */
     public function destroy($findId, Request $request)
@@ -366,7 +361,7 @@ class FindController extends Controller
     /**
      * Process an image
      *
-     * @param array $image The configuration of an image, contains a base64 encoded image
+     * @param  array $image The configuration of an image, contains a base64 encoded image
      * @return array
      */
     private function processImage($image_config)
@@ -389,5 +384,35 @@ class FindController extends Controller
         })->save($public_path . $image_name_small);
 
         return [$image_name, $image_name_small, $width, $height];
+    }
+
+    /**
+     * Register a create/update event
+     *
+     * @param integer $userId
+     * @param string  $action
+     * @return
+     */
+    private function registerPiwikEvent($userId, $action, $status)
+    {
+        $eventName = $action;
+
+        if ($status == 'Voorlopige versie') {
+            $eventName .= 'Draft';
+        } elseif ($status == 'Klaar voor validatie') {
+            $eventName .= 'AndSubmit';
+        } elseif ($status == 'Aan te passen') {
+            $eventName .= 'ButNotSubmit';
+        } else {
+            $eventName += 'ButUnexpectedStatus';
+        }
+
+        if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {
+            PiwikTracker::$URL = env('PIWIK_URI');
+            $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
+
+            $piwikTracker->setUserId($userId);
+            $piwikTracker->doTrackEvent('User', $eventName, $userId);
+        }
     }
 }

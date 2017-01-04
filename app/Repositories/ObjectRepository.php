@@ -7,6 +7,7 @@ use App\Models\ProductionClassification;
 use App\Models\ProductionEvent;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Relationship;
+use Carbon\Carbon;
 
 class ObjectRepository extends BaseRepository
 {
@@ -28,33 +29,38 @@ class ObjectRepository extends BaseRepository
     /**
      * Add a classification to an object
      *
-     * @param $objectId             integer The id of the object
-     * @param $classification array   The configuration of the classification
-     *
-     * @return Node
+     * @param  integer $objectId       The id of the object
+     * @param  array   $classification The configuration of the classification
+     * @return Node    The classification Node
      */
     public function addClassification($objectId, $classification)
     {
         $object = $this->getById($objectId);
 
-        if (!empty($object)) {
+        if (! empty($object)) {
+            $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
+            WHERE id(object) = $objectId return productionEvent, object";
+
+            $client = $this->getClient();
+
+            $cypherQuery = new Query($client, $query);
+            $results = $cypherQuery->getResultSet();
+
             $prodClassification = new ProductionClassification($classification);
             $prodClassification->save();
 
-            // Check if a productionEvent already exists
-            $production_event_rel = $object->getFirstRelationship(['P108']);
+            if ($results->count() > 0) {
+                $row = $results->current();
+                $production_event = $row['productionEvent'];
 
-            if (empty($production_event_rel)) {
+                $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
+            } else {
                 $production_event = new ProductionEvent(['productionClassification' => $classification]);
 
                 $object->relateTo($production_event, 'P108')->save();
-            } else {
-                $production_event = $production_event_rel->getEndNode();
-
-                $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
             }
 
-            return $object;
+            return $prodClassification->getNode();
         }
 
         return null;
@@ -71,7 +77,7 @@ class ObjectRepository extends BaseRepository
         $cypherQuery = new Query($client, $query);
         $result = $cypherQuery->getResultSet();
 
-        if (!empty($result->current())) {
+        if (! empty($result->current())) {
             return $result->current()->current();
         } else {
             return null;
@@ -81,7 +87,7 @@ class ObjectRepository extends BaseRepository
     /**
      * Get the related user id for a given object
      *
-     * @param  integer $objectId The id of the object
+     * @param integer $objectId The id of the object
      *
      * @return integer
      */
@@ -95,7 +101,7 @@ class ObjectRepository extends BaseRepository
 
         $results = $query->getResultSet();
 
-        if ($results->count() > 0 && !empty($results->current())) {
+        if ($results->count() > 0 && ! empty($results->current())) {
             $person = $results->current()->current();
 
             return $person->getId();
@@ -107,7 +113,7 @@ class ObjectRepository extends BaseRepository
     /**
      * Get the related findEvent id for a given object
      *
-     * @param  integer $objectId The id of the object
+     * @param integer $objectId The id of the object
      *
      * @return integer
      */
@@ -121,7 +127,7 @@ class ObjectRepository extends BaseRepository
 
         $results = $query->getResultSet();
 
-        if (!empty($results->current())) {
+        if (! empty($results->current())) {
             $find = $results->current()->current();
 
             return $find->getId();
@@ -131,15 +137,16 @@ class ObjectRepository extends BaseRepository
     }
 
     /**
-     * Set the validation status of a certain object
+     * Set the validation status of an object
      *
      * @param integer $objectId The id of the object
-     * @param string $status The new status of the object
-     * @param array $feedback The given feedback on different properties
+     * @param string  $status   The new status of the object
+     * @param array   $feedback The given feedback on different properties
+     * @param boolean $embargo
      *
      * @return Node
      */
-    public function setValidationStatus($objectId, $status, $feedback)
+    public function setValidationStatus($objectId, $status, $feedback, $embargo)
     {
         $objectNode = $this->getById($objectId);
 
@@ -148,8 +155,12 @@ class ObjectRepository extends BaseRepository
         foreach ($relationships as $relationship) {
             $typeNode = $relationship->getEndNode();
 
-            $relationship->delete();
-            $typeNode->delete();
+            if ($typeNode->getProperty('name') == 'objectValidationStatus') {
+                $relationship->delete();
+                $typeNode->delete();
+
+                break;
+            }
         }
 
         $object = new Object();
@@ -157,11 +168,11 @@ class ObjectRepository extends BaseRepository
 
         $typeNode = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);
 
-        if (!empty($feedback)) {
+        if (! empty($feedback)) {
             // Append the feedback if feedback already exists
             $currentFeedback = $objectNode->getProperty('feedback');
 
-            if (!empty($currentFeedback)) {
+            if (! empty($currentFeedback)) {
                 $currentFeedback = json_decode($currentFeedback, true);
             } else {
                 $currentFeedback = [];
@@ -170,6 +181,15 @@ class ObjectRepository extends BaseRepository
             $currentFeedback[] = $feedback;
 
             $objectNode->setProperty('feedback', json_encode($currentFeedback))->save();
+        }
+
+        // Set the embargo property
+        $objectNode->setProperty('embargo', $embargo)->save();
+
+        // If the status is final, set the timestamp
+        if ($status == 'Gepubliceerd' || $status == 'Wordt verwijderd') {
+            $now = Carbon::now();
+            $objectNode->setProperty('validated_at', $now->toIso8601String())->save();
         }
 
         return $objectNode->relateTo($typeNode, 'P2')->save();

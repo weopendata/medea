@@ -1,24 +1,24 @@
 <template>
   <div class="card card-center cls-card">
     <div class="card-textual">
-      <p v-if="cls.productionClassificationPeriod || cls.productionClassificationRulerNation">
-        <span class="cls-labeled" v-if="cls.productionClassificationPeriod">Periode <b>{{cls.productionClassificationPeriod}}</b></span>
-        <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Natie <b>{{cls.productionClassificationRulerNation}}</b></span>
+      <p v-if="cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.productionClassificationType || cls.startDate || cls.endDate">
         <span class="cls-labeled" v-if="cls.productionClassificationType">Type <b>{{cls.productionClassificationType}}</b></span>
-        <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{cls.startDate || '?'}} - {{cls.endDate || '?'}}</b></span>
+        <span class="cls-labeled" v-if="cls.productionClassificationCulturePeople">Periode <b>{{cls.productionClassificationCulturePeople}}</b></span>
+        <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Heerser <b>{{cls.productionClassificationRulerNation}}</b></span>
+        <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{ vC(cls.startDate) }} - {{ vC(cls.endDate, cls.startDate) }}</b></span>
       </p>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
         Referentie:
-        <a :href="singlePub.href" v-if="singlePub.href" v-text="singlePub.href"></a>
-        <span v-else v-text="singlePub.text"></span>@
+        <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationTitle"></a>
+          <span v-else>{{ singlePub.publicationTitle }}</span>
       </p>
       <p v-if="multiPub">
         Referenties:
         <span v-for="pub in pubs">
           <br>
-          <a :href="pub.href" v-if="pub.href" v-text="pub.href"></a>
-          <span v-else v-text="pub.text"></span>
+          <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationTitle"></a>
+          <span v-else>{{ pub.publicationTitle }}</span>
         </span>
       </p>
       <p v-if="cls.agree">
@@ -29,10 +29,10 @@
       </p>
     </div>
     <div class="card-bar card-bar-border">
-      <span v-if="user.vondstexpert">
+      <span v-if="$root.user.vondstexpert">
         <button class="btn" :class="{green:cls.me==='agree'}" @click.stop="agree"><i class="thumbs up icon"></i></button>
         <button class="btn" :class="{red:cls.me==='disagree'}" @click.stop="disagree"><i class="thumbs down icon"></i></button>
-      </span>{{cls.me}}
+      </span>
       <span class="cls-creator" v-if="creator||cls.created_at">
         Opgesteld
         <span v-if="creator">door {{creator}}</span>
@@ -62,10 +62,16 @@ export default {
       return this.pubs && this.pubs.length === 1 && this.pubs[0]
     },
     pubs () {
-      return this.cls.publication && this.cls.publication.map(p => urlify(p.publicationTitle)).filter(Boolean)
+      return this.cls.publication || []
     }
   },
   methods: {
+    vC (y1, y2) {
+      if (y1 < 0 || y2 < 0) {
+        return !y1 ? '?' : y1 < 0 ? -y1 + ' v.C.' : y1 + ' n.C.'
+      }
+      return y1 || '?'
+    },
     agree () {
       this.cls[this.cls.me]--
       this.$set('cls.me', this.cls.me === 'agree' ? null : 'agree')

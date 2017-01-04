@@ -1,7 +1,8 @@
 <template>
   <div class="card">
     <div class="card-img">
-      <a :href="uri" class="card-img-abs" style="background-image:url({{cardCover}})"></a>
+      <a :href="uri" class="card-img-abs" v-if="cardCover" style="background-image:url({{cardCover}})"></a>
+      <a :href="uri" class="card-img-abs" v-else style="background:#ddd"></a>
     </div>
     <div class="card-content">
       <div class="card-textual">
@@ -10,18 +11,18 @@
         <br>Status: {{ find.validation }}
       </div>
       <div class="card-bar">
-        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.validation == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.validation == 'Gepubliceerd'">
           <i class="tag icon"></i>
           Classificeren
         </a>
-        <a class="btn" :href="uri" v-if="classificationCount&&find.validation == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="classificationCount&&find.validation == 'Gepubliceerd'">
           <i class="tag icon"></i>
           {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}} bekijken
         </a>
-        <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'in bewerking'">
+        <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'Klaar voor validatie'">
           Valideren
         </a>
-        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.validation == 'gevalideerd'">
+        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.validation == 'Gepubliceerd'">
           Bekijken
         </a>
         <a class="btn" href="#mapview" @click="mapFocus" v-if="hasLocation">
@@ -54,18 +55,18 @@ export default {
   },
   computed: {
     editable () {
-      return ['revisie nodig', 'voorlopig'].indexOf(this.find.validation) !== -1
-      // Finder    if 'revisie nodig' or 'voorlopig'
-      // Validator if 'in bewerking'
+      return ['Aan te passen', 'Voorlopige versie'].indexOf(this.find.validation) !== -1
+      // Finder    if 'Aan te passen' or 'Voorlopige versie'
+      // Validator if 'Klaar voor validatie'
       // Admin     always
       var s = this.find.validation
       return this.user.email && (
-        (this.user.email === this.find.email && ['revisie nodig', 'voorlopig'].indexOf(s) !== -1) ||
-        (this.user.validator && s === 'in bewerking')
+        (this.user.email === this.find.email && ['Aan te passen', 'Voorlopige versie'].indexOf(s) !== -1) ||
+        (this.user.validator && s === 'Klaar voor validatie')
       )
     },
     classificationCount () {
-      return this.classificationCount
+      return this.find.classificationCount
     },
     hasLocation () {
       return this.find.lat
@@ -80,14 +81,13 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-      // Not showing undefined and onbekend in title
       var title = [
-        this.find.objectCategory,
+        this.find.category || 'ongeïdentificeerd',
         this.find.period,
         this.find.material
       ].filter(f => f && f !== 'onbekend').join(', ')
 
-      title += ' (ID-' + this.find.identifier + ')'
+      title += ', ' + slug + ' (ID-' + this.find.identifier + ')'
 
       return title;
     }
@@ -100,15 +100,16 @@ export default {
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         console.log('removed', this.find.identifier)
         this.$root.fetch()
-        this.find.validation = 'verwijderd'
+        this.find.validation = 'Wordt verwijderd'
       });
     },
     mapFocus (accuracy) {
-      if (!this.find.findSpot.location.lat) {
+      if (!this.find.lat) {
         return alert('LatLng is missing, this will never happen')
       }
-      accuracy = accuracy == 'city' ? 7000 : 0
-      this.$dispatch('mapFocus', {lat:this.find.findSpot.location.lat, lng:this.find.findSpot.location.lng}, accuracy || this.find.findSpot.location.accuracy || 1)
+      accuracy = parseInt(accuracy == 'city' ? 7000 : this.find.accuracy || 1) * 2
+
+      this.$dispatch('mapFocus', {lat:parseFloat(this.find.lat), lng:parseFloat(this.find.lng)}, accuracy)
     }
   },
   filters: {
