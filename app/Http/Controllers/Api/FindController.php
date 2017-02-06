@@ -108,7 +108,6 @@ class FindController extends Controller
         // Check if personal finds are set
         if ($request->has('myfinds') && ! empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
-            $validatedStatus = '*';
         }
 
         $limit = $request->input('limit', 20);

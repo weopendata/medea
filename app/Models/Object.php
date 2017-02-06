@@ -142,6 +142,12 @@ class Object extends Base
             'objectCategory',
             'objectDescription',
             'material',
+
+            // TODO:
+            // technique
+            // surface treatment
+            // address.city
+            // period
         ];
 
         $description = '';

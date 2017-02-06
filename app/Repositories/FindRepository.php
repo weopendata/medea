@@ -101,7 +101,6 @@ class FindRepository extends BaseRepository
      * We'll have to build our query based on the filters that are configured,
      * some are filters on object relationships, some on find event, some on classifications
      *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @param array $filters
      *
      * @return
@@ -127,7 +126,6 @@ class FindRepository extends BaseRepository
 
     /**
      * Get a heatmap count for a filtered search
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      *
      * @param  array  $filters
      * @param  string $validationStatus
@@ -174,7 +172,6 @@ class FindRepository extends BaseRepository
     /**
      * Prepare the filtered cypher query
      *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      *
      * @param  array   $filters
      * @param  integer $limit

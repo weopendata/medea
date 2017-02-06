@@ -89,8 +89,8 @@
     <button type="button" v-if="!show.address" @click.prevent="show.address=1" class="ui button">Adres</button>
   </div>
   <div class="field" v-if="show.spotdescription">
-    <label>Beschrijving van de vindplaats</label>
-    <input type="text" v-model="find.findSpot.findSpotDescription" placeholder="Beschrijving van de vindplaats">
+    <label>Opmerkingen over de vindplaats</label>
+    <input type="text" v-model="find.findSpot.findSpotDescription" placeholder="Opmerkingen over de vindplaats">
   </div>
    <div class="two fields">
     <div class="field">
@@ -108,8 +108,13 @@
     </p>
   </div>
   <div class="field" v-if="show.place">
-    <label>Plaatsnaam</label>
+    <label>Lokale plaatsnaam</label>
     <input type="text" v-model="find.findSpot.findSpotTitle" placeholder="">
+  </div>
+  <div class="ui message" v-if="!HelpText.create">
+    <p>
+      Vul hier de lokale plaatsnaam van de vindplaats in (toponiem of veldnaam).
+    </p>
   </div>
   <div class="fields" v-if="show.address">
     <div class="six wide field">

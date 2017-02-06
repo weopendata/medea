@@ -11,8 +11,8 @@
     <div class="list-controls">
       <span class="finds-order">
         Sorteren op:
-        <a @click.prevent="sortBy('findDate')" :class="{active:filterState.order=='findDate', reverse:filterState.order=='-findDate'}">datum</a>
-        <a @click.prevent="sortBy('identifier')" :class="{active:filterState.order=='identifier', reverse:filterState.order=='-identifier'}">vondstnummer</a>
+        <a @click.prevent="sortBy('findDate')" :class="{active:filterState.order=='findDate', reverse:filterState.order=='-findDate'}">vondstdatum</a>
+        <a @click.prevent="sortBy('identifier')" :class="{active:filterState.order=='identifier', reverse:filterState.order=='-identifier'}">vondstnummer (ID)</a>
       </span>
       <label class="pull-right" style="margin-left:20px">
         <button class="ui basic button" :class="{green:filterState.type=='heatmap'}" @click="mapToggle('heatmap')">Heatmap</button>

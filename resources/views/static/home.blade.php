@@ -124,7 +124,8 @@
   <div class="field" v-show="roles.vondstexpert">
     <div class="ui checkbox">
       <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
-      <label>Ik heb als onderzoeker toegang tot de CAI en wil ook op MEDEA volledige toegang krijgen tot exacte vondstlocaties</label>
+      <label>Ik ben wetenschappelijk onderzoeker en wil toegang krijgen tot exacte vondstlocatie.  Beschrijf in het ‘project’-veld hieronder kort waarvoor je die informatie wil gebruiken.
+      Een MEDEA-medewerker zal je aanmelding evalueren, in samenspraak met het Agentschap Onroerend Erfgoed.</label>
     </div>
   </div>
   <div class="required field" v-if="roles.onderzoeker">

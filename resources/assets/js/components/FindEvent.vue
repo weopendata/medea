@@ -88,7 +88,7 @@ export default {
       ].filter(f => f && f !== 'onbekend').join(', ')
 
       title += ', ' + slug + ' (ID-' + this.find.identifier + ')'
-
+      console.log("hi");
       return title;
     }
   },

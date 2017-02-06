@@ -67,8 +67,11 @@
             <p>&nbsp;</p>
           </div>
           <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (user.email!==find.person.email)">
-            Security error #20984
-            <p>&nbsp;</p>
+            <div v-if="user.administrator">
+              U kan deze vondst zien omdat u administrator bent, maar kan niet valideren.
+              Om te kunnen valideren moet u eerst de validator rol krijgen.
+              <p>&nbsp;</p>
+            </div>
           </h1>
           <div v-if="find.object.objectValidationStatus == 'Afgeschermd'">
             Deze vondstfiche staat onder embargo.
