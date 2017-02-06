@@ -123,6 +123,7 @@ class FindController extends Controller
                 'objectMaterial' => $request->input('objectMaterial', '*'),
                 'modification' => $request->input('modification', '*'),
                 'status' => $validated_status,
+                'embargo' => $request->input('embargo', false),
                 'showmap' => $request->input('showmap', null)
             ],
             'fields' => $this->list_values->getFindTemplate(),

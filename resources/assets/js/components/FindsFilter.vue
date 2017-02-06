@@ -17,7 +17,8 @@
         <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
       </div>
 
-      <facet label="Validatie status" prop="status" :options="statuses"></facet>
+      <facet label="Validatie status" prop="status" :options="statusOptions"></facet>
+      <facet label="Embargo" prop="embargo" :options="embargoOptions"></facet>
       <facet label="Periode" prop="period" :options="fields.object.period"></facet>
       <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
       <facet label="Techniek" prop="technique" :options="fields.object.technique"></facet>
@@ -62,6 +63,7 @@ export default {
       show: {
         category: true,
         status: true,
+        embargo: true,
         period: null,
         technique: null,
         modification: null,
@@ -70,12 +72,23 @@ export default {
     }
   },
   computed: {
-    statuses () {
+    statusOptions () {
       if (this.$root.user.administrator || this.model.myfinds) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen', 'Voorlopige versie', 'Wordt verwijderd']
       }
       if (this.$root.user.validator) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen']
+      }
+    },
+    embargoOptions () {
+      if (this.$root.user.administrator || this.model.myfinds) {
+        return [{
+          label: 'Onder embargo',
+          value: 'true'
+        }, {
+          label: 'Niet onder embargo',
+          value: false
+        }]
       }
     },
     unnamed () {
