@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import ls from 'local-storage'
+
 import FindEvent from './FindEvent.vue';
 import Facet from './Facet.vue';
 import {inert} from '../const.js';
@@ -55,12 +57,13 @@ var modificationFields = [
 export default {
   props: ['name', 'model', 'saved'],
   data () {
+    const showFacets = ls('showFacets') || {}
     return {
       name: '',
       fields: window.fields,
       modificationFields: modificationFields,
       advanced: false,
-      show: {
+      show: Object.assign({
         category: true,
         status: true,
         embargo: true,
@@ -68,7 +71,7 @@ export default {
         technique: null,
         modification: null,
         objectMaterial: true
-      }
+      }, showFacets)
     }
   },
   computed: {
@@ -148,6 +151,12 @@ export default {
   watch: {
     advanced () {
       $('select.ui.dropdown').dropdown()
+    },
+    show: {
+      deep: true,
+      handler () {
+        ls('showFacets', this.show)
+      }
     }
   },
   components: {
