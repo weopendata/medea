@@ -16,13 +16,13 @@
 <script>
 import AddClassificationForm from './AddClassificationForm'
 import Ajax from '../mixins/Ajax'
-import {EMPTY_CLS} from '../const.js'
+import { emptyClassification } from '../const.js'
 
 export default {
   props: ['object'],
   data () {
     return {
-      cls: EMPTY_CLS
+      cls: emptyClassification()
     }
   },
   computed: {
@@ -39,7 +39,7 @@ export default {
     },
     submitSuccess ({data}) {
       this.$root.fetch()
-      this.cls = EMPTY_CLS
+      this.cls = emptyClassification()
     },
     submitError ({data}) {
       console.warn(data)

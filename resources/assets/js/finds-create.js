@@ -14,7 +14,7 @@ import Ajax from './mixins/Ajax'
 import HelpText from './mixins/HelpText'
 import Notifications from './mixins/Notifications'
 
-import { EMPTY_CLS, toPublicBounds, validDate } from './const.js'
+import { emptyClassification, toPublicBounds, validDate } from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -399,7 +399,7 @@ new window.Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.find.object.productionEvent.productionClassification.push(EMPTY_CLS)
+      this.find.object.productionEvent.productionClassification.push(emptyClassification())
     },
     formdata () {
       // Dimensions
