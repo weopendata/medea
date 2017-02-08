@@ -43,7 +43,7 @@ new window.Vue({
         zoom: 8
       },
       markerOptions: {
-        fillOpacity: 0.1,
+        fillOpacity: 0,
         strokeWeight: 1
       },
       rawmap: null,
@@ -143,7 +143,7 @@ new window.Vue({
       }
 
       // Do not fetch same query twice
-      if (type === 'heatmap' && heatmapQuery !== query) {
+      if (type && heatmapQuery !== query) {
         heatmapQuery = query
         this.$http.get('/api' + query + '&type=heatmap')
           .then(({ data }) => this.rawmap = data)
@@ -158,9 +158,7 @@ new window.Vue({
         this.$set('filterState.type', false)
       } else {
         this.$set('filterState.type', v)
-        if (v === 'heatmap') {
-          this.fetch('heatmap')
-        }
+        this.fetch('heatmap')
       }
     },
     mapClick (f) {

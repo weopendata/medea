@@ -162,7 +162,7 @@
         <img src="/assets/img/help-area.png" height="40px"> Ruwe vondstlocatie
       </p>
       <p>
-        <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie (alleen bij eigen vondst)
+        <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie is enkel zichtbaar voor eigen vondsten.
       </p>
       <p>
         <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
