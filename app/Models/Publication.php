@@ -160,7 +160,7 @@ class Publication extends Base
                 $publicationCreation['publicationCreationLocation']['publicationCreationLocationAppellation']
             );
 
-            $pubCreationLocation->relateTo($locationAppellation, 'P78')->save();
+            $pubCreationLocation->relateTo($locationAppellation, 'P87')->save();
         }
 
         return $pubCreationNode;
