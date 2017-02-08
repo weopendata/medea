@@ -77,6 +77,8 @@ class Publication extends Base
     {
         $client = self::getClient();
 
+        \Log::info($publicationCreation);
+
         $generalId = $this->getGeneralId();
 
         // Create a publicationCreation (E65)
@@ -87,7 +89,7 @@ class Publication extends Base
             self::makeLabel('E65'),
             self::makeLabel('publicationCreation'),
             self::makeLabel($generalId)
-            ]);
+        ]);
 
         // Create the type and name of the actor
         if (! empty($publicationCreation['publicationCreationActor']['publicationCreationActorName'])) {
@@ -101,7 +103,7 @@ class Publication extends Base
                 self::makeLabel($generalId)
                 ]);
 
-        // Link the actor with the publicationCreation
+            // Link the actor with the publicationCreation
             $pubCreationNode->relateTo($pubCreationActorNode, 'P14')->save();
 
             $actorNameNode = $this->createValueNode(
@@ -121,8 +123,8 @@ class Publication extends Base
         }
 
         // Save optional data (publicationCreationTimeSpan, publicationCreationLocation)
-        if (! empty($publicationCreation['publicationCreation']['publicationCreationTimeSpan'])) {
-            $pubCreationTsNode = $this->makeNode();
+        if (! empty($publicationCreation['publicationCreationTimeSpan'])) {
+            $pubCreationTsNode = $client->makeNode();
             $pubCreationTsNode->setProperty('name', 'publicationCreationTimeSpan');
             $pubCreationTsNode->save();
             $pubCreationTsNode->addLabels([
@@ -136,14 +138,14 @@ class Publication extends Base
             $dateNode = $this->createValueNode(
                 'date',
                 ['E50', $generalId, 'date'],
-                $publicationCreation['publicationCreation']['publicationCreationTimeSpan']
+                $publicationCreation['publicationCreationTimeSpan']
             );
 
             $pubCreationTsNode->relateTo($dateNode, 'P78')->save();
         }
 
-        if (! empty($publicationCreation['publicationCreation']['publicationCreationLocation'])) {
-            $pubCreationLocation = $this->makeNode();
+        if (! empty($publicationCreation['publicationCreationLocation'])) {
+            $pubCreationLocation = $client->makeNode();
             $pubCreationLocation->setProperty('name', 'publicationCreationLocation');
             $pubCreationLocation->save();
             $pubCreationLocation->addLabels([
@@ -157,7 +159,7 @@ class Publication extends Base
             $locationAppellation = $this->createValueNode(
                 'publicationCreationLocationAppellation',
                 ['E44', $generalId, 'publicationCreationLocationAppellation'],
-                $publicationCreation['publicationCreation']['publicationCreationLocation']['publicationCreationLocationAppellation']
+                $publicationCreation['publicationCreationLocation']['publicationCreationLocationAppellation']
             );
 
             $pubCreationLocation->relateTo($locationAppellation, 'P78')->save();
