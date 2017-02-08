@@ -151,7 +151,7 @@ import InputDate from './InputDate';
 import InputPublication from './InputPublication.vue'
 import SelectPublication from './SelectPublication.vue'
 
-import { inert } from '../const.js'
+import { fromPublication, toPublication } from '../const.js'
 
 const TYPE_AUTHOR = 'author'
 const TYPE_COAUTHOR = 'coauthor'
@@ -160,54 +160,6 @@ const TYPE_PUBLISHER = 'publisher'
 const TYPE = 'publicationCreationActorType'
 const NAME = 'publicationCreationActorName'
 const ACTOR = 'publicationCreationActor'
-
-function fromPublication (p) {
-  p = inert(p)
-  const creations = (p.publicationCreation || [])
-  const publisher = creations.find(a => a[ACTOR][TYPE] === TYPE_PUBLISHER) || {}
-
-  // Get author, their names and split them
-  let authors = creations.find(a => a[ACTOR][TYPE] === TYPE_AUTHOR)
-  authors = authors && authors[ACTOR] && authors[ACTOR][NAME].split('&', 2) || []
-
-  return Object.assign(p, {
-    author: (authors[0] || '').trim(),
-    coauthor: (authors[1] || '').trim(),
-    publisher: publisher[ACTOR] && publisher[ACTOR][NAME] || '',
-    pubTimeSpan: publisher.publicationCreationTimeSpan || '',
-    pubLocation: publisher.publicationCreationLocation && publisher.publicationCreationLocation.publicationCreationLocationAppellation || ''
-  })
-}
-
-function toPublication (p) {
-  p = inert(p)
-  const author = [p.author, p.coauthor].filter(Boolean).join(' & ')
-  return Object.assign(p, {
-    publicationCreation: [
-
-      // Include author if available
-      author && {
-        publicationCreationActor: {
-          [NAME]: author,
-          [TYPE]: TYPE_AUTHOR
-        }
-      },
-
-      // Include publisher if available
-      (p.publisher || p.pubTimeSpan || p.pubLocation) && {
-        publicationCreationActor: p.publisher && {
-          [NAME]: p.publisher,
-          [TYPE]: TYPE_PUBLISHER
-        },
-        publicationCreationTimeSpan: p.pubTimeSpan,
-        publicationCreationLocation: p.pubLocation && {
-          publicationCreationLocationAppellation: p.pubLocation
-        }
-      }
-
-    ].filter(Boolean)
-  })
-}
 
 const dateRanges = [
   { period: 'Bronstijd', min: -2000, max: -800 },
