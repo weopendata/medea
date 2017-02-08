@@ -70,14 +70,15 @@
       </div>
     </div>
 
-    <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}" style="max-width: 16em">
+    <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}">
       <label>Vondstdatum</label>
-      <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate">
-      <i class="delete icon" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'"></i>
+      <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate" style="max-width: 16em ">
+      <button type="button" class="ui basic button" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'">onbekend</button>
     </div>
-    <div class="ui message" v-if="!HelpText.create">
+    <div class="ui message" v-if="!HelpText.create || !validFindDate">
       <p>
         Vul hier de datum in waarop je de vondst gedaan hebt.
+        <br>Aanvaardbare formaten: <code>YYYY-MM-DD</code> <code>YYYY-MM</code> <code>YYYY</code> <code>onbekend</code>
       </p>
     </div>
   </div>

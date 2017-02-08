@@ -544,3 +544,14 @@ h4.required::after {
   font-weight: bold;
   text-transform: none;
 }
+
+/* Formatting rules in forms */
+
+.message code {
+  margin: 0 .5em;
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #fff;
+  background-color: #333;
+  border-radius: 3px;
+}
