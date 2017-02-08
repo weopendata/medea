@@ -81,15 +81,14 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-      var title = [
+      return [
         this.find.category || 'ongeïdentificeerd',
         this.find.period,
-        this.find.material
-      ].filter(f => f && f !== 'onbekend').join(', ')
+        this.find.material,
+        '(ID-' + this.find.identifier + ')'
 
-      title += ', ' + slug + ' (ID-' + this.find.identifier + ')'
-      console.log("hi");
-      return title;
+        // The line below will join every item together if it's not empty and not 'onbekend'
+      ].filter(f => f && f !== 'onbekend').join(', ')
     }
   },
   methods: {
