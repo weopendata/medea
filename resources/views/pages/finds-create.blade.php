@@ -393,7 +393,10 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
   <div class="ui message" v-if="!HelpText.create">
-    <p>Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd gepubliceerd kan worden door een validator. Deze krijgt je identiteit exacte vondstlocatie niet te zien. Na publicatie kunnen experten publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. Let wel: na versturen kun je de meeste velden niet meer wijzigen, tussenkomst van de databeheerder. Als je niet klaar bent met deze dan voor om ze tijdelijk op te slaan als een voorlopige versie.</p>
+    <p>
+      Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd en gepubliceerd kan worden door een validator. Deze krijgt je identiteit en de exacte vondstlocatie niet te zien. Na publicatie kunnen experten en het brede publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. 
+      <br><b>Let wel</b>: na versturen kun je de meeste velden niet meer wijzigen, tenzij met tussenkomst van de databeheerder. Als je niet klaar bent met deze fiche, kies er dan voor om ze tijdelijk op te slaan als een voorlopige versie. 
+    </p>
   </div>
 
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
