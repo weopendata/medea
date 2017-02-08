@@ -56,6 +56,14 @@ class ClassificationController extends Controller
         return response()->json(['success' => true]);
     }
 
+    /**
+     * Parse the publications from a classification object and return them in a
+     * repository compatible way as well as the links to those publications that
+     * indicate the relevant pages of the linked publication
+     *
+     * @param  array $classification array
+     * @return array
+     */
     private function parsePublications($classification)
     {
         $referencedPublications = [];

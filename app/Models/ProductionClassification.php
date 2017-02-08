@@ -92,6 +92,9 @@ class ProductionClassification extends Base
         ],
         [
             'name' => 'endDate'
+        ],
+        [
+            'name' => 'productionClassificationSource',
         ]
     ];
 }
