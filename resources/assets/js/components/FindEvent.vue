@@ -2,27 +2,24 @@
   <div class="card">
     <div class="card-img">
       <a :href="uri" class="card-img-abs" v-if="cardCover" style="background-image:url({{cardCover}})"></a>
-      <a :href="uri" class="card-img-abs" v-else style="background:#ddd"></a>
+      <a :href="uri" class="card-img-abs" v-else style="background:#fff"></a>
     </div>
     <div class="card-content">
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
         <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{find.locality}}</a></span>
-        <br>Status: {{ find.validation }}
+        <div>
+          Status: {{ find.validation }}
+          <span v-if="classificationCount&&find.validation == 'Gepubliceerd'">
+            - {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}}
+          </span>
+        </div>
       </div>
       <div class="card-bar">
-        <a class="btn" :href="uri" v-if="user.vondstexpert&&!classificationCount&&find.validation == 'Gepubliceerd'">
-          <i class="tag icon"></i>
-          Classificeren
-        </a>
-        <a class="btn" :href="uri" v-if="classificationCount&&find.validation == 'Gepubliceerd'">
-          <i class="tag icon"></i>
-          {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}} bekijken
-        </a>
         <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'Klaar voor validatie'">
           Valideren
         </a>
-        <a class="btn" :href="uri" v-if="!user.validator&&!user.vondstexpert&&find.validation == 'Gepubliceerd'">
+        <a class="btn" :href="uri" v-if="find.validation == 'Gepubliceerd'">
           Bekijken
         </a>
         <a class="btn" href="#mapview" @click="mapFocus" v-if="hasLocation">
@@ -81,15 +78,14 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-      var title = [
+      return [
         this.find.category || 'ongeïdentificeerd',
         this.find.period,
-        this.find.material
-      ].filter(f => f && f !== 'onbekend').join(', ')
+        this.find.material,
+        '(ID-' + this.find.identifier + ')'
 
-      title += ', ' + slug + ' (ID-' + this.find.identifier + ')'
-      console.log("hi");
-      return title;
+        // The line below will join every item together if it's not empty and not 'onbekend'
+      ].filter(f => f && f !== 'onbekend').join(', ')
     }
   },
   methods: {

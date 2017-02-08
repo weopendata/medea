@@ -30,8 +30,11 @@
 	top: 0;
 	bottom: 0;
 	width: 200px;
+	border-right: 1px solid #ddd;
+	background-color: #eee;
 	background-position: center;
-	background-size: cover;
+	background-size: contain;
+	background-repeat: no-repeat;
 }
 .card-content {
 	margin-left: 200px;

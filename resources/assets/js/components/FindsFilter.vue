@@ -19,7 +19,7 @@
 
       <facet label="Validatie status" prop="status" :options="statusOptions"></facet>
       <facet label="Embargo" prop="embargo" :options="embargoOptions"></facet>
-      <facet label="Periode" prop="period" :options="fields.object.period"></facet>
+      <facet label="Periode" prop="period" :options="fields.classification.period"></facet>
       <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
       <facet label="Techniek" prop="technique" :options="fields.object.technique"></facet>
       <facet label="Oppervlaktebehandeling" prop="modification" :options="modificationFields"></facet>
