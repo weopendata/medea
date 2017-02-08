@@ -40,17 +40,19 @@ export function findTitle (find) {
 }
 
 // Classification helpers
-export const EMPTY_CLS = {
-  productionClassificationCulturePeople: '',
-  productionClassificationDescription: '',
-  productionClassificationMainType: '',
-  productionClassificationPeriod: '',
-  productionClassificationRulerNation: '',
-  productionClassificationSource: [],
-  productionClassificationType: '',
-  startDate: '',
-  endDate: '',
-  publication: [],
+export function emptyClassification () {
+  return {
+    productionClassificationCulturePeople: '',
+    productionClassificationDescription: '',
+    productionClassificationMainType: '',
+    productionClassificationPeriod: '',
+    productionClassificationRulerNation: '',
+    productionClassificationSource: [],
+    productionClassificationType: '',
+    startDate: '',
+    endDate: '',
+    publication: [],
+  }
 }
 
 export function urlify (u) {
