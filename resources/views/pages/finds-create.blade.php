@@ -324,11 +324,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte">
     </div>
   </div>
-  <div class="three fields" v-if="show.omtrek||show.diameter">
-    <div class="field" v-if="show.omtrek">
-      <label>Omtrek</label>
-      <dim-input :dim="dims.omtrek"></dim-input>
-    </div>
+  <div class="three fields" v-if="show.diameter">
     <div class="field" v-if="show.diameter">
       <label>Diameter</label>
       <dim-input :dim="dims.diameter"></dim-input>
@@ -344,8 +340,8 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <div class="field">
     </div>
   </div>
-  <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
-    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
+  <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.diameter||!show.gewicht">
+    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
   </div>
   <div class="ui message" v-if="!HelpText.create">
     <p>Vul hier de afmetingen van je vondst in, liefst met millimeterprecisie. Kies voor de maximale afmetingen, en vul minstens twee dimensies in. Bij de knop ‘alle dimensies tonen’ kun je andere maten kiezen.</p>
@@ -459,7 +455,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 
 @section('script')
 <script type="text/javascript">
-window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte', 'omtrek'], mantelspeld: ['lengte', 'diameter']};
+window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte'], mantelspeld: ['lengte', 'diameter']};
 window.fields = {!! json_encode($fields) !!};
 @if (isset($find))
 window.initialFind = {!! json_encode($find) !!};
