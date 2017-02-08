@@ -56,13 +56,21 @@ export function emptyClassification () {
 }
 
 // Publication helpers
+const TYPE_AUTHOR = 'author'
+const TYPE_COAUTHOR = 'coauthor'
+const TYPE_PUBLISHER = 'publisher'
+
+const TYPE = 'publicationCreationActorType'
+const NAME = 'publicationCreationActorName'
+const ACTOR = 'publicationCreationActor'
+
 export function fromPublication (p) {
   p = inert(p)
   const creations = (p.publicationCreation || [])
-  const publisher = creations.find(a => a[ACTOR][TYPE] === TYPE_PUBLISHER) || {}
+  const publisher = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_PUBLISHER) || {}
 
   // Get author, their names and split them
-  let authors = creations.find(a => a[ACTOR][TYPE] === TYPE_AUTHOR)
+  let authors = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_AUTHOR)
   authors = authors && authors[ACTOR] && authors[ACTOR][NAME].split('&', 2) || []
 
   return Object.assign(p, {

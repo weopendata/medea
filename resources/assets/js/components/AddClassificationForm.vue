@@ -153,14 +153,6 @@ import SelectPublication from './SelectPublication.vue'
 
 import { fromPublication, toPublication } from '../const.js'
 
-const TYPE_AUTHOR = 'author'
-const TYPE_COAUTHOR = 'coauthor'
-const TYPE_PUBLISHER = 'publisher'
-
-const TYPE = 'publicationCreationActorType'
-const NAME = 'publicationCreationActorName'
-const ACTOR = 'publicationCreationActor'
-
 const dateRanges = [
   { period: 'Bronstijd', min: -2000, max: -800 },
   { period: 'IJzertijd', min: -800, max: -57 },
