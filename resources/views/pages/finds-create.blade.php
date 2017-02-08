@@ -455,7 +455,13 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 
 @section('script')
 <script type="text/javascript">
-window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte'], mantelspeld: ['lengte', 'diameter']};
+window.categoryMap = {
+  armband: ['diameter', 'diepte'],
+  munt: ['diameter', 'diepte'],
+  gesp: ['lengte', 'breedte'],
+  vingerhoed: ['diepte'],
+  mantelspeld: ['lengte', 'diameter']
+};
 window.fields = {!! json_encode($fields) !!};
 @if (isset($find))
 window.initialFind = {!! json_encode($find) !!};
