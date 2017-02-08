@@ -142,19 +142,16 @@ class Object extends Base
             'objectCategory',
             'objectDescription',
             'material',
-
-            // TODO:
-            // technique
-            // surface treatment
-            // address.city
-            // period
+            'surfaceTreatment',
+            'treatmentEvent.modificationTechnique.modificationTechniqueType',
+            'productionEvent.productionTechnique.productionTechniqueType',
         ];
 
         $description = '';
 
         foreach ($fulltextProperties as $property) {
-            if (! empty($properties[$property])) {
-                $description .= $properties[$property] . ' ';
+            if (! empty($value = array_get($properties, $property))) {
+                $description .= $value . ' ';
             }
         }
 
