@@ -55,6 +55,55 @@ export function emptyClassification () {
   }
 }
 
+// Publication helpers
+export function fromPublication (p) {
+  p = inert(p)
+  const creations = (p.publicationCreation || [])
+  const publisher = creations.find(a => a[ACTOR][TYPE] === TYPE_PUBLISHER) || {}
+
+  // Get author, their names and split them
+  let authors = creations.find(a => a[ACTOR][TYPE] === TYPE_AUTHOR)
+  authors = authors && authors[ACTOR] && authors[ACTOR][NAME].split('&', 2) || []
+
+  return Object.assign(p, {
+    author: (authors[0] || '').trim(),
+    coauthor: (authors[1] || '').trim(),
+    publisher: publisher[ACTOR] && publisher[ACTOR][NAME] || '',
+    pubTimeSpan: publisher.publicationCreationTimeSpan || '',
+    pubLocation: publisher.publicationCreationLocation && publisher.publicationCreationLocation.publicationCreationLocationAppellation || ''
+  })
+}
+
+export function toPublication (p) {
+  p = inert(p)
+  const author = [p.author, p.coauthor].filter(Boolean).join(' & ')
+  return Object.assign(p, {
+    publicationCreation: [
+
+      // Include author if available
+      author && {
+        publicationCreationActor: {
+          [NAME]: author,
+          [TYPE]: TYPE_AUTHOR
+        }
+      } || null,
+
+      // Include publisher if available
+      (p.publisher || p.pubTimeSpan || p.pubLocation) && {
+        publicationCreationActor: p.publisher && {
+          [NAME]: p.publisher,
+          [TYPE]: TYPE_PUBLISHER
+        } || null,
+        publicationCreationTimeSpan: p.pubTimeSpan,
+        publicationCreationLocation: p.pubLocation && {
+          publicationCreationLocationAppellation: p.pubLocation
+        }
+      } || null
+
+    ].filter(Boolean)
+  })
+}
+
 export function urlify (u) {
   if (!u) {
     return

@@ -16,9 +16,8 @@
       <p v-if="multiPub">
         Referenties:
         <span v-for="pub in pubs">
-          <br>
-          <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationTitle"></a>
-          <span v-else>{{ pub.publicationTitle }}</span>
+          <br>{{ cite(pub) }}
+          <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
       <p v-if="cls.agree">
@@ -66,6 +65,14 @@ export default {
     }
   },
   methods: {
+    cite (pub) {
+      if (!pub) {
+        return
+      }
+      return (pub.author || 'Auteur')
+        + ' (' + (pub.publicationYear || 'jaar') + '). ' +
+        (pub.publicationTitle || 'Titel')
+    },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {
         return !y1 ? '?' : y1 < 0 ? -y1 + ' v.C.' : y1 + ' n.C.'
