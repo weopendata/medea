@@ -33,7 +33,7 @@
       <div class="card-textual ui form">
         <div class="field">
           <label>Citeer deze vondstfiche</label>
-          <input type="text" :value="cite" readonly @click="selectThis">
+          <div class="cite" v-text="cite"></div>
         </div>
       </div>
       <div class="card-bar text-right" v-if="editable">
@@ -156,13 +156,6 @@ export default {
       title += ' (ID-' + this.find.identifier + ')'
 
       return title;
-    }
-  },
-  methods: {
-    selectThis (evt) {
-      if (evt && evt.target) {
-        evt.target.select()
-      }
     }
   },
   events: {
