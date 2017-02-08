@@ -188,7 +188,15 @@
     </div>
     <div class="four wide field" v-if="show.map">
       <label>Nauwkeurigheid (meter)</label>
-      <input type="number" v-model="find.findSpot.location.accuracy" min="1" :step="accuracyStep">
+      <select class="ui dropdown" v-model="find.findSpot.location.accuracy">
+        <option value="1">1 - 5m (GPS)</option>
+        <option value="5">5 - 20m</option>
+        <option value="20">20 - 50m</option>
+        <option value="50">50 - 100m</option>
+        <option value="100">100 - 500m</option>
+        <option value="500">500 - 2000m</option>
+        <option value="2000">Gemeenteniveau</option>
+      </select>
     </div>
     <div class="five wide field" v-if="show.map">
       <label>&nbsp;</label>
