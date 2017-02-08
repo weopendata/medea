@@ -327,8 +327,10 @@ export default {
       if (typeof index === 'number') {
         this.editingIndex = index
       }
+      if (this.cls.productionClassificationSource) {
+        this.cls.productionClassificationSource[this.editingIndex] = null
+      }
       this.cls.publication.splice(this.editingIndex, 1)
-      this.cls.productionClassificationSource[this.editingIndex] = null
       this.editing = null
       this.editingIndex = -1
     },

@@ -46,6 +46,7 @@ export const EMPTY_CLS = {
   productionClassificationMainType: '',
   productionClassificationPeriod: '',
   productionClassificationRulerNation: '',
+  productionClassificationSource: [],
   productionClassificationType: '',
   startDate: '',
   endDate: '',
