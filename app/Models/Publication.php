@@ -77,8 +77,6 @@ class Publication extends Base
     {
         $client = self::getClient();
 
-        \Log::info($publicationCreation);
-
         $generalId = $this->getGeneralId();
 
         // Create a publicationCreation (E65)
