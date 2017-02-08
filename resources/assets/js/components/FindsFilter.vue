@@ -87,7 +87,7 @@ export default {
       if (this.$root.user.administrator || this.model.myfinds) {
         return [{
           label: 'Onder embargo',
-          value: 'true'
+          value: true
         }, {
           label: 'Niet onder embargo',
           value: false
