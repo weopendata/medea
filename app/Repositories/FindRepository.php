@@ -363,10 +363,16 @@ class FindRepository extends BaseRepository
             ],
             'modification' => [
                 'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
-                    'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
-                    'nodeName' => 'modificationTechniqueType',
-                    'with' => 'modificationTechniqueType'
-            ]
+                'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
+                'nodeName' => 'modificationTechniqueType',
+                'with' => 'modificationTechniqueType'
+            ],
+            'embargo' => [
+                'match' => '(object:E22)',
+                'where' => 'object.embargo = {embargo}',
+                'nodeName' => 'embargo',
+                'with' => 'object'
+            ],
         ];
     }
 

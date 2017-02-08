@@ -65,6 +65,10 @@ class FindController extends Controller
             $filters['myfinds'] = $request->user()->email;
         }
 
+        if (! empty($filters['embargo'])) {
+            $filters['embargo'] = (bool) $filters['embargo'];
+        }
+
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
 
         $finds = $result['data'];
@@ -123,7 +127,7 @@ class FindController extends Controller
                 'objectMaterial' => $request->input('objectMaterial', '*'),
                 'modification' => $request->input('modification', '*'),
                 'status' => $validated_status,
-                'embargo' => $request->input('embargo', false),
+                'embargo' => (boolean) $request->input('embargo', false),
                 'showmap' => $request->input('showmap', null)
             ],
             'fields' => $this->list_values->getFindTemplate(),
