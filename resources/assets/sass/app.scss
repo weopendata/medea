@@ -194,7 +194,7 @@ dd {
 	margin-top: 1.5em;
 	height: 50vh;
 }
-.mapview .card-help {
+.card-help {
 	position: absolute;
 	z-index: 3;
 	top: 0;
@@ -543,4 +543,15 @@ h4.required::after {
   font-size: 0.92857143em;
   font-weight: bold;
   text-transform: none;
+}
+
+/* Formatting rules in forms */
+
+.message code {
+  margin: 0 .5em;
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #fff;
+  background-color: #333;
+  border-radius: 3px;
 }
