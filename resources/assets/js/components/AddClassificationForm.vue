@@ -52,11 +52,11 @@
         </div>
         <div class="content">
           <div class="two fields">
-            <div class="field">
+            <div class="required field">
               <label>Titel</label>
               <input type="text" v-model="editing.publicationTitle">
             </div>
-            <div class="field">
+            <div class="required field">
               <label>Type</label>
               <select class="ui dropdown" v-model="editing.publicationType">
                 <option>boek</option>
@@ -66,13 +66,11 @@
               </select>
             </div>
           </div>
-          <div class="two fields">
-            <div class="field">
-              <label>Auteurs (meerdere namen gescheiden door komma)</label>
-              <input type="text" v-model="editing.author">
-            </div>
+          <div class="required field">
+            <label>Auteurs (meerdere namen gescheiden door komma)</label>
+            <input type="text" v-model="editing.author">
           </div>
-          <div class="two fields">
+          <div class="three fields">
             <div class="field">
               <label>Jaar van uitgave</label>
               <input type="text" v-model="editing.pubTimeSpan">
@@ -81,8 +79,6 @@
               <label>Plaats van uitgave</label>
               <input type="text" v-model="editing.pubLocation">
             </div>
-          </div>
-          <div class="two fields">
             <div class="field">
               <label>Pagina's</label>
               <input type="text" v-model="editing.publicationVolume">
@@ -95,7 +91,7 @@
           <br>
         </div>
         <div class="actions">
-          <div class="ui green button" @click="savePublication">
+          <div class="ui {{ validPublication ? 'green' : 'grey disabled' }} button" @click="savePublication">
             <i class="checkmark icon"></i>
             Bewaren
           </div>
@@ -208,6 +204,9 @@ export default {
   computed: {
     validRange () {
       return parseInt(this.cls.startDate) > parseInt(this.cls.endDate)
+    },
+    validPublication () {
+      return this.isValidPublication(this.editing)
     }
   },
   methods: {
@@ -254,11 +253,17 @@ export default {
         })
       }
     },
+    isValidPublication (pub) {
+      return pub && pub.publicationTitle && pub.publicationType && pub.author
+    },
     editPublication (pub, index) {
       this.editing = fromPublication(pub)
       this.editingIndex = index
     },
     closePublication () {
+      if (!this.isValidPublication(this.cls.publication[this.editingIndex])) {
+        this.rmPublication(this.editingIndex)
+      }
       this.editing = null
       this.editingIndex = -1
     },
