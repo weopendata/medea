@@ -127,6 +127,9 @@ export function toMonth (d) {
 }
 
 export function fromDate (d) {
+  if (!d || d.length < 10) {
+    return d
+  }
   d = new Date(Date.parse(d))
   return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
 }
