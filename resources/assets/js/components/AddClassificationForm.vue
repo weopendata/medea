@@ -1,48 +1,57 @@
 <template>
   <div>
-    <div class="two fields">
+    <div v-if="!cls || !cls.productionClassificationMainType">
       <div class="field">
-        <label>Type</label>
-        <input type="text" v-model="cls.productionClassificationType" placeholder="Voorbeeld: 2.1" list="types">
-        <div class="help-block">Welk type classificatie doe je?</div>
-      </div>
-      <div class="field" @change="limitDateRange">
-        <label>Periode</label>
-        <select class="ui search fluid dropdown" v-model="cls.productionClassificationCulturePeople">
-          <option>onbekend</option>
-          <option v-for="opt in fields.culturepeople" :value="opt" v-text="opt"></option>
-        </select>
-        <div class="help-block">Uit welke archeologische periode komt het object?</div>
-      </div>
-      <div class="field">
-        <label>Heerser</label>
-        <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
-        <div class="help-block">Alleen voor munten: Welke heerser was destijds aan de macht?</div>
+        <label>Nieuwe classificatie</label>
+        <button class="ui blue button" @click.prevent="setMainType('Typologie')">Typologie</button>
+        <button class="ui button" @click.prevent="setMainType('Gelijkaardige vondst')">Gelijkaardige vondst</button>
       </div>
     </div>
-    <div class="two fields" @change="limitPeriod">
+    <div v-else>
+      <div class="two fields">
+        <div class="field">
+          <label>Type</label>
+          <input type="text" v-model="cls.productionClassificationType" placeholder="Voorbeeld: 2.1" list="types">
+          <div class="help-block">Welk type classificatie doe je?</div>
+        </div>
+        <div class="field" @change="limitDateRange">
+          <label>Periode</label>
+          <select class="ui search fluid dropdown" v-model="cls.productionClassificationCulturePeople">
+            <option>onbekend</option>
+            <option v-for="opt in fields.culturepeople" :value="opt" v-text="opt"></option>
+          </select>
+          <div class="help-block">Uit welke archeologische periode komt het object?</div>
+        </div>
+        <div class="field">
+          <label>Heerser</label>
+          <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
+          <div class="help-block">Alleen voor munten: Welke heerser was destijds aan de macht?</div>
+        </div>
+      </div>
+      <div class="two fields" @change="limitPeriod">
+        <div class="field">
+          <label>Datering vanaf</label>
+          <input-date :model.sync="cls.startDate">
+        </div>
+        <div class="field" :class="{error: validRange}">
+          <label>Datering tot</label>
+          <input-date :model.sync="cls.endDate">
+        </div>
+      </div>
+      <div class="field field-publications">
+        <label for="description">Referenties</label>
+        <input-publication v-for="(index, pub) in cls.publication" :model="pub" :index="index"></input-publication>
+        <div class="help-block">
+          <button type="button" class="ui gray button" @click="addPublication">Publicatie aanmaken</button>
+          <select-publication :model="pub" :index="index"></select-publication>
+          <br>Vul verwijzingen in naar publicaties die je tot deze classificatie gebracht hebben.
+          <br>
+        </div>
+      </div>
       <div class="field">
-        <label>Datering vanaf</label>
-        <input-date :model.sync="cls.startDate">
+        <label for="description">Opmerkingen</label>
+        <textarea-growing id="description" :model.sync="cls.productionClassificationDescription"></textarea-growing>
       </div>
-      <div class="field" :class="{error: validRange}">
-        <label>Datering tot</label>
-        <input-date :model.sync="cls.endDate">
-      </div>
-    </div>
-    <div class="field field-publications">
-      <label for="description">Referenties</label>
-      <input-publication v-for="(index, pub) in cls.publication" :model="pub" :index="index"></input-publication>
-      <div class="help-block">
-        <button type="button" class="ui gray button" @click="addPublication">Publicatie aanmaken</button>
-        <select-publication :model="pub" :index="index"></select-publication>
-        <br>Vul verwijzingen in naar publicaties die je tot deze classificatie gebracht hebben.
-        <br>
-      </div>
-    </div>
-    <div class="field">
-      <label for="description">Opmerkingen</label>
-      <textarea-growing id="description" :model.sync="cls.productionClassificationDescription"></textarea-growing>
     </div>
 
     <div class="ui dimmer modals page transition visible active" v-if="editing" @click="closePublication">
@@ -210,6 +219,9 @@ export default {
     }
   },
   methods: {
+    setMainType (type) {
+      this.cls.productionClassificationsetMainType = type
+    },
     limitDateRange () {
       const period = this.cls.productionClassificationCulturePeople
       const range = dateRanges.find(r => r.period === period)

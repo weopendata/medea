@@ -41,14 +41,15 @@ export function findTitle (find) {
 
 // Classification helpers
 export const EMPTY_CLS = {
-	productionClassificationCulturePeople: '',
-	productionClassificationDescription: '',
-	productionClassificationRulerNation: '',
-	productionClassificationPeriod: '',
-	productionClassificationType: '',
-	startDate: '',
-	endDate: '',
-	publication: [],
+  productionClassificationCulturePeople: '',
+  productionClassificationDescription: '',
+  productionClassificationMainType: '',
+  productionClassificationPeriod: '',
+  productionClassificationRulerNation: '',
+  productionClassificationType: '',
+  startDate: '',
+  endDate: '',
+  publication: [],
 }
 
 export function urlify (u) {
