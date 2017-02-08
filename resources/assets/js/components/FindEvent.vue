@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-img">
       <a :href="uri" class="card-img-abs" v-if="cardCover" style="background-image:url({{cardCover}})"></a>
-      <a :href="uri" class="card-img-abs" v-else style="background:#ddd"></a>
+      <a :href="uri" class="card-img-abs" v-else style="background:#fff"></a>
     </div>
     <div class="card-content">
       <div class="card-textual">
