@@ -150,4 +150,17 @@ export default {
   padding: 5px 0;
   white-space: pre-wrap;
 }
+.select2-container {
+  vertical-align: top!important;
+}
+.select2-container .select2-selection--single {
+  height: 36px!important;
+  border: 1px solid rgba(34, 36, 38, 0.15)!important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 34px!important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 34px!important;
+}
 </style>

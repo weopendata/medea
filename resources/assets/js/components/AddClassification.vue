@@ -5,6 +5,7 @@
       <div class="card-textual">
         <add-classification-form :cls.sync="cls"></add-classification-form>
         <p v-if="cls && cls.productionClassificationMainType">
+          <br>
           <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Toevoegen</button>
         </p>
       </div>
