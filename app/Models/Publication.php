@@ -37,7 +37,6 @@ class Publication extends Base
                 'key' => 'publicationCreation',
                 'name' => 'publicationCreation',
                 'plural' => true,
-                'nested' => true,
                 'cidoc_type' => 'E65',
             ]
         ],
