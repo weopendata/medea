@@ -444,11 +444,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     Deze helpteksten hebben je hopelijk op weg geholpen. Hieronder kan je ze uitschakelen. Het is steeds mogelijk om ze terug te tonen.
   </p>
   <p>
-    <button class="ui green button" @click="hideHelp('create')">OK, helptekst verbergen</button>
+    <button class="ui green button" type="button" @click="hideHelp('create')">OK, helptekst verbergen</button>
   </p>
 </div>
 <p v-else>
-  <button class="ui green button" @click="showHelp('create')">Helptekst tonen</button>
+  <button class="ui green button" type="button" @click="showHelp('create')">Helptekst tonen</button>
 </p>
 
 {!! Form::close() !!}
