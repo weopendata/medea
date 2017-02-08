@@ -102,20 +102,22 @@ class Publication extends Base
         $pubCreationNode->relateTo($pubCreationActorNode, 'P14')->save();
 
         // Create the type and name of the actor
-        $actorNameNode = $this->createValueNode(
-            'publicationCreationActorName',
-            ['E82', $generalId, 'publicationCreationActorName'],
-            $publicationCreation['publicationCreationActor']['publicationCreationActorName']
-        );
+        if (! empty($publicationCreation['publicationCreationActor']['publicationCreationActorName'])) {
+            $actorNameNode = $this->createValueNode(
+                'publicationCreationActorName',
+                ['E82', $generalId, 'publicationCreationActorName'],
+                $publicationCreation['publicationCreationActor']['publicationCreationActorName']
+            );
 
-        $actorTypeNode = $this->createValueNode(
-            'publicationCreationActorType',
-            ['E55', $generalId, 'publicationCreationActorType'],
-            $publicationCreation['publicationCreationActor']['publicationCreationActorType']
-        );
+            $actorTypeNode = $this->createValueNode(
+                'publicationCreationActorType',
+                ['E55', $generalId, 'publicationCreationActorType'],
+                $publicationCreation['publicationCreationActor']['publicationCreationActorType']
+            );
 
-        $pubCreationActorNode->relateTo($actorNameNode, 'P131')->save();
-        $pubCreationActorNode->relateTo($actorTypeNode, 'P141')->save();
+            $pubCreationActorNode->relateTo($actorTypeNode, 'P141')->save();
+            $pubCreationActorNode->relateTo($actorNameNode, 'P131')->save();
+        }
 
         // Save optional data (publicationCreationTimeSpan, publicationCreationLocation)
         if (! empty($publicationCreation['publicationCreation']['publicationCreationTimeSpan'])) {
