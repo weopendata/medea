@@ -37,7 +37,8 @@ class Publication extends Base
                 'key' => 'publicationCreation',
                 'name' => 'publicationCreation',
                 'plural' => true,
-                'cidoc_type' => 'E31',
+                'nested' => true,
+                'cidoc_type' => 'E65',
             ]
         ],
         [
@@ -88,21 +89,21 @@ class Publication extends Base
             self::makeLabel($generalId)
             ]);
 
-        // Create a publicationCreationActor (E39)
-        $pubCreationActorNode = $client->makeNode();
-        $pubCreationActorNode->setProperty('name', 'publicationCreationActor');
-        $pubCreationActorNode->save();
-        $pubCreationActorNode->addLabels([
-            self::makeLabel('E39'),
-            self::makeLabel('publicationCreationActor'),
-            self::makeLabel($generalId)
-            ]);
-
-        // Link the actor with the publicationCreation
-        $pubCreationNode->relateTo($pubCreationActorNode, 'P14')->save();
-
         // Create the type and name of the actor
         if (! empty($publicationCreation['publicationCreationActor']['publicationCreationActorName'])) {
+            // Create a publicationCreationActor (E39)
+            $pubCreationActorNode = $client->makeNode();
+            $pubCreationActorNode->setProperty('name', 'publicationCreationActor');
+            $pubCreationActorNode->save();
+            $pubCreationActorNode->addLabels([
+                self::makeLabel('E39'),
+                self::makeLabel('publicationCreationActor'),
+                self::makeLabel($generalId)
+                ]);
+
+        // Link the actor with the publicationCreation
+            $pubCreationNode->relateTo($pubCreationActorNode, 'P14')->save();
+
             $actorNameNode = $this->createValueNode(
                 'publicationCreationActorName',
                 ['E82', $generalId, 'publicationCreationActorName'],

@@ -126,8 +126,8 @@ class Base
 
                         if (is_array($input) && ! $this->isAssoc($input)) {
                             foreach ($input as $entry) {
-                                $modelName = 'App\Models\\' . $config['model_name'];
-                                $model = new $modelName($entry);
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name($entry);
                                 $model->save();
 
                                 if (! empty($model)) {
@@ -143,8 +143,8 @@ class Base
                                 // Fetch the node and create the relationship
                                 $model = $this->searchNode($input['id'], $config['model_name']);
                             } else {
-                                $modelName = 'App\Models\\' . $config['model_name'];
-                                $model = new $modelName($input);
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name($input);
                                 $model->save();
                             }
 
@@ -223,8 +223,8 @@ class Base
                             foreach ($input as $entry) {
                                 // Check if an identifier is provided, if not, perform a create
                                 if (empty($entry['identifier'])) {
-                                    $modelName = 'App\Models\\' . $config['model_name'];
-                                    $model = new $modelName($entry);
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name($entry);
                                     $model->save();
 
                                     $this->makeRelationship($model, $relationshipName);
@@ -232,8 +232,8 @@ class Base
                                 } else {
                                     $related_identifiers[] = $entry['identifier'];
 
-                                    $modelName = 'App\Models\\' . $config['model_name'];
-                                    $model = new $modelName();
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name();
                                     $model->setNode($client->getNode($entry['identifier']));
                                     $model->update($entry);
                                 }
@@ -245,8 +245,8 @@ class Base
                             } else {
                                 // Check if an identifier is provided, if not, perform a create
                                 if (empty($input['identifier'])) {
-                                    $modelName = 'App\Models\\' . $config['model_name'];
-                                    $model = new $modelName($input);
+                                    $model_name = 'App\Models\\' . $config['model_name'];
+                                    $model = new $model_name($input);
                                     $model->save();
 
                                     $this->makeRelationship($model, $relationshipName);
@@ -256,9 +256,9 @@ class Base
 
                                     $node = $client->getNode($input['identifier']);
 
-                                    $modelName = 'App\Models\\' . $config['model_name'];
+                                    $model_name = 'App\Models\\' . $config['model_name'];
 
-                                    $model = new $modelName();
+                                    $model = new $model_name();
                                     $model->setNode($node);
                                     $model->update($input);
                                 }
@@ -276,8 +276,8 @@ class Base
                             $related_node = $related_node->current();
 
                             if (! in_array($related_node->getId(), $related_identifiers)) {
-                                $modelName = 'App\Models\\' . $config['model_name'];
-                                $model = new $modelName();
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name();
                                 $model->setNode($related_node);
                                 $model->delete();
                             }
@@ -285,8 +285,8 @@ class Base
                     }
 
                 } elseif (! empty($config['link_only']) && $config['link_only']) {
-                    $modelName = 'App\Models\\' . $config['model_name'];
-                    $model = new $modelName();
+                    $model_name = 'App\Models\\' . $config['model_name'];
+                    $model = new $model_name();
                     $model->delete();
                 }
             }
@@ -370,7 +370,7 @@ class Base
      *
      * @return void
      */
-    private function addTimestamps()
+    protected function addTimestamps()
     {
         $timestamp = Carbon::now();
 
@@ -386,7 +386,7 @@ class Base
      *
      * @return void
      */
-    private function addUniqueId()
+    protected function addUniqueId()
     {
         // Add a unique id to the node
         $idName = lcfirst(static::$NODE_NAME) . 'Id';
@@ -395,7 +395,7 @@ class Base
         $this->node->relateTo($idNode, 'P1')->save();
     }
 
-    private function createImplicitNode($input, $config)
+    protected function createImplicitNode($input, $config)
     {
         // If the variable value_node is set, this means a simple creation of a node is
         // viable and can be automated. If not the specific create function will be called
@@ -466,12 +466,12 @@ class Base
             if ($config['cascade_delete']) {
                 $relationships = $this->node->getRelationships([$relationshipName], Relationship::DirectionOut);
 
-                $modelName = 'App\Models\\' . $config['model_name'];
+                $model_name = 'App\Models\\' . $config['model_name'];
 
                 foreach ($relationships as $relationship) {
                     $end_node = $relationship->getEndNode();
 
-                    $model = new $modelName();
+                    $model = new $model_name();
                     $model->setNode($end_node);
                     try {
                         $model->delete();
@@ -554,18 +554,19 @@ class Base
     {
         $data = [];
 
-        // Ask all of the values of the related models
+        // Get the values of the related models
         foreach ($this->relatedModels as $relationship => $config) {
-            $modelName = 'App\Models\\' . ucfirst($config['model_name']);
+            $model_name = 'App\Models\\' . ucfirst($config['model_name']);
+
             $related_nodes = $this->getRelatedNodes(
                 $relationship,
-                $modelName::$NODE_TYPE
+                $model_name::$NODE_TYPE
             );
 
             foreach ($related_nodes as $related_node) {
                 $end_node = $related_node->current();
 
-                $related_model = new $modelName();
+                $related_model = new $model_name();
                 $related_model->setNode($end_node);
                 $related_model_values = $related_model->getValues();
 
@@ -705,7 +706,7 @@ class Base
      *
      * @return null|Node
      */
-    private function searchNode($nodeId, $model)
+    protected function searchNode($nodeId, $model)
     {
         $client = self::getClient();
 
@@ -720,8 +721,8 @@ class Base
             // the models that we fetch are all related models
             // meaning they have cidoc labels and model name labels
             if (mb_strtolower($label->getName()) == mb_strtolower($model)) {
-                 $modelName = 'App\Models\\' . $model;
-                 $model = new $modelName();
+                 $model_name = 'App\Models\\' . $model;
+                 $model = new $model_name();
                  $model->setNode($node);
 
                  return $model;
@@ -731,7 +732,7 @@ class Base
         return null;
     }
 
-    private function getImplicitValues($implicit_node)
+    protected function getImplicitValues($implicit_node)
     {
         $data = [];
 
@@ -762,7 +763,7 @@ class Base
      *
      * @return array
      */
-    private function getImplicitRelatedNodes($rel_type, $endnode_type, $node_name)
+    protected function getImplicitRelatedNodes($rel_type, $endnode_type, $node_name)
     {
         $node_id = $this->node->getId();
 
@@ -783,7 +784,7 @@ class Base
      *
      * @return
      */
-    private function getRelatedNodes($rel_type, $endnode_type)
+    protected function getRelatedNodes($rel_type, $endnode_type)
     {
         $node_id = $this->node->getId();
 
@@ -796,7 +797,7 @@ class Base
         return $cypher_query->getResultSet();
     }
 
-    private function isAssoc($arr)
+    protected function isAssoc($arr)
     {
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
@@ -806,7 +807,7 @@ class Base
      *
      * @return string
      */
-    private function createMedeaId()
+    protected function createMedeaId()
     {
         return 'MEDEA' . sha1(str_random(10) . '__' . time());
     }
