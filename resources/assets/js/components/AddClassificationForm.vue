@@ -68,35 +68,23 @@
           </div>
           <div class="two fields">
             <div class="field">
-              <label>Naam van de auteur</label>
+              <label>Auteurs (meerdere namen gescheiden door komma)</label>
               <input type="text" v-model="editing.author">
             </div>
-            <div class="field">
-              <label>Naam van de co-auteur</label>
-              <input type="text" v-model="editing.coauthor">
-            </div>
-          </div>
-          <div class="field">
-            <label>Naam van de publisher</label>
-            <input type="text" v-model="editing.publisher">
           </div>
           <div class="two fields">
             <div class="field">
-              <label>Wanneer werd dit gepubliceerd?</label>
+              <label>Jaar van uitgave</label>
               <input type="text" v-model="editing.pubTimeSpan">
             </div>
             <div class="field">
-              <label>Waar werd dit gepubliceerd?</label>
+              <label>Plaats van uitgave</label>
               <input type="text" v-model="editing.pubLocation">
             </div>
           </div>
           <div class="two fields">
             <div class="field">
-              <label>Welke pagina van de publicatie?</label>
-              <input type="text" v-model="editing.publicationPages">
-            </div>
-            <div class="field">
-              <label>Hoe groot is de publicatie (aantal pagina's)</label>
+              <label>Pagina's</label>
               <input type="text" v-model="editing.publicationVolume">
             </div>
           </div>
