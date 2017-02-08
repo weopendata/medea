@@ -186,10 +186,11 @@ const dateRanges = [
   { period: 'Bronstijd', min: -2000, max: -800 },
   { period: 'IJzertijd', min: -800, max: -57 },
   { period: 'Romeins', min: -57, max: 400 },
+  { period: 'middeleeuws', min: 400, max: 1500 },
   { period: 'vroegmiddeleeuws', min: 400, max: 900 },
   { period: 'volmiddeleeuws', min: 900, max: 1200 },
   { period: 'laatmiddeleeuws', min: 1200, max: 1500 },
-  { period: 'post-middeleeuws', min: 1500, max: 1800 },
+  { period: 'postmiddeleeuws', min: 1500, max: 1800 },
   { period: 'modern', min: 1800, max: new Date().getFullYear() },
   { period: 'Wereldoorlog I', min: 1914, max: 1918 },
   { period: 'Wereldoorlog II', min: 1940, max: 1945 }
