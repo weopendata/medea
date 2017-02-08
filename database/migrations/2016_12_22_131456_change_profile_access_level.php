@@ -27,14 +27,22 @@ class ChangeProfileAccessLevel extends Migration
 
         foreach ($results as $result) {
             $personNode = $result['value'];
-            dd($personNode->getProperty('profileAccessLevel'));
 
             // Get the new status based on a status mapping from old to new strings
-            $newStatus = $this->getNewStatus($personNode->value);
+            $newAccessLevel = $this->getNewProfileAccessLevel($personNode->profileAccessLevel);
 
-            $personNode->value = $newStatus;
+            $personNode->profileAccessLevel = $newAccessLevel;
             $personNode->save();
         }
+    }
+
+    private function getNewProfileAccessLevel($accessLevel)
+    {
+        if ($accessLevel == 1 || $accessLevel == 2) {
+            return 0;
+        }
+
+        return $accessLevel;
     }
 
     /**

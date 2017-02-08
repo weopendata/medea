@@ -32,6 +32,15 @@ class ProductionClassification extends Base
             ]
         ],
         [
+            'relationship' => 'P2',
+            'config' => [
+                'key' => 'productionClassificationMainType',
+                'name' => 'productionClassificationMainType',
+                'value_node' => true,
+                'cidoc_type' => 'E55'
+            ]
+        ],
+        [
             'relationship' => 'P3',
             'config' => [
                 'key' => 'productionClassificationDescription',

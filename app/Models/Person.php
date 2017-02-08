@@ -442,10 +442,8 @@ class Person extends Base implements Authenticatable
     public function getProfileAllowedRoles()
     {
         switch ($this->profileAccessLevel) {
-            case 1:
+            case 0:
                 return ['onderzoeker', 'administrator'];
-            case 2:
-                return ['onderzoeker', 'agentschap', 'administrator'];
             case 3:
                 return [
                     'administrator',
