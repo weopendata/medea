@@ -105,7 +105,7 @@ class Object extends Base
         ],
         [
             'name' => 'embargo',
-            'default_value' => false
+            'default_value' => 'false'
         ],
         [
             'name' => 'validated_at',
