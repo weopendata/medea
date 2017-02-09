@@ -7,7 +7,7 @@ import DevBar from './components/DevBar'
 
 import Notifications from './mixins/Notifications'
 import HelpText from './mixins/HelpText'
-import { inert, toPublicBounds } from './const.js'
+import { inert, toPublicBounds, findTitle } from './const.js'
 
 import parseLinkHeader from 'parse-link-header'
 
@@ -43,7 +43,7 @@ new window.Vue({
         zoom: 8
       },
       markerOptions: {
-        fillOpacity: 0.1,
+        fillOpacity: 0,
         strokeWeight: 1
       },
       rawmap: null,
@@ -80,16 +80,6 @@ new window.Vue({
     }
   },
   methods: {
-    findTitle (find) {
-      // Not showing undefined and onbekend in title
-      var title = [
-      find.category,
-      find.period,
-      find.material
-      ].filter(f => f && f !== 'onbekend').join(', ')
-
-      return title + ' (ID-' + find.identifier + ')'
-    },
     relevant (find) {
       if (find.validation == 'Klaar voor validatie') {
         if (!this.user.validator) {
@@ -143,7 +133,7 @@ new window.Vue({
       }
 
       // Do not fetch same query twice
-      if (type === 'heatmap' && heatmapQuery !== query) {
+      if (type && heatmapQuery !== query) {
         heatmapQuery = query
         this.$http.get('/api' + query + '&type=heatmap')
           .then(({ data }) => this.rawmap = data)
@@ -158,9 +148,7 @@ new window.Vue({
         this.$set('filterState.type', false)
       } else {
         this.$set('filterState.type', v)
-        if (v === 'heatmap') {
-          this.fetch('heatmap')
-        }
+        this.fetch('heatmap')
       }
     },
     mapClick (f) {
@@ -234,7 +222,7 @@ new window.Vue({
         .map(f => {
           return {
             identifier: f.identifier,
-            title: this.findTitle(f),
+            title: findTitle(f),
             position: { lat: parseFloat(f.lat), lng: parseFloat(f.lng) }
           }
         })
@@ -244,7 +232,7 @@ new window.Vue({
         .filter(f => f.lat)
         .map(f => {
           return {
-            title: this.findTitle(f),
+            title: findTitle(f),
             bounds: toPublicBounds(f)
           }
         })

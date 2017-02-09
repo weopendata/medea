@@ -108,7 +108,6 @@ class FindController extends Controller
         // Check if personal finds are set
         if ($request->has('myfinds') && ! empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
-            $validatedStatus = '*';
         }
 
         $limit = $request->input('limit', 20);
@@ -128,6 +127,10 @@ class FindController extends Controller
             } else {
                 $order_by = $order;
             }
+        }
+
+        if (! empty($filters['embargo'])) {
+            $filters['embargo'] = (bool) $filters['embargo'];
         }
 
         return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');

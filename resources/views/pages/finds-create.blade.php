@@ -70,14 +70,15 @@
       </div>
     </div>
 
-    <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}" style="max-width: 16em">
+    <div class="required fluid field" :class="{error:!validFindDate||validation.feedback.findDate}">
       <label>Vondstdatum</label>
-      <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate">
-      <i class="delete icon" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'"></i>
+      <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate" style="max-width: 16em ">
+      <button type="button" class="ui basic button" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'">onbekend</button>
     </div>
-    <div class="ui message" v-if="!HelpText.create">
+    <div class="ui message" v-if="!HelpText.create || !validFindDate">
       <p>
         Vul hier de datum in waarop je de vondst gedaan hebt.
+        <br>Aanvaardbare formaten: <code>YYYY-MM-DD</code> <code>YYYY-MM</code> <code>YYYY</code> <code>onbekend</code>
       </p>
     </div>
   </div>
@@ -89,8 +90,8 @@
     <button type="button" v-if="!show.address" @click.prevent="show.address=1" class="ui button">Adres</button>
   </div>
   <div class="field" v-if="show.spotdescription">
-    <label>Beschrijving van de vindplaats</label>
-    <input type="text" v-model="find.findSpot.findSpotDescription" placeholder="Beschrijving van de vindplaats">
+    <label>Opmerkingen over de vindplaats</label>
+    <input type="text" v-model="find.findSpot.findSpotDescription" placeholder="Opmerkingen over de vindplaats">
   </div>
    <div class="two fields">
     <div class="field">
@@ -108,8 +109,13 @@
     </p>
   </div>
   <div class="field" v-if="show.place">
-    <label>Plaatsnaam</label>
+    <label>Lokale plaatsnaam</label>
     <input type="text" v-model="find.findSpot.findSpotTitle" placeholder="">
+  </div>
+  <div class="ui message" v-if="!HelpText.create">
+    <p>
+      Vul hier de lokale plaatsnaam van de vindplaats in (toponiem of veldnaam).
+    </p>
   </div>
   <div class="fields" v-if="show.address">
     <div class="six wide field">
@@ -157,7 +163,7 @@
         <img src="/assets/img/help-area.png" height="40px"> Ruwe vondstlocatie
       </p>
       <p>
-        <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie (alleen bij eigen vondst)
+        <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie is enkel zichtbaar voor eigen vondsten.
       </p>
       <p>
         <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
@@ -182,7 +188,15 @@
     </div>
     <div class="four wide field" v-if="show.map">
       <label>Nauwkeurigheid (meter)</label>
-      <input type="number" v-model="find.findSpot.location.accuracy" min="1" :step="accuracyStep">
+      <select class="ui dropdown" v-model="find.findSpot.location.accuracy">
+        <option value="1">1 - 5m (GPS)</option>
+        <option value="5">5 - 20m</option>
+        <option value="20">20 - 50m</option>
+        <option value="50">50 - 100m</option>
+        <option value="100">100 - 500m</option>
+        <option value="500">500 - 2000m</option>
+        <option value="2000">Gemeenteniveau</option>
+      </select>
     </div>
     <div class="five wide field" v-if="show.map">
       <label>&nbsp;</label>
@@ -319,11 +333,7 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte">
     </div>
   </div>
-  <div class="three fields" v-if="show.omtrek||show.diameter">
-    <div class="field" v-if="show.omtrek">
-      <label>Omtrek</label>
-      <dim-input :dim="dims.omtrek"></dim-input>
-    </div>
+  <div class="three fields" v-if="show.diameter">
     <div class="field" v-if="show.diameter">
       <label>Diameter</label>
       <dim-input :dim="dims.diameter"></dim-input>
@@ -339,8 +349,8 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     <div class="field">
     </div>
   </div>
-  <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.omtrek||!show.diameter||!show.gewicht">
-    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.omtrek=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
+  <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte||!show.diameter||!show.gewicht">
+    <button class="ui button" @click.prevent="show.lengte=show.breedte=show.diepte=show.diameter=show.gewicht=1">Alle dimensies toevoegen</button>
   </div>
   <div class="ui message" v-if="!HelpText.create">
     <p>Vul hier de afmetingen van je vondst in, liefst met millimeterprecisie. Kies voor de maximale afmetingen, en vul minstens twee dimensies in. Bij de knop ‘alle dimensies tonen’ kun je andere maten kiezen.</p>
@@ -383,7 +393,10 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
   <div class="ui message" v-if="!HelpText.create">
-    <p>Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd gepubliceerd kan worden door een validator. Deze krijgt je identiteit exacte vondstlocatie niet te zien. Na publicatie kunnen experten publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. Let wel: na versturen kun je de meeste velden niet meer wijzigen, tussenkomst van de databeheerder. Als je niet klaar bent met deze dan voor om ze tijdelijk op te slaan als een voorlopige versie.</p>
+    <p>
+      Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd en gepubliceerd kan worden door een validator. Deze krijgt je identiteit en de exacte vondstlocatie niet te zien. Na publicatie kunnen experten en het brede publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. 
+      <br><b>Let wel</b>: na versturen kun je de meeste velden niet meer wijzigen, tenzij met tussenkomst van de databeheerder. Als je niet klaar bent met deze fiche, kies er dan voor om ze tijdelijk op te slaan als een voorlopige versie. 
+    </p>
   </div>
 
   <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
@@ -439,11 +452,11 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
     Deze helpteksten hebben je hopelijk op weg geholpen. Hieronder kan je ze uitschakelen. Het is steeds mogelijk om ze terug te tonen.
   </p>
   <p>
-    <button class="ui green button" @click="hideHelp('create')">OK, helptekst verbergen</button>
+    <button class="ui green button" type="button" @click="hideHelp('create')">OK, helptekst verbergen</button>
   </p>
 </div>
 <p v-else>
-  <button class="ui green button" @click="showHelp('create')">Helptekst tonen</button>
+  <button class="ui green button" type="button" @click="showHelp('create')">Helptekst tonen</button>
 </p>
 
 {!! Form::close() !!}
@@ -454,7 +467,13 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
 
 @section('script')
 <script type="text/javascript">
-window.categoryMap = {munt:['diameter', 'diepte'], gesp:['lengte', 'breedte'], vingerhoed: ['diepte', 'omtrek'], mantelspeld: ['lengte', 'diameter']};
+window.categoryMap = {
+  armband: ['diameter', 'diepte'],
+  munt: ['diameter', 'diepte'],
+  gesp: ['lengte', 'breedte'],
+  vingerhoed: ['diepte'],
+  mantelspeld: ['lengte', 'diameter']
+};
 window.fields = {!! json_encode($fields) !!};
 @if (isset($find))
 window.initialFind = {!! json_encode($find) !!};

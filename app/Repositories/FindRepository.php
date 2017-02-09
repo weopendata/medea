@@ -101,7 +101,6 @@ class FindRepository extends BaseRepository
      * We'll have to build our query based on the filters that are configured,
      * some are filters on object relationships, some on find event, some on classifications
      *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      * @param array $filters
      *
      * @return
@@ -127,7 +126,6 @@ class FindRepository extends BaseRepository
 
     /**
      * Get a heatmap count for a filtered search
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      *
      * @param  array  $filters
      * @param  string $validationStatus
@@ -174,7 +172,6 @@ class FindRepository extends BaseRepository
     /**
      * Prepare the filtered cypher query
      *
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      *
      * @param  array   $filters
      * @param  integer $limit
@@ -366,10 +363,16 @@ class FindRepository extends BaseRepository
             ],
             'modification' => [
                 'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
-                    'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
-                    'nodeName' => 'modificationTechniqueType',
-                    'with' => 'modificationTechniqueType'
-            ]
+                'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
+                'nodeName' => 'modificationTechniqueType',
+                'with' => 'modificationTechniqueType'
+            ],
+            'embargo' => [
+                'match' => '(object:E22)',
+                'where' => 'object.embargo = {embargo}',
+                'nodeName' => 'embargo',
+                'with' => 'object'
+            ],
         ];
     }
 

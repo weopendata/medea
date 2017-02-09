@@ -2,7 +2,7 @@
   <div class="facet" v-if="options">
     <h3 class="facet-title" @click="collapse"><i class="ui chevron icon" :class="shown?'down':'right'"></i> {{ label }}</h3>
     <div class="facet-options" v-if="shown">
-      <a href="#" class="facet-a" :class="{active:activeOption==opt}" @click.prevent="toggle(prop, opt)" v-for="opt in options" v-text="opt"></a>
+      <a href="#" class="facet-a" :class="{active:activeOption===opt.value}" @click.prevent="toggle(prop, opt.value)" v-for="opt in formattedOptions" :value="opt.value" v-text="opt.label"></a>
     </div>
   </div>
 </template>
@@ -16,6 +16,11 @@ export default {
     },
     activeOption () {
       return this.$parent.model[this.prop]
+    },
+    formattedOptions() {
+      return this.options.map(function (o) {
+        return typeof o === 'string' ? { label: o, value: o } : o
+      })
     }
   },
   methods: {

@@ -14,7 +14,7 @@ import Ajax from './mixins/Ajax'
 import HelpText from './mixins/HelpText'
 import Notifications from './mixins/Notifications'
 
-import { EMPTY_CLS, toPublicBounds, validDate } from './const.js'
+import { emptyClassification, toPublicBounds, validDate } from './const.js'
 
 load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
@@ -40,7 +40,6 @@ function fromDimensions (dimensions) {
     lengte: {unit: 'mm' },
     breedte: {unit: 'mm' },
     diepte: {unit: 'mm' },
-    omtrek: {unit: 'mm' },
     diameter: {unit: 'mm' },
     gewicht: {unit: 'g'}
   }
@@ -180,7 +179,6 @@ new window.Vue({
         lengte: true,
         breedte: true,
         diepte: true,
-        omtrek: false,
         diameter: false,
         gewicht: false
       },
@@ -278,7 +276,7 @@ new window.Vue({
       return this.hasDimensions
     },
     hasDimensions () {
-      return this.dims.lengte.value || this.dims.breedte.value || this.dims.diepte.value || this.dims.omtrek.value || this.dims.diameter.value || this.dims.gewicht.value
+      return this.dims.lengte.value || this.dims.breedte.value || this.dims.diepte.value || this.dims.diameter.value || this.dims.gewicht.value
     }
   },
   methods: {
@@ -399,7 +397,7 @@ new window.Vue({
       return d; // returns the distance in meter
     },
     pushCls () {
-      this.find.object.productionEvent.productionClassification.push(EMPTY_CLS)
+      this.find.object.productionEvent.productionClassification.push(emptyClassification())
     },
     formdata () {
       // Dimensions

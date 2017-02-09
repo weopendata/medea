@@ -17,8 +17,9 @@
         <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
       </div>
 
-      <facet label="Validatie status" prop="status" :options="statuses"></facet>
-      <facet label="Periode" prop="period" :options="fields.object.period"></facet>
+      <facet label="Validatie status" prop="status" :options="statusOptions"></facet>
+      <facet label="Embargo" prop="embargo" :options="embargoOptions"></facet>
+      <facet label="Periode" prop="period" :options="fields.classification.period"></facet>
       <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
       <facet label="Techniek" prop="technique" :options="fields.object.technique"></facet>
       <facet label="Oppervlaktebehandeling" prop="modification" :options="modificationFields"></facet>
@@ -28,6 +29,8 @@
 </template>
 
 <script>
+import ls from 'local-storage'
+
 import FindEvent from './FindEvent.vue';
 import Facet from './Facet.vue';
 import {inert} from '../const.js';
@@ -54,28 +57,41 @@ var modificationFields = [
 export default {
   props: ['name', 'model', 'saved'],
   data () {
+    const showFacets = ls('showFacets') || {}
     return {
       name: '',
       fields: window.fields,
       modificationFields: modificationFields,
       advanced: false,
-      show: {
+      show: Object.assign({
         category: true,
         status: true,
+        embargo: true,
         period: null,
         technique: null,
         modification: null,
         objectMaterial: true
-      }
+      }, showFacets)
     }
   },
   computed: {
-    statuses () {
+    statusOptions () {
       if (this.$root.user.administrator || this.model.myfinds) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen', 'Voorlopige versie', 'Wordt verwijderd']
       }
       if (this.$root.user.validator) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen']
+      }
+    },
+    embargoOptions () {
+      if (this.$root.user.administrator || this.model.myfinds) {
+        return [{
+          label: 'Onder embargo',
+          value: true
+        }, {
+          label: 'Niet onder embargo',
+          value: false
+        }]
       }
     },
     unnamed () {
@@ -135,6 +151,12 @@ export default {
   watch: {
     advanced () {
       $('select.ui.dropdown').dropdown()
+    },
+    show: {
+      deep: true,
+      handler () {
+        ls('showFacets', this.show)
+      }
     }
   },
   components: {

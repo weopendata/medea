@@ -109,7 +109,9 @@ class UserController extends Controller
     {
         return [
             0 => 'Alleen ik',
-            1 => 'Voor alle geregistreerde gebruikers',
+            // 1 => 'Onderzoekers',
+            // 2 => 'Onderzoekers en overheid',
+            3 => 'Geregistreerde gebruikers',
             4 => 'Iedereen (ook voor bezoekers)'
         ];
     }

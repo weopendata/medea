@@ -121,17 +121,7 @@
     <label for="expertise">Expertise</label>
     <textarea-growing style="min-height: 60px" id="expertise" :model.sync="reg.expertise" placeholder="Schrijf iets kort over jouw expertisedomein. Graag ook categorie en/of periode en/of regio vermelden."></textarea>
   </div>
-  <div class="field" v-show="roles.vondstexpert">
-    <div class="ui checkbox">
-      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
-      <label>Ik heb als onderzoeker toegang tot de CAI en wil ook op MEDEA volledige toegang krijgen tot exacte vondstlocaties</label>
-    </div>
-  </div>
-  <div class="required field" v-if="roles.onderzoeker">
-    <label for="research">Onderzoek</label>
-    <textarea-growing id="research" :model.sync="reg.research" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
-  </div>
-  <div class="required two fields" v-if="roles.onderzoeker">
+  <div class="required two fields" v-if="roles.vondstexpert">
     <div class="field" :class="{error:errors.function}">
       <label for="function">Functie</label>
       <input v-model="reg.function" type="text" id="function">
@@ -143,9 +133,20 @@
       <div v-for="msg in errors.affiliation" v-text="msg" class="input"></div>
     </div>
   </div>
-  <div class="field" v-if="roles.detectorist||roles.registrator">
-    <label for="bio">Biografie</label>
-    <textarea-growing id="bio" :model.sync="reg.bio" placeholder="Schrijf een korte biografie."></textarea-growing>
+  <div class="field" v-show="roles.vondstexpert">
+    <div class="ui checkbox">
+      <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
+      <label>Ik ben wetenschappelijk onderzoeker en wil toegang krijgen tot exacte vondstlocatie.  Beschrijf in het ‘project’-veld hieronder kort waarvoor je die informatie wil gebruiken.
+      Een MEDEA-medewerker zal je aanmelding evalueren, in samenspraak met het Agentschap Onroerend Erfgoed.</label>
+    </div>
+  </div>
+  <div class="required field" v-if="roles.onderzoeker">
+    <label for="research">Onderzoek</label>
+    <textarea-growing id="research" :model.sync="reg.research" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
+  </div>
+  <div class="field" v-if="roles.detectorist || roles.vondstexpert || roles.registrator">
+    <label for="bio">@{{ biografieLabel }}</label>
+    <textarea-growing id="bio" :model.sync="reg.bio" :placeholder="biografiePlaceholder"></textarea-growing>
   </div>
   <div class="field" v-if="roles.detectorist">
     <label for="email">Erkenningsnummer</label>

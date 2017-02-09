@@ -22,12 +22,12 @@ class PublicationRepository extends BaseRepository
     {
         $queryString = '
         MATCH (publication:E31)-[P102]->(title:E35)
-        WHERE title.value =~{searchString}
+        WHERE title.value =~ {searchString}
         RETURN publication, title.value as title
         LIMIT 20';
 
         $variables = [
-            'searchString' => '.*' . $searchString . '.*'
+            'searchString' => '(?i).*' . $searchString . '.*'
         ];
 
         $cypherQuery = new Query($this->getClient(), $queryString, $variables);

@@ -21,12 +21,16 @@
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
       @if (!Auth::guest())
-      <a href="/persons" class="item {{ Request::is('persons') ? 'active' : '' }}">Leden</a>
-      <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
+        <a href="/persons" class="item {{ Request::is('persons') ? 'active' : '' }}">Leden</a>
+        <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
+        <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}">Over MEDEA</a>
+      @else
+        <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}">Over MEDEA</a>
+        <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}/news">Nieuws</a>
+        <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}/guidelines">Guidelines</a>
       @endif
 
       <div class="right menu">
-        <a href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}" class="item {{ Request::is('about') ? 'active' : '' }}">Over MEDEA</a>
         <a href="#" class="item {{ Request::is('help') ? 'active' : '' }}" onclick="startIntro();return false">Handleiding</a>
         @if (Auth::guest())
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
@@ -49,7 +53,6 @@
             <a href="/persons/{{ Auth::user()->id }}" @click.stop class="item">Profiel bekijken</a>
             <a href="/settings" @click.stop class="item">Profiel aanpassen</a>
             <div class="divider"></div>
-            <a href="/settings" @click.stop class="item">Instellingen</a>
             <a href="/logout" @click.stop class="item">Afmelden</a>
           </div>
         </div>
@@ -101,25 +104,27 @@ medeaUser.name = '{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}';
 medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
-<script src="/js/vendor.min.js?16nov"></script>
+
+@if (Config::get('app.debug'))
+  <script src="/js/vendor.js"></script>
+  <script type="text/javascript">
+  Vue.config.devtools = true
+  Vue.config.debug = true
+  </script>
+@else
+  <script src="/js/vendor.min.js?9feb"></script>
+@endif
 
 @section('script')
 <script src="{{ asset('js/users-admin.js') }}"></script>
 @show
 
 <script type="text/javascript">
-Vue.config.devtools = true
-Vue.config.debug = true
-</script>
-
-<script type="text/javascript">
 $('nav .ui.dropdown').dropdown()
 </script>
 
 @if (Config::get('app.debug'))
-<script type="text/javascript">
-document.write('<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
-</script>
+<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript" async defer></script>
 @endif
 </body>
 </html>

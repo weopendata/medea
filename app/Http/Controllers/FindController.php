@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\FindEvent;
-use App\Repositories\FindRepository;
-use App\Repositories\ObjectRepository;
-use App\Repositories\ListValueRepository;
-use Illuminate\Support\Facades\Auth;
-use App\Repositories\UserRepository;
 use App\Helpers\Pager;
 use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\ShowFindRequest;
+use App\Mailers\AppMailer;
+use App\Models\FindEvent;
 use App\Models\Person;
+use App\Repositories\FindRepository;
+use App\Repositories\ListValueRepository;
+use App\Repositories\ObjectRepository;
+use App\Repositories\UserRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PiwikTracker;
 
 /**
@@ -63,7 +64,10 @@ class FindController extends Controller
         // Check if personal finds are set
         if ($request->has('myfinds') && ! empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
-            $validated_status = '*';
+        }
+
+        if (! empty($filters['embargo'])) {
+            $filters['embargo'] = (bool) $filters['embargo'];
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
@@ -124,6 +128,7 @@ class FindController extends Controller
                 'objectMaterial' => $request->input('objectMaterial', '*'),
                 'modification' => $request->input('modification', '*'),
                 'status' => $validated_status,
+                'embargo' => (boolean) $request->input('embargo', false),
                 'showmap' => $request->input('showmap', null)
             ],
             'fields' => $this->list_values->getFindTemplate(),
@@ -189,7 +194,11 @@ class FindController extends Controller
         try {
             $findId = $this->finds->store($input);
 
-            // Log the create event
+            // Send a confirmation email to the user
+            $input['identifier'] = $findId;
+            app(AppMailer::class)->sendNewFindEmail($user, makeFindTitle($input), $findId);
+
+            // and log the create event
             $this->registerPiwikEvent($user->id, 'Create', $input['object']['objectValidationStatus']);
 
             return response()->json(['id' => $findId, 'url' => '/finds/' . $findId]);

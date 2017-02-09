@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Repositories\FindRepository;
 use Illuminate\Http\Request as HttpRequest;
 
 class ShowFindRequest extends FindApiRequest
@@ -13,7 +14,7 @@ class ShowFindRequest extends FindApiRequest
      */
     public function authorize(HttpRequest $request)
     {
-        $finds = \App::make('App\Repositories\FindRepository');
+        $finds = app(FindRepository::class);
 
         // Get the find
         $this->find = $finds->expandValues($request->finds, $request->user());

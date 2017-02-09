@@ -151,17 +151,9 @@
       <label for="role">Onderzoek</label>
       <textarea id="description" name="description" rows="5" placeholder="Schrijf iets kort over je onderzoeksproject." v-model="user.research"></textarea>
     </div>
-    <div class="field" v-if="roles.detectorist||roles.registrator">
-      <label for="role">Biografie</label>
-      <textarea id="description" name="description" rows="5" placeholder="Schrijf een korte biografie." v-model="user.bio"></textarea>
-    </div>
-    <div class="field">
-      <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showContactForm">
-        <label>
-          <b>Toon een contactformulier op mijn profiel.</b>
-        </label>
-      </div>
+    <div class="field" v-if="roles.detectorist || roles.vondstexpert || roles.registrator">
+      <label for="role">@{{ biografieLabel }}</label>
+      <textarea id="description" name="description" rows="5" :placeholder="biografiePlaceholder" v-model="user.bio"></textarea>
     </div>
     <div class="field">
       <div class="ui checkbox">

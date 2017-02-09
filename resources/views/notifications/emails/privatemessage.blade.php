@@ -9,7 +9,7 @@
         Uw heeft een nieuw bericht van {{ $user->firstName }} {{ $user->lastName}}.
     </p>
     <p>
-        {!! nl2br($message) !!}
+        {!! nl2br(e($message)) !!}
     </p>
     <p>
         U kan enkel antwoorden door de persoon via zijn email, {{ $user->email }} te contacteren.

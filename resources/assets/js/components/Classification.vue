@@ -9,16 +9,15 @@
       </p>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
-        Referentie:
-        <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationTitle"></a>
-          <span v-else>{{ singlePub.publicationTitle }}</span>
+        Bron:
+        {{ cite(singlePub) }}
+        <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationContact"></a>
       </p>
       <p v-if="multiPub">
-        Referenties:
-        <span v-for="pub in pubs">
-          <br>
-          <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationTitle"></a>
-          <span v-else>{{ pub.publicationTitle }}</span>
+        Bronnen:
+        <span v-for="pub in pubs" style="display:block">
+          {{ cite(pub) }}
+          <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
       <p v-if="cls.agree">
@@ -47,7 +46,7 @@
 </template>
 
 <script>
-import {fromDate, urlify} from '../const.js'
+import { fromDate, urlify, fromPublication } from '../const.js'
 
 export default {
   props: ['cls', 'obj'],
@@ -62,10 +61,20 @@ export default {
       return this.pubs && this.pubs.length === 1 && this.pubs[0]
     },
     pubs () {
-      return this.cls.publication || []
+      return (this.cls.publication || []).map(fromPublication)
     }
   },
   methods: {
+    cite (pub) {
+      if (!pub) {
+        return
+      }
+      return [
+        (pub.author || 'Auteur'),
+        (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
+        (pub.publicationTitle || 'Titel')
+      ].join('')
+    },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {
         return !y1 ? '?' : y1 < 0 ? -y1 + ' v.C.' : y1 + ' n.C.'
@@ -149,5 +158,18 @@ export default {
   font-size: 16px;
   padding: 5px 0;
   white-space: pre-wrap;
+}
+.select2-container {
+  vertical-align: top!important;
+}
+.select2-container .select2-selection--single {
+  height: 36px!important;
+  border: 1px solid rgba(34, 36, 38, 0.15)!important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 34px!important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 34px!important;
 }
 </style>

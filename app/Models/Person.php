@@ -426,13 +426,12 @@ class Person extends Base implements Authenticatable
 
     /**
      * Indicates if the user has a public profile
-     * Note: The administrator has access in any case
      *
      * @return boolean
      */
     public function hasPublicProfile()
     {
-        return is_numeric($this->profileAccessLevel) && $this->profileAccessLevel > 0;
+        return is_numeric($this->profileAccessLevel) && $this->profileAccessLevel == 4;
     }
 
     /**
@@ -443,10 +442,8 @@ class Person extends Base implements Authenticatable
     public function getProfileAllowedRoles()
     {
         switch ($this->profileAccessLevel) {
-            case 1:
+            case 0:
                 return ['onderzoeker', 'administrator'];
-            case 2:
-                return ['onderzoeker', 'agentschap', 'administrator'];
             case 3:
                 return [
                     'administrator',

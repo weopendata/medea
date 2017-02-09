@@ -27,13 +27,24 @@
                 <i class="magnify icon"></i>
               </div>
             </div>
+            <google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
+              <rectangle
+                v-if="rectangle"
+                :bounds.sync="rectangle.bounds"
+                :options="rectangleOptions"
+              ></rectangle>
+              <marker
+                v-if="marker"
+                :position.sync="marker.position"
+              ></marker>
+            </google-map>
           </div>
         </div>
       </div>
       <div class="card-textual ui form">
         <div class="field">
           <label>Citeer deze vondstfiche</label>
-          <input type="text" :value="cite" readonly @click="selectThis">
+          <div class="cite" v-text="cite"></div>
         </div>
       </div>
       <div class="card-bar text-right" v-if="editable">
@@ -67,8 +78,11 @@
             <p>&nbsp;</p>
           </div>
           <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (user.email!==find.person.email)">
-            Security error #20984
-            <p>&nbsp;</p>
+            <div v-if="user.administrator">
+              U kan deze vondst zien omdat u administrator bent, maar kan niet valideren.
+              Om te kunnen valideren moet u eerst de validator rol krijgen.
+              <p>&nbsp;</p>
+            </div>
           </h1>
           <div v-if="find.object.objectValidationStatus == 'Afgeschermd'">
             Deze vondstfiche staat onder embargo.
@@ -94,6 +108,7 @@
 
 <script>
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
+import {load, Map as GoogleMap, Marker, Rectangle} from 'vue-google-maps'
 
 import AddClassification from './AddClassification'
 import Classification from './Classification'
@@ -102,19 +117,58 @@ import ObjectFeatures from './ObjectFeatures'
 import PhotoswipeThumb from './PhotoswipeThumb'
 import ValidationForm from './ValidationForm'
 
+import { findTitle, toPublicBounds } from '../const.js'
+
 export default {
   props: ['user', 'find'],
   data () {
+    const location = this.find.findSpot.location || {}
     return {
       feedback: {},
+      rectangleOptions: {
+        fillOpacity: 0.1,
+        strokeWeight: 1
+      },
+      map: {
+        center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
+        zoom: 11,
+        identifier: this.find.identifier,
+        title: findTitle(this.find),
+        position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
+      },
+      loaded: false,
       show: {
         validation: false
       }
     }
   },
   computed: {
+    location () {
+      return this.find.findSpot.location || {}
+    },
+    markerNeeded () {
+      return this.map.zoom < 21 - Math.log2(this.location.accuracy)
+    },
+    marker () {
+      return this.markerNeeded && {
+        title: findTitle(this.location),
+        position: {
+          lat: parseFloat(this.location.lat),
+          lng: parseFloat(this.location.lng)
+        }
+      }
+    },
+    rectangle (finds) {
+      return this.location.lat && this.markerNeeded && {
+        title: findTitle(this.location),
+        bounds: toPublicBounds(this.location)
+      }
+    },
+    findTitle () {
+      return findTitle(this.find)
+    },
     finder () {
-      return window.publicUserInfo
+      return window.publicUserInfo || {}
     },
     cite () {
       const d = new Date()
@@ -141,26 +195,10 @@ export default {
         (this.user.validator && s === 'Klaar voor validatie') ||
         this.user.administrator
       )
-    },
-    findTitle () {
-      // Not showing undefined and onbekend in title
-      var title = [
-        this.find.object.objectCategory || 'ongeïdentificeerd',
-        this.find.object.period,
-        this.find.object.objectMaterial
-      ].filter(f => f && f !== 'onbekend').join(', ')
-
-      title += ' (ID-' + this.find.identifier + ')'
-
-      return title;
     }
   },
-  methods: {
-    selectThis (evt) {
-      if (evt && evt.target) {
-        evt.target.select()
-      }
-    }
+  ready () {
+    load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
   },
   events: {
     initPhotoswipe (options) {
@@ -184,6 +222,9 @@ export default {
     AddClassification,
     Classification,
     DtCheck,
+    Rectangle,
+    Marker,
+    GoogleMap,
     ObjectFeatures,
     PhotoswipeThumb,
     ValidationForm,

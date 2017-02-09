@@ -4,7 +4,8 @@
     <div class="card card-center cls-card">
       <div class="card-textual">
         <add-classification-form :cls.sync="cls"></add-classification-form>
-        <p>
+        <p v-if="cls && cls.productionClassificationMainType">
+          <br>
           <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Toevoegen</button>
         </p>
       </div>
@@ -15,18 +16,18 @@
 <script>
 import AddClassificationForm from './AddClassificationForm'
 import Ajax from '../mixins/Ajax'
-import {EMPTY_CLS} from '../const.js'
+import { emptyClassification } from '../const.js'
 
 export default {
   props: ['object'],
   data () {
     return {
-      cls: EMPTY_CLS
+      cls: emptyClassification()
     }
   },
   computed: {
     submittable () {
-      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
+      return this.cls.productionClassificationMainType || this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'
@@ -38,7 +39,7 @@ export default {
     },
     submitSuccess ({data}) {
       this.$root.fetch()
-      this.cls = EMPTY_CLS
+      this.cls = emptyClassification()
     },
     submitError ({data}) {
       console.warn(data)

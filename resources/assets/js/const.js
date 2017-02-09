@@ -29,26 +29,93 @@ export function fromQuery (query) {
 
 // FindEvent helpers
 export function findTitle (find) {
-  // Not showing undefined and onbekend in title
-  var title = [
-    find.object.objectCategory,
+  if (!find) {
+    return 'Probleem met vondst'
+  }
+  const title = (find.object ? [
+    find.object.objectCategory || 'ongeïdentificeerd',
     find.object.period,
     find.object.objectMaterial
-  ].filter(f => f && f !== 'onbekend').join(', ')
+  ] : [
+    find.category || 'ongeïdentificeerd',
+    find.period,
+    find.material
+  ]).filter(f => f && f !== 'onbekend').join(', ')
 
   return title + ' (ID-' + find.identifier + ')'
 }
 
 // Classification helpers
-export const EMPTY_CLS = {
-	productionClassificationCulturePeople: '',
-	productionClassificationDescription: '',
-	productionClassificationRulerNation: '',
-	productionClassificationPeriod: '',
-	productionClassificationType: '',
-	startDate: '',
-	endDate: '',
-	publication: [],
+export function emptyClassification () {
+  return {
+    productionClassificationCulturePeople: '',
+    productionClassificationDescription: '',
+    productionClassificationMainType: '',
+    productionClassificationPeriod: '',
+    productionClassificationRulerNation: '',
+    productionClassificationSource: [],
+    productionClassificationType: '',
+    startDate: '',
+    endDate: '',
+    publication: [],
+  }
+}
+
+// Publication helpers
+const TYPE_AUTHOR = 'author'
+const TYPE_COAUTHOR = 'coauthor'
+const TYPE_PUBLISHER = 'publisher'
+
+const TYPE = 'publicationCreationActorType'
+const NAME = 'publicationCreationActorName'
+const ACTOR = 'publicationCreationActor'
+
+export function fromPublication (p) {
+  p = inert(p)
+  const creations = (p.publicationCreation || [])
+  const publisher = creations.find(a => !a[ACTOR] || a[ACTOR][TYPE] !== TYPE_AUTHOR) || {}
+
+  // Get author, their names and split them
+  let authors = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_AUTHOR)
+  authors = authors && authors[ACTOR] && authors[ACTOR][NAME].split('&', 2) || []
+
+  return Object.assign(p, {
+    author: (authors[0] || '').trim(),
+    coauthor: (authors[1] || '').trim(),
+    publisher: publisher[ACTOR] && publisher[ACTOR][NAME] || '',
+    pubTimeSpan: publisher.publicationCreationTimeSpan && publisher.publicationCreationTimeSpan.date || '',
+    pubLocation: publisher.publicationCreationLocation && publisher.publicationCreationLocation.publicationCreationLocationAppellation || ''
+  })
+}
+
+export function toPublication (p) {
+  p = inert(p)
+  const author = [p.author, p.coauthor].filter(Boolean).join(' & ')
+  return Object.assign(p, {
+    publicationCreation: [
+
+      // Include author if available
+      author && {
+        publicationCreationActor: {
+          [NAME]: author,
+          [TYPE]: TYPE_AUTHOR
+        }
+      } || null,
+
+      // Include publisher if available
+      (p.publisher || p.pubTimeSpan || p.pubLocation) && {
+        publicationCreationActor: p.publisher && {
+          [NAME]: p.publisher,
+          [TYPE]: TYPE_PUBLISHER
+        } || null,
+        publicationCreationTimeSpan: { date: p.pubTimeSpan },
+        publicationCreationLocation: p.pubLocation && {
+          publicationCreationLocationAppellation: p.pubLocation
+        }
+      } || null
+
+    ].filter(Boolean)
+  })
 }
 
 export function urlify (u) {
@@ -74,6 +141,9 @@ export function toMonth (d) {
 }
 
 export function fromDate (d) {
+  if (!d || d.length < 10) {
+    return d
+  }
   d = new Date(Date.parse(d))
   return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear()
 }

@@ -34,7 +34,7 @@ class ViewUserRequest extends Request
         // * The logged in user is viewing his own profile
         // * The user of the profile has a role that allows to view the profile (e.g. administrator)
         // and the logged in user has a role that belongs to that set
-        return ($this->person->hasPublicProfile() == 4 ||
+        return ($this->person->hasPublicProfile() ||
                     ! empty($request->user()) && (
                         $request->user()->id == $this->person->id ||
                         $request->user()->hasRole($this->person->getProfileAllowedRoles())

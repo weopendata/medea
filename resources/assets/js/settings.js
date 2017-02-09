@@ -21,6 +21,18 @@ new window.Vue({
     }
   },
   computed: {
+    biografieLabel() {
+      return [
+        this.roles.detectorist && 'Biografie',
+        (this.roles.vondstexpert || this.roles.registrator) && 'Projectachtergrond'
+      ].filter(Boolean).join('/')
+    },
+    biografiePlaceholder () {
+      return [
+        this.roles.detectorist && 'Schrijf hier kort iets over jezelf (optioneel).',
+        (this.roles.vondstexpert || this.roles.registrator) && 'Beschrijf hier kort je project, collectie of wetenschappelijke achtergrond.'
+      ].filter(Boolean).join('\n')
+    },
     detectoristArray () {
       return this.user && this.user.detectoristNumber && this.user.detectoristNumber.split('/') || ['OE', 'ERK', 'Metaaldetectorist', '', '']
     },

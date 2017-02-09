@@ -194,7 +194,7 @@ dd {
 	margin-top: 1.5em;
 	height: 50vh;
 }
-.mapview .card-help {
+.card-help {
 	position: absolute;
 	z-index: 3;
 	top: 0;
@@ -532,4 +532,26 @@ h4.required::after {
 .th-sortable.up>a::after {
   opacity: 1;
   background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==);
+}
+
+/* Using column isof field bacause spacing issue in classification */
+
+.field>.grid>.column>label {
+  display: block;
+  margin: 0em 0em 0.28571429rem 0em;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 0.92857143em;
+  font-weight: bold;
+  text-transform: none;
+}
+
+/* Formatting rules in forms */
+
+.message code {
+  margin: 0 .5em;
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #fff;
+  background-color: #333;
+  border-radius: 3px;
 }

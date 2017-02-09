@@ -34,7 +34,8 @@ class HomeController extends Controller
 
     public function about(Request $request)
     {
-        return view('static.about');
+        // Redirect to kirby
+        return redirect(env('CMS', 'http://medea-cms.weopendata.com'));
     }
 
     public function contact(Request $request)
