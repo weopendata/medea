@@ -131,7 +131,7 @@ export default {
       },
       map: {
         center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
-        zoom: 11,
+        zoom: 10,
         identifier: this.find.identifier,
         title: findTitle(this.find),
         position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
