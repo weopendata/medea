@@ -53,7 +53,6 @@
             <a href="/persons/{{ Auth::user()->id }}" @click.stop class="item">Profiel bekijken</a>
             <a href="/settings" @click.stop class="item">Profiel aanpassen</a>
             <div class="divider"></div>
-            <a href="/settings" @click.stop class="item">Instellingen</a>
             <a href="/logout" @click.stop class="item">Afmelden</a>
           </div>
         </div>
