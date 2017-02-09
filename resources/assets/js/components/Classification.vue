@@ -9,14 +9,14 @@
       </p>
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
-        Referentie:
-        <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationTitle"></a>
-          <span v-else>{{ singlePub.publicationTitle }}</span>
+        Bron:
+        {{ cite(singlePub) }}
+        <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationContact"></a>
       </p>
       <p v-if="multiPub">
-        Referenties:
-        <span v-for="pub in pubs">
-          <br>{{ cite(pub) }}
+        Bronnen:
+        <span v-for="pub in pubs" style="display:block">
+          {{ cite(pub) }}
           <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import {fromDate, urlify} from '../const.js'
+import { fromDate, urlify, fromPublication } from '../const.js'
 
 export default {
   props: ['cls', 'obj'],
@@ -61,7 +61,7 @@ export default {
       return this.pubs && this.pubs.length === 1 && this.pubs[0]
     },
     pubs () {
-      return this.cls.publication || []
+      return (this.cls.publication || []).map(fromPublication)
     }
   },
   methods: {
@@ -69,9 +69,11 @@ export default {
       if (!pub) {
         return
       }
-      return (pub.author || 'Auteur')
-        + ' (' + (pub.publicationYear || 'jaar') + '). ' +
+      return [
+        (pub.author || 'Auteur'),
+        (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
         (pub.publicationTitle || 'Titel')
+      ].join('')
     },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {

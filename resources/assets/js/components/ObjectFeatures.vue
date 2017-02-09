@@ -8,7 +8,7 @@
   <dl v-if="find.findSpot">
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
-    <dd>{{find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
+    <dd>{{find.findSpot.location.address && find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
   </dl>
   <dl v-if="finder&&finder.name">
     <dt-check v-if="validating" prop="finder.name"></dt-check>

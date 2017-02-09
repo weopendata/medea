@@ -27,6 +27,17 @@
                 <i class="magnify icon"></i>
               </div>
             </div>
+            <google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
+              <rectangle
+                v-if="rectangle"
+                :bounds.sync="rectangle.bounds"
+                :options="rectangleOptions"
+              ></rectangle>
+              <marker
+                v-if="marker"
+                :position.sync="marker.position"
+              ></marker>
+            </google-map>
           </div>
         </div>
       </div>
@@ -97,6 +108,7 @@
 
 <script>
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
+import {load, Map as GoogleMap, Marker, Rectangle} from 'vue-google-maps'
 
 import AddClassification from './AddClassification'
 import Classification from './Classification'
@@ -105,19 +117,53 @@ import ObjectFeatures from './ObjectFeatures'
 import PhotoswipeThumb from './PhotoswipeThumb'
 import ValidationForm from './ValidationForm'
 
-import { findTitle } from '../const.js'
+import { findTitle, toPublicBounds } from '../const.js'
 
 export default {
   props: ['user', 'find'],
   data () {
+    const location = this.find.findSpot.location || {}
     return {
       feedback: {},
+      rectangleOptions: {
+        fillOpacity: 0.1,
+        strokeWeight: 1
+      },
+      map: {
+        center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
+        zoom: 11,
+        identifier: this.find.identifier,
+        title: findTitle(this.find),
+        position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
+      },
+      loaded: false,
       show: {
         validation: false
       }
     }
   },
   computed: {
+    location () {
+      return this.find.findSpot.location || {}
+    },
+    markerNeeded () {
+      return this.map.zoom < 21 - Math.log2(this.location.accuracy)
+    },
+    marker () {
+      return this.markerNeeded && {
+        title: findTitle(this.location),
+        position: {
+          lat: parseFloat(this.location.lat),
+          lng: parseFloat(this.location.lng)
+        }
+      }
+    },
+    rectangle (finds) {
+      return this.location.lat && this.markerNeeded && {
+        title: findTitle(this.location),
+        bounds: toPublicBounds(this.location)
+      }
+    },
     findTitle () {
       return findTitle(this.find)
     },
@@ -151,6 +197,9 @@ export default {
       )
     }
   },
+  ready () {
+    load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
+  },
   events: {
     initPhotoswipe (options) {
       if (!window.PhotoSwipe) {
@@ -173,6 +222,9 @@ export default {
     AddClassification,
     Classification,
     DtCheck,
+    Rectangle,
+    Marker,
+    GoogleMap,
     ObjectFeatures,
     PhotoswipeThumb,
     ValidationForm,

@@ -73,7 +73,7 @@ const ACTOR = 'publicationCreationActor'
 export function fromPublication (p) {
   p = inert(p)
   const creations = (p.publicationCreation || [])
-  const publisher = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_PUBLISHER) || {}
+  const publisher = creations.find(a => !a[ACTOR] || a[ACTOR][TYPE] !== TYPE_AUTHOR) || {}
 
   // Get author, their names and split them
   let authors = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_AUTHOR)
@@ -83,7 +83,7 @@ export function fromPublication (p) {
     author: (authors[0] || '').trim(),
     coauthor: (authors[1] || '').trim(),
     publisher: publisher[ACTOR] && publisher[ACTOR][NAME] || '',
-    pubTimeSpan: publisher.publicationCreationTimeSpan || '',
+    pubTimeSpan: publisher.publicationCreationTimeSpan && publisher.publicationCreationTimeSpan.date || '',
     pubLocation: publisher.publicationCreationLocation && publisher.publicationCreationLocation.publicationCreationLocationAppellation || ''
   })
 }
@@ -108,7 +108,7 @@ export function toPublication (p) {
           [NAME]: p.publisher,
           [TYPE]: TYPE_PUBLISHER
         } || null,
-        publicationCreationTimeSpan: p.pubTimeSpan,
+        publicationCreationTimeSpan: { date: p.pubTimeSpan },
         publicationCreationLocation: p.pubLocation && {
           publicationCreationLocationAppellation: p.pubLocation
         }
