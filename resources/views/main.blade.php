@@ -104,25 +104,27 @@ medeaUser.name = '{{ Auth::user()->firstName }} {{ Auth::user()->lastName }}';
 medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
-<script src="/js/vendor.min.js?16nov"></script>
+
+@if (Config::get('app.debug'))
+  <script src="/js/vendor.js"></script>
+  <script type="text/javascript">
+  Vue.config.devtools = true
+  Vue.config.debug = true
+  </script>
+@else
+  <script src="/js/vendor.min.js?9feb"></script>
+@endif
 
 @section('script')
 <script src="{{ asset('js/users-admin.js') }}"></script>
 @show
 
 <script type="text/javascript">
-Vue.config.devtools = true
-Vue.config.debug = true
-</script>
-
-<script type="text/javascript">
 $('nav .ui.dropdown').dropdown()
 </script>
 
 @if (Config::get('app.debug'))
-<script type="text/javascript">
-document.write('<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript"><\/script>')
-</script>
+<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript" async defer></script>
 @endif
 </body>
 </html>
