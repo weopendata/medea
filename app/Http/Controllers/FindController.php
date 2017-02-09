@@ -68,6 +68,8 @@ class FindController extends Controller
 
         if (! empty($filters['embargo'])) {
             $filters['embargo'] = (bool) $filters['embargo'];
+        } else {
+            $filters['embargo'] = false;
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
