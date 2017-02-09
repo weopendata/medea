@@ -144,9 +144,9 @@
     <label for="research">Onderzoek</label>
     <textarea-growing id="research" :model.sync="reg.research" placeholder="Schrijf iets kort over je onderzoeksproject."></textarea>
   </div>
-  <div class="field" v-if="roles.detectorist||roles.registrator">
-    <label for="bio">Biografie</label>
-    <textarea-growing id="bio" :model.sync="reg.bio" placeholder="Schrijf een korte biografie."></textarea-growing>
+  <div class="field" v-if="roles.detectorist || roles.vondstexpert || roles.registrator">
+    <label for="bio">@{{ biografieLabel }}</label>
+    <textarea-growing id="bio" :model.sync="reg.bio" :placeholder="biografiePlaceholder"></textarea-growing>
   </div>
   <div class="field" v-if="roles.detectorist">
     <label for="email">Erkenningsnummer</label>
