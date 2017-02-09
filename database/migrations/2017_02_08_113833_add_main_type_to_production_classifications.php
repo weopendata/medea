@@ -48,7 +48,7 @@ class AddMainTypeToProductionClassifications extends Migration
      * @param  string $generalId
      * @return Node
      */
-    private function makeMainTypeNode(string $generalId)
+    private function makeMainTypeNode($generalId)
     {
         $node = $this->client->makeNode();
         $node->setProperty('name', 'productionClassificationMainType');
