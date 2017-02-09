@@ -16,8 +16,18 @@
         Lid van MEDEA sinds {{ $profile['created_at'] }}
     </p>
 
-    @if (!empty($profile['expertise']) || !empty($profile['bio']) || !empty($profile['research']))
+    @if (!empty($profile['expertise']) || !empty($profile['bio']) || !empty($profile['research']) || !empty($profile['function']) || !empty($profile['affiliation']))
         <h3>Over mij</h3>
+        @if (!empty($profile['function']))
+        <p>
+            <b>Functie</b>: {!! nl2br(e($profile['function'])) !!}
+        </p>
+        @endif
+        @if (!empty($profile['affiliation']))
+        <p>
+            <b>Instelling</b>: {!! nl2br(e($profile['affiliation'])) !!}
+        </p>
+        @endif
         @if (!empty($profile['research']))
         <p>
             <b>Onderzoek</b>: {!! nl2br(e($profile['research'])) !!}
