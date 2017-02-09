@@ -59,7 +59,6 @@ export default {
   data () {
     const showFacets = ls('showFacets') || {}
     return {
-      name: '',
       fields: window.fields,
       modificationFields: modificationFields,
       advanced: false,

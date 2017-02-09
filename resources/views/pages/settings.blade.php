@@ -254,5 +254,5 @@
 window.user = {!! json_encode($user) !!}
 window.roles = {!! json_encode($roles) !!}
 </script>
-<script src="{{ asset('js/settings.js') }}"></script>
+<script src="{{ asset('js/settings.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection

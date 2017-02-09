@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?{{ Config::get('app.version') }}"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - MEDEA</title>
 </head>
@@ -112,11 +112,10 @@ medeaUser.email = '{{ Auth::user()->email }}';
   Vue.config.debug = true
   </script>
 @else
-  <script src="/js/vendor.min.js?9feb"></script>
+  <script src="/js/vendor.min.js?{{ Config::get('app.version') }}"></script>
 @endif
 
 @section('script')
-<script src="{{ asset('js/users-admin.js') }}"></script>
 @show
 
 <script type="text/javascript">
