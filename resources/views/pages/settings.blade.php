@@ -157,14 +157,6 @@
     </div>
     <div class="field">
       <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showContactForm">
-        <label>
-          <b>Toon een contactformulier op mijn profiel.</b>
-        </label>
-      </div>
-    </div>
-    <div class="field">
-      <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden" v-model="user.showEmail">
         <label>
           <b>Toon mijn emailadres op mijn profiel.</b>
