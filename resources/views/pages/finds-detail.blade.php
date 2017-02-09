@@ -66,7 +66,7 @@ window.fields = {!! json_encode($fields) !!};
 window.publicUserInfo = {!! json_encode($publicUserInfo) !!};
 @endif
 </script>
-<script src="{{ asset('js/finds-detail.js') }}"></script>
+<script src="{{ asset('js/finds-detail.js') }}?{{ Config::get('app.version') }}"></script>
 <script src="{{ asset('assets/js/photoswipe.min.js') }}"></script>
 <link href="{{ asset('assets/css/photoswipe.min.css') }}" rel="stylesheet" type="text/css">
 @endsection

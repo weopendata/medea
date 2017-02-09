@@ -52,5 +52,5 @@ window.filterState = {!! json_encode($filterState) !!};
 window.fields = {!! json_encode($fields) !!};
 window.link = {!! json_encode($link) !!};
 </script>
-<script src="{{ asset('js/finds-list.js') }}"></script>
+<script src="{{ asset('js/finds-list.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection

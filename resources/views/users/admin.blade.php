@@ -71,5 +71,5 @@
 <script type="text/javascript">
 window.users = {!! json_encode($users) !!};
 </script>
-<script src="{{ asset('js/users-admin.js') }}"></script>
+<script src="{{ asset('js/users-admin.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection

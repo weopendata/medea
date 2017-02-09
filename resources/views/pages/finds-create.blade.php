@@ -480,5 +480,5 @@ window.initialFind = {!! json_encode($find) !!};
 console.log('finds.edit:', window.initialFind)
 @endif
 </script>
-<script src="{{ asset('js/finds-create.js') }}"></script>
+<script src="{{ asset('js/finds-create.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection

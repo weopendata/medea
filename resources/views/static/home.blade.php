@@ -197,5 +197,5 @@
 @endsection
 
 @section('script')
-<script src="{{ asset('js/home.js') }}"></script>
+<script src="{{ asset('js/home.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection
