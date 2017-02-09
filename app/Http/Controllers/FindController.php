@@ -66,10 +66,8 @@ class FindController extends Controller
             $filters['myfinds'] = $request->user()->email;
         }
 
-        $filters['embargo'] = 'false';
-
-        if (! empty($filters['embargo'])) {
-            $filters['embargo'] = (string) $filters['embargo'];
+        if (! isset($filters['embargo'])) {
+            $filters['embargo'] = 'false';
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
