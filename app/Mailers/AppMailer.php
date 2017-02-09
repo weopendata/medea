@@ -156,6 +156,23 @@ class AppMailer
     }
 
     /**
+     * Send an email to the user that has added a new find
+     *
+     * @param  Person  $user   The user that has created the find
+     * @param  string  $title  The title of the find
+     * @param  integer $findId The ID of the find
+     * @return void
+     */
+    public function sendNewFindEmail(Person $user, $title, $findId)
+    {
+        $this->to = $user->email;
+        $this->view = 'notifications.emails.newfind';
+        $this->data = compact('user', 'title', 'findId');
+        $this->subject = 'Nieuwe vondst';
+        $this->deliver();
+    }
+
+    /**
      * Send an email to a certain person through the platform
      *
      * @param  string $message

@@ -68,22 +68,7 @@ class ObjectController extends Controller
     {
         $find = $this->finds->expandValues($this->objects->getRelatedFindEventId($objectId));
 
-        $title = 'ongeïdentificeerd';
-
-        if (! empty($find['object']['objectCategory'])) {
-            $title = $find['object']['objectCategory'] . ', ';
-        }
-
-        if (! empty($find['object']['period'])) {
-            $title .= $find['object']['period'] . ', ';
-        }
-
-        if (! empty($find['object']['objectMaterial'])) {
-            $title .= $find['object']['objectMaterial'];
-        }
-
-        $title = rtrim($title, ', ');
-        $title .= ' ' . '(ID-' . $find['identifier'] . ')';
+        $title = makeFindTitle($find);
 
         $message = "Uw vondst: $title, werd behandeld. De nieuwe status is: " . $input['objectValidationStatus'];
 

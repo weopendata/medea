@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\FindEvent;
-use App\Repositories\FindRepository;
-use App\Repositories\ObjectRepository;
-use App\Repositories\ListValueRepository;
-use Illuminate\Support\Facades\Auth;
-use App\Repositories\UserRepository;
 use App\Helpers\Pager;
 use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\ShowFindRequest;
+use App\Mailers\AppMailer;
+use App\Models\FindEvent;
 use App\Models\Person;
+use App\Repositories\FindRepository;
+use App\Repositories\ListValueRepository;
+use App\Repositories\ObjectRepository;
+use App\Repositories\UserRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PiwikTracker;
 
 /**
@@ -193,7 +194,11 @@ class FindController extends Controller
         try {
             $findId = $this->finds->store($input);
 
-            // Log the create event
+            // Send a confirmation email to the user
+            $input['identifier'] = $findId;
+            app(AppMailer::class)->sendNewFindEmail($user, makeFindTitle($input), $findId);
+
+            // and log the create event
             $this->registerPiwikEvent($user->id, 'Create', $input['object']['objectValidationStatus']);
 
             return response()->json(['id' => $findId, 'url' => '/finds/' . $findId]);
