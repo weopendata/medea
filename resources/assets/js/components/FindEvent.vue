@@ -43,7 +43,7 @@
 
 <script>
 import ObjectFeatures from './ObjectFeatures';
-import {fromDate} from '../const.js'
+import { fromDate, findTitle } from '../const.js'
 
 export default {
   props: ['user', 'find'],
@@ -78,14 +78,7 @@ export default {
       return this.uri + '/edit'
     },
     findTitle () {
-      return [
-        this.find.category || 'ongeïdentificeerd',
-        this.find.period,
-        this.find.material,
-        '(ID-' + this.find.identifier + ')'
-
-        // The line below will join every item together if it's not empty and not 'onbekend'
-      ].filter(f => f && f !== 'onbekend').join(', ')
+      return findTitle(this.find)
     }
   },
   methods: {

@@ -105,6 +105,8 @@ import ObjectFeatures from './ObjectFeatures'
 import PhotoswipeThumb from './PhotoswipeThumb'
 import ValidationForm from './ValidationForm'
 
+import { findTitle } from '../const.js'
+
 export default {
   props: ['user', 'find'],
   data () {
@@ -116,8 +118,11 @@ export default {
     }
   },
   computed: {
+    findTitle () {
+      return findTitle(this.find)
+    },
     finder () {
-      return window.publicUserInfo
+      return window.publicUserInfo || {}
     },
     cite () {
       const d = new Date()
@@ -144,18 +149,6 @@ export default {
         (this.user.validator && s === 'Klaar voor validatie') ||
         this.user.administrator
       )
-    },
-    findTitle () {
-      // Not showing undefined and onbekend in title
-      var title = [
-        this.find.object.objectCategory || 'ongeïdentificeerd',
-        this.find.object.period,
-        this.find.object.objectMaterial
-      ].filter(f => f && f !== 'onbekend').join(', ')
-
-      title += ' (ID-' + this.find.identifier + ')'
-
-      return title;
     }
   },
   events: {

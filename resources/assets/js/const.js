@@ -29,12 +29,18 @@ export function fromQuery (query) {
 
 // FindEvent helpers
 export function findTitle (find) {
-  // Not showing undefined and onbekend in title
-  var title = [
-    find.object.objectCategory,
+  if (!find) {
+    return 'Probleem met vondst'
+  }
+  const title = (find.object ? [
+    find.object.objectCategory || 'ongeïdentificeerd',
     find.object.period,
     find.object.objectMaterial
-  ].filter(f => f && f !== 'onbekend').join(', ')
+  ] : [
+    find.category || 'ongeïdentificeerd',
+    find.period,
+    find.material
+  ]).filter(f => f && f !== 'onbekend').join(', ')
 
   return title + ' (ID-' + find.identifier + ')'
 }
