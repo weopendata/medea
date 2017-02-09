@@ -234,6 +234,10 @@ class FindController extends Controller
             }
         }
 
+        if (empty($user) && $find['object']['embargo']) {
+            abort(401);
+        }
+
         $users = new UserRepository();
 
         // Check if the user of the find allows their name to be displayed on the find details

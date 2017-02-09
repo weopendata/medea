@@ -44,13 +44,14 @@ class DataManagement extends Command
      */
     public function handle()
     {
-        $this->info("Warning! Any changes you commit through this command immediatly effect the data that is withing the Neo4j of the MEDEA project.");
+        $this->info('Warning! Any changes you commit through this command immediatly effect the data that is withing the Neo4j of the MEDEA project.');
 
-        $this->info("Choose from the following commands: (enter the number)");
-        $this->info("1. Remove all finds.");
-        $this->info("2. Remove all users.");
+        $this->info('Choose from the following commands: (enter the number)');
+        $this->info('1. Remove all finds.');
+        $this->info('2. Remove all users.');
+        $this->info('3. Remove single find.');
 
-        $choice = $this->ask("Enter your choice of action: ");
+        $choice = $this->ask('Enter your choice of action: ');
         $this->executeCommand($choice);
     }
 
@@ -63,9 +64,21 @@ class DataManagement extends Command
             case 2:
                 $this->removeAllUsers();
                 break;
+            case 3:
+                $this->removeSingleFind();
+                break;
             default:
                 break;
         }
+    }
+
+    private function removeSingleFind()
+    {
+        $id = $this->ask('Enter the ID of the find we can remove: ');
+
+        $this->finds->delete($id);
+
+        $this->info('Removed find with ID ' . $id);
     }
 
     private function removeAllUsers()
@@ -86,7 +99,7 @@ class DataManagement extends Command
             $count++;
         }
 
-        $this->info("");
+        $this->info('');
         $this->info("Removed $count Person nodes.");
     }
 
@@ -108,7 +121,7 @@ class DataManagement extends Command
             $count++;
         }
 
-        $this->info("");
+        $this->info('');
         $this->info("Removed $count FindEvent nodes.");
     }
 }
