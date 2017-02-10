@@ -200,7 +200,7 @@
     </div>
     <div class="five wide field" v-if="show.map">
       <label>&nbsp;</label>
-      <button v-if="show.map" @click.prevent="reverseGeocode" class="ui button">Omzetten naar adres</button>
+      <button v-if="show.map" @click.prevent="reverseGeocode" class="ui button">Coördinaten bevestigen</button>
     </div>
   </div>
   <div class="ui message" v-if="(show.co||show.map)&&!HelpText.create">
@@ -219,19 +219,22 @@
   </p>
   <ul>
   <li>
-    Plaats je object op een egale achtergrond die goed contrasteert met kleur van object (bij voorkeur wit).
-Zorg voor goede belichting, die de details van het object duidelijk zichtbaar maakt. Vermijd scherpe schaduwen. Belicht eventueel van verschillende kanten, of gebruik een wit blad om licht te reflecteren. Daglicht (geen direct zonlicht) levert vaak goede resultaten op.
+    Gebruik een witte achtergrond.
   </li>
   <li>
-Zorg dat er steeds een schaallat op de foto staat. Als je geen schaallat bij de hand hebt, download dan <a href="http://static1.squarespace.com/static/50edd649e4b0829d0c5030a0/t/55f48a78e4b0a0b78958f884/1442089592936/Scales.pdf">dit pdf-bestand</a>, druk het af (let op dat de afdrukgrootte ingesteld staat op 100%!), kleef eventueel op dun karton, en knip de benodigde schaallatjes uit.
+    Maak gebruik van natuurlijk daglicht indien mogelijk, maar geen direcht zonlicht.
   </li>
   <li>
-Zorg dat je foto goed is scherpgesteld. Gebruik eventueel de ‘macro’-stand van je fototoestel.
-Plaats het object centraal en voldoende groot op de foto. Snijd je foto eventueel bij na het nemen om overtollige witruimte te verwijderen.
+    Zorg voor een schaallat.
   </li>
   <li>
-Zorg dat je foto een voldoende resolutie heeft. (best hoger dan 1600x900)
-Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van andere invalshoeken of details wanneer dat nodig is om het object goed te documenteren.
+    Ga niet te dichtbij je onderwerp, snij liever achteraf bij.
+  </li>
+  <li>
+    Minimaal twee invalshoeken (boven en zij/achter). Minimumresolutie 400x400 pixels, richtgrootte 1600x900 of meer.
+  </li>
+  <li>
+    <a target="_blank" href="https://blog.vondsten.be/tips/vondstfotografie">Meer tips</a>
   </li>
   </ul>
   <div class="field cleared">
@@ -394,8 +397,8 @@ Neem verschillende foto’s, minstens van voor- en achterkant, en eventuele van 
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
   <div class="ui message" v-if="!HelpText.create">
     <p>
-      Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd en gepubliceerd kan worden door een validator. Deze krijgt je identiteit en de exacte vondstlocatie niet te zien. Na publicatie kunnen experten en het brede publiek je vondst (maar niet de exacte vondstlocatie) raadplegen. 
-      <br><b>Let wel</b>: na versturen kun je de meeste velden niet meer wijzigen, tenzij met tussenkomst van de databeheerder. Als je niet klaar bent met deze fiche, kies er dan voor om ze tijdelijk op te slaan als een voorlopige versie. 
+      Kies hier of je deze vondstfiche wil doorsturen, zodat de vondst gevalideerd en gepubliceerd kan worden door een validator. Deze krijgt je identiteit en de exacte vondstlocatie niet te zien. Na publicatie kunnen experten en het brede publiek je vondst (maar niet de exacte vondstlocatie) raadplegen.
+      <br><b>Let wel</b>: na versturen kun je de meeste velden niet meer wijzigen, tenzij met tussenkomst van de databeheerder. Als je niet klaar bent met deze fiche, kies er dan voor om ze tijdelijk op te slaan als een voorlopige versie.
     </p>
   </div>
 

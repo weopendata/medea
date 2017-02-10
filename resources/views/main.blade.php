@@ -26,15 +26,15 @@
         <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}">Over MEDEA</a>
       @else
         <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}">Over MEDEA</a>
-        <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}/news">Nieuws</a>
-        <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}/guidelines">Guidelines</a>
+        {{--<a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}/news">Nieuws</a>--}}
+        {{--<a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}/guidelines">Guidelines</a>--}}
       @endif
 
       <div class="right menu">
-        <a href="#" class="item {{ Request::is('help') ? 'active' : '' }}" onclick="startIntro();return false">Handleiding</a>
         @if (Auth::guest())
         <a href="/login" class="right floated item {{ (Request::is('login') ? 'active' : '') }}">Log in</a>
         @else
+        <a href="#" class="item {{ Request::is('help') ? 'active' : '' }}" onclick="startIntro();return false">Handleiding</a>
         <div class="ui top right pointing dropdown link item item-notif">
           <span class="text"><span class="ui red circular label" v-if="notifUnread" v-text="notifUnread" v-cloak></span> Meldingen</span>
           <i class="dropdown icon"></i>
@@ -68,11 +68,11 @@
 <footer>
   <div class="ui container">
     <div style="float:right">
-      <a href="mailto:pdeckers@vub.ac.be">Contact</a> &nbsp; &middot; &nbsp;
+      <a target="_blank" href="https://blog.vondsten.be/over-medea/contact">Contact</a> &nbsp; &middot; &nbsp;
       <a href="/feedback">Feedback</a>
     </div>
     <p>
-      <a href="/voorwaarden">Gebruikersvoorwaarden</a>
+      <a href="https://blog.vondsten.be/gebruikersvoorwaarden">Gebruikersvoorwaarden</a>
     </p>
     <p>
       <a href="https://creativecommons.org/licenses/by-nc/4.0/">
