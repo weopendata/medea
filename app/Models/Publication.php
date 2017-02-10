@@ -135,7 +135,7 @@ class Publication extends Base
             $dateNode = $this->createValueNode(
                 'date',
                 ['E50', $generalId, 'date'],
-                $publicationCreation['publicationCreationTimeSpan']
+                $publicationCreation['publicationCreationTimeSpan']['date']
             );
 
             $pubCreationTsNode->relateTo($dateNode, 'P78')->save();
