@@ -6,7 +6,7 @@
 </head>
 <body>
     <p>
-        De vondst, {{ $title }} werd behandle door een validator.<a href='{{ url("/finds/$findId") }}'>Klik hier</a> om de vondst te bekijken.
+        De vondst, {{ $title }} werd behandeld door een validator.<a href='{{ url("/finds/$findId") }}'>Klik hier</a> om de vondst te bekijken.
     </p>
 </body>
 </html>
