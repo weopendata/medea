@@ -22,8 +22,7 @@ class FindApiRequest extends Request
 
         $personalFindsOnly = ! empty($input['myfinds']) && $input['myfinds'] == 'true';
 
-        //$embargoEnabled = ! empty($request->input('Afgeschermd')) && $request->input('Afgeschermd') == 'true';
-        $embargoEnabled = false;
+        $embargoEnabled = isset($input['embargo']) ? $input['embargo'] : 'false';
 
         // Default validation status is "Gepubliceerd", this is also
         // applied in the API controller
@@ -42,7 +41,7 @@ class FindApiRequest extends Request
      *
      * @param boolean $personalFindsOnly
      * @param string  $status
-     * @param boolean $embargo
+     * @param string  $embargo
      * @param Person  $user
      *
      * @return boolean
@@ -71,7 +70,7 @@ class FindApiRequest extends Request
             }
 
             if (! $this->userHasRoleIn($userRoles, $this->getRolesForEmbargo())
-                && $embargo && $embargo != 'false'
+                && $embargo != 'false'
                 && ! $personalFindsOnly
             ) {
                 abort('403');
