@@ -38,10 +38,10 @@ class ObjectController extends Controller
 
         $input['timestamp'] = date('c');
 
-        $embargo = false;
+        $embargo = 'false';
 
         if (! empty($input['embargo'])) {
-            $embargo = $input['embargo'];
+            $embargo = (string) $input['embargo'];
         }
 
         // The third argument must be the whole validation input

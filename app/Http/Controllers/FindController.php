@@ -66,8 +66,8 @@ class FindController extends Controller
             $filters['myfinds'] = $request->user()->email;
         }
 
-        if (! empty($filters['embargo'])) {
-            $filters['embargo'] = (bool) $filters['embargo'];
+        if (! isset($filters['embargo'])) {
+            $filters['embargo'] = 'false';
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
@@ -103,8 +103,7 @@ class FindController extends Controller
                         $find['lat'] = $lat; //round(($find['lat'] / 2), 2) * 2;
                         $find['lng'] = $lon; //round(($find['lng'] / 2), 2) * 2;
 
-                        $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
-                        $find['accuracy'] = max(7000, $accuracy);
+                        $find['accuracy'] = 7000;
                     }
                 }
 
@@ -223,13 +222,20 @@ class FindController extends Controller
     {
         $find = $request->getFind();
 
+        $user = $request->user();
+
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
         if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
             && ! in_array('onderzoeker', $user->getRoles())) {
             if (! empty($find['findSpot']['location']['lat'])) {
-                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat'] / 2), 2) * 2;
-                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng'] / 2), 2) * 2;
+                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
+                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
+                $find['findSpot']['location']['accuracy'] = 7000;
             }
+        }
+
+        if (empty($user) && $find['object']['embargo']) {
+            abort(401);
         }
 
         $users = new UserRepository();

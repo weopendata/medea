@@ -129,8 +129,8 @@ class FindController extends Controller
             }
         }
 
-        if (! empty($filters['embargo'])) {
-            $filters['embargo'] = (bool) $filters['embargo'];
+        if (! isset($filters['embargo'])) {
+            $filters['embargo'] = 'false';
         }
 
         return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');

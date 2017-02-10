@@ -105,7 +105,7 @@ class Object extends Base
         ],
         [
             'name' => 'embargo',
-            'default_value' => false
+            'default_value' => 'false'
         ],
         [
             'name' => 'validated_at',
@@ -127,6 +127,18 @@ class Object extends Base
         if (! empty($properties)) {
             $this->updateFtsField($properties);
         }
+    }
+
+    /**
+     * Force the full text field to be recomputed
+     *
+     * @return void
+     */
+    public function computeFtsField()
+    {
+        $object = $this->getValues();
+
+        $this->updateFtsField($object);
     }
 
     /**
@@ -154,6 +166,11 @@ class Object extends Base
                 $description .= $value . ' ';
             }
         }
+
+        // Through recursion we can safely say that the ID of the find will be one less
+        // than the ID of object, this is not a very safe way however
+        // The field should be set through the repository instead of in this object
+        $description .= $this->getNode()->getId() - 1;
 
         $this->getNode()->setProperty('fulltext_description', $description)->save();
     }

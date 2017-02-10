@@ -31,6 +31,9 @@
         <p>
           <img src="/assets/img/help-marker.png" height="40px"> Precieze vondstlocatie is enkel zichtbaar voor eigen vondsten.
         </p>
+        <p>
+          <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
+        </p>
       </div>
       <google-map :center.sync="map.center" :zoom.sync="map.zoom">
           <rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></rectangle>

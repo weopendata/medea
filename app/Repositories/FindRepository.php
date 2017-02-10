@@ -103,7 +103,7 @@ class FindRepository extends BaseRepository
      *
      * @param array $filters
      *
-     * @return
+     * @return array
      */
     public function getAllWithFilter(
         $filters,
@@ -283,11 +283,10 @@ class FindRepository extends BaseRepository
         }
 
         foreach ($filterProperties as $property => $config) {
-            if (! empty($filters[$property])) {
+            if (isset($filters[$property])) {
                 $matchStatements[] = $config['match'];
                 $whereStatements[] = $config['where'];
                 $variables[$config['nodeName']] = $filters[$property];
-
                 if (! empty($config['with'])) {
                     $withStatement[] = $config['with'];
                 }

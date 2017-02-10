@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Everyman\Neo4j\Client;
 use App\Repositories\UserRepository;
 
 class DatabaseSeeder extends Seeder
@@ -26,15 +25,17 @@ class DatabaseSeeder extends Seeder
         $label = $client->makeLabel('Person');
 
         // Get all of the Person node with the admin email
-        $nodes = $label->getNodes("email", "foo@bar.com");
+        $nodes = $label->getNodes('email', 'foo@bar.com');
 
         if ($nodes->count() == 0) {
             $users = new UserRepository();
 
+            $password = env('ADMIN_PASSWORD', str_random(30));
+
             $admin = [
                 'firstName' => 'Medea',
                 'lastName' => 'Admin',
-                'password' => 'foobar',
+                'password' => $password,
                 'email' => 'foo@bar.com',
                 'verified' => true,
                 'description' => 'Dit is de generieke admin user van het MEDEA platform.',
@@ -52,9 +53,11 @@ class DatabaseSeeder extends Seeder
 
             $users->store($admin);
 
-            $this->command->info("An admin user was created.");
+            $this->command->info('An admin user was created.');
+            $this->command->info('The admin password is: ' . $password);
+            $this->command->info('This password will never be displayed again so make sure you save it somewhere.');
         } else {
-            $this->command->info("The admin user already exists.");
+            $this->command->info('The admin user already exists.');
         }
 
         // Seed the values in the lists of MEDEA

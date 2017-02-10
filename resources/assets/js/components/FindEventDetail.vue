@@ -28,15 +28,15 @@
               </div>
             </div>
             <google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
+              <marker
+                v-if="markerNeeded"
+                :position.sync="markerPosition"
+              ></marker>
               <rectangle
-                v-if="rectangle"
-                :bounds.sync="rectangle.bounds"
+                v-else
+                :bounds.sync="rectangleBounds"
                 :options="rectangleOptions"
               ></rectangle>
-              <marker
-                v-if="marker"
-                :position.sync="marker.position"
-              ></marker>
             </google-map>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default {
       },
       map: {
         center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
-        zoom: 11,
+        zoom: 10,
         identifier: this.find.identifier,
         title: findTitle(this.find),
         position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
@@ -147,22 +147,17 @@ export default {
       return this.find.findSpot.location || {}
     },
     markerNeeded () {
+      console.log(this.location.lat)
       return this.map.zoom < 21 - Math.log2(this.location.accuracy)
     },
-    marker () {
-      return this.markerNeeded && {
-        title: findTitle(this.location),
-        position: {
-          lat: parseFloat(this.location.lat),
-          lng: parseFloat(this.location.lng)
-        }
+    markerPosition () {
+      return {
+        lat: parseFloat(this.location.lat),
+        lng: parseFloat(this.location.lng)
       }
     },
-    rectangle (finds) {
-      return this.location.lat && this.markerNeeded && {
-        title: findTitle(this.location),
-        bounds: toPublicBounds(this.location)
-      }
+    rectangleBounds () {
+      return toPublicBounds(this.location)
     },
     findTitle () {
       return findTitle(this.find)
