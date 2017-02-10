@@ -6,7 +6,13 @@
 </head>
 <body>
     <p>
-        De vondst, {{ $title }} werd behandeld door een validator. <a href='{{ url("/finds/$findId") }}'>Klik hier</a> om de vondst te bekijken.
+        Hartelijk dank voor je melding van de volgende vondst op MEDEA:
+    <p>
+    <p>
+        {{ $title }}
+    </p>
+    <p>
+        Deze werd ondertussen nagekeken door een validator. <a href='{{ url("/finds/$findId") }}'>Klik hier</a> om de vondst te bekijken.
     </p>
 </body>
 </html>
