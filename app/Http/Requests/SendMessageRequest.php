@@ -28,7 +28,8 @@ class SendMessageRequest extends Request
         $person = new Person();
         $person->setNode($user);
 
-        return $person->isContactable();
+        // Only sent a message when the person allows to do so, or the user that wants to send a message is an admin
+        return $person->isContactable() || $request->user()->hasRole('administrator');
     }
 
     /**

@@ -177,13 +177,14 @@ class AppMailer
      *
      * @param  string $message
      * @param  Person $user
+     * @param  Person $sender
      * @return void
      */
-    public function sendPlatformMessage($message, $user)
+    public function sendPlatformMessage($message, $recipient, $sender)
     {
-        $this->to = $user->email;
+        $this->to = $recipient->email;
         $this->view = 'notifications.emails.privatemessage';
-        $this->data = ['message' => $message, 'user' => $user];
+        $this->data = ['message' => $message, 'sender' => $sender];
         $this->subject = 'MEDEA - Nieuw bericht';
         $this->deliver();
     }

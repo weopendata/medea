@@ -21,10 +21,10 @@ class MessageController extends Controller
         // Get the user
         $userNode = $users->getById($request->input('user_id'));
 
-        $user = new Person();
-        $user->setNode($userNode);
+        $recipient = new Person();
+        $recipient->setNode($userNode);
 
-        $mailer->sendPlatformMessage($request->input('message'), $user);
+        $mailer->sendPlatformMessage($request->input('message'), $recipient, $request->user());
 
         return redirect()->back()->with('message', 'Uw bericht werd verstuurd!');
     }

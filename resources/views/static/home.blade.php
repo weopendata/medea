@@ -184,7 +184,7 @@
     <br>
   </div>
   <p>
-    Door te registreren verklaar je jezelf akkoord met de <a href="/voorwaarden">gebruikersvoorwaarden en het privacy-beleid</a> van MEDEA.
+    Door te registreren verklaar je jezelf akkoord met de <a href="https://blog.vondsten.be/gebruikersvoorwaarden">gebruikersvoorwaarden en het privacy-beleid</a> van MEDEA.
   </p>
   <div class="field">
     <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Registreer</button>

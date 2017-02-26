@@ -69,11 +69,12 @@ export default {
       if (!pub) {
         return
       }
+      console.log(pub)
       return [
         (pub.author || 'Auteur'),
         (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
         (pub.publicationTitle || 'Titel')
-      ].join('')
+      ].join('') + ', ' + pub.pubLocation
     },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {
