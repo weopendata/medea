@@ -119,7 +119,7 @@ LEFT JOIN piwik_log_action as cat ON piwik_log_link_visit_action.idaction_event_
 ORDER BY `piwik_log_link_visit_action`.`server_time`  ASC;
 ```
 
-    scp medea.weopendata.com:/tmp/result.csv .
+    scp host:/tmp/result.csv .
 
 ## Trivia
 
