@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Everyman\Neo4j\Client;
 
 /**
  * This class' sole purpose is to provide an array of values that can be
@@ -10,21 +9,21 @@ use Everyman\Neo4j\Client;
 class ListValueSeeder extends Seeder
 {
     private $listNames = [
-        "MaterialAuthorityList",
-        "Roles",
-        "SearchAreaTypeAuthorityList",
-        "FindSpotTypeAuthorityList",
-        "ObjectCategoryAuthorityList",
-        "ProductionClassificationPeriodAuthorityList",
-        "DimensionTypeAuthorityList",
-        "DimensionUnitAuthorityList",
-        "InscriptionTypeAuthorityList",
-        "ProductionTechniqueTypeAuthorityList",
-        "CollectionTypeAuthorityList",
-        "ProductionClassificationTypeAuthorityList",
-        "ProductionClassificationCenturyAuthorityList",
-        "ProductionClassificationRulerNationAuthorityList",
-        "ProductionClassificationCultureAuthorityList",
+        'MaterialAuthorityList',
+        'Roles',
+        'SearchAreaTypeAuthorityList',
+        'FindSpotTypeAuthorityList',
+        'ObjectCategoryAuthorityList',
+        'ProductionClassificationPeriodAuthorityList',
+        'DimensionTypeAuthorityList',
+        'DimensionUnitAuthorityList',
+        'InscriptionTypeAuthorityList',
+        'ProductionTechniqueTypeAuthorityList',
+        'CollectionTypeAuthorityList',
+        'ProductionClassificationTypeAuthorityList',
+        'ProductionClassificationCenturyAuthorityList',
+        'ProductionClassificationRulerNationAuthorityList',
+        'ProductionClassificationCultureAuthorityList',
     ];
 
     public function run()
@@ -71,52 +70,53 @@ class ListValueSeeder extends Seeder
     public function getMaterialAuthorityList()
     {
         return [
-            "koperlegering",
-            "ijzer",
-            "lood",
-            "tin, loodtin",
-            "goud",
-            "zilver",
+            'koperlegering',
+            'ijzer',
+            'lood',
+            'tin, loodtin',
+            'goud',
+            'zilver',
         ];
     }
 
     public function getRoles()
     {
         return [
-            "detectorist",
-            "onderzoeker",
-            "registrator",
-            "expert",
+            'detectorist',
+            'onderzoeker',
+            'registrator',
+            'expert',
         ];
     }
 
     public function getSearchAreaTypeAuthorityList()
     {
         return [
-            "weide",
-            "akker",
-            "strand",
-            "hof",
-            "gestorte grond",
-            "andere",
+            'weide',
+            'akker',
+            'strand',
+            'hof',
+            'gestorte grond',
+            'andere',
         ];
     }
 
     public function getFindSpotTypeAuthorityList()
     {
         return [
-            "weide",
-            "akker",
-            "strand",
-            "hof",
-            "gestorte grond",
-            "andere",
+            'weide',
+            'akker',
+            'strand',
+            'hof',
+            'gestorte grond',
+            'andere',
         ];
     }
 
     public function getObjectCategoryAuthorityList()
     {
         return [
+            'andere',
             'armband',
             'baar',
             'balansonderdeel',
@@ -134,6 +134,7 @@ class ListValueSeeder extends Seeder
             'hengsel/handvat',
             'hoefijzer',
             'insigne',
+            'kandelaar (of onderdeel)',
             'kledinghaak',
             'knoop',
             'lakenloodje',
@@ -141,6 +142,7 @@ class ListValueSeeder extends Seeder
             'mantelspeld',
             'mes',
             'meubelbeslag',
+            'munitie',
             'munt',
             'muntgewicht',
             'musketkogel',
@@ -152,9 +154,11 @@ class ListValueSeeder extends Seeder
             'rekenpenning',
             'riem- en leerbeslag',
             'riemtong',
-            'schedebeschermer',
+            'schedebeslag',
             'schildknop',
             'sleutel',
+            'sleutel',
+            'slot (of onderdeel)',
             'speelgoed',
             'speelstuk',
             'speerpunt',
@@ -168,129 +172,128 @@ class ListValueSeeder extends Seeder
             'vuurwapenonderdeel of -accessoire',
             'zegelstempel',
             'zwaard(onderdeel)',
-            'andere',
         ];
     }
 
     public function getProductionClassificationPeriodAuthorityList()
     {
         return [
-            "Bronstijd",
-            "IJzertijd",
-            "Romeins",
-            "middeleeuws",
-            "postmiddeleeuws",
-            "modern",
-            "Wereldoorlog I",
-            "Wereldoorlog II",
+            'Bronstijd',
+            'IJzertijd',
+            'Romeins',
+            'middeleeuws',
+            'postmiddeleeuws',
+            'modern',
+            'Wereldoorlog I',
+            'Wereldoorlog II',
         ];
     }
 
     public function getProductionClassificationCultureAuthorityList()
     {
         return [
-            "Bronstijd",
-            "IJzertijd",
-            "Romeins",
-            "middeleeuws",
-            "postmiddeleeuws",
-            "modern",
-            "Wereldoorlog I",
-            "Wereldoorlog II",
+            'Bronstijd',
+            'IJzertijd',
+            'Romeins',
+            'middeleeuws',
+            'postmiddeleeuws',
+            'modern',
+            'Wereldoorlog I',
+            'Wereldoorlog II',
         ];
     }
 
     public function getDimensionTypeAuthorityList()
     {
         return [
-            "lengte",
-            "breedte",
-            "diepte",
-            "omtrek",
-            "diameter",
-            "gewicht",
+            'lengte',
+            'breedte',
+            'diepte',
+            'omtrek',
+            'diameter',
+            'gewicht',
         ];
     }
 
     public function getDimensionUnitAuthorityList()
     {
         return [
-            "millimeter",
-            "centimeter",
-            "meter",
-            "gram",
+            'millimeter',
+            'centimeter',
+            'meter',
+            'gram',
         ];
     }
 
     public function getInscriptionTypeAuthorityList()
     {
         return [
-            "initialen",
-            "handtekening",
+            'initialen',
+            'handtekening',
         ];
     }
 
     public function getProductionTechniqueTypeAuthorityList()
     {
         return [
-            "gesmeed",
-            "gegoten",
-            "gehamerd",
-            "geslagen (enkel voor munten)",
+            'gesmeed',
+            'gegoten',
+            'gehamerd',
+            'geslagen (enkel voor munten)',
         ];
     }
 
     public function getCollectionTypeAuthorityList()
     {
         return [
-           "prive collectie",
-           "heemkundige collectie",
-           "museumcollectie",
-           "bibliotheekcollectie",
-           "archiefcollectie",
+           'prive collectie',
+           'heemkundige collectie',
+           'museumcollectie',
+           'bibliotheekcollectie',
+           'archiefcollectie',
         ];
     }
 
     public function getProductionClassificationTypeAuthorityList()
     {
         return [
-            "Thörle Gruppe X var b",
-            "Type 2.3",
+            'Thörle Gruppe X var b',
+            'Type 2.3',
         ];
     }
 
     public function getProductionClassificationCenturyAuthorityList()
     {
         return [
-            "1de  E. (0/99)",
-            "2de  E. (100/199)",
-            "3de  E. (200/299)",
-            "4de  E. (300/399)",
-            "5de  E. (400/499)",
-            "6de  E. (500/599)",
-            "7de  E. (600/699)",
-            "8de  E. (700/799)",
-            "9de  E. (800/899)",
-            "10de E. (900/999)",
-            "11de E. (1000/1099)",
-            "12de E. (1100/1199)",
-            "13de E. (1200/1299)",
-            "14de E. (1300/1399)",
-            "1ste E. v.Chr. (-0099/0001)",
-            "2de E. v.Chr. (-0199/0100)",
-            "3de E. v.Chr. (-0299/0200)",
+            '1de  E. (0/99)',
+            '2de  E. (100/199)',
+            '3de  E. (200/299)',
+            '4de  E. (300/399)',
+            '5de  E. (400/499)',
+            '6de  E. (500/599)',
+            '7de  E. (600/699)',
+            '8de  E. (700/799)',
+            '9de  E. (800/899)',
+            '10de E. (900/999)',
+            '11de E. (1000/1099)',
+            '12de E. (1100/1199)',
+            '13de E. (1200/1299)',
+            '14de E. (1300/1399)',
+            '1ste E. v.Chr. (-0099/0001)',
+            '2de E. v.Chr. (-0199/0100)',
+            '3de E. v.Chr. (-0299/0200)',
         ];
     }
 
     public function getProductionClassificationRulerNationAuthorityList()
     {
         return [
-            "Napoleon",
-            "Filips de Schone",
-            "Augustus",
-            "Nero",
-            "Franken",
-            "Friezen",
+            'Napoleon',
+            'Filips de Schone',
+            'Augustus',
+            'Nero',
+            'Franken',
+            'Friezen',
         ];
     }
 }

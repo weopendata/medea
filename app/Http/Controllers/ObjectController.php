@@ -27,7 +27,7 @@ class ObjectController extends Controller
 
     /**
      * We expect the body to hold the new validationstatus of the find
-     * TODO check if the object exists
+     *
      * @param string
      *
      * @return Response
