@@ -5,7 +5,6 @@ namespace App\Models;
 class Location extends Base
 {
     public static $NODE_TYPE = 'E53';
-
     public static $NODE_NAME = 'location';
 
     protected $implicitModels = [
@@ -143,7 +142,7 @@ class Location extends Base
         ]);
 
         foreach ($address_properties as $address_property) {
-            if (!empty($address[$address_property['key']])) {
+            if (! empty($address[$address_property['key']])) {
                 $node = $this->createValueNode(
                     $address_property['name'],
                     [$address_property['name'], $address_property['node_type']],
@@ -153,7 +152,6 @@ class Location extends Base
                 $address_node->relateTo($node, 'P87')->save();
             }
         }
-
 
         return $address_node;
     }
@@ -191,7 +189,7 @@ class Location extends Base
         ];
 
         foreach ($optional_properties as $relationship => $optional_property) {
-            if (!empty($spatial[$optional_property['key']])) {
+            if (! empty($spatial[$optional_property['key']])) {
                 $node = $this->createValueNode(
                     $optional_property['key'],
                     [$optional_property['key'], $optional_property['node_type']],

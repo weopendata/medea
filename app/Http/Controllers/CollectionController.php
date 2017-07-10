@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Repositories\CollectionRepository;
+use App\Http\Requests\ViewCollectionRequest;
+use App\Http\Requests\DeleteCollectionRequest;
+use App\Http\Requests\UpdateCollectionRequest;
+use App\Http\Requests\CreateCollectionRequest;
 
 class CollectionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing collections.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ViewCollectionRequest $request)
     {
         //
     }
@@ -32,9 +36,21 @@ class CollectionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateCollectionRequest $request)
     {
-        //
+        try {
+            $input = $request->input();
+            $input['title'] = trim($input['title']);
+
+            $collection = app(CollectionRepository::class)->store($input);
+        } catch (\Exception $ex) {
+            return response()->json(
+                ['error' => $ex->getMessage()],
+                400
+            );
+        }
+
+        return response()->json(['id' => $collection->getId(), 'url' => '/collections/' . $collection->getId()]);
     }
 
     /**
@@ -66,7 +82,7 @@ class CollectionController extends Controller
      * @param  int                       $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCollectionRequest $request, $id)
     {
         //
     }
@@ -77,7 +93,7 @@ class CollectionController extends Controller
      * @param  int                       $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, DeleteCollectionRequest $request)
     {
         //
     }

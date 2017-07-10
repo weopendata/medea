@@ -88,65 +88,49 @@ class Base
 
     public function __construct($properties = [])
     {
-        if (! empty($properties)) {
-            $client = self::getClient();
+        if (empty($properties)) {
+            return;
+        }
+        $client = self::getClient();
 
-            $this->node = $client->makeNode();
+        $this->node = $client->makeNode();
 
-            $generalId = $this->createMedeaId();
+        $generalId = $this->createMedeaId();
 
-            $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
-            $this->node->setProperty('name', static::$NODE_NAME)->save();
+        $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
+        $this->node->setProperty('name', static::$NODE_NAME)->save();
 
-            // Set the properties of the model
-            $this->setProperties($properties);
+        // Set the properties of the model
+        $this->setProperties($properties);
 
-            $this->node->save();
+        $this->node->save();
 
-            // Check if timestamps need to be added
-            // if so, add created_at and updated_at
-            if ($this->timestamps) {
-                $this->addTimestamps();
-            }
+        // Check if timestamps need to be added
+        // if so, add created_at and updated_at
+        if ($this->timestamps) {
+            $this->addTimestamps();
+        }
 
-            // Create related models through recursion
-            // these models need to be consistent, meaning once they are created
-            // they need to have the same URI throughout the life cycle
-            foreach ($this->relatedModels as $relationshipName => $config) {
-                // Check if the related model is required
-                if (empty($properties[$config['key']]) && @$config['required']) {
-                    abort(400, "The property '" . $config['key'] .
-                        "'' is required in order to create the model '" . static::$NODE_NAME . "'");
+        // Create related models through recursion
+        // these models need to be consistent, meaning once they are created
+        // they need to have the same URI throughout the life cycle
+        foreach ($this->relatedModels as $relationshipName => $config) {
+            // Check if the related model is required
+            if (empty($properties[$config['key']]) && @$config['required']) {
+                abort(400, "The property '" . $config['key'] .
+                    "'' is required in order to create the model '" . static::$NODE_NAME . "'");
 
-                } elseif (! empty($properties[$config['key']])) {
-                    $input = $properties[$config['key']];
+            } elseif (! empty($properties[$config['key']])) {
+                $input = $properties[$config['key']];
 
-                    if (! empty($input)) {
-                        $model = null;
+                if (! empty($input)) {
+                    $model = null;
 
-                        if (is_array($input) && ! $this->isAssoc($input)) {
-                            foreach ($input as $entry) {
-                                $model_name = 'App\Models\\' . $config['model_name'];
-                                $model = new $model_name($entry);
-                                $model->save();
-
-                                if (! empty($model)) {
-                                    $this->makeRelationship($model, $relationshipName);
-
-                                    if (! empty($config['reverse_relationship'])) {
-                                        $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
-                                    }
-                                }
-                            }
-                        } else {
-                            if (! empty($config['link_only']) && $config['link_only']) {
-                                // Fetch the node and create the relationship
-                                $model = $this->searchNode($input['id'], $config['model_name']);
-                            } else {
-                                $model_name = 'App\Models\\' . $config['model_name'];
-                                $model = new $model_name($input);
-                                $model->save();
-                            }
+                    if (is_array($input) && ! $this->isAssoc($input)) {
+                        foreach ($input as $entry) {
+                            $model_name = 'App\Models\\' . $config['model_name'];
+                            $model = new $model_name($entry);
+                            $model->save();
 
                             if (! empty($model)) {
                                 $this->makeRelationship($model, $relationshipName);
@@ -156,35 +140,52 @@ class Base
                                 }
                             }
                         }
+                    } else {
+                        if (! empty($config['link_only']) && $config['link_only']) {
+                            // Fetch the node and create the relationship
+                            $model = $this->searchNode($input['id'], $config['model_name']);
+                        } else {
+                            $model_name = 'App\Models\\' . $config['model_name'];
+                            $model = new $model_name($input);
+                            $model->save();
+                        }
+
+                        if (! empty($model)) {
+                            $this->makeRelationship($model, $relationshipName);
+
+                            if (! empty($config['reverse_relationship'])) {
+                                $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                            }
+                        }
                     }
                 }
             }
+        }
 
-            foreach ($this->implicitModels as $config) {
-                $relationship = $config['relationship'];
-                $model_config = $config['config'];
+        foreach ($this->implicitModels as $config) {
+            $relationship = $config['relationship'];
+            $model_config = $config['config'];
 
-                $input = @$properties[$model_config['key']];
+            $input = @$properties[$model_config['key']];
 
-                if (! empty($input)) {
-                    // We can have multiple instances of an implicit node (e.g. multiple dimensions)
-                    // Check which of the cases it is by checking whether the array is associative or not
-                    if (is_array($input) && ! $this->isAssoc($input)) {
-                        foreach ($input as $entry) {
-                            $related_node = $this->createImplicitNode($entry, $model_config);
-
-                            if (! empty($related_node)) {
-                                // Make the relationship
-                                $this->node->relateTo($related_node, $relationship)->save();
-                            }
-                        }
-                    } else {
-                        $related_node = $this->createImplicitNode($input, $model_config);
+            if (! empty($input)) {
+                // We can have multiple instances of an implicit node (e.g. multiple dimensions)
+                // Check which of the cases it is by checking whether the array is associative or not
+                if (is_array($input) && ! $this->isAssoc($input)) {
+                    foreach ($input as $entry) {
+                        $related_node = $this->createImplicitNode($entry, $model_config);
 
                         if (! empty($related_node)) {
                             // Make the relationship
                             $this->node->relateTo($related_node, $relationship)->save();
                         }
+                    }
+                } else {
+                    $related_node = $this->createImplicitNode($input, $model_config);
+
+                    if (! empty($related_node)) {
+                        // Make the relationship
+                        $this->node->relateTo($related_node, $relationship)->save();
                     }
                 }
             }
