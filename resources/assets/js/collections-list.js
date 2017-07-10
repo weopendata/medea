@@ -1,11 +1,11 @@
 import Notifications from './mixins/Notifications'
+import CollectionsList from './components/CollectionsList'
 
 new window.Vue({
   el: 'body',
   data () {
     return {
-      find: null,
-      user: window.medeaUser
+      collections: window.initialCollections || []
     }
   },
   methods: {
@@ -18,23 +18,23 @@ new window.Vue({
     }
   },
   ready () {
-    console.log(JSON.parse(JSON.stringify(window.initialFind)))
+  /* console.log(JSON.parse(JSON.stringify(window.initialFind)))
     if (window.initialFind && window.initialFind.identifier) {
       this.find = window.initialFind;
     } else {
       this.fetch()
-    }
+    }*/
   },
   watch: {
-    'user': {
+    /*'user': {
       deep: true,
       handler (user) {
         localStorage.debugUser = JSON.stringify(user) 
       }
-    }
+    }*/
   },
   mixins: [Notifications],
   components: {
-    FindEventDetail
+    CollectionsList
   }
 });
