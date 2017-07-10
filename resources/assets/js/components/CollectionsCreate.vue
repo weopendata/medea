@@ -3,22 +3,25 @@
     <form class="ui form" @submit.prevent="submit">
       <h3>Nieuwe collectie</h3>
       <div class="required field">
-        <label>Titel</label>
-        <input type="text" v-model="collection.title" placeholder="Naam van de collectie" style="max-width: 16em">
-      </div>
-      <div class="required field">
-        <label>Info</label>
-        <textarea-growing id="description" :model.sync="collection.description"></textarea-growing>
-      </div>
-
-      <div class="required field">
         <label>Type</label>
         <select class="ui search dropdown category" v-model="collection.collectionType" style="max-width: 16em">
           <option v-for="opt in fields.collectionType" :value="opt" v-text="opt" track-by="$index"></option>
         </select>
       </div>
+      <div class="required field">
+        <label>Titel</label>
+        <input type="text" v-model="collection.title" placeholder="Naam van de collectie" style="max-width: 16em">
+      </div>
       <div class="field">
-        <button class="ui green button" type="submit">Bewaren</button>
+        <label>Info</label>
+        <textarea-growing id="description" :model.sync="collection.description"></textarea-growing>
+      </div>
+      <div class="field">
+        <label>Bewaard door</label>
+        <input type="text" v-model="collection.institutions" placeholder="Gescheiden door komma's">
+      </div>
+      <div class="field">
+        <button class="ui button" :class="{ green: submittable }" :disabled="!submittable" type="submit">Bewaren</button>
       </div>
     </form>
   </div>
@@ -35,6 +38,7 @@ export default {
       fields: window.fields,
       errors: {},
       collection: {
+        collectionType: 'prive collectie',
         title: '',
         description: '',
         person: [],
@@ -45,10 +49,12 @@ export default {
       }
     }
   },
-  methods: {
+  computed: {
     submittable () {
-      return this.title
-    },
+      return this.collection.title && this.collection.collectionType
+    }
+  },
+  methods: {
     formdata () {
       const { institutions } = this.collection
 
