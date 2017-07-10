@@ -1,10 +1,23 @@
 import Notifications from './mixins/Notifications'
 import CollectionsList from './components/CollectionsList'
+import parseLinkHeader from 'parse-link-header'
+
+// Parse link header
+function getPaging (header) {
+  if (typeof header === 'function') {
+    return parseLinkHeader(header('link')) || {}
+  }
+  if (typeof header === 'string') {
+    return parseLinkHeader(header) || {}
+  }
+  return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0]) || {}
+}
 
 new window.Vue({
   el: 'body',
   data () {
     return {
+      paging: getPaging(window.link),
       collections: window.initialCollections || []
     }
   },
