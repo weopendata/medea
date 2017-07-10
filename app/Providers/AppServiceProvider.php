@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Auth;
-use App\Extensions\Neo4jUserProvider;
 use App\Brokers\Neo4jPasswordBroker;
+use App\Extensions\Neo4jUserProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
          Validator::extend('jsonMax', function ($attribute, $value, $parameters, $validator) {
             return count(json_decode($value)) <= array_shift($parameters);
         });
+
+        if ($this->app->environment() !== 'production') {
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        }
     }
 
     /**
