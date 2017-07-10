@@ -1,3 +1,5 @@
+import CollectionsCreate from './components/CollectionsCreate.vue'
+
 import Notifications from './mixins/Notifications'
 
 new window.Vue({
@@ -6,23 +8,6 @@ new window.Vue({
     return {
       find: null,
       user: window.medeaUser
-    }
-  },
-  methods: {
-    fetch () {
-      // this.$http.get('/api/finds/' + window.initialFind.identifier).then(function (res) {
-      //   this.find = res.data
-      // }, function () {
-      //   console.error('could not fetch findEvent', window.initialFind.identifier)
-      // });
-    }
-  },
-  ready () {
-    console.log(JSON.parse(JSON.stringify(window.initialFind)))
-    if (window.initialFind && window.initialFind.identifier) {
-      this.find = window.initialFind;
-    } else {
-      this.fetch()
     }
   },
   watch: {
@@ -35,6 +20,6 @@ new window.Vue({
   },
   mixins: [Notifications],
   components: {
-    FindEventDetail
+    CollectionsCreate
   }
 });
