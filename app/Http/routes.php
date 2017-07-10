@@ -39,6 +39,8 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::resource('persons', 'UserController');
 
+    Route::resource('collections', 'CollectionController');
+
     Route::group(['middleware' => 'auth'], function () {
         Route::get('api/statistics', 'Api\StatisticsController@index');
         Route::get('api/notifications', 'Api\NotificationController@index');

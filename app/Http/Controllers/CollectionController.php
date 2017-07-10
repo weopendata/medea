@@ -13,7 +13,7 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        //
+        return view('pages.collections-list')->with(['collections' => '']);
     }
 
     /**
@@ -23,7 +23,7 @@ class CollectionController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.collections-create');
     }
 
     /**
