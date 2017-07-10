@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Faker\Factory;
 use Illuminate\Http\Request;
 
 class CollectionController extends Controller
@@ -9,11 +10,33 @@ class CollectionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
-        return view('pages.collections-list')->with(['collections' => '']);
+        $faker = Factory::create();
+
+        $collections = [];
+
+        for ($a = 0; $a < 10; $a++) {
+            $collections[] =
+                [
+
+                    'title'       => $faker->title,
+                    'description' => $faker->text(),
+                    'type'        => '',
+                    'person'      => '',
+                    'object'      => '',
+                    'instelling'  => '',
+                ];
+        }
+
+        return view('pages.collections-list')->with([
+            'collections' => $collections,
+            'filterState' => '',
+            'fields'      => '',
+            'link'        => '',
+        ]);
     }
 
     /**
@@ -29,7 +52,7 @@ class CollectionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -40,7 +63,7 @@ class CollectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int                       $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -51,7 +74,7 @@ class CollectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int                       $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -62,8 +85,8 @@ class CollectionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -74,7 +97,7 @@ class CollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int                       $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

@@ -4,7 +4,7 @@
 
 @section('content')
 <div id="app">
-  <collections-list></collections-list>
+  <collections-list :collections="collections"></collections-list>
 </div>
 @endsection
 

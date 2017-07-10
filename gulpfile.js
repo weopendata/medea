@@ -23,7 +23,8 @@ elixir(function(mix) {
 			'home.js',
 			'settings.js',
 			'users-admin.js',
-		], {
+      'collections-list.js',
+    ], {
 			module: {
 				loaders: [
 					{ test: /\.css$/, loader: 'style!css' },
