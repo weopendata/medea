@@ -223,8 +223,12 @@ new window.Vue({
         feedback: {}
       }
     },
+    // Order validations: most recent first
     validationList () {
-      return JSON.parse(this.find.object.feedback).filter(f => f.timestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+      try {
+        return JSON.parse(this.find.object.feedback).filter(f => f.timestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+      } catch (e) {}
+      return []
     },
     hasFeedback () {
       return this.validationList.length > 0

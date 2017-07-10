@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
-
 class ViewCollectionRequest extends Request
 {
     /**
@@ -13,7 +11,7 @@ class ViewCollectionRequest extends Request
      */
     public function authorize()
     {
-        return false;
+        return ! empty($request->user()) && $request->user()->hasRole('administrator');
     }
 
     /**

@@ -13,7 +13,6 @@ class CreateCollectionRequest extends Request
      */
     public function authorize(HttpRequest $request)
     {
-        return true;
         return ! empty($request->user()) && $request->user()->hasRole('administrator');
     }
 

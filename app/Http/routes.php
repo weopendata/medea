@@ -39,9 +39,9 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::resource('persons', 'UserController');
 
-    Route::group(['middleware' => 'auth'], function () {
-        Route::resource('collections', 'CollectionController');
+    Route::resource('collections', 'CollectionController');
 
+    Route::group(['middleware' => 'auth'], function () {
         Route::get('api/statistics', 'Api\StatisticsController@index');
         Route::get('api/notifications', 'Api\NotificationController@index');
         Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
@@ -65,6 +65,7 @@ Route::group(['middleware' => 'web'], function () {
         });
 
         Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::resource('collections', 'CollectionController');
             Route::get('api/export', 'Api\ExportController@export');
         });
 

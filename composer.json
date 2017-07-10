@@ -12,7 +12,8 @@
         "sendgrid/sendgrid": "~4.0",
         "intervention/image": "^2.3",
         "piwik/piwik-php-tracker": "^1.0",
-        "league/csv": "^8.1"
+        "league/csv": "^8.1",
+        "barryvdh/laravel-ide-helper": "^2.4"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
