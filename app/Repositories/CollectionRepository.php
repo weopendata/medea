@@ -38,7 +38,7 @@ class CollectionRepository extends BaseRepository
 
         $results = $query->getResultSet();
 
-        if (empty($results)) {
+        if ($results->count() < 1) {
             return [];
         }
 

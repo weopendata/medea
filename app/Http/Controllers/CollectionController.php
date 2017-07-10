@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\CollectionRepository;
-use App\Http\Requests\ViewCollectionRequest;
+use App\Helpers\Pager;
+use App\Http\Requests\CreateCollectionRequest;
 use App\Http\Requests\DeleteCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
-use App\Http\Requests\CreateCollectionRequest;
-use App\Helpers\Pager;
+use App\Models\Collection;
+use App\Repositories\CollectionRepository;
 use Faker\Factory;
 
 class CollectionController extends Controller
@@ -22,7 +22,7 @@ class CollectionController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(ViewCollectionRequest $request)
+    public function index(Request $request)
     {
         $faker = Factory::create();
 
@@ -116,9 +116,11 @@ class CollectionController extends Controller
      * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function edit($collectionId, UpdateCollectionRequest $request)
+    public function edit($collectionId)
     {
-        //
+        $collection = $this->collections->expandValues($collectionId);
+
+        return $collection;
     }
 
     /**
@@ -130,7 +132,25 @@ class CollectionController extends Controller
      */
     public function update(UpdateCollectionRequest $request, $collectionId)
     {
-        //
+        // The title cannot appear twice, unless it's the same collection of course
+        $collection = $this->collections->getByTitle($request->title);
+
+        if (! empty($collection) && $collection->getId() != $collectionId) {
+            return response()->json(['error' => 'Er is een andere collectie met dezelfde titel. De titel moet uniek zijn.']);
+        }
+
+        $collectionNode = $this->collections->getById($collectionId);
+
+        if (empty($collectionNode)) {
+            return response()->json(['error' => 'De collectie bestaat niet.'], 404);
+        }
+
+        $collection = new Collection();
+        $collection->setNode($collectionNode);
+
+        $collection->update($request->input());
+
+        return response()->json(['url' => '/collections/' . $collectionId, 'id' => $collectionId]);
     }
 
     /**

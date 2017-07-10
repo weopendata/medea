@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request as HttpRequest;
+
 class UpdateCollectionRequest extends Request
 {
     /**
@@ -9,8 +11,9 @@ class UpdateCollectionRequest extends Request
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(HttpRequest $request)
     {
+        return true;
         return ! empty($request->user()) && $request->user()->hasRole('administrator');
     }
 
@@ -22,7 +25,7 @@ class UpdateCollectionRequest extends Request
     public function rules()
     {
         return [
-            //
+            'title' => 'required|min:2'
         ];
     }
 }

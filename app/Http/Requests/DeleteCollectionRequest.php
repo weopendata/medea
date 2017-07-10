@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request as HttpRequest;
+
 class DeleteCollectionRequest extends Request
 {
     /**
@@ -9,7 +11,7 @@ class DeleteCollectionRequest extends Request
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(HttpRequest $request)
     {
         return true;
         return ! empty($request->user()) && $request->user()->hasRole('administrator');
