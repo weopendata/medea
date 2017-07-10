@@ -17,13 +17,14 @@ require('laravel-elixir-livereload');
 elixir(function(mix) {
 	mix.sass('app.scss', 'public/css')
 	mix.webpack([
-			'finds-list.js',
-			'finds-detail.js',
+			'collections-create.js',
+			'collections-list.js',
 			'finds-create.js',
+			'finds-detail.js',
+			'finds-list.js',
 			'home.js',
 			'settings.js',
 			'users-admin.js',
-      'collections-list.js',
     ], {
 			module: {
 				loaders: [
