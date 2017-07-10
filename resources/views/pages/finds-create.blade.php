@@ -48,7 +48,7 @@
       <label>Categorie</label>
       <select class="ui search dropdown category" v-model="find.object.objectCategory" style="max-width: 16em">
         <option>onbekend</option>
-        <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
+        <option v-for="opt in fields.object.category" :value="opt" v-text="opt" track-by="$index"></option>
       </select>
       <div class="ui message" v-if="!HelpText.create">
         <p>
