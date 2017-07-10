@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Pager;
 use App\Http\Requests\CreateCollectionRequest;
 use App\Http\Requests\DeleteCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
 use App\Models\Collection;
 use App\Repositories\CollectionRepository;
-use Faker\Factory;
+use App\Helpers\Pager;
+use Illuminate\Http\Request;
 
 class CollectionController extends Controller
 {
@@ -24,34 +24,19 @@ class CollectionController extends Controller
      */
     public function index(Request $request)
     {
-        $faker = Factory::create();
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+        $sortBy = $request->input('sortBy', 'created_at');
+        $sortOrder = $request->input('sortOrder', 'DESC');
 
-        $collections = [];
+        $collections = $this->collections->getAll($limit, $offset, $sortBy, $sortOrder);
 
-        for ($a = 0; $a < 10; $a++) {
-            $collections[] =
-                [
-                    'id'          => rand(0, 100),
-                    'title'       => $faker->sentence(),
-                    'description' => $faker->paragraph(10),
-                    'type'        => $faker->sentence(2),
-                    'person'      => [
-                        'id'        => rand(1, 100),
-                        'firstName' => $faker->firstName,
-                        'lastName'  => $faker->lastName,
-                    ],
-                    'setting'     => $faker->sentence(2),
-                ];
-        }
+        $pages = $this->calculatePagingInfo($request);
 
         $linkHeader = [];
 
-        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
-
-        $query_string = $this->buildQueryString($request);
-
-        foreach ($pages as $rel => $page_info) {
-            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . '>;rel=' . $rel;
+        foreach ($pages as $rel => $pagingInfo) {
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $pagingInfo[0] . '&limit=' . $pagingInfo[1] . '&' . $query_string . '>;rel=' . $rel;
         }
 
         $linkHeader = implode(', ', $linkHeader);
@@ -169,5 +154,31 @@ class CollectionController extends Controller
 
         // This should only happen if the collection was not found
         return response()->json(['error' => 'De collectie werd niet verwijderd.'], 400);
+    }
+
+    /**
+     * Calculate paging info based on the request
+     *
+     * @param  Request $request
+     * @return array
+     */
+    private function calculatePagingInfo($request)
+    {
+        $totalCollections = $this->collections->countAllCollections();
+
+        $limit = $request->input('limit', 50);
+        $offset = $request->input('offset', 0);
+
+        $pageInfo = Pager::calculatePagingInfo($limit, $offset, $totalCollections);
+        $url = $request->url();
+        $queryString = $this->buildQueryString($request);
+
+        if ($offset > 0) {
+            $pageInfo['first'] = [0, 0];
+        }
+
+        return array_map(function ($info) use ($url, $queryString) {
+            return $url . '?offset=' . $info[0] . '&limit=' . $info[1] . '&' . $queryString;
+        }, $pageInfo);
     }
 }

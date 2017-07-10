@@ -12,6 +12,85 @@ class CollectionRepository extends BaseRepository
         parent::__construct(Collection::$NODE_TYPE, Collection::class);
     }
 
+    public function countAllCollections()
+    {
+        $client = $this->getClient();
+
+        $queryString = 'MATCH (n:collection)
+        RETURN count(distinct n)';
+
+        $cypherQuery = new Query($client, $queryString);
+        $results = $cypherQuery->getResultSet();
+
+        return $results->current()->current();
+    }
+
+    /**
+     * Get all the collection nodes
+     *
+     * @param integer $limit
+     * @param integer $offset
+     * @param string  $sortBy    The field to sort by (title|created_at)
+     * @param string  $sortOrder The sort order (ASC|DESC)
+     *
+     * @return array
+     */
+    public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
+    {
+        $client = $this->getClient();
+
+        $variables = [];
+
+        $queryString = 'MATCH (n:collection)
+        OPTIONAL MATCH (person:person)-[P109]-(n)
+        RETURN n as collection, n.title as collectionTitle, person';
+
+        if (! empty($sortBy)) {
+            // Statements in functions don't seem to work with the jadell library
+            if ($sortBy == 'title') {
+                $orderBy = 'LOWER(n.title)';
+            } else {
+                $orderBy = 'n.created_at';
+            }
+
+            $sortOrder = ' ';
+
+            // Don't allow injection,
+            // for some reason statement binding
+            // the order statement doesn't work
+            if ($sortOrder == 'ASC') {
+                $sortOrder = 'ASC';
+            } else {
+                $sortOrder = 'DESC';
+            }
+
+            $queryString .= ' ORDER BY ' . $orderBy . ' ' . $sortOrder;
+        }
+
+        $queryString .= ' SKIP {offset} LIMIT {limit}';
+
+        $variables['offset'] = (int) $offset;
+        $variables['limit'] = (int) $limit;
+
+        $cypherQuery = new Query($client, $queryString, $variables);
+        $results = $cypherQuery->getResultSet();
+
+        $collections = [];
+
+        foreach ($results as $result) {
+            $collectionNode = $result->current();
+
+            $collections[] = [
+                'title' => $result['collection']->getProperty('title'),
+                'identifier' => $result['collection']->getId(),
+                'description' => $result['collection']->getProperty('description'),
+                'persons' => []
+            ];
+        }
+
+        return $collections;
+    }
+
     /**
      * Create a new collection
      *
