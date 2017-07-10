@@ -12,6 +12,11 @@ use Faker\Factory;
 
 class CollectionController extends Controller
 {
+    public function __construct(CollectionRepository $collections)
+    {
+        $this->collections = $collections;
+    }
+
     /**
      * Display a listing collections.
      *
@@ -81,7 +86,7 @@ class CollectionController extends Controller
             $input = $request->input();
             $input['title'] = trim($input['title']);
 
-            $collection = app(CollectionRepository::class)->store($input);
+            $collection = $this->collections->store($input);
         } catch (\Exception $ex) {
             return response()->json(
                 ['error' => $ex->getMessage()],
@@ -95,21 +100,23 @@ class CollectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int                       $id
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($collectionId)
     {
-        //
+        $collection = $this->collections->expandValues($collectionId);
+
+        return $collection;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int                       $id
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($collectionId, UpdateCollectionRequest $request)
     {
         //
     }
@@ -118,10 +125,10 @@ class CollectionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $id
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCollectionRequest $request, $id)
+    public function update(UpdateCollectionRequest $request, $collectionId)
     {
         //
     }
@@ -129,11 +136,18 @@ class CollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int                       $id
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id, DeleteCollectionRequest $request)
+    public function destroy($collectionId, DeleteCollectionRequest $request)
     {
-        //
+        $deleted = $this->collections->delete($collectionId);
+
+        if ($deleted) {
+            return response()->json(['success' => true]);
+        }
+
+        // This should only happen if the collection was not found
+        return response()->json(['error' => 'De collectie werd niet verwijderd.'], 400);
     }
 }
