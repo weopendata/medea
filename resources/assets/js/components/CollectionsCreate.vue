@@ -29,13 +29,13 @@
         <input type="text" v-model="collection.institutions" placeholder="Gescheiden door komma's">
         <div v-for="msg in errors.institution" v-text="msg" class="input"></div>
       </div>
-      <div class="field" v-if="collection.identifier">
+<!--       <div class="field" v-if="collection.identifier">
         <label>Gecureerd door</label>
         <ul v-if="collection.person.length">
           <li v-for="person in collection.person">{{ person && person.name }}</li>
         </ul>
         <select-person @select="addCurator" placeholder="Voeg curator toe"></select-person>
-      </div>
+      </div> -->
       <div class="field">
         <button class="ui button" :class="{ green: submittable }" :disabled="!submittable" type="submit">Bewaren</button>
       </div>
@@ -49,21 +49,24 @@ import Ajax from '../mixins/Ajax'
 import SelectPerson from './SelectPerson'
 import TextareaGrowing from './TextareaGrowing'
 
+function incomingCollection (collection) {
+  collection.institutions = collection.institution ? collection.institution.map(inst => inst.name).join(', ') : ''
+  return collection
+}
+
 export default {
   data () {
     return {
       fields: window.fields,
-      collection: {
+      collection: incomingCollection(window.initialCollection || {
         collectionType: 'prive collectie',
-        title: '',
         description: '',
-        person: [],
+        institution: [],
         object: [],
-
-        // Transformed properties
-        institutions: ''
-      },
-      submitAction: '/collections',
+        person: [],
+        title: '',
+      }),
+      submitAction: '/collections' + (window.initialCollection ? '/' + window.initialCollection.identifier : ''),
       errors: {},
     }
   },
