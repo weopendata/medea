@@ -6,7 +6,7 @@
         <a :href="'/collections/' + collection.identifier">{{ collection.title }}</a>
       </div>
     </div>
-    <div class="field collections__add" :class="{error:errors.function}">
+    <div class="field collections__add" :class="{ error: errors.person }">
       <label for="function">Collectie toewijzen aan dit profiel</label>
       <select-collection @select="assignCollection" placeholder="Zoek collectie"></select-collection>
       <div v-for="msg in errors.person" v-text="msg" class="input"></div>

@@ -18,14 +18,14 @@
         </template>
         <template v-if="collection.institution">
           <dt>Instelling</dt>
-          <dd>{{ collection.institution }}</dd>
+          <dd>{{ collection.institutions }}</dd>
         </template>
         <template v-if="collection.created_at">
           <dt>Aangemaakt op</dt>
           <dd>{{ collection.created_at | fromDate }}</dd>
         </template>
       </dl>
-      <br><br>
+      <br>
       <div>
         {{ collection.description }}
       </div>

@@ -31,7 +31,7 @@
   </div>
 </template>
 <script>
-  import { inert, fromQuery } from '../const.js'
+  import { incomingCollection, inert, fromQuery } from '../const.js'
   import Collection from '../components/Collection.vue'
   import parseLinkHeader from 'parse-link-header'
 
@@ -39,7 +39,7 @@
     data () {
       return {
         paging: parseLinkHeader(window.link),
-        collections: window.initialCollections || [],
+        collections: (window.initialCollections || []).map(incomingCollection),
         filterState: window.filterState || {}
       }
     },

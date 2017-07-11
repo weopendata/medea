@@ -49,10 +49,7 @@ import Ajax from '../mixins/Ajax'
 import SelectPerson from './SelectPerson'
 import TextareaGrowing from './TextareaGrowing'
 
-function incomingCollection (collection) {
-  collection.institutions = collection.institution ? collection.institution.map(inst => inst.name).join(', ') : ''
-  return collection
-}
+import { incomingCollection } from '../const.js'
 
 export default {
   data () {
