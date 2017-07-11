@@ -173,7 +173,7 @@ class CollectionController extends Controller
 
         $collection->update($request->input());
 
-        return response()->json(['url' => '/collections/' . $collectionId, 'id' => $collectionId]);
+        return $this->show($request, $collection->getId());
     }
 
     /**

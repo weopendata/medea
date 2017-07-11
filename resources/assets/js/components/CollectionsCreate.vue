@@ -93,7 +93,7 @@ export default {
     submitSuccess (res) {
       this.errors = {}
       if (res.data && res.data.identifier) {
-        window.location.href = '/collections/' + res.data.identifier
+        window.location.href = '/collections' + (window.initialCollection ? '' : '/' + res.data.identifier)
       }
     },
     submitError (errors) {
