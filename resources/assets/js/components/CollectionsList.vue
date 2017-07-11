@@ -2,7 +2,7 @@
   <div class="ui very relaxed items">
     <div class="create-cta">
       <label class="pull-right">
-        <a :href="createUri" class="ui green button">Collectie toevoegen</a>
+        <a href="/collections/create" class="ui green button">Collectie toevoegen</a>
       </label>
     </div>
       <collection v-for="collection in collections" :collection="collection"></collection>
@@ -27,9 +27,6 @@
         <label>Geef deze zoekopdracht een naam</label>
         <input type="text" v-model="favName" style="width: 200px">
       </div>
-      <p v-if="!user.isGuest">
-        <button type="button" class="ui large button" :class="{green:favName}" @click.prevent="toggleFav" :disabled="showFavName&&!favName"><i class="ui alarm icon"></i> Zoekopdracht {{ exists ? 'verwijderen uit' : 'toevoegen aan' }} favorieten</button>
-      </p>
     </div>
 
   </div>
@@ -44,9 +41,6 @@
       return {}
     },
     computed: {
-      createUri () {
-        return '/collections/create'
-      },
       currentPage () {
         if (this.paging.next) {
           return this.paging.next.offset /  this.paging.next.limit

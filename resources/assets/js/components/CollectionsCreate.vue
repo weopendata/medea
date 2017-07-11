@@ -1,8 +1,11 @@
 <template>
   <div class="ui container">
+    <div class="create-cta">
+      <a href="/collections" class="ui button">Alle collecties</a>
+    </div>
     <form class="ui form" @submit.prevent="submit">
       <h3 v-if="collection.identifier">Collectie bewerken</h3>
-      <h3 v-else>Nieuwe collectie</h3>
+      <h3 v-else>Nieuwe collectie maken</h3>
       <div class="required field">
         <label>Type</label>
         <select class="ui search dropdown category" v-model="collection.collectionType" style="max-width: 16em">
