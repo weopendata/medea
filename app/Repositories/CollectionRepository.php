@@ -148,30 +148,6 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
-     * Check if the user and collection are linked with eachother
-     *
-     * @param  integer $collectionId
-     * @param  integer $userId
-     * @return boolean
-     */
-    private function isCollectionLinkedWithUser($collectionId, $userId)
-    {
-        $query = 'MATCH (n:collection)-[P109]->(p:person)
-        WHERE id(p) = {userId} AND id(n) = {collectionId}
-        RETURN n';
-
-        $variables = [
-            'userId' => (int) $userId,
-            'collectionId' => (int) $collectionId
-        ];
-
-        $query = new Query($this->getClient(), $query, $variables);
-        $results = $query->getResultSet();
-
-        return $results->count() > 0;
-    }
-
-    /**
      * Unlink a user (=maintainer ) of a collection
      *
      * @param  int     $collectionId
@@ -195,6 +171,30 @@ class CollectionRepository extends BaseRepository
         }
 
         return true;
+    }
+
+    /**
+     * Check if the user and collection are linked with eachother
+     *
+     * @param  integer $collectionId
+     * @param  integer $userId
+     * @return boolean
+     */
+    private function isCollectionLinkedWithUser($collectionId, $userId)
+    {
+        $query = 'MATCH (n:collection)-[P109]->(p:person)
+        WHERE id(p) = {userId} AND id(n) = {collectionId}
+        RETURN n';
+
+        $variables = [
+            'userId' => (int) $userId,
+            'collectionId' => (int) $collectionId
+        ];
+
+        $query = new Query($this->getClient(), $query, $variables);
+        $results = $query->getResultSet();
+
+        return $results->count() > 0;
     }
 
     /**

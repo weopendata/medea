@@ -25,6 +25,13 @@ class Object extends Base
             'plural' => true,
             'reverse_relationship' => 'P62'
         ],
+        'P24' => [
+            'key' => 'collection',
+            'model_name' => 'Collection',
+            'cascade_delete' => false,
+            'link_only' => true,
+            'reverse_relationship' => 'P46'
+        ]
     ];
 
     protected $implicitModels = [

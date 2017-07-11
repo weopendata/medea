@@ -303,7 +303,7 @@ class FindController extends Controller
 
             $images = [];
 
-            // Check for images, they need special processing before the Neo4j writing is initiated
+            // Check for images, they need special processing before the Neo4j processing is initiated
             if (! empty($input['object']['photograph'])) {
                 foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {

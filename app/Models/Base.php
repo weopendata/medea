@@ -219,6 +219,7 @@ class Base
                     // Keep track of the related models by the returned identifiers
                     // The identifiers that we get and are not in this list, we need to delete
                     $related_identifiers = [];
+
                     if (! empty($input)) {
                         if (is_array($input) && ! $this->isAssoc($input)) {
                             foreach ($input as $entry) {
