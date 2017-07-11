@@ -9,17 +9,20 @@
           <option v-for="opt in fields.collectionType" :value="opt" v-text="opt" track-by="$index"></option>
         </select>
       </div>
-      <div class="required field">
+      <div class="required field" :class="{ error: errors.title }">
         <label>Titel</label>
         <input type="text" v-model="collection.title" placeholder="Naam van de collectie" style="max-width: 16em">
+        <div v-for="msg in errors.title" v-text="msg" class="input"></div>
       </div>
-      <div class="field">
+      <div class="field" :class="{ error: errors.description }">
         <label>Info</label>
         <textarea-growing id="description" :model.sync="collection.description"></textarea-growing>
+        <div v-for="msg in errors.description" v-text="msg" class="input"></div>
       </div>
-      <div class="field">
+      <div class="field" :class="{ error: errors.institution }">
         <label>Bewaard door</label>
         <input type="text" v-model="collection.institutions" placeholder="Gescheiden door komma's">
+        <div v-for="msg in errors.institution" v-text="msg" class="input"></div>
       </div>
       <div class="field" v-if="collection.identifier">
         <label>Gecureerd door</label>
@@ -80,12 +83,10 @@ export default {
       return this.collection
     },
     submitSuccess () {
-      alert('success')
       this.errors = {}
     },
-    submitError (res) {
-      alert('err')
-      this.errors = res.data
+    submitError (errors) {
+      this.errors = errors.data
     },
     addCurator (person) {
       if (this.collection.identifier) {

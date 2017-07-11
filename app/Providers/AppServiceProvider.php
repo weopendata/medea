@@ -31,12 +31,11 @@ class AppServiceProvider extends ServiceProvider
                 // The title that identifies the collection must be unique
                 $existingCollection = app(CollectionRepository::class)->getByTitle($value);
 
-                if (! empty($existingCollection)) {
-                    return false;
+                if (empty($existingCollection)) {
+                    return true;
                 }
             } catch (\Exception $ex) {
                 \Log::error($ex->getMessage());
-                return false;
             }
         });
 
