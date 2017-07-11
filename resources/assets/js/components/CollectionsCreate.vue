@@ -25,8 +25,8 @@
         <div v-for="msg in errors.description" v-text="msg" class="input"></div>
       </div>
       <div class="field" :class="{ error: errors.institution }">
-        <label>Bewaard door</label>
-        <input type="text" v-model="collection.institutions" placeholder="Gescheiden door komma's">
+        <label>Instelling</label>
+        <input type="text" :value="collection.institutions" @input="setInstitution" placeholder="Gescheiden door komma's">
         <div v-for="msg in errors.institution" v-text="msg" class="input"></div>
       </div>
 <!--       <div class="field" v-if="collection.identifier">
@@ -49,7 +49,7 @@ import Ajax from '../mixins/Ajax'
 import SelectPerson from './SelectPerson'
 import TextareaGrowing from './TextareaGrowing'
 
-import { incomingCollection } from '../const.js'
+import { incomingCollection, inert } from '../const.js'
 
 export default {
   data () {
@@ -73,7 +73,11 @@ export default {
     }
   },
   methods: {
+    setInstitution (evt) {
+      this.$set('collection.institutions', evt.target.value)
+    },
     formdata () {
+      console.log('formdata')
       const { institutions } = this.collection
 
       // Apply outgoing transformers
@@ -108,6 +112,13 @@ export default {
             console.warn('Failed.. inserting anyway')
             this.collection.person = [person]
           })
+      }
+    }
+  },
+  watch: {
+    collection: {
+      deep:true,handler (c) {
+        console.log(inert(c))
       }
     }
   },
