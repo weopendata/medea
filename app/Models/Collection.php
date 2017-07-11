@@ -26,7 +26,10 @@ class Collection extends Base
             'name' => 'description'
         ],
         [
-            'name' => 'type'
+            'name' => 'collectionType'
+        ],
+        [
+            'name' => 'institution'
         ]
     ];
 }

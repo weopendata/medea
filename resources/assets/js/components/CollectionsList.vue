@@ -66,6 +66,7 @@
 <style>
   .create-cta{
     position: relative;
+    z-index: 1;
     overflow: auto;
     max-width: 900px;
     margin: 0 auto 2em;

@@ -1,9 +1,11 @@
 <template>
   <div class="ui container">
-    <div class="create-cta">
-      <a href="/collections" class="ui button">Alle collecties</a>
-    </div>
     <form class="ui form" @submit.prevent="submit">
+      <div class="create-cta">
+        <label class="pull-right">
+          <a href="/collections" class="ui button">Alle collecties</a>
+        </label>
+      </div>
       <h3 v-if="collection.identifier">Collectie bewerken</h3>
       <h3 v-else>Nieuwe collectie maken</h3>
       <div class="required field">
@@ -82,20 +84,29 @@ export default {
         .map(inst => ({
           institutionAppellation: inst
         })) : null
-     
+
       return this.collection
     },
-    submitSuccess () {
+    submitSuccess (res) {
       this.errors = {}
+      if (res.data && res.data.identifier) {
+        window.location.href = '/collections/' + res.data.identifier
+      }
     },
     submitError (errors) {
       this.errors = errors.data
     },
     addCurator (person) {
-      if (this.collection.identifier) {
-        this.$http.post('/collections/' + this.collection.identifier + '/people')
-          .then(people => {
-            this.collection.person = people
+      if (this.collection.identifier && person.identifier) {
+        this.$http.put('/collections/' + this.collection.identifier + '/persons/' + person.identifier)
+          .then(persons => {
+            this.collection.person = persons
+          })
+          .catch(persons => {
+            // TODO: show errors
+           // this.errors = errors.data
+            console.warn('Failed.. inserting anyway')
+            this.collection.person = [person]
           })
       }
     }

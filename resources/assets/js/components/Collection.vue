@@ -30,7 +30,7 @@
     props: ['collection'],
     computed: {
       uri () {
-        return '/collections/' + this.collection.id
+        return '/collections/' + this.collection.identifier
       },
       editUri () {
         return this.uri + '/edit'
@@ -41,7 +41,7 @@
     },
     methods: {
       rm () {
-        if (!confirm('Ben je zeker dat collectie #' + this.collection.id + ' verwijderd mag worden?')) {
+        if (!confirm('Ben je zeker dat collectie #' + this.collection.identifier + ' verwijderd mag worden?')) {
           return
         }
         this.$http.delete(this.deleteUri).then(function () {
