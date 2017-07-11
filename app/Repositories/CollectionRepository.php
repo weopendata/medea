@@ -154,7 +154,21 @@ class CollectionRepository extends BaseRepository
      */
     public function unlinkUser($collectionId, $userId)
     {
+        $collection = $this->getById($collectionId);
 
+        if (empty($collection)) {
+            return false;
+        }
+
+        $relationships = $collection->getRelationships(['P109']);
+
+        foreach ($relationships as $relationship) {
+            if ($relationship->getEndNode()->getId() == $userId) {
+                $relationship->delete();
+            }
+        }
+
+        return true;
     }
 
     /**

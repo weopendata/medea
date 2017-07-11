@@ -32,11 +32,19 @@ class CollectionUserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int                       $id
+     * @param  int                       $collectionId
+     * @param  int                       $userId
+     * @param  Request                   $request
      * @return \Illuminate\Http\Response
      */
-    public function unlinkUser($id)
+    public function unlinkUser($collectionId, $userId, LinkCollectionAndUserRequest $request)
     {
-        //
+        $success = $this->collections->unlinkUser($collectionId, $userId);
+
+        if ($success) {
+            return response()->json(['message' => 'success']);
+        }
+
+        return response()->json(['error' => 'De gebruiker kon niet verwijderd worden van de collectie. Wellicht bestaat de gebruiker of collectie niet meer, of zijn ze niet gelinkt aan elkaar.'], 400);
     }
 }

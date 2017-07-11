@@ -66,8 +66,8 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::group(['middleware' => 'roles:administrator'], function () {
             Route::resource('collections', 'CollectionController');
-            Route::post('collections/{collection_id}/users/{user_id}', 'CollectionUserController@linkUser');
-            Route::delete('collections/{collection_id}/users/{user_id}', 'CollectionUserController@unlinkUser');
+            Route::put('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@linkUser');
+            Route::delete('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@unlinkUser');
             Route::get('api/export', 'Api\ExportController@export');
         });
 
