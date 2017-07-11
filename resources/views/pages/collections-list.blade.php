@@ -3,8 +3,8 @@
 @section('title', 'Collecties')
 
 @section('content')
-<div id="app">
-  <collections-list :collections="collections" :paging="paging"></collections-list>
+<div class  ="ui container">
+  <collections-list></collections-list>
 </div>
 @endsection
 

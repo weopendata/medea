@@ -53,8 +53,6 @@ class CollectionRepository extends BaseRepository
                 $orderBy = 'n.created_at';
             }
 
-            $sortOrder = ' ';
-
             // Don't allow injection,
             // for some reason statement binding
             // the order statement doesn't work
