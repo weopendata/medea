@@ -10,6 +10,9 @@
 
 @section('script')
 <script type="text/javascript">
+@if (isset($collection))
+window.initialCollection = {!! json_encode($collection) !!};
+@endif
 window.fields = {!! json_encode($fields ?? [
   'collectionType' => [
     'prive collectie',

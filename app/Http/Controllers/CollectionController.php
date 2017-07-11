@@ -84,7 +84,7 @@ class CollectionController extends Controller
             );
         }
 
-        return response()->json(['id' => $collection->getId(), 'url' => '/collections/' . $collection->getId()]);
+        return $this->show($request, $collection->getId());
     }
 
     /**
@@ -93,9 +93,13 @@ class CollectionController extends Controller
      * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function show($collectionId)
+    public function show(Request $request, $collectionId)
     {
         $collection = $this->collections->expandValues($collectionId);
+
+        if (! $request->wantsJson()) {
+            return view('pages.collections-detail', compact('collection'));
+        }
 
         return $collection;
     }
@@ -106,9 +110,13 @@ class CollectionController extends Controller
      * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
-    public function edit($collectionId)
+    public function edit(Request $request, $collectionId)
     {
         $collection = $this->collections->expandValues($collectionId);
+
+        if (! $request->wantsJson()) {
+            return view('pages.collections-create', compact('collection'));
+        }
 
         return $collection;
     }

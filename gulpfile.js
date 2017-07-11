@@ -18,6 +18,7 @@ elixir(function(mix) {
 	mix.sass('app.scss', 'public/css')
 	mix.webpack([
 			'collections-create.js',
+			'collections-detail.js',
 			'collections-list.js',
 			'finds-create.js',
 			'finds-detail.js',

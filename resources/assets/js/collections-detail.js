@@ -1,4 +1,4 @@
-import CollectionsCreate from './components/CollectionsCreate.vue'
+import Collection from './components/Collection.vue'
 
 import Notifications from './mixins/Notifications'
 
@@ -6,7 +6,7 @@ new window.Vue({
   el: 'body',
   data () {
     return {
-      collection: window.initialCollection || null,
+      collection: window.initialCollection,
       user: window.medeaUser
     }
   },
@@ -20,6 +20,6 @@ new window.Vue({
   },
   mixins: [Notifications],
   components: {
-    CollectionsCreate
+    Collection
   }
 });
