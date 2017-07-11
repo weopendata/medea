@@ -2,10 +2,20 @@
   <div class="card">
     <div class="card-textual">
       <a class="card-title" :href="uri">{{ collection.title }}</a>
-      <div>Registratoren: <a :href="'/persons/' + person.id" v-for="person in collection.person">
-      {{ person.firstName + ' ' + person.lastName }}</a></div>
-      <div>Type: {{ collection.type }} </div>
-      <div>Instelling: {{ collection.setting }}</div>
+      <div v-if="collection.persons && collection.persons.length">Registratoren:
+        <template v-for="(index, person) in collection.persons">
+          <span v-if="index">, </span>
+          <a :href="'/persons/' + person.identifier">{{ person.firstName + ' ' + person.lastName }}</a>
+        </template>
+      </div>
+      <dl v-if="collection.collectionType">
+        <dt>Type</dt>
+        <dd>{{ collection.collectionType }}</dd>
+      </dl>
+      <dl v-if="collection.institution">
+        <dt>Instelling</dt>
+        <dd>{{ collection.institution }}</dd>
+      </dl>
       <br><br>
       <div>
         {{ collection.description }}
@@ -42,11 +52,11 @@
     },
     methods: {
       rm () {
-        if (!confirm('Ben je zeker dat collectie #' + this.collection.identifier + ' verwijderd mag worden?')) {
+        if (!confirm('Ben je zeker dat collectie "' + this.collection.title + '" verwijderd mag worden?')) {
           return
         }
         this.$http.delete(this.deleteUri).then(function () {
-          location.reload()
+          window.location.href = '/collections'
         });
       },
     }
