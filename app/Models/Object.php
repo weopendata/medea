@@ -103,6 +103,15 @@ class Object extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
+        ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'objectNr',
+                'name' => 'objectNr',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
+            ]
         ]
     ];
 
