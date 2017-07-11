@@ -26,6 +26,7 @@ elixir(function(mix) {
 			'home.js',
 			'settings.js',
 			'users-admin.js',
+			'user-collections.js',
     ], {
 			module: {
 				loaders: [

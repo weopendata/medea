@@ -416,6 +416,7 @@ class Person extends Base implements Authenticatable
     {
         $person = [];
         $person['created_at'] = substr($this->created_at, 0, 10);
+        $person['identifier'] = $this->id;
 
         // Iterate over the default fillable fields
         foreach ($this->fillable as $property) {
