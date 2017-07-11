@@ -92,6 +92,72 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
+     * Link a user (=maintainer ) to a collection
+     *
+     * @param  integer $collectionId
+     * @param  integer $userId
+     * @return boolean
+     */
+    public function linkUser($collectionId, $userId)
+    {
+        // Check if there's already a link
+        if ($this->isCollectionLinkedWithUser($collectionId, $userId)) {
+            return false;
+        }
+
+        // Get the collection
+        $collection = $this->getById($collectionId);
+
+        // Get the user
+        $user = app(UserRepository::class)->getById($userId);
+
+        if (empty($user) || empty($collection)) {
+            return false;
+        }
+
+        // Link the user and the collection
+        $collection->relateTo($user, 'P109')->save();
+
+        return true;
+    }
+
+    /**
+     * Check if the user and collection are linked with eachother
+     *
+     * @param  integer $collectionId
+     * @param  integer $userId
+     * @return boolean
+     */
+    private function isCollectionLinkedWithUser($collectionId, $userId)
+    {
+        $query = 'MATCH (n:collection)-[P109]->(p:person)
+        WHERE id(p) = {userId} AND id(n) = {collectionId}
+        RETURN n';
+
+        $variables = [
+            'userId' => (int) $userId,
+            'collectionId' => (int) $collectionId
+        ];
+
+        $query = new Query($this->getClient(), $query, $variables);
+        $results = $query->getResultSet();
+
+        return $results->count() > 0;
+    }
+
+    /**
+     * Unlink a user (=maintainer ) of a collection
+     *
+     * @param  int     $collectionId
+     * @param  int     $userId
+     * @return boolean
+     */
+    public function unlinkUser($collectionId, $userId)
+    {
+
+    }
+
+    /**
      * Create a new collection
      *
      * @param  array $properties

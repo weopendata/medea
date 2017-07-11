@@ -25,7 +25,6 @@
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
-    Route::resource('collections', 'CollectionController');
     Route::get('/', 'HomeController@index');
     Route::get('about', 'HomeController@about');
     Route::get('contact', 'HomeController@contact');
@@ -66,6 +65,9 @@ Route::group(['middleware' => 'web'], function () {
         });
 
         Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::resource('collections', 'CollectionController');
+            Route::post('collections/{collection_id}/users/{user_id}', 'CollectionUserController@linkUser');
+            Route::delete('collections/{collection_id}/users/{user_id}', 'CollectionUserController@unlinkUser');
             Route::get('api/export', 'Api\ExportController@export');
         });
 

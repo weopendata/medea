@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Http\Request as HttpRequest;
 
-class UpdateCollectionRequest extends Request
+class LinkCollectionAndUserRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class UpdateCollectionRequest extends Request
     public function rules()
     {
         return [
-            'title' => 'required|min:2'
+            //
         ];
     }
 }
