@@ -59,11 +59,6 @@ class CollectionController extends Controller
         return view('pages.collections-create');
     }
 
-    public function search(Request $request)
-    {
-        dd($request);
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -96,6 +91,11 @@ class CollectionController extends Controller
     public function show(Request $request, $collectionId)
     {
         $collection = $this->collections->expandValues($collectionId);
+
+        // Get the users linked to the collection
+        $users = $this->collections->getLinkedUsers($collectionId);
+
+        $collection['person'] = $users;
 
         if (! $request->wantsJson()) {
             return view('pages.collections-detail', compact('collection'));

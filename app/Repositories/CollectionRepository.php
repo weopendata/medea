@@ -221,6 +221,44 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
+     * Get the users linked to the collection
+     *
+     * @param  int   $collectionId
+     * @return array
+     */
+    public function getLinkedUsers($collectionId)
+    {
+        $collection = $this->getById($collectionId);
+
+        $users = [];
+
+        if (empty($collection)) {
+            return $users;
+        }
+
+        $relationships = $collection->getRelationships(['P109']);
+
+        foreach ($relationships as $relationship) {
+            $endNode = $relationship->getEndNode();
+
+            foreach ($endNode->getLabels() as $label) {
+                if ($label->getName() == 'person') {
+                    $userNode = $relationship->getEndNode();
+
+                    $users[] = [
+                        'identifier' => $userNode->getId(),
+                        'firstName' => $userNode->getProperty('firstName'),
+                        'lastName' => $userNode->getProperty('lastName'),
+                        'email' => $userNode->getProperty('email'),
+                    ];
+                }
+            }
+        }
+
+        return $users;
+    }
+
+    /**
      * Get the collections for a user
      *
      * @param  int   $userId
