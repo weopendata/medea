@@ -59,6 +59,11 @@ class CollectionController extends Controller
         return view('pages.collections-create');
     }
 
+    public function search(Request $request)
+    {
+        dd($request);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

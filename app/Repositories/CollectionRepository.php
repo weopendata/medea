@@ -185,6 +185,41 @@ class CollectionRepository extends BaseRepository
         return $collection;
     }
 
+    /**
+     * Search for a collection by its title or a piece of the title
+     *
+     * @param  string $queryString
+     * @return array
+     */
+    public function search($queryString = '')
+    {
+        if (empty($queryString)) {
+            return $this->getAll();
+        }
+
+        $query = 'MATCH (n:E78)
+        WHERE n.title =~ {queryString}
+        RETURN n';
+
+        $variables = ['queryString' =>  '(?i).*' . $queryString . '.*'];
+
+        $query = new Query($this->getClient(), $query, $variables);
+        $results = $query->getResultSet();
+
+        $collections = [];
+
+        foreach ($results as $result) {
+            $result = $result->current();
+
+            $collections[] = [
+                'identifier' => $result->getId(),
+                'title' => $result->getProperty('title'),
+            ];
+        }
+
+        return $collections;
+    }
+
     public function getByTitle($title)
     {
         $title = trim($title);

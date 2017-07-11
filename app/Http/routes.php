@@ -36,6 +36,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::resource('finds', 'FindController');
     Route::resource('api/finds', 'Api\FindController');
+    Route::get('api/collections', 'Api\CollectionController@search');
 
     Route::resource('persons', 'UserController');
 
