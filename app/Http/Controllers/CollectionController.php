@@ -30,6 +30,7 @@ class CollectionController extends Controller
     /**
      * Display a listing collections.
      *
+     * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request)

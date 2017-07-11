@@ -7,11 +7,17 @@ use Everyman\Neo4j\Cypher\Query;
 
 class CollectionRepository extends BaseRepository
 {
+    /**
+     * CollectionRepository constructor.
+     */
     public function __construct()
     {
         parent::__construct(Collection::$NODE_TYPE, Collection::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function countAllCollections()
     {
         $client = $this->getClient();
@@ -76,8 +82,6 @@ class CollectionRepository extends BaseRepository
         $collections = [];
 
         foreach ($results as $result) {
-            $collectionNode = $result->current();
-
             $users = [];
 
             foreach ($result['person'] as $person) {
@@ -93,7 +97,9 @@ class CollectionRepository extends BaseRepository
                 'title' => $result['collection']->getProperty('title'),
                 'identifier' => $result['collection']->getId(),
                 'description' => $result['collection']->getProperty('description'),
-                'persons' => $users
+                'persons' => $users,
+                'created_at' => $result['collection']->getProperty('created_at'),
+                'collectionType' => $result['collection']->getProperty('type'),
             ];
         }
 
