@@ -38,7 +38,7 @@ class CreateCollectionRequest extends Request
         return [
             'title.required' => 'De title is verplicht in te vullen.',
             'title.min' => 'De titel moet langer zijn dan 2 karakters.',
-            'title.collectionTitle' => 'De ingegeven titel bestaat al voor een collectie, deze moet uniek zijn.'
+            'title.collection_title' => 'De ingegeven titel bestaat al voor een collectie, deze moet uniek zijn.'
         ];
     }
 }

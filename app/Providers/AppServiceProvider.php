@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use App\Extensions\Neo4jUserProvider;
 use Illuminate\Support\Facades\Validator;
-use App\Repositories\App\Repositories\CollectionRepository;
+use App\Repositories\CollectionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
