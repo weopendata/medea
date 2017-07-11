@@ -12,6 +12,16 @@ use Illuminate\Http\Request;
 
 class CollectionController extends Controller
 {
+    /**
+     * @var CollectionRepository
+     */
+    private $collections;
+
+    /**
+     * CollectionController constructor.
+     *
+     * @param CollectionRepository $collections
+     */
     public function __construct(CollectionRepository $collections)
     {
         $this->collections = $collections;
@@ -74,7 +84,7 @@ class CollectionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param CreateCollectionRequest|Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(CreateCollectionRequest $request)
@@ -97,8 +107,9 @@ class CollectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $collectionId
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param  int    $collectionId
+     * @return array|\Illuminate\Http\Response
      */
     public function show(Request $request, $collectionId)
     {
@@ -107,7 +118,7 @@ class CollectionController extends Controller
         // Get the users linked to the collection
         $users = $this->collections->getLinkedUsers($collectionId);
 
-        $collection['person'] = $users;
+        $collection['persons'] = $users;
 
         if (! $request->wantsJson()) {
             return view('pages.collections-detail', compact('collection'));
@@ -119,8 +130,9 @@ class CollectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $collectionId
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param  int    $collectionId
+     * @return array|\Illuminate\Http\Response
      */
     public function edit(Request $request, $collectionId)
     {
@@ -136,8 +148,8 @@ class CollectionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $collectionId
+     * @param UpdateCollectionRequest $request
+     * @param  int                    $collectionId
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateCollectionRequest $request, $collectionId)
@@ -166,7 +178,8 @@ class CollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $collectionId
+     * @param  int                    $collectionId
+     * @param DeleteCollectionRequest $request
      * @return \Illuminate\Http\Response
      */
     public function destroy($collectionId, DeleteCollectionRequest $request)
