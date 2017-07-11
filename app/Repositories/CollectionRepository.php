@@ -91,13 +91,12 @@ class CollectionRepository extends BaseRepository
 
             $collections[] = [
                 'title' => $result['collection']->getProperty('title'),
+                'collectionType' => $result['collection']->getProperty('collectionType'),
                 'identifier' => $result['collection']->getId(),
                 'description' => $result['collection']->getProperty('description'),
                 'persons' => $users
             ];
         }
-
-        dd($collections);
 
         return $collections;
     }

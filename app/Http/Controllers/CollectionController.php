@@ -74,7 +74,7 @@ class CollectionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(CreateCollectionRequest $request)
@@ -97,7 +97,7 @@ class CollectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $collectionId
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $collectionId)
@@ -119,7 +119,7 @@ class CollectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $collectionId
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $collectionId)
@@ -136,8 +136,8 @@ class CollectionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int                      $collectionId
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateCollectionRequest $request, $collectionId)
@@ -166,7 +166,7 @@ class CollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $collectionId
+     * @param  int                       $collectionId
      * @return \Illuminate\Http\Response
      */
     public function destroy($collectionId, DeleteCollectionRequest $request)

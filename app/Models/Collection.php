@@ -10,13 +10,47 @@ class Collection extends Base
     protected $hasUniqueId = true;
 
     protected $relatedModels = [
-        'P46' => [
-            'key' => 'object',
-            'model_name' => 'Object',
-            'cascade_delete' => false,
-            'reverse_relationship' => 'P24',
-        ],
     ];
+
+    protected $implicitModels = [
+        [
+            'relationship' => 'P109',
+            'config' => [
+                'key' => 'institution',
+                'name' => 'institution',
+                'plural' => true,
+                'cidoc_type' => 'E40'
+            ]
+        ]
+    ];
+
+    /**
+     * Dimension is not a main entity, so we create it in this object only
+     *
+     * @param array $institutions
+     *
+     * @return Node
+     */
+    public function createInstitution($institution)
+    {
+        $client = self::getClient();
+
+        $generalId = $this->getGeneralId();
+
+        // Make E40 Institution
+        $institutionNode = $client->makeNode();
+        $institutionNode->setProperty('name', 'institution');
+        $institutionNode->save();
+
+        // Set the proper labels to the objectDimensionType
+        $institutionNode->addLabels([self::makeLabel('E40'), self::makeLabel('LegalBody'), self::makeLabel($generalId)]);
+
+        // Make E82
+        $institutionAppellation = $this->createValueNode('institutionAppellation', ['E82', $generalId], $institution['institutionAppellation']);
+        $institutionNode->relateTo($institutionAppellation, 'P131')->save();
+
+        return $institutionNode;
+    }
 
     protected $properties = [
         [
@@ -27,9 +61,6 @@ class Collection extends Base
         ],
         [
             'name' => 'collectionType'
-        ],
-        [
-            'name' => 'institution'
         ]
     ];
 }
