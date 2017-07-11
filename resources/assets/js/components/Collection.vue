@@ -52,11 +52,11 @@
     },
     methods: {
       rm () {
-        if (!confirm('Ben je zeker dat collectie #' + this.collection.identifier + ' verwijderd mag worden?')) {
+        if (!confirm('Ben je zeker dat collectie "' + this.collection.title + '" verwijderd mag worden?')) {
           return
         }
         this.$http.delete(this.deleteUri).then(function () {
-          location.reload()
+          window.location.href = '/collections'
         });
       },
     }

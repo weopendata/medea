@@ -96,7 +96,7 @@ class CollectionRepository extends BaseRepository
                 'persons' => $users
             ];
         }
-        
+
         return $collections;
     }
 
