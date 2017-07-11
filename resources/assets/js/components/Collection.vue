@@ -2,8 +2,8 @@
   <div class="card">
     <div class="card-textual">
       <a class="card-title" :href="uri">{{ collection.title }}</a>
-      <div v-if="collection.person && collection.person.length">Persoon:
-        <template v-for="(index, person) in collection.person">
+      <div v-if="collection.persons && collection.persons.length">Registratoren:
+        <template v-for="(index, person) in collection.persons">
           <span v-if="index">, </span>
           <a :href="'/persons/' + person.identifier">{{ person.firstName + ' ' + person.lastName }}</a>
         </template>
