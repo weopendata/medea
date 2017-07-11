@@ -48,8 +48,9 @@ class CollectionRepository extends BaseRepository
         $variables = [];
 
         $queryString = 'MATCH (n:collection)
-        OPTIONAL MATCH (n:collection)-[P109]->(person:person)
-        RETURN n as collection, n.title as collectionTitle, collect(person) as person';
+        OPTIONAL MATCH (n:collection)-[p1:P109]->(person:person)
+        OPTIONAL MATCH (n:collection)-[p2:P109]->(institution:E40)-[P131]->(institutionAppellation:E82)
+        RETURN n as collection, n.title as collectionTitle, collect(person) as person, collect(institutionAppellation) as instNames';
 
         if (! empty($sortBy)) {
             // Statements in functions don't seem to work with the jadell library
@@ -93,12 +94,21 @@ class CollectionRepository extends BaseRepository
                 ];
             }
 
+            $institutions = [];
+
+            foreach ($result['instNames'] as $institution) {
+                $institutions[] = [
+                    'institutionAppellation' => $institution->getProperty('value'),
+                ];
+            }
+
             $collections[] = [
                 'title' => $result['collection']->getProperty('title'),
                 'collectionType' => $result['collection']->getProperty('collectionType'),
                 'identifier' => $result['collection']->getId(),
                 'description' => $result['collection']->getProperty('description'),
                 'persons' => $users,
+                'institution' => $institutions,
                 'created_at' => $result['collection']->getProperty('created_at'),
                 'collectionType' => $result['collection']->getProperty('collectionType'),
             ];
