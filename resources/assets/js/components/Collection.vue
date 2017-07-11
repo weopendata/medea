@@ -16,7 +16,7 @@
           <dt>Type</dt>
           <dd>{{ collection.collectionType }}</dd>
         </template>
-        <template v-if="collection.institution">
+        <template v-if="collection.institutions">
           <dt>Instelling</dt>
           <dd>{{ collection.institutions }}</dd>
         </template>
