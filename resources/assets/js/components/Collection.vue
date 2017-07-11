@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-textual">
       <a class="card-title" :href="uri">{{ collection.title }}</a>
-      <div>Persoon: <a :href="personUri">{{ personName }}</a></div>
+      <div>Persoon: <a :href="'/persons/' + person.id" v-for="person in collection.person">{{ person.firstName + ' ' + person.lastName }}</a></div>
       <div>Type: {{ collection.type }} </div>
       <div>Instelling: {{ collection.setting }}</div>
       <br><br>
@@ -37,12 +37,6 @@
       },
       deleteUri () {
         return this.uri + '/delete'
-      },
-      personUri () {
-        return '/persons/' + this.collection.person.id
-      },
-      personName () {
-        return this.collection.person.firstName + ' ' + this.collection.person.lastName
       }
     },
     methods: {
