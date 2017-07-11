@@ -220,6 +220,37 @@ class CollectionRepository extends BaseRepository
         return $collections;
     }
 
+    /**
+     * Get the collections for a user
+     *
+     * @param  int   $userId
+     * @return array
+     */
+    public function getForUser($userId)
+    {
+        $query = 'MATCH (n:collection)-[P109]->(person:person)
+        WHERE id(person) = {userId}
+        RETURN distinct n';
+
+        $variables = ['userId' => $userId];
+
+        $query = new Query($this->getClient(), $query, $variables);
+        $results = $query->getResultSet();
+
+        $collections = [];
+
+        foreach ($results as $result) {
+            $result = $result->current();
+
+            $collections[] = [
+                'identifier' => $result->getId(),
+                'title' => $result->getProperty('title'),
+            ];
+        }
+
+        return $collections;
+    }
+
     public function getByTitle($title)
     {
         $title = trim($title);

@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Everyman\Neo4j\Relationship;
 use App\Repositories\UserRepository;
+use App\Repositories\CollectionRepository;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
@@ -511,6 +512,16 @@ class Person extends Base implements Authenticatable
         }
 
         return $roles;
+    }
+
+    /**
+     * Get the related collections for this user
+     *
+     * @return array
+     */
+    public function getCollections()
+    {
+        return app(CollectionRepository::class)->getForUser($this->id);
     }
 
     public function __get($key)

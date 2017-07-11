@@ -71,6 +71,7 @@ class UserController extends Controller
             'findCount' => $person->getFindCount(),
             'profile' => $person->getPublicProfile(),
             'roles' => $person->getRoles(),
+            'collections' => $person->getCollections(),
             'id' => $person->id,
             'profileAccessLevel' => $person->profileAccessLevel,
         ]);
