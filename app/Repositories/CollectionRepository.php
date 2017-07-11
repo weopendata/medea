@@ -99,7 +99,7 @@ class CollectionRepository extends BaseRepository
                 'description' => $result['collection']->getProperty('description'),
                 'persons' => $users,
                 'created_at' => $result['collection']->getProperty('created_at'),
-                'collectionType' => $result['collection']->getProperty('type'),
+                'collectionType' => $result['collection']->getProperty('collectionType'),
             ];
         }
 
