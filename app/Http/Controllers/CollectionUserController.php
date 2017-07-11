@@ -26,7 +26,7 @@ class CollectionUserController extends Controller
             return response()->json(['message' => 'success']);
         }
 
-        return response()->json(['error' => 'De gebruiker werd niet gelinkt aan de collectie. Wellicht maakt deze gebruiker al deel uit van de collectie, of de gebruiker/collectie bestaat niet meer.'], 400);
+        return response()->json(['person' => ['De gebruiker werd niet gelinkt aan de collectie. Wellicht maakt deze gebruiker al deel uit van de collectie, of de gebruiker/collectie bestaat niet meer.']], 400);
     }
 
     /**
