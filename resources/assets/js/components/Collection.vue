@@ -2,19 +2,28 @@
   <div class="card">
     <div class="card-textual">
       <a class="card-title" :href="uri">{{ collection.title }}</a>
-      <div v-if="collection.persons && collection.persons.length">Registratoren:
-        <template v-for="(index, person) in collection.persons">
-          <span v-if="index">, </span>
-          <a :href="'/persons/' + person.identifier">{{ person.firstName + ' ' + person.lastName }}</a>
+      <dl>
+        <template v-if="collection.persons && collection.persons.length">
+          <dt>Registratoren</dt>
+          <dd>
+            <template v-for="(index, person) in collection.persons">
+              <span v-if="index">, </span>
+              <a :href="'/persons/' + person.identifier">{{ person.firstName + ' ' + person.lastName }}</a>
+            </template>
+          </dd>
         </template>
-      </div>
-      <dl v-if="collection.collectionType">
-        <dt>Type</dt>
-        <dd>{{ collection.collectionType }}</dd>
-      </dl>
-      <dl v-if="collection.institution">
-        <dt>Instelling</dt>
-        <dd>{{ collection.institution }}</dd>
+        <template v-if="collection.collectionType">
+          <dt>Type</dt>
+          <dd>{{ collection.collectionType }}</dd>
+        </template>
+        <template v-if="collection.institution">
+          <dt>Instelling</dt>
+          <dd>{{ collection.institution }}</dd>
+        </template>
+        <template v-if="collection.created_at">
+          <dt>Aangemaakt op</dt>
+          <dd>{{ collection.created_at | fromDate }}</dd>
+        </template>
       </dl>
       <br><br>
       <div>
@@ -36,6 +45,7 @@
 </template>
 <script>
   import ObjectFeatures from './ObjectFeatures';
+  import { fromDate } from '../const'
 
   export default {
     props: ['collection'],
@@ -49,6 +59,9 @@
       deleteUri () {
         return this.uri
       }
+    },
+    filters: {
+      fromDate
     },
     methods: {
       rm () {
