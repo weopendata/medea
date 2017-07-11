@@ -14,9 +14,8 @@
     <collection v-for="collection in collections" :collection="collection"></collection>
     <div v-if="!collections.length" class="finds-empty">
       <h1>
-        Geen resultaten
+        Er zijn nog geen collecties gemaakt.
         <br>
-        <small>Er zijn geen vondsten die voldoen aan de criteria</small>
       </h1>
     </div>
     <div v-if="paging" class="paging">

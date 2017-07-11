@@ -47,6 +47,7 @@ export function findTitle (find) {
 
 // Collection helpers
 export function incomingCollection (collection) {
+  // Concatenate the institution appellations to a string and attribute it to the institutions property of the collection
   collection.institutions = collection.institution ? collection.institution.map(inst => inst.institutionAppellation).join(', ') : ''
   return collection
 }
