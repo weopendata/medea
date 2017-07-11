@@ -1,74 +1,80 @@
 <template>
   <div class="ui very relaxed items">
-    <div class="create-cta">
+    <div class="list-controls">
+      <span class="finds-order">
+        Sorteren op:
+        <a @click.prevent="sortBy('title')" :class="sortClass('title')">Titel</a>
+        <a @click.prevent="sortBy('created_at')" :class="sortClass('created_at')">Datum aangemaakt</a>
+      </span>
       <label class="pull-right">
         <a href="/collections/create" class="ui green button">Collectie toevoegen</a>
       </label>
     </div>
-      <collection v-for="collection in collections" :collection="collection"></collection>
-
+    <br>
+    <collection v-for="collection in collections" :collection="collection"></collection>
     <div v-if="!collections.length" class="finds-empty">
       <h1>
         Geen resultaten
-        <br><small>Er zijn geen vondsten die voldoen aan de criteria</small>
+        <br>
+        <small>Er zijn geen vondsten die voldoen aan de criteria</small>
       </h1>
     </div>
-    <div v-else class="paging">
+    <div v-if="paging" class="paging">
       <div class="paging-current">
         Pagina {{ currentPage }} van {{ totalPages }}
       </div>
-      <button v-if="paging.previous" @click="to({offset:0})" class="ui blue icon button"><i class="double angle left icon"></i></button>
-      <button v-if="paging.previous" @click="to(paging.previous)" class="ui blue button">Vorige</button>
-      <button v-if="paging.next" @click="to(paging.last||paging.next)" class="ui blue icon button pull-right"><i class="double angle right icon"></i></button>
-      <button v-if="paging.next" @click="to(paging.next)" class="ui blue button pull-right">Volgende</button>
+      <a :href="paging.first.url" v-if="paging.first" class="ui blue icon button"><i class="double angle left icon"></i></a>
+      <a :href="paging.previous.url" v-if="paging.previous" class="ui blue button">Vorige</a>
+      <a :href="paging.last.url" v-if="paging.last" class="ui blue icon button pull-right"><i class="double angle right icon"></i></a>
+      <a :href="paging.next.url" v-if="paging.next" class="ui blue button pull-right">Volgende</a>
     </div>
-    <div class="ui form finds-cta">
-      <div class="field" v-if="showFavName">
-        <label>Geef deze zoekopdracht een naam</label>
-        <input type="text" v-model="favName" style="width: 200px">
-      </div>
-    </div>
-
   </div>
 </template>
 <script>
-  import {inert, fromQuery} from '../const.js'
+  import { inert, fromQuery } from '../const.js'
   import Collection from '../components/Collection.vue'
+  import parseLinkHeader from 'parse-link-header'
 
   export default {
-    props: ['collections', 'paging'],
     data () {
-      return {}
+      return {
+        paging: parseLinkHeader(window.link),
+        collections: window.initialCollections || [],
+        filterState: window.filterState || {}
+      }
+    },
+    methods: {
+      sortBy(property){
+        let sortBy = (this.filterState.sortOrder === 'ASC' && this.filterState.sortBy === property ) ? 'DESC' : 'ASC'
+        window.location = '?sortBy=' + property + '&sortOrder=' + sortBy
+      },
+      sortClass(property){
+        if(property === this.filterState.sortBy){
+          return this.filterState.sortOrder === 'ASC' ? 'active' : 'reverse'
+        }
+      }
     },
     computed: {
       currentPage () {
         if (this.paging.next) {
-          return this.paging.next.offset /  this.paging.next.limit
+          return this.paging.next.offset / this.paging.next.limit
         }
         if (this.paging.previous) {
-          return 2 + this.paging.previous.offset /  this.paging.previous.limit
+          return 2 + this.paging.previous.offset / this.paging.previous.limit
         }
         return 1
       },
       totalPages () {
         if (this.paging.last) {
-          return 1 + this.paging.last.offset /  this.paging.last.limit
+          return 1 + this.paging.last.offset / this.paging.last.limit
         }
         return this.currentPage
-      },
+      }
     },
-    methods: {},
+    ready () {
+    },
     components: {
-      Collection
+      Collection,
     }
   }
 </script>
-<style>
-  .create-cta{
-    position: relative;
-    z-index: 1;
-    overflow: auto;
-    max-width: 900px;
-    margin: 0 auto 2em;
-  }
-</style>

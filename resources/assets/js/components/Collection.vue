@@ -36,7 +36,7 @@
         return this.uri + '/edit'
       },
       deleteUri () {
-        return this.uri + '/delete'
+        return this.uri
       }
     },
     methods: {
@@ -45,8 +45,7 @@
           return
         }
         this.$http.delete(this.deleteUri).then(function () {
-          console.log('removed', this.find.identifier)
-          this.$root.fetch()
+          location.reload()
         });
       },
     }

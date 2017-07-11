@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Pager;
 use App\Http\Requests\CreateCollectionRequest;
 use App\Http\Requests\DeleteCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
 use App\Models\Collection;
 use App\Repositories\CollectionRepository;
-use App\Helpers\Pager;
 use Illuminate\Http\Request;
 
 class CollectionController extends Controller
@@ -24,26 +24,38 @@ class CollectionController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit', 50);
+        $limit = $request->input('limit', 10);
         $offset = $request->input('offset', 0);
         $sortBy = $request->input('sortBy', 'created_at');
         $sortOrder = $request->input('sortOrder', 'DESC');
 
         $collections = $this->collections->getAll($limit, $offset, $sortBy, $sortOrder);
+        $totalCollections = $this->collections->countAllCollections();
 
-        $pages = $this->calculatePagingInfo($request);
+        $queryString = $this->buildQueryString($request);
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $totalCollections);
+
+        if ($offset > 0) {
+            $pages['first'] = [0, $limit];
+        }
 
         $linkHeader = [];
 
         foreach ($pages as $rel => $pagingInfo) {
-            $linkHeader[] = '<' . $request->url() . '?offset=' . $pagingInfo[0] . '&limit=' . $pagingInfo[1] . '&' . $query_string . '>;rel=' . $rel;
+            $linkHeader[] = '<' . $request->url() . '?offset=' . $pagingInfo[0] . '&limit=' . $pagingInfo[1] . '&' . $queryString . '>;rel=' . $rel;
         }
 
         $linkHeader = implode(', ', $linkHeader);
 
         return view('pages.collections-list')->with([
             'collections' => $collections,
-            'filterState' => '',
+            'filterState' => [
+                'limit'     => $limit,
+                'offset'    => $offset,
+                'sortBy'    => $sortBy,
+                'sortOrder' => $sortOrder,
+            ],
             'fields'      => '',
             'link'        => $linkHeader,
         ]);
@@ -62,7 +74,7 @@ class CollectionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(CreateCollectionRequest $request)
@@ -85,7 +97,7 @@ class CollectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int                       $collectionId
+     * @param  int $collectionId
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $collectionId)
@@ -107,7 +119,7 @@ class CollectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int                       $collectionId
+     * @param  int $collectionId
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $collectionId)
@@ -124,8 +136,8 @@ class CollectionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $collectionId
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $collectionId
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateCollectionRequest $request, $collectionId)
@@ -154,7 +166,7 @@ class CollectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int                       $collectionId
+     * @param  int $collectionId
      * @return \Illuminate\Http\Response
      */
     public function destroy($collectionId, DeleteCollectionRequest $request)
@@ -167,31 +179,5 @@ class CollectionController extends Controller
 
         // This should only happen if the collection was not found
         return response()->json(['error' => 'De collectie werd niet verwijderd.'], 400);
-    }
-
-    /**
-     * Calculate paging info based on the request
-     *
-     * @param  Request $request
-     * @return array
-     */
-    private function calculatePagingInfo($request)
-    {
-        $totalCollections = $this->collections->countAllCollections();
-
-        $limit = $request->input('limit', 50);
-        $offset = $request->input('offset', 0);
-
-        $pageInfo = Pager::calculatePagingInfo($limit, $offset, $totalCollections);
-        $url = $request->url();
-        $queryString = $this->buildQueryString($request);
-
-        if ($offset > 0) {
-            $pageInfo['first'] = [0, 0];
-        }
-
-        return array_map(function ($info) use ($url, $queryString) {
-            return $url . '?offset=' . $info[0] . '&limit=' . $info[1] . '&' . $queryString;
-        }, $pageInfo);
     }
 }
