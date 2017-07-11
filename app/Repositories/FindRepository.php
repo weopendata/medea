@@ -287,6 +287,13 @@ class FindRepository extends BaseRepository
                 $matchStatements[] = $config['match'];
                 $whereStatements[] = $config['where'];
                 $variables[$config['nodeName']] = $filters[$property];
+
+                // If we have an integer value, convert the value we received from the request URI
+                // Neo4j makes a strict distinction between integers and strings
+                if (@$config['varType'] == 'int') {
+                    $variables[$config['nodeName']] = (int) $filters[$property];
+                }
+
                 if (! empty($config['with'])) {
                     $withStatement[] = $config['with'];
                 }
@@ -372,6 +379,13 @@ class FindRepository extends BaseRepository
                 'nodeName' => 'embargo',
                 'with' => 'object'
             ],
+            'collection' => [
+                'match' => '(object:E22)-[P24]-(collection:E78)',
+                'where' => 'id(collection)= {collection}',
+                'nodeName' => 'collection',
+                'with' => 'collection',
+                'varType' => 'int',
+            ]
         ];
     }
 
