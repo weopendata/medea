@@ -2,9 +2,20 @@
   <div class="card">
     <div class="card-textual">
       <a class="card-title" :href="uri">{{ collection.title }}</a>
-      <div>Persoon: <a :href="'/persons/' + person.id" v-for="person in collection.person">{{ person.firstName + ' ' + person.lastName }}</a></div>
-      <div>Type: {{ collection.type }} </div>
-      <div>Instelling: {{ collection.setting }}</div>
+      <div v-if="collection.person && collection.person.length">Persoon:
+        <template v-for="(index, person) in collection.person">
+          <span v-if="index">, </span>
+          <a :href="'/persons/' + person.identifier">{{ person.firstName + ' ' + person.lastName }}</a>
+        </template>
+      </div>
+      <dl v-if="collection.collectionType">
+        <dt>Type</dt>
+        <dd>{{ collection.collectionType }}</dd>
+      </dl>
+      <dl v-if="collection.institution">
+        <dt>Instelling</dt>
+        <dd>{{ collection.institution }}</dd>
+      </dl>
       <br><br>
       <div>
         {{ collection.description }}
