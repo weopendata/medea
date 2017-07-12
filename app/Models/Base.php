@@ -85,6 +85,7 @@ class Base
         if (empty($properties)) {
             return;
         }
+
         $client = self::getClient();
 
         $this->node = $client->makeNode();
@@ -238,6 +239,10 @@ class Base
                             if (! empty($config['link_only']) && $config['link_only']) {
                                 // Fetch the node and create the relationship
                                 $model = $this->searchNode($input['id'], $config['model_name']);
+
+                                if (! empty($model)) {
+                                    $this->makeRelationship($model, $relationshipName);
+                                }
                             } else {
                                 // Check if an identifier is provided, if not, perform a create
                                 if (empty($input['identifier'])) {
@@ -279,7 +284,6 @@ class Base
                             }
                         }
                     }
-
                 } elseif (! empty($config['link_only']) && $config['link_only']) {
                     $model_name = 'App\Models\\' . $config['model_name'];
                     $model = new $model_name();
