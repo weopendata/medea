@@ -285,9 +285,20 @@ class Base
                         }
                     }
                 } elseif (! empty($config['link_only']) && $config['link_only']) {
+                    // Remove the link between the end node and this node
+                    $relationships = $this->node->getRelationships([$relationshipName]);
+
                     $model_name = 'App\Models\\' . $config['model_name'];
-                    $model = new $model_name();
-                    $model->delete();
+
+                    foreach ($relationships as $relationship) {
+                        $endNode = $relationship->getEndNode();
+
+                        foreach ($endNode->getLabels() as $label) {
+                            if ($label->getName() == $model_name::$NODE_TYPE) {
+                                $relationship->delete();
+                            }
+                        }
+                    }
                 }
             }
 
