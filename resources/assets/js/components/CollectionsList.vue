@@ -6,7 +6,7 @@
         <a @click.prevent="sortBy('title')" :class="sortClass('title')">Titel</a>
         <a @click.prevent="sortBy('created_at')" :class="sortClass('created_at')">Datum aangemaakt</a>
       </span>
-      <label class="pull-right">
+      <label class="pull-right" v-if="canEdit">
         <a href="/collections/create" class="ui green button">Collectie toevoegen</a>
       </label>
     </div>
@@ -68,6 +68,9 @@
           return 1 + this.paging.last.offset / this.paging.last.limit
         }
         return this.currentPage
+      },
+      canEdit () {
+        return window.medeaUser && window.medeaUser.administrator
       }
     },
     ready () {
