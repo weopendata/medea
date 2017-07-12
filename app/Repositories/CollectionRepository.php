@@ -32,6 +32,31 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
+     * Return a simle list of the all collections
+     * This list is a mapping between id's and the title of the collection
+     */
+    public function getList()
+    {
+        $client = $this->getClient();
+
+        $variables = [];
+
+        $queryString = 'MATCH (n:collection)
+        RETURN n as collection';
+
+        $cypherQuery = new Query($client, $queryString, $variables);
+        $results = $cypherQuery->getResultSet();
+
+        $collections = [];
+
+        foreach ($results as $result) {
+            $collections[$result['collection']->getId()] = $result['collection']->getProperty('title');
+        }
+
+        return $collections;
+    }
+
+    /**
      * Get all the collection nodes
      *
      * @param integer $limit

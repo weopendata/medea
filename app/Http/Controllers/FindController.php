@@ -10,6 +10,7 @@ use App\Models\FindEvent;
 use App\Models\Person;
 use App\Repositories\FindRepository;
 use App\Repositories\ListValueRepository;
+use App\Repositories\CollectionRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -109,6 +110,12 @@ class FindController extends Controller
             $finds = $adjusted_finds;
         }
 
+        // Get the fields a user can choose from in order to filter through the finds
+        // Add the collections as a full list, it's currently still feasible
+        // that all collections can be added to the facet filter
+        $fields = $this->list_values->getFindTemplate();
+        $fields['collections'] = app(CollectionRepository::class)->getList();
+
         return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
@@ -126,8 +133,8 @@ class FindController extends Controller
                 'embargo' => (boolean) $request->input('embargo', false),
                 'showmap' => $request->input('showmap', null)
             ],
-            'fields' => $this->list_values->getFindTemplate(),
-            'link' => $linkHeader
+            'fields' => $fields,
+            'link' => $linkHeader,
         ])->header('Link', $linkHeader);
     }
 

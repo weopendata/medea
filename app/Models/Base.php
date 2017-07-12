@@ -11,12 +11,6 @@ use Carbon\Carbon;
 /**
  * The base class for a node in the graph
  * Because this class is almost inherently complex
- * some MD functionalities have been suppressed
- *
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
- * @SuppressWarnings(PHPMD.TooManyMethods)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Base
 {
