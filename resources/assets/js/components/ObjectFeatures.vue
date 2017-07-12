@@ -41,7 +41,6 @@
   <dd>{{find.object.objectMaterial}}</dd>
 </dl>
   <dl v-if="find.object.objectNr">
-    <dt-check v-if="validating" prop="objectNr"></dt-check>
     <dt>Inventaris nummer</dt>
     <dd>{{find.object.objectNr}}</dd>
   </dl>
