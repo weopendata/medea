@@ -11,7 +11,7 @@
       </label>
     </div>
     <br>
-    <collection v-for="collection in collections" :collection="collection"></collection>
+    <collection v-for="collection in collections" :initial-collection="collection"></collection>
     <div v-if="!collections.length" class="finds-empty">
       <h1>
         Er zijn nog geen collecties gemaakt.
@@ -38,7 +38,7 @@
     data () {
       return {
         paging: parseLinkHeader(window.link),
-        collections: (window.initialCollections || []).map(incomingCollection),
+        collections: window.initialCollections || [],
         filterState: window.filterState || {}
       }
     },

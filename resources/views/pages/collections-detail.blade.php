@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="ui container">
-  <collection v-if="collection" :collection="collection"></collection>
+  <collection v-if="collection" :initial-collection="collection"></collection>
 </div>
 @endsection
 
