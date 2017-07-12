@@ -114,7 +114,12 @@ class FindController extends Controller
         // Add the collections as a full list, it's currently still feasible
         // that all collections can be added to the facet filter
         $fields = $this->list_values->getFindTemplate();
-        $fields['collections'] = app(CollectionRepository::class)->getList();
+        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function($title, $identifier){
+           return [
+               'value' => $identifier,
+               'label' => $title
+           ];
+        })->values();
 
         return response()->view('pages.finds-list', [
             'finds' => $finds,
@@ -125,6 +130,7 @@ class FindController extends Controller
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
+                'collection' => $request->input('collection'),
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),
