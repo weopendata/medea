@@ -317,8 +317,6 @@ class CollectionRepository extends BaseRepository
      */
     public function getCollectionForObject($objectId)
     {
-        $collection = [];
-
         $query = 'MATCH (n:object)-[P24]->(collection:collection)
         WHERE id(n) = {objectId}
         RETURN collection';
@@ -334,7 +332,8 @@ class CollectionRepository extends BaseRepository
             $collectionNode = $results->current()['collection'];
 
             $collection = [
-                'id' => $collectionNode->getId(),
+                'identifier' => $collectionNode->getId(),
+                'title' => $collectionNode->getProperty('title'),
             ];
         }
 
