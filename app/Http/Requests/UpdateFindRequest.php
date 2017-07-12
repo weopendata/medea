@@ -29,7 +29,13 @@ class UpdateFindRequest extends Request
 
         $this->find = $finds->expandValues($findId);
 
+        // Check if the collection is passed and if it has changed
+        // the user is allowed to change it
+        $this->validateInput($request);
+
         // Determine the owner of the find
+        // and make sure the user is not set to a
+        // different user so that the owner remains correct
         $this->setOwnerOfTheFind($request);
 
         if ($this->user->hasRole('administrator')) {
@@ -42,6 +48,30 @@ class UpdateFindRequest extends Request
             ($status == 'Aan te passen' || $status == 'Voorlopige versie')
             && $this->user->id == $this->find['person']['identifier']
            || $status == 'Klaar voor validatie' && $this->user->hasRole('validator'));
+    }
+
+    /**
+     * Make sure that properties such as person and collection are allowed
+     * and correct according to the role of the user
+     *
+     * @param  array   $input
+     * @return boolean
+     */
+    private function validateInput($request)
+    {
+        $input = $request->input();
+        $user = $request->user();
+
+        // If the user is a registrator, then all is well, he can do everything
+        // if not, then the linked person and collection should remain the same as they were before
+        return $user->hasRole('registrator')
+            || (
+                // collection remained the same
+                @$input['object']['collection']['id'] == @$this->find['object']['collection']['identifier']
+                &&
+                // Linked user remained the same
+                @$input['object']['person']['id'] == @$this->find['object']['person']['identifier']
+            );
     }
 
     /**

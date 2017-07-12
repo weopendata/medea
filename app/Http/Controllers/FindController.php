@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Pager;
 use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\UpdateFindRequest;
+use App\Http\Requests\CreateFindRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Mailers\AppMailer;
 use App\Models\FindEvent;
@@ -162,13 +163,13 @@ class FindController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param CreateFindRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, UserRepository $users)
+    public function store(CreateFindRequest $request, UserRepository $users)
     {
-        $input = $request->json()->all();
+        $input = $request->getInput();
 
         $user = $request->user();
 
@@ -394,7 +395,7 @@ class FindController extends Controller
 
         $public_path = public_path('uploads/');
 
-        $image_name = str_random(6).'_'.$image_config['name'];
+        $image_name = str_random(6) . '_' . $image_config['name'];
         $image_name_small = 'small_' . $image_name;
 
         $image->save($public_path . $image_name);
