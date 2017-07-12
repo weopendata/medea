@@ -9,6 +9,7 @@ import FindEvent from './components/FindEvent'
 import PhotoUpload from './components/PhotoUpload'
 import Step from './components/Step'
 import TextareaGrowing from './components/TextareaGrowing'
+import AddCollections from './components/AddCollections'
 
 import Ajax from './mixins/Ajax'
 import HelpText from './mixins/HelpText'
@@ -166,6 +167,7 @@ new window.Vue({
       inscription: fromInscription(initialFind.object.objectInscription),
       technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
       treatment: fromTreatment(initialFind.object.treatmentEvent),
+      collection: initialFind.collection || {},
       // Interface state
       today: new Date().toISOString().slice(0, 10),
       show: {
@@ -284,6 +286,12 @@ new window.Vue({
     }
   },
   methods: {
+    assignCollection (collection) {
+      this.collection = collection
+    },
+    removeCollection () {
+      this.collection = {}
+    },
     toStep (i, show) {
       this.formdata()
       this.step = i
@@ -409,6 +417,9 @@ new window.Vue({
       this.find.object.objectInscription = toInscription(this.inscription)
       this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
       this.find.object.treatmentEvent = toTreatment(this.treatment)
+      if(this.collection.identifier){
+        this.find.collection = { id: this.collection.identifier }
+      }
 
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
@@ -457,7 +468,8 @@ new window.Vue({
     DimInput,
     FindEvent,
     TextareaGrowing,
-    AddClassificationForm
+    AddClassificationForm,
+    AddCollections
   }
 });
 

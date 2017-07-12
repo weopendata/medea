@@ -385,8 +385,14 @@
   </div>
 </step>
 
+<step number="5" title="Linken aan een collectie">
+  <div class="field">
+    <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection"></add-collections>
+  </div>
+</step>
+
 <div class="grouped fields">
-  <h3>5. Klaar met vondstfiche</h3>
+  <h3>6. Klaar met vondstfiche</h3>
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
     <label>Bijkomende opmerkingen</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>

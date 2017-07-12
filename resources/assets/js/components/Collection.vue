@@ -20,6 +20,10 @@
           <dt>Instelling</dt>
           <dd>{{ collection.institutions }}</dd>
         </template>
+        <template v-if="collection.objectNr">
+          <dt>ObjectNr</dt>
+          <dd>{{ collection.objectNr }}</dd>
+        </template>
         <template v-if="collection.created_at">
           <dt>Aangemaakt op</dt>
           <dd>{{ collection.created_at | fromDate }}</dd>
@@ -31,13 +35,13 @@
       </div>
     </div>
     <div class="card-bar">
-      <a class="btn" :href="uri">
-        Bekijken
+      <a class="btn" :href="filterUri">
+        Bekijk vondsten
       </a>
-      <button class="btn btn-icon pull-right" @click="rm">
+      <button class="btn btn-icon pull-right" @click="rm" v-if="canEdit">
         <i class="trash icon"></i>
       </button>
-      <a class="btn btn-icon pull-right" :href="editUri">
+      <a class="btn btn-icon pull-right" :href="editUri" v-if="canEdit">
         <i class="pencil icon"></i>
       </a>
     </div>
@@ -58,6 +62,12 @@
       },
       deleteUri () {
         return this.uri
+      },
+      filterUri () {
+        return '/finds?collection=' + this.collection.identifier
+      },
+      canEdit () {
+        return window.medeaUser && window.medeaUser.administrator
       }
     },
     filters: {
