@@ -134,6 +134,8 @@ new window.Vue({
       extend(initialFind, window.initialFind)
     }
     return {
+      addAnother: false,
+      confirmNextMessage: false,
       // Location picker
       map: {
         center: {lat: 50.9, lng: 4.3},
@@ -196,6 +198,9 @@ new window.Vue({
     }
   },
   computed: {
+    isEditing () {
+      return this.find.identifier
+    },
     publicBounds () {
       return toPublicBounds(this.latlng)
     },
@@ -274,7 +279,7 @@ new window.Vue({
 
     // Step 2
     step2valid () {
-      return this.hasImages
+      return this.hasImages || this.user.registrator
     },
     hasImages () {
       return this.find.object.photograph.length > 1
@@ -300,6 +305,11 @@ new window.Vue({
     },
     removePerson () {
       this.person = {}
+    },
+    confirmNext () {
+      this.confirmNextMessage = false
+      this.step = 1
+      window.scrollTo(0, 0)
     },
     toStep (i, show) {
       this.formdata()
@@ -442,8 +452,14 @@ new window.Vue({
       return this.find
     },
     submitSuccess (res) {
-      const newStatus = this.find.object.objectValidationStatus
-      window.location.href = res.data.url || this.redirectTo
+      if (this.addAnother) {
+        this.confirmNextMessage = true
+
+        this.find.object.photograph = []
+      }
+     else{
+        window.location.href = res.data.url || this.redirectTo
+      }
     }
   },
   ready () {
@@ -465,7 +481,6 @@ new window.Vue({
       }
     }
     $('.ui.checkbox', this.$el).checkbox()
-    // $('.step .ui.dropdown').dropdown()
   },
   watch: {
     'find.object.objectCategory' (val) {
