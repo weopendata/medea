@@ -57,7 +57,7 @@ class UpdateFindRequest extends Request
         // from the previous linked person, otherwise the identifier should stay the same
         // as the original person identifier
         $input = $request->input();
-        info($this->user->getRoles());
+
         if ($this->user->hasRole('registrator') && ! empty($input['person']['id']) && $this->find['person']['identifier'] != $input['person']['id']) {
             $this->ownerOfTheFind = $input['person']['id'];
 

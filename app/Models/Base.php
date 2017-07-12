@@ -237,11 +237,23 @@ class Base
                             }
                         } else {
                             if (! empty($config['link_only']) && $config['link_only']) {
-                                // Fetch the node and create the relationship
+                                // Destroy the relationships, those are temporary
+                                // Remove the link between the end node and this node
+                                $model_name = 'App\Models\\' . $config['model_name'];
+
+                                $relationships = $this->getRelationships($model_name::$NODE_TYPE);
+
+                                foreach ($relationships as $relationship) {
+                                    $relationship->delete();
+                                }
+
+                                // Fetch the node of the related model and create the relationship
                                 $model = $this->searchNode($input['id'], $config['model_name']);
 
                                 if (! empty($model)) {
                                     $this->makeRelationship($model, $relationshipName);
+
+                                    $model->getNode()->relateTo($this->getNode(), $config['reverse_relationship'])->save();
                                 }
                             } else {
                                 // Check if an identifier is provided, if not, perform a create
@@ -286,18 +298,12 @@ class Base
                     }
                 } elseif (! empty($config['link_only']) && $config['link_only']) {
                     // Remove the link between the end node and this node
-                    $relationships = $this->node->getRelationships([$relationshipName]);
-
                     $model_name = 'App\Models\\' . $config['model_name'];
 
-                    foreach ($relationships as $relationship) {
-                        $endNode = $relationship->getEndNode();
+                    $relationships = $this->getRelationships($model_name::$NODE_TYPE);
 
-                        foreach ($endNode->getLabels() as $label) {
-                            if ($label->getName() == $model_name::$NODE_TYPE) {
-                                $relationship->delete();
-                            }
-                        }
+                    foreach ($relationships as $relationship) {
+                        $relationship->delete();
                     }
                 }
             }
@@ -715,7 +721,7 @@ class Base
      * @param integer $nodeId
      * @param string  $model
      *
-     * @return null|Node
+     * @return null|Model
      */
     protected function searchNode($nodeId, $model)
     {
@@ -793,7 +799,7 @@ class Base
      * @param string $rel_type
      * @param string $endnode_type
      *
-     * @return
+     * @return ResultSet
      */
     protected function getRelatedNodes($rel_type, $endnode_type)
     {
@@ -806,6 +812,35 @@ class Base
         $cypher_query = new Query($this->getClient(), $query);
 
         return $cypher_query->getResultSet();
+    }
+
+    /**
+     * Retrieve the relationships between a specified node
+     * and the current node
+     *
+     * @param  string $nodeType     The type of the node
+     * @param  string $relationship The type of the relationship
+     * @return array
+     */
+    protected function getRelationships($nodeType)
+    {
+        $nodeId = $this->node->getId();
+
+        $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[r]-(end:$nodeType)
+                  WHERE id(n) = $nodeId
+                  RETURN r";
+
+        $cypher_query = new Query($this->getClient(), $query);
+
+        $results = $cypher_query->getResultSet();
+
+        $relationships = [];
+
+        foreach ($results as $result) {
+            $relationships[] = $result['r'];
+        }
+
+        return $relationships;
     }
 
     protected function isAssoc($arr)

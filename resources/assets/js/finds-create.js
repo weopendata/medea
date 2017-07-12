@@ -427,13 +427,13 @@ new window.Vue({
       this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
       this.find.object.treatmentEvent = toTreatment(this.treatment)
       if (this.collection.title) {
-        this.find.object.collection = {identifier: this.collection.identifier}
+        this.find.object.collection = {id: this.collection.identifier}
       } else {
         delete this.find.object.collection
       }
 
       if (this.person.firstName) {
-        this.find.person = {identifier: this.person.identifier}
+        this.find.person = {id: this.person.identifier}
       } else {
         delete this.find.person
       }
@@ -461,7 +461,7 @@ new window.Vue({
 
       if (this.find.person) {
         this.person = this.find.person
-        this.find.person = {identifier: this.person.identifier}
+        this.find.person = {identifier: this.person.id}
       }
     }
     $('.ui.checkbox', this.$el).checkbox()
