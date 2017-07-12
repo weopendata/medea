@@ -321,8 +321,8 @@
 
   <div class="two fields">
     <div class="field">
-      <label>Inventory nummer</label>
-      <input type="text" v-model="find.object.objectNr" placeholder="Inventory nummer">
+      <label>Inventaris nummer</label>
+      <input type="text" v-model="find.object.objectNr" placeholder="Inventaris nummer">
     </div>
   </div>
 

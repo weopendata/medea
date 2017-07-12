@@ -42,7 +42,7 @@
 </dl>
   <dl v-if="find.object.objectNr">
     <dt-check v-if="validating" prop="objectNr"></dt-check>
-    <dt>Inventory nummer</dt>
+    <dt>Inventaris nummer</dt>
     <dd>{{find.object.objectNr}}</dd>
   </dl>
   <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
