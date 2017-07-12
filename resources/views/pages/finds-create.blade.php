@@ -213,7 +213,7 @@
   </p>
 </step>
 
-<step number="2" title="Foto's" class="required" :class="{completed:step2valid}" data-step="2" data-intro="Er moeten minstens 2 foto's opgeladen worden: de voor- en achterkant van het object.">
+<step number="2" title="Foto's" :class="{required:! this.user || !this.user.registrator}" :class="{completed:step2valid}" data-step="2" data-intro="Er moeten minstens 2 foto's opgeladen worden: de voor- en achterkant van het object.">
   <p>
     Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
   </p>
@@ -243,11 +243,11 @@
       <input type="file">
     </div>
   </div>
-  <p v-if="!hasImages" style="color:red">
+  <p v-if="!hasImages && ! this.user.registrator" style="color:red">
     Zorg voor minstens 2 foto's
   </p>
   <p>
-    <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Volgende stap</button>
+    <button class="ui button" :class="{green:hasImages}" :disabled="! step2valid" @click.prevent="toStep(3)">Volgende stap</button>
   </p>
 </step>
 
@@ -454,12 +454,28 @@
   <p v-if="submitting&&!toValidate" style="color:#090">
     Bedankt, jouw vondstfiche wordt bewaard.
   </p>
-  <div v-if="!submitting" class="field">
-    <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
-    <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+  <div v-show="confirmNextMessage" class="ui success message visible">
+    <button class="ui button green pull-right" type="button" @click="confirmNext">OK!</button>
+    <div class="header">
+      De vondst werd opgeslaan
+    </div>
+    <p>U kan nu een volgende vondst ingeven</p>
   </div>
-  <div v-else>
-    <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
+  <div v-show="! confirmNextMessage">
+    <div v-if="!submitting" class="field">
+      <div class="ui checkbox" v-if="user.registrator && !isEditing">
+        <br>
+        <input type="checkbox" v-model="addAnother" id="addAnother">
+        <label for="addAnother">
+          <b>Nog een vondst toevoegen met dezelfde data</b>
+        </label>
+      </div><br><br>
+      <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
+      <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+    </div>
+    <div v-else>
+      <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
+    </div>
   </div>
 </div>
 <div class="field" v-if="!submittable">
