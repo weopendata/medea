@@ -65,6 +65,8 @@ Route::group(['middleware' => 'web'], function () {
             Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
         });
 
+        Route::get('api/users', 'Api\UserController@index');
+
         Route::group(['middleware' => 'roles:administrator'], function () {
             Route::resource('collections', 'CollectionController');
             Route::put('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@linkUser');

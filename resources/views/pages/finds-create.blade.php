@@ -385,9 +385,12 @@
   </div>
 </step>
 
-<step number="5" title="Linken aan een collectie" v-if="user.administrator">
+<step number="5" title="Linken aan een collectie / persoon" v-if="user.administrator">
   <div class="field">
-    <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection"></add-collections>
+    <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection" placeholder="Koppel aan een collectie"></add-collections>
+  </div>
+  <div class="field">
+    <add-persons @select="assignPerson" @remove="removePerson" :person.sync="person" placeholder="Koppel aan een persoon"></add-persons>
   </div>
 </step>
 

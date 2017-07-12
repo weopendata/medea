@@ -10,6 +10,7 @@ import PhotoUpload from './components/PhotoUpload'
 import Step from './components/Step'
 import TextareaGrowing from './components/TextareaGrowing'
 import AddCollections from './components/AddCollections'
+import AddPersons from './components/AddPersons'
 
 import Ajax from './mixins/Ajax'
 import HelpText from './mixins/HelpText'
@@ -168,6 +169,7 @@ new window.Vue({
       technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
       treatment: fromTreatment(initialFind.object.treatmentEvent),
       collection: {},
+      person: {},
       // Interface state
       today: new Date().toISOString().slice(0, 10),
       show: {
@@ -292,6 +294,12 @@ new window.Vue({
     },
     removeCollection () {
       this.collection = {}
+    },
+    assignPerson (person) {
+      this.person = person
+    },
+    removePerson () {
+      this.person = {}
     },
     toStep (i, show) {
       this.formdata()
@@ -418,10 +426,16 @@ new window.Vue({
       this.find.object.objectInscription = toInscription(this.inscription)
       this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
       this.find.object.treatmentEvent = toTreatment(this.treatment)
-      if (this.collection.identifier) {
-        this.find.object.collection = {id: this.collection.identifier}
+      if (this.collection.title) {
+        this.find.object.collection = {identifier: this.collection.identifier}
       } else {
         delete this.find.object.collection
+      }
+
+      if (this.person.firstName) {
+        this.find.person = {identifier: this.person.identifier}
+      } else {
+        delete this.find.person
       }
 
       console.log(JSON.parse(JSON.stringify(this.find)))
@@ -439,10 +453,15 @@ new window.Vue({
         this.show.map = true
         this.marker.visible = true
       }
-      console.log(this.find)
+
       if (this.find.object.collection) {
         this.collection = this.find.object.collection
-        this.find.object.collection = {id: this.collection.id}
+        this.find.object.collection = {identifier: this.collection.id}
+      }
+
+      if (this.find.person) {
+        this.person = this.find.person
+        this.find.person = {identifier: this.person.identifier}
       }
     }
     $('.ui.checkbox', this.$el).checkbox()
@@ -477,7 +496,8 @@ new window.Vue({
     FindEvent,
     TextareaGrowing,
     AddClassificationForm,
-    AddCollections
+    AddCollections,
+    AddPersons
   }
 })
 
