@@ -280,11 +280,17 @@ class FindController extends Controller
     public function edit(EditFindRequest $request)
     {
         $find = $request->getFind();
-        //$find = $this->finds->expandValues($findId, $request->user());
+
+        // Get the collection of the find, could be empty as well
+        $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
+
+        if (! empty($collection)) {
+            $find['collection'] = $collection;
+        }
 
         return view('pages.finds-create', [
             'fields' => $this->list_values->getFindTemplate(),
-            'find' => $find,
+            'find' => $find
         ]);
     }
 

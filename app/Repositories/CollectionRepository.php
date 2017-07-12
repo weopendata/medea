@@ -310,6 +310,38 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
+     * Get the collection that is linked to an object
+     *
+     * @param  int   $objectId
+     * @return array
+     */
+    public function getCollectionForObject($objectId)
+    {
+        $collection = [];
+
+        $query = 'MATCH (n:object)-[P24]->(collection:collection)
+        WHERE id(n) = {objectId}
+        RETURN collection';
+
+        $variables = ['objectId' => $objectId];
+
+        $query = new Query($this->getClient(), $query, $variables);
+        $results = $query->getResultSet();
+
+        $collection = [];
+
+        if ($results->count() > 0) {
+            $collectionNode = $results->current()['collection'];
+
+            $collection = [
+                'id' => $collectionNode->getId(),
+            ];
+        }
+
+        return $collection;
+    }
+
+    /**
      * Get the collections for a user
      *
      * @param  int   $userId

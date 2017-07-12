@@ -418,7 +418,7 @@ new window.Vue({
       this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
       this.find.object.treatmentEvent = toTreatment(this.treatment)
       if(this.collection.identifier){
-        this.find.collection = { id: this.collection.identifier }
+        this.find.object.collection = { id: this.collection.identifier }
       }
 
       console.log(JSON.parse(JSON.stringify(this.find)))
