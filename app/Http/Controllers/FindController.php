@@ -225,25 +225,15 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ShowFindRequest $request
-     *
+     * @param  ShowFindRequest           $request
      * @return \Illuminate\Http\Response
      */
     public function show(ShowFindRequest $request)
     {
-        $find = $request->getFind();
-
         $user = $request->user();
 
-        // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
-        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-            && ! in_array('onderzoeker', $user->getRoles())) {
-            if (! empty($find['findSpot']['location']['lat'])) {
-                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
-                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
-                $find['findSpot']['location']['accuracy'] = 7000;
-            }
-        }
+        $find = $request->getFind();
+        $find = $this->transformFind($find, $user);
 
         $users = new UserRepository();
 
@@ -276,6 +266,39 @@ class FindController extends Controller
             'find' => $find,
             'publicUserInfo' => $publicUserInfo
         ]);
+    }
+
+    /**
+     * Transform the find based on the role of the user
+     * and its relationship to the find
+     *
+     * @param  array $find
+     * @param  User  $user
+     * @return array
+     */
+    private function transformFind($find, $user)
+    {
+        // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
+        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && ! in_array('onderzoeker', $user->getRoles())) {
+            if (! empty($find['findSpot']['location']['lat'])) {
+                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
+                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
+                $find['findSpot']['location']['accuracy'] = 7000;
+            }
+        }
+
+        // If the object of the find is not linked to a collection, hide the objectNr property of the object
+        // unless the user is the owner of the find
+        if (! empty($find['object']['objectNr'])
+            && empty($find['object']['collection'])
+            && (empty($find['person']['identifier'])
+                || (empty($find['person']['identifier']) || empty($user) || $find['person']['identifier'] != $user->id))
+            ) {
+            unset($find['object']['objectNr']);
+        }
+
+        return $find;
     }
 
     /**
