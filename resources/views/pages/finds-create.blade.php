@@ -385,14 +385,14 @@
   </div>
 </step>
 
-<step number="5" title="Linken aan een collectie">
+<step number="5" title="Linken aan een collectie" v-if="user.administrator">
   <div class="field">
     <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection"></add-collections>
   </div>
 </step>
 
+<step :number="user.administrator ? 6 : 5" title="Klaar met vondstfiche">
 <div class="grouped fields">
-  <h3>6. Klaar met vondstfiche</h3>
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
     <label>Bijkomende opmerkingen</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
@@ -432,8 +432,11 @@
     Huidige status: @{{currentStatus}}
   </p>
 </div>
+</step>
 
-<div v-if="submittable||step==5">
+
+
+<div v-if="submittable || (user.administrator && step==5 || !user.administrator && step == 6)">
   <p v-if="submitting&&toValidate" style="color:#090">
     Bedankt, jouw vondstfiche wordt bewaard en doorgestuurd voor validatie.
     <br>Je krijgt een verwittiging van de uitkomst zodra dit is gebeurd.

@@ -167,7 +167,7 @@ new window.Vue({
       inscription: fromInscription(initialFind.object.objectInscription),
       technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
       treatment: fromTreatment(initialFind.object.treatmentEvent),
-      collection: initialFind.collection || {},
+      collection: {},
       // Interface state
       today: new Date().toISOString().slice(0, 10),
       show: {
@@ -435,6 +435,10 @@ new window.Vue({
         this.map.center = this.latlng
         this.show.map = true
         this.marker.visible = true
+      }
+      if(this.find.object.collection){
+        this.collection = this.find.object.collection
+        this.find.object.collection = { id : this.collection.identifier }
       }
     }
     $('.ui.checkbox', this.$el).checkbox()
