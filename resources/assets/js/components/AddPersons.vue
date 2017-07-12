@@ -2,13 +2,7 @@
   <div class="ui form">
     <div class="field persons__add">
       <label for="function">Koppelen aan een persoon</label>
-      <select2 :options="options" @select="select"></select2>
-    </div>
-    <div class="persons">
-      <div class="person" v-if="person.firstName">
-        <span class="remove" @click="remove(person)">&times;</span>
-        <a :href="'/persons/' + person.identifier">{{ person.firstName }} {{ person.lastName }}</a>
-      </div>
+      <select2 :options="options" @select="select" :clear-value="false" :value="formattedValue"></select2>
     </div>
   </div>
 </template>
@@ -38,7 +32,10 @@
               params.page = params.page || 1
 
               return {
-                results: data.map(({identifier, firstName, lastName}) => ({id: identifier, text: firstName + ' ' + lastName})),
+                results: data.map(({identifier, firstName, lastName}) => ({
+                  id: identifier === 0 ? "0" : identifier,
+                  text: firstName + ' ' + lastName
+                })),
                 pagination: {
                   more: (params.page * 30) < data.total_count
                 }
@@ -52,10 +49,25 @@
     methods: {
       select (id) {
         const person = this.lastData.find(p => p.identifier == id)
-        person && this.$emit('select', person)
+        if (person) {
+          this.$emit('select', person)
+        }
+        else {
+          this.remove(this.person)
+        }
       },
       remove (person) {
         this.$emit('remove', person)
+      }
+    },
+    computed: {
+      formattedValue() {
+        if (this.person.firstName) {
+          return {
+            id: this.person.identifier === 0 ? "0" : this.person.identifier,
+            text: this.person.firstName + ' ' + this.person.lastName
+          }
+        }
       }
     },
     components: {

@@ -394,8 +394,8 @@ class FindController extends Controller
 
         $public_path = public_path('uploads/');
 
-        $image_name = $image_config['name'];
-        $image_name_small = 'small_' . $image_config['name'];
+        $image_name = str_random(6).'_'.$image_config['name'];
+        $image_name_small = 'small_' . $image_name;
 
         $image->save($public_path . $image_name);
         $width = $image->width();
