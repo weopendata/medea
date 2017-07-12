@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Pager;
 use App\Http\Requests\EditFindRequest;
+use App\Http\Requests\UpdateFindRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Mailers\AppMailer;
 use App\Models\FindEvent;
@@ -307,18 +308,12 @@ class FindController extends Controller
      * @param  int                       $findId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $findId)
+    public function update(UpdateFindRequest $request, $findId)
     {
         $find_node = $this->finds->getById($findId);
 
         if (! empty($find_node)) {
-            $input = $request->json()->all();
-
-            $user = $request->user();
-
-            if (empty($user)) {
-                abort('401');
-            }
+            $input = $request->input();
 
             $images = [];
 
@@ -329,10 +324,10 @@ class FindController extends Controller
                         list($name, $name_small, $width, $height) = $this->processImage($image);
 
                         $images[] = [
-                        'src' => $request->root() . '/uploads/' . $name,
-                        'resized' => $request->root() . '/uploads/' . $name_small,
-                        'width' => $width,
-                        'height' => $height
+                            'src' => $request->root() . '/uploads/' . $name,
+                            'resized' => $request->root() . '/uploads/' . $name_small,
+                            'width' => $width,
+                            'height' => $height
                         ];
                     } else {
                         $images[] = $image;
@@ -341,7 +336,7 @@ class FindController extends Controller
             }
 
             $input['object']['photograph'] = $images;
-            $input['person'] = ['id' => $user->id];
+            $input['person'] = ['id' => $request->getOwnerId()];
 
             $find = new FindEvent();
             $find->setNode($find_node);
@@ -349,10 +344,13 @@ class FindController extends Controller
             try {
                 $find->update($input);
 
-                $this->registerPiwikEvent($user->id, 'Update', @$input['object']['objectValidationStatus']);
+                $this->registerPiwikEvent($request->user()->id, 'Update', @$input['object']['objectValidationStatus']);
 
                 return response()->json(['url' => '/finds/' . $findId, 'id' => $findId]);
             } catch (\Exception $ex) {
+                \Log::error($ex->getMessage());
+                \Log::error($ex->getTraceAsString());
+
                 return response()->json(
                     [
                         'error' => $ex->getMessage()
