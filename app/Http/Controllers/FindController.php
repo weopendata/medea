@@ -291,7 +291,7 @@ class FindController extends Controller
         $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
 
         if (! empty($collection)) {
-            $find['collection'] = $collection;
+            $find['object']['collection'] = $collection;
         }
 
         return view('pages.finds-create', [
