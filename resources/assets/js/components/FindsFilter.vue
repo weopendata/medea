@@ -70,7 +70,7 @@ export default {
         period: null,
         technique: null,
         modification: null,
-        objectMaterial: true
+        objectMaterial: true,
       }, showFacets)
     }
   },
