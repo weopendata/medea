@@ -304,8 +304,7 @@ class FindController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param EditFindRequest $requst
-     *
+     * @param  EditFindRequest           $request
      * @return \Illuminate\Http\Response
      */
     public function edit(EditFindRequest $request)
