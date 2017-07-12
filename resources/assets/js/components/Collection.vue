@@ -45,10 +45,15 @@
 </template>
 <script>
   import ObjectFeatures from './ObjectFeatures';
-  import { fromDate } from '../const'
+  import { fromDate, incomingCollection } from '../const'
 
   export default {
-    props: ['collection'],
+    props: ['initialCollection'],
+    data() {
+      return {
+        collection: incomingCollection(this.initialCollection)
+      };
+    },
     computed: {
       uri () {
         return '/collections/' + this.collection.identifier
