@@ -36,9 +36,14 @@
     <dd v-for="dim in find.object.dimensions">{{dim.dimensionType}}: {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
   </dl>
   <dl v-if="find.object.objectMaterial">
-    <dt-check v-if="validating" prop="objectMaterial"></dt-check>
-    <dt>Materiaal</dt>
-    <dd>{{find.object.objectMaterial}}</dd>
+  <dt-check v-if="validating" prop="objectMaterial"></dt-check>
+  <dt>Materiaal</dt>
+  <dd>{{find.object.objectMaterial}}</dd>
+</dl>
+  <dl v-if="find.object.objectNr">
+    <dt-check v-if="validating" prop="objectNr"></dt-check>
+    <dt>Inventory nummer</dt>
+    <dd>{{find.object.objectNr}}</dd>
   </dl>
   <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
     <dt-check v-if="validating" prop="productionTechniqueType"></dt-check>

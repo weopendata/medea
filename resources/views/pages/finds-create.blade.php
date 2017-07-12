@@ -319,6 +319,13 @@
     </div>
   </div>
 
+  <div class="two fields">
+    <div class="field">
+      <label>Inventory nummer</label>
+      <input type="text" v-model="find.object.objectNr" placeholder="Inventory nummer">
+    </div>
+  </div>
+
   <h4 class="required">Dimensies</h4>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
     <div class="field" v-if="show.lengte">

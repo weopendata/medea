@@ -20,10 +20,6 @@
           <dt>Instelling</dt>
           <dd>{{ collection.institutions }}</dd>
         </template>
-        <template v-if="collection.objectNr">
-          <dt>ObjectNr</dt>
-          <dd>{{ collection.objectNr }}</dd>
-        </template>
         <template v-if="collection.created_at">
           <dt>Aangemaakt op</dt>
           <dd>{{ collection.created_at | fromDate }}</dd>
