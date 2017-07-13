@@ -40,10 +40,6 @@
   <dt>Materiaal</dt>
   <dd>{{find.object.objectMaterial}}</dd>
 </dl>
-  <dl v-if="find.object.objectNr">
-    <dt>Inventaris nummer</dt>
-    <dd>{{find.object.objectNr}}</dd>
-  </dl>
   <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
     <dt-check v-if="validating" prop="productionTechniqueType"></dt-check>
     <dt>Techniek</dt>
@@ -81,10 +77,17 @@
     <dt>Status</dt>
     <dd>{{find.object.objectValidationStatus}}</dd>
   </dl>
-  <dl v-if="find.object.collection && find.object.collection.title">
-    <dt>Collectie </dt>
-    <dd><a :href="'/collections/' + find.object.collection.identifier">{{ find.object.collection.title }}</a></dd>
-  </dl>
+  <template v-if="find.object.objectNr || (find.object.collection && find.object.collection.title)">
+    <h4>Collectie</h4>
+    <dl>
+      <dt>Titel</dt>
+      <dd><a v-if="find.object.collection && find.object.collection.title" :href="'/collections/' + find.object.collection.identifier">{{ find.object.collection.title }}</a><span v-else>Niet gespecificeerd</span></dd>
+    </dl>
+    <dl v-if="find.object.objectNr">
+      <dt>Inventaris nummer</dt>
+      <dd>{{find.object.objectNr}}</dd>
+    </dl>
+  </template>
 </template>
 
 <script>
