@@ -120,6 +120,7 @@ medeaUser.email = '{{ Auth::user()->email }}';
 
 @section('script')
 @show
+<script src="/js/main.js?{{ Config::get('app.version') }}"></script>
 
 <script type="text/javascript">
 $('nav .ui.dropdown').dropdown()

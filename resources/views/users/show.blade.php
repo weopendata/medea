@@ -68,6 +68,7 @@
             </p>
         @else
             <form action="/api/sendMessage" method="POST" class="ui form" style="max-width:25em">
+                {!! csrf_field() !!}
                 <input type="hidden" name="user_id" value="{{ $id }}">
                 <div class="field">
                     <label>Bericht aan {{ $profile['firstName'] }}</label>
