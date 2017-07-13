@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use League\Csv\Reader;
+use App\Repositories\FindRepository;
 use Illuminate\Console\Command;
+use League\Csv\Reader;
 
 class ImportFinds extends Command
 {
@@ -61,8 +62,17 @@ class ImportFinds extends Command
                 }
             }
 
+            $find['object']['objectValidationStatus'] = 'Gepubliceerd';
+
             // Store the find and return the result (success or not)
-            dd($find);
+            try {
+                $findId = app(FindRepository::class)->store($find);
+
+                $this->info('A find was created, the ID of the FindEvent is: ' . $findId);
+            } catch (\Exception $ex) {
+                $this->error('Something went wrong when trying to make a find from the CSV: ' . $ex->getMessage());
+                $this->error($ex->getTraceAsString());
+            }
         }
     }
 
@@ -92,7 +102,41 @@ class ImportFinds extends Command
         $find['object']['dimensions'][] = [
             'dimensionType' => 'gewicht',
             'dimensionUnit' => 'g',
-            'measurementValue' => $value
+            'measurementValue' => (double) $value
+        ];
+
+        return $find;
+    }
+
+    private function setWidth($find, $value)
+    {
+        $find = $this->initObject($find);
+
+        if (empty($find['object']['dimensions'])) {
+            $find['object']['dimensions'] = [];
+        }
+
+        $find['object']['dimensions'][] = [
+            'dimensionType' => 'breedte',
+            'dimensionUnit' => 'mm',
+            'measurementValue' => (double) $value
+        ];
+
+        return $find;
+    }
+
+    private function setLength($find, $value)
+    {
+        $find = $this->initObject($find);
+
+        if (empty($find['object']['dimensions'])) {
+            $find['object']['dimensions'] = [];
+        }
+
+        $find['object']['dimensions'][] = [
+            'dimensionType' => 'lengte',
+            'dimensionUnit' => 'mm',
+            'measurementValue' => (double) $value
         ];
 
         return $find;
@@ -109,8 +153,34 @@ class ImportFinds extends Command
         $find['object']['dimensions'][] = [
             'dimensionType' => 'diameter',
             'dimensionUnit' => 'mm',
-            'measurementValue' => $value
+            'measurementValue' => (double) $value
         ];
+
+        return $find;
+    }
+
+    private function setLatitude($find, $value)
+    {
+        $find = $this->initFindSpot($find);
+
+        if (empty($find['findSpot']['location'])) {
+            $find['findSpot']['location'] = [];
+        }
+
+        $find['findSpot']['location']['lat'] = (double) $value;
+
+        return $find;
+    }
+
+    private function setLongitude($find, $value)
+    {
+        $find = $this->initFindSpot($find);
+
+        if (empty($find['findSpot']['location'])) {
+            $find['findSpot']['location'] = [];
+        }
+
+        $find['findSpot']['location']['lng'] = (double) $value;
 
         return $find;
     }
@@ -171,7 +241,7 @@ class ImportFinds extends Command
     private function setInscription($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['objectInscription'] = ['objectInscription' => $value];
+        $find['object']['objectInscription'] = ['objectInscriptionNote' => $value];
 
         return $find;
     }
@@ -228,7 +298,7 @@ class ImportFinds extends Command
      * @param  string $value
      * @return array
      */
-    private function setClassificationType($find, $value)
+    private function setClassificationTypeValue($find, $value)
     {
         $find = $this->initClassification($find);
         $find['object']['productionEvent']['productionClassification'][0]['productionClassificationType'] = 'Typologie';
