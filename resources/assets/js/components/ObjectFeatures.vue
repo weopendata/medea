@@ -81,6 +81,10 @@
     <dt>Status</dt>
     <dd>{{find.object.objectValidationStatus}}</dd>
   </dl>
+  <dl v-if="find.object.collection && find.object.collection.title">
+    <dt>Collectie </dt>
+    <dd><a :href="'/collections/' + find.object.collection.identifier">{{ find.object.collection.title }}</a></dd>
+  </dl>
 </template>
 
 <script>
