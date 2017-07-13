@@ -71,6 +71,7 @@ export default {
         technique: null,
         modification: null,
         objectMaterial: true,
+        collections: null,
       }, showFacets)
     }
   },
