@@ -237,7 +237,10 @@ class FindController extends Controller
         $users = new UserRepository();
 
         // Check if the user of the find allows their name to be displayed on the find details
-        $findUser = $users->getById($find['person']['identifier']);
+        // With imported finds, person can also be empty, so we need to take that into account
+        if (! empty($find['person']['identifier'])) {
+            $findUser = $users->getById($find['person']['identifier']);
+        }
 
         $publicUserInfo = [];
 

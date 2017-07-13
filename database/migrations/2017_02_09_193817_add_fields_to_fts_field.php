@@ -33,7 +33,6 @@ class AddFieldsToFtsField extends Migration
             $object->setNode($objectNode);
             $object->computeFtsField();
         }
-        die;
     }
 
     /**

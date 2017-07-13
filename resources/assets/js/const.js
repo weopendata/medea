@@ -50,7 +50,6 @@ export function emptyClassification () {
   return {
     productionClassificationCulturePeople: '',
     productionClassificationDescription: '',
-    productionClassificationMainType: '',
     productionClassificationPeriod: '',
     productionClassificationRulerNation: '',
     productionClassificationSource: [],

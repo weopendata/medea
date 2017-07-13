@@ -4,7 +4,7 @@
     <div class="card card-center cls-card">
       <div class="card-textual">
         <add-classification-form :cls.sync="cls"></add-classification-form>
-        <p v-if="cls && cls.productionClassificationMainType">
+        <p v-if="cls && cls.productionClassificationType">
           <br>
           <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Toevoegen</button>
         </p>
@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     submittable () {
-      return this.cls.productionClassificationMainType || this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
+      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'
