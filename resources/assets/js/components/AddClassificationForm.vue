@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!cls || !cls.productionClassificationMainType">
+    <div v-if="!cls || !cls.productionClassificationType">
       <div class="field">
         <label>Nieuwe classificatie</label>
         <button class="ui blue button" @click.prevent="setMainType('Typologie')">Typologie</button>
@@ -178,7 +178,7 @@ export default {
   },
   computed: {
     isTypology () {
-      return this.cls.productionClassificationMainType === 'Typologie'
+      return this.cls.productionClassificationType === 'Typologie'
     },
     validRange () {
       return parseInt(this.cls.startDate) > parseInt(this.cls.endDate)
@@ -189,7 +189,7 @@ export default {
   },
   methods: {
     setMainType (type) {
-      this.cls.productionClassificationMainType = type
+      this.cls.productionClassificationType = type
     },
     limitDateRange () {
       const period = this.cls.productionClassificationCulturePeople

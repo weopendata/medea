@@ -23,10 +23,10 @@ class ProductionClassification extends Base
 
     protected $implicitModels = [
         [
-            'relationship' => 'P2',
+            'relationship' => 'P42',
             'config' => [
-                'key' => 'productionClassificationType',
-                'name' => 'productionClassificationType',
+                'key' => 'productionClassificationValue',
+                'name' => 'productionClassificationValue',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
@@ -34,8 +34,8 @@ class ProductionClassification extends Base
         [
             'relationship' => 'P2',
             'config' => [
-                'key' => 'productionClassificationMainType',
-                'name' => 'productionClassificationMainType',
+                'key' => 'productionClassificationType',
+                'name' => 'productionClassificationType',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
             ]
