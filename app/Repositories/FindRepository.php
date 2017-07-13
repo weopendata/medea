@@ -26,10 +26,9 @@ class FindRepository extends BaseRepository
     /**
      * Get all of the finds for a person
      *
-     * @param Person  $person The Person object
-     * @param integer $limit
-     * @param integer $offset
-     *
+     * @param  Person  $person The Person object
+     * @param  integer $limit
+     * @param  integer $offset
      * @return array
      */
     public function getForPerson($person, $limit = 20, $offset = 0)
@@ -199,6 +198,7 @@ class FindRepository extends BaseRepository
            'period',
            'photograph',
            'location',
+           'collection',
         ];
 
         $withStatements = array_merge($withStatement, $withProperties);
@@ -222,9 +222,10 @@ class FindRepository extends BaseRepository
         OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
         OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
         OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
+        OPTIONAL MATCH (object:E22)-[P24]-(collection:E78)
         WITH $withStatement
         WHERE $whereStatement
-        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy, location.geoGrid as grid
+        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy, location.geoGrid as grid, collection
         ORDER BY $orderStatement
         SKIP $offset
         LIMIT $limit";
@@ -479,6 +480,8 @@ class FindRepository extends BaseRepository
                     $tmp[$key] = $val;
                 } elseif ($key == 'photograph' && $val->count()) {
                     $tmp[$key] = $val->current();
+                } elseif ($key == 'collection' && $val->getProperty('title')) {
+                    $tmp['collectionTitle'] = $val->getProperty('title');
                 }
             }
 
