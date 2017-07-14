@@ -367,6 +367,12 @@
   <div class="field">
     <div v-if="find.object.productionEvent.productionClassification.length">
       <add-classification-form :cls.sync="cls" v-for="cls in find.object.productionEvent.productionClassification"></add-classification-form>
+      <div class="ui message" v-if="!HelpText.create">
+        <p>
+          Kies hier welk soort informatie je wil toevoegen aan deze vondstfiche. <b>'Typologie'</b> laat je toe om deze vondst toe te wijzen aan een bepaald objecttype. Je kunt ook verwijzen naar een <b>'Gelijkaardige vondst'</b>, bijvoorbeeld afkomstig uit een opgraving. In beide gevallen kun je de datering preciseren en verwijzen naar een boek, internetpagina of andere gepubliceerde bron. Als de vondst op deze fiche zelf in detail beschreven en besproken werd in een publicatie, kies dan voor de laatste optie <b>'Publicatie van deze vondst'</b>. Zo kun je een verwijzing naar die bron toevoegen, en de voornaamste informatie uit die bron aan deze fiche koppelen.
+        </p>
+      </div>
+      <br>
       <p>
         <button class="ui green button" @click.prevent="toStep(5)">Volgende stap</button>
       </p>
