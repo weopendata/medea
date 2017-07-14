@@ -2,12 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Models\FindEvent;
 use App\Repositories\FindRepository;
+use App\Repositories\ClassificationRepository;
+use App\Traits\ValidateFields;
 use Illuminate\Console\Command;
 use League\Csv\Reader;
 
 class ImportFinds extends Command
 {
+    use ValidateFields;
+
     /**
      * The name and signature of the console command.
      *
@@ -50,30 +55,149 @@ class ImportFinds extends Command
         $csv = Reader::createFromPath($file);
         $csv->setDelimiter(';');
 
+        // Keep track of the (human) row index in the CSV
+        $index = 1;
+
         foreach ($csv->fetchAssoc() as $row) {
             $find = [];
 
-            // Build the find with the properties of the row
-            foreach ($row as $property => $value) {
-                if (! empty($value)) {
-                    $method = 'set' . studly_case($property);
-
-                    $find = $this->$method($find, $value);
-                }
-            }
-
-            $find['object']['objectValidationStatus'] = 'Gepubliceerd';
-
-            // Store the find and return the result (success or not)
             try {
+                // Build the find with the properties of the row
+                foreach ($row as $property => $value) {
+                    // Some properties are "update only", such as publication and publicationPage
+                    if (! empty($value) && ! in_array($property, ['publication'])) {
+                        $method = 'set' . studly_case($property);
+
+                        // Validate the value for the property
+                        $validatedValue = $this->validate($property, $value);
+
+                        if (! $validatedValue) {
+                            throw new \Exception("The value $value for property $property is not correct. Make sure it's a correct value (check the authority lists)");
+
+                        }
+
+                        $value = $validatedValue;
+
+                        $find = $this->$method($find, $value);
+                    }
+                }
+
+                $find['object']['objectValidationStatus'] = 'Gepubliceerd';
+
+                // Store the find and return the result (success or not)
                 $findId = app(FindRepository::class)->store($find);
 
-                $this->info('A find was created, the ID of the FindEvent is: ' . $findId);
+                $this->info("A find was created from row $index, the ID of the FindEvent is: $findId");
+
+                // Check if we need to update the find with publication for example
+                $this->update($findId, $row);
             } catch (\Exception $ex) {
-                $this->error('Something went wrong when trying to make a find from the CSV: ' . $ex->getMessage());
-                $this->error($ex->getTraceAsString());
+                $this->error("Something went wrong when trying to make a find from the CSV file, row $index: " . $ex->getMessage());
+                \Log::error($ex->getTraceAsString());
             }
+
+            $index++;
         }
+    }
+
+    /**
+     * Update the find, currently only adding a publication is supported
+     *
+     * @param  int   $findId
+     * @param  array $row
+     * @return void
+     */
+    private function update($findId, $row)
+    {
+        $find = app(FindRepository::class)->expandValues($findId);
+
+        $publicationId = array_get($row, 'publication');
+
+        if (empty($publicationId)) {
+            return;
+        }
+
+        // If the publication is added, a classification must exist!
+        $classification = array_get($find, 'object.productionEvent.productionClassification.0');
+
+        if (empty($classification)) {
+            $this->error('No classification was found, we could not add the publication properties');
+        }
+
+        $classificationNode = app(ClassificationRepository::class)->getById($classification['identifier']);
+
+        if (! empty($row['publication'])) {
+            app(ClassificationRepository::class)->linkPublications($classificationNode, [(int) $row['publication']]);
+        }
+    }
+
+    /**
+     * Set publication page
+     *
+     * @param  array  $find
+     * @param  string $id
+     * @return array
+     */
+    private function setPublicationPage($find, $value)
+    {
+        $find = $this->initClassification($find);
+        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationSource'] = (int) $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the findSpotTypeDescription
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setFindSpotTypeDescription($find, $value)
+    {
+        if (empty($find['findSpot'])) {
+            $find['findSpot'] = [];
+        }
+
+        $find['findSpot']['findSpotTypeDescription'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the findSpotType
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setFindSpotType($find, $value)
+    {
+        if (empty($find['findSpot'])) {
+            $find['findSpot'] = [];
+        }
+
+        $find['findSpot']['findSpotType'] = $value;
+
+        return $find;
+    }
+
+     /**
+     * Set the findSpotTitle
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setfindSpotTitle($find, $value)
+    {
+        if (empty($find['findSpot'])) {
+            $find['findSpot'] = [];
+        }
+
+        $find['findSpot']['findSpotTitle'] = $value;
+
+        return $find;
     }
 
     /**
@@ -185,6 +309,19 @@ class ImportFinds extends Command
         return $find;
     }
 
+    private function setAccuracy($find, $value)
+    {
+        $find = $this->initFindSpot($find);
+
+        if (empty($find['findSpot']['location'])) {
+            $find['findSpot']['location'] = [];
+        }
+
+        $find['findSpot']['location']['accuracy'] = (int) $value;
+
+        return $find;
+    }
+
     private function setCity($find, $value)
     {
         $find = $this->initFindSpot($find);
@@ -219,6 +356,14 @@ class ImportFinds extends Command
     {
         $find = $this->initObject($find);
         $find['object']['period'] = $value;
+
+        return $find;
+    }
+
+    private function setObjectDescription($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['objectDescription'] = $value;
 
         return $find;
     }
@@ -262,6 +407,36 @@ class ImportFinds extends Command
     }
 
     /**
+     * Set the productionevent technique
+     *
+     * @param  array $find
+     * @param  value $value
+     * @return array
+     */
+    private function setTechnique($find, $value)
+    {
+        $find = $this->initClassification($find);
+        $find['object']['productionEvent']['productionTechnique'] = ['productionTechniqueType' => $value];
+
+        return $find;
+    }
+
+    /**
+     * Set the surface treatment
+     *
+     * @param  array $find
+     * @param  value $value
+     * @return array
+     */
+    private function setSurfaceTreatment($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['treatmentEvent'] = ['modificationTechnique' => ['modificationTechniqueType' => $value]];
+
+        return $find;
+    }
+
+    /**
      * Set the start date on classification
      *
      * @param  array  $find
@@ -283,7 +458,7 @@ class ImportFinds extends Command
      * @param  string $value
      * @return array
      */
-    private function setRuler($find, $value)
+    private function setNation($find, $value)
     {
         $find = $this->initClassification($find);
         $find['object']['productionEvent']['productionClassification'][0]['productionClassificationRulerNation'] = $value;

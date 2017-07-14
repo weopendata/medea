@@ -201,6 +201,12 @@ class ClassificationController extends Controller
 
         $userId = $this->objects->getRelatedUserId($objectId);
 
+        // Finds can be imported as well, no person is attached to it
+        // if that's the case
+        if (empty($userId)) {
+            return;
+        }
+
         $this->notifications->store([
             'message' => $message,
             'url' => $url,

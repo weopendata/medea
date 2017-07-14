@@ -117,7 +117,6 @@ class Base
                 if (empty($properties[$config['key']]) && @$config['required']) {
                     abort(400, "The property '" . $config['key'] .
                         "'' is required in order to create the model '" . static::$NODE_NAME . "'");
-
                 } elseif (! empty($properties[$config['key']])) {
                     $input = $properties[$config['key']];
 
