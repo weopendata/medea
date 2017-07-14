@@ -45,6 +45,13 @@ export function findTitle (find) {
   return title + ' (ID-' + find.identifier + ')'
 }
 
+// Collection helpers
+export function incomingCollection (collection) {
+  // Concatenate the institution appellations to a string and attribute it to the institutions property of the collection
+  collection.institutions = collection.institution ? collection.institution.map(inst => inst.institutionAppellation).join(', ') : ''
+  return collection
+}
+
 // Classification helpers
 export function emptyClassification () {
   return {

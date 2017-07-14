@@ -68,6 +68,7 @@
             </p>
         @else
             <form action="/api/sendMessage" method="POST" class="ui form" style="max-width:25em">
+                {!! csrf_field() !!}
                 <input type="hidden" name="user_id" value="{{ $id }}">
                 <div class="field">
                     <label>Bericht aan {{ $profile['firstName'] }}</label>
@@ -85,7 +86,26 @@
             <li>{{ $role }}</li>
         @endforeach
     </ul>
+
+    @if (isset($collections))
+    <div id="app">
+        <h3>Collecties:</h3>
+        <ul is="user-collections">
+            @foreach($collections as $collection)
+                <li>{{ $collection['title'] }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 </div>
 @endsection
 
-
+@section('script')
+    @if (isset($collections))
+    <script type="text/javascript">
+    window.profile = {!! json_encode($profile) !!};
+    window.collections = {!! json_encode($collections) !!};
+    </script>
+    <script src="{{ asset('js/user-collections.js') }}?{{ Config::get('app.version') }}"></script>
+    @endif
+@endsection

@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Http\Request as HttpRequest;
-use App\Http\Requests\Request;
 
 /**
  * Request that handles the update or insertion of a user
@@ -20,7 +19,7 @@ class UpdateUserRequest extends Request
         $userInput = $request->input();
 
         // You cannot update or insert an empty user
-        if (empty($userInput) && !empty($request->user())) {
+        if (empty($userInput) && ! empty($request->user())) {
             return false;
         }
 
@@ -34,7 +33,7 @@ class UpdateUserRequest extends Request
 
         // You're allowed to upsert your own profile, except for the administrator role
         if ($userInput['id'] == $request->user()->id) {
-            if (!empty($userInput['personType']) && !$request->user()->hasRole('administrator')) {
+            if (! empty($userInput['personType']) && ! $request->user()->hasRole('administrator')) {
                 return true;
             }
 
@@ -79,15 +78,15 @@ class UpdateUserRequest extends Request
      * Process the data and make necessary changes
      * e.g. create JSON strings from
      *
-     * @param  string  $key
-     * @param  string|array|null  $default
+     * @param  string            $key
+     * @param  string|array|null $default
      * @return string|array
      */
     public function input($key = null, $default = null)
     {
         $input = request()->input();
 
-        if (!empty($input['savedSearches']) && is_array($input['savedSearches'])) {
+        if (! empty($input['savedSearches']) && is_array($input['savedSearches'])) {
             $input['savedSearches'] = json_encode($input['savedSearches']);
         }
 
@@ -128,6 +127,6 @@ class UpdateUserRequest extends Request
             return response()->json(['message' => 'Permission denied'], 403);
         }
 
-        return response('Permission denied foo!', 403);
+        return response('Permission denied', 403);
     }
 }

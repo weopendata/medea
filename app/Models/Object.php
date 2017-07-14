@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Repositories\CollectionRepository;
+
 class Object extends Base
 {
     public static $NODE_TYPE = 'E22';
@@ -25,6 +27,13 @@ class Object extends Base
             'plural' => true,
             'reverse_relationship' => 'P62'
         ],
+        'P24' => [
+            'key' => 'collection',
+            'model_name' => 'Collection',
+            'cascade_delete' => false,
+            'link_only' => true,
+            'reverse_relationship' => 'P46'
+        ]
     ];
 
     protected $implicitModels = [
@@ -95,6 +104,15 @@ class Object extends Base
                 'name' => 'period',
                 'value_node' => true,
                 'cidoc_type' => 'E55'
+            ]
+        ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'objectNr',
+                'name' => 'objectNr',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
             ]
         ]
     ];
@@ -167,8 +185,15 @@ class Object extends Base
             }
         }
 
+        // Check if there's a collection linked to this object, if so, then add the title to the FTS field
+        $collection = app(CollectionRepository::class)->getCollectionForObject($this->node->getId());
+
+        if (! empty($collection['title'])) {
+            $description .= ' ' . $collection['title'];
+        }
+
         // Through recursion we can safely say that the ID of the find will be one less
-        // than the ID of object, this is not a very safe way however
+        // than the ID of object, this is not a very safe way though
         // The field should be set through the repository instead of in this object
         $description .= $this->getNode()->getId() - 1;
 

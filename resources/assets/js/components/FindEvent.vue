@@ -14,6 +14,9 @@
             - {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}}
           </span>
         </div>
+        <div v-if="find.collectionTitle">
+          Collectie: {{ find.collectionTitle }}
+        </div>
       </div>
       <div class="card-bar">
         <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'Klaar voor validatie'">
