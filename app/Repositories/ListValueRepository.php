@@ -95,4 +95,20 @@ class ListValueRepository
 
         return $list;
     }
+
+    /**
+     * Return the configured values for the authority list
+     *
+     * @param  string $listLabel The name of the authority list (label name)
+     * @return array
+     */
+    public function makeAuthorityListForLabel($listLabel)
+    {
+        $label = $this->getClient()->makeLabel($listLabel);
+
+        // This shouldn't fail, otherwise the application hasn't been seeded properly, so an exception in place.
+        $authorityList = $label->getNodes()->current();
+
+        return $authorityList->getProperty('values');
+    }
 }

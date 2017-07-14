@@ -63,10 +63,9 @@ class BaseRepository
 
         $node = $client->getNode($id);
 
-        if (!empty($node)) {
+        if (! empty($node)) {
             // Check if the node is valid, namely does it have the correct label!
             // IDs = universal, labels = types
-
             $valid = false;
 
             foreach ($node->getLabels() as $label) {
@@ -101,7 +100,7 @@ class BaseRepository
     {
         $node = $this->getById($id);
 
-        if (!empty($node)) {
+        if (! empty($node)) {
             $model = new $this->model();
             $model->setNode($node);
 

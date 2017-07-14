@@ -1,6 +1,6 @@
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
-import extend from 'deep-extend';
-import {load, Map, Marker, Circle, Rectangle} from 'vue-google-maps'
+import extend from 'deep-extend'
+import { load, Map, Marker, Circle, Rectangle } from 'vue-google-maps'
 
 import AddClassificationForm from './components/AddClassificationForm'
 import DevBar from './components/DevBar'
@@ -9,6 +9,8 @@ import FindEvent from './components/FindEvent'
 import PhotoUpload from './components/PhotoUpload'
 import Step from './components/Step'
 import TextareaGrowing from './components/TextareaGrowing'
+import AddCollections from './components/AddCollections'
+import AddPersons from './components/AddPersons'
 
 import Ajax from './mixins/Ajax'
 import HelpText from './mixins/HelpText'
@@ -16,31 +18,31 @@ import Notifications from './mixins/Notifications'
 
 import { emptyClassification, toPublicBounds, validDate } from './const.js'
 
-load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
+load({key: 'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
 
 var getCities = function (results) {
-  var location = {}, x = 0;
-    for (var y = 0, length_2 = results[x].address_components.length; y < length_2; y++) {
-      var type = results[x].address_components[y].types[0];
-      if (type === "route") {
-        location.street = results[x].address_components[y].long_name;
-      } else if (type === "locality") {
-        location.locality = results[x].address_components[y].long_name;
-      } else if (type === "postal_code") {
-        location.postalCode = results[x].address_components[y].long_name;
-      } else if (type === "street_number") {
-        location.number = results[x].address_components[y].long_name;
-      }
+  var location = {}, x = 0
+  for (var y = 0, length_2 = results[x].address_components.length; y < length_2; y++) {
+    var type = results[x].address_components[y].types[0]
+    if (type === 'route') {
+      location.street = results[x].address_components[y].long_name
+    } else if (type === 'locality') {
+      location.locality = results[x].address_components[y].long_name
+    } else if (type === 'postal_code') {
+      location.postalCode = results[x].address_components[y].long_name
+    } else if (type === 'street_number') {
+      location.number = results[x].address_components[y].long_name
+    }
   }
   return location
 }
 
 function fromDimensions (dimensions) {
   var dims = {
-    lengte: {unit: 'mm' },
-    breedte: {unit: 'mm' },
-    diepte: {unit: 'mm' },
-    diameter: {unit: 'mm' },
+    lengte: {unit: 'mm'},
+    breedte: {unit: 'mm'},
+    diepte: {unit: 'mm'},
+    diameter: {unit: 'mm'},
     gewicht: {unit: 'g'}
   }
   for (var i = dimensions.length - 1; i >= 0; i--) {
@@ -69,8 +71,8 @@ function fromInscription (ins) {
 }
 function toInscription (ins) {
   return ins && {
-    objectInscriptionNote: ins
-  } || undefined
+      objectInscriptionNote: ins
+    } || undefined
 }
 
 function fromTechnique (tech) {
@@ -78,8 +80,8 @@ function fromTechnique (tech) {
 }
 function toTechnique (tech) {
   return tech && {
-    productionTechniqueType: tech
-  } || undefined
+      productionTechniqueType: tech
+    } || undefined
 }
 
 function fromTreatment (tech) {
@@ -87,10 +89,10 @@ function fromTreatment (tech) {
 }
 function toTreatment (tech) {
   return tech && {
-    modificationTechnique: {
-      modificationTechniqueType: tech
-    }
-  } || undefined
+      modificationTechnique: {
+        modificationTechniqueType: tech
+      }
+    } || undefined
 }
 
 new window.Vue({
@@ -127,11 +129,13 @@ new window.Vue({
           productionClassification: []
         }
       }
-    };
+    }
     if (window.initialFind) {
       extend(initialFind, window.initialFind)
     }
     return {
+      addAnother: false,
+      confirmNextMessage: false,
       // Location picker
       map: {
         center: {lat: 50.9, lng: 4.3},
@@ -145,7 +149,7 @@ new window.Vue({
           strokeColor: 'red',
           strokeWeight: 1,
           draggable: true,
-          editable: true,
+          editable: true
         },
         draggable: true,
         clickable: true
@@ -166,6 +170,8 @@ new window.Vue({
       inscription: fromInscription(initialFind.object.objectInscription),
       technique: fromTechnique(initialFind.object.productionEvent.productionTechnique),
       treatment: fromTreatment(initialFind.object.treatmentEvent),
+      collection: {},
+      person: {},
       // Interface state
       today: new Date().toISOString().slice(0, 10),
       show: {
@@ -192,6 +198,9 @@ new window.Vue({
     }
   },
   computed: {
+    isEditing () {
+      return this.find.identifier
+    },
     publicBounds () {
       return toPublicBounds(this.latlng)
     },
@@ -220,11 +229,16 @@ new window.Vue({
     validation () {
       console.log(this.validationList[0])
       return this.validationList[0] || {
-        feedback: {}
-      }
+          feedback: {}
+        }
     },
+    // Order validations: most recent first
     validationList () {
-      return JSON.parse(this.find.object.feedback).filter(f => f.timestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+      try {
+        return JSON.parse(this.find.object.feedback).filter(f => f.timestamp).sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+      } catch (e) {
+      }
+      return []
     },
     hasFeedback () {
       return this.validationList.length > 0
@@ -265,7 +279,7 @@ new window.Vue({
 
     // Step 2
     step2valid () {
-      return this.hasImages
+      return this.hasImages || this.user.registrator
     },
     hasImages () {
       return this.find.object.photograph.length > 1
@@ -280,6 +294,23 @@ new window.Vue({
     }
   },
   methods: {
+    assignCollection (collection) {
+      this.collection = collection
+    },
+    removeCollection () {
+      this.collection = {}
+    },
+    assignPerson (person) {
+      this.person = person
+    },
+    removePerson () {
+      this.person = {}
+    },
+    confirmNext () {
+      this.confirmNextMessage = false
+      this.step = 1
+      window.scrollTo(0, 0)
+    },
     toStep (i, show) {
       this.formdata()
       this.step = i
@@ -347,7 +378,7 @@ new window.Vue({
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
-        address: (a.locationAddressStreet ? a.locationAddressStreet + (a.locationAddressNumber || '') + ' , ': '') + (a.locationAddressPostalCode || '') + a.locationAddressLocality,
+        address: (a.locationAddressStreet ? a.locationAddressStreet + (a.locationAddressNumber || '') + ' , ' : '') + (a.locationAddressPostalCode || '') + a.locationAddressLocality,
         region: 'be'
       }, function (results, status) {
         if (status !== google.maps.GeocoderStatus.OK) {
@@ -379,22 +410,22 @@ new window.Vue({
         if (location.street) {
           self.show.address = true
         }
-        self.$nextTick(function(){
+        self.$nextTick(function () {
           document.querySelector('#location-picker').scrollIntoView()
         })
       })
     },
     haversineDistance (p1, p2) {
-      var rad = function(x) {
-        return x * Math.PI / 180;
+      var rad = function (x) {
+        return x * Math.PI / 180
       }
-      var R = 6378137; // Earth’s mean radius in meter
-      var dLat = rad(p2.lat() - p1.lat());
-      var dLong = rad(p2.lng() - p1.lng());
-      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c;
-      return d; // returns the distance in meter
+      var R = 6378137 // Earth’s mean radius in meter
+      var dLat = rad(p2.lat() - p1.lat())
+      var dLong = rad(p2.lng() - p1.lng())
+      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) * Math.sin(dLong / 2) * Math.sin(dLong / 2)
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+      var d = R * c
+      return d // returns the distance in meter
     },
     pushCls () {
       this.find.object.productionEvent.productionClassification.push(emptyClassification())
@@ -405,13 +436,30 @@ new window.Vue({
       this.find.object.objectInscription = toInscription(this.inscription)
       this.find.object.productionEvent.productionTechnique = toTechnique(this.technique)
       this.find.object.treatmentEvent = toTreatment(this.treatment)
+      if (this.collection.title) {
+        this.find.object.collection = {id: this.collection.identifier}
+      } else {
+        delete this.find.object.collection
+      }
+
+      if (this.person.firstName) {
+        this.find.person = {id: this.person.identifier}
+      } else {
+        delete this.find.person
+      }
 
       console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
     submitSuccess (res) {
-      const newStatus = this.find.object.objectValidationStatus
-      window.location.href = res.data.url || this.redirectTo
+      if (this.addAnother) {
+        this.confirmNextMessage = true
+
+        this.find.object.photograph = []
+      }
+     else{
+        window.location.href = res.data.url || this.redirectTo
+      }
     }
   },
   ready () {
@@ -421,9 +469,18 @@ new window.Vue({
         this.show.map = true
         this.marker.visible = true
       }
+
+      if (this.find.object.collection) {
+        this.collection = this.find.object.collection
+        this.find.object.collection = {identifier: this.collection.id}
+      }
+
+      if (this.find.person) {
+        this.person = this.find.person
+        this.find.person = {identifier: this.person.id}
+      }
     }
     $('.ui.checkbox', this.$el).checkbox()
-    // $('.step .ui.dropdown').dropdown()
   },
   watch: {
     'find.object.objectCategory' (val) {
@@ -453,20 +510,22 @@ new window.Vue({
     DimInput,
     FindEvent,
     TextareaGrowing,
-    AddClassificationForm
+    AddClassificationForm,
+    AddCollections,
+    AddPersons
   }
-});
+})
 
 window.startIntro = function () {
   introJs()
-  .setOptions({
-    scrollPadding: 200
-  })
-  .setOption('hideNext', true)
-  .setOption('hidePrev', true)
-  .setOption('doneLabel', 'Ik heb alles begrepen!')
-  .setOption('skipLabel', 'Ik heb alles begrepen!')
-  .start()
+    .setOptions({
+      scrollPadding: 200
+    })
+    .setOption('hideNext', true)
+    .setOption('hidePrev', true)
+    .setOption('doneLabel', 'Ik heb alles begrepen!')
+    .setOption('skipLabel', 'Ik heb alles begrepen!')
+    .start()
 }
 if (window.location.href.indexOf('startIntro') !== -1) {
   window.startIntro()

@@ -4,22 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Pager;
 use App\Http\Requests\EditFindRequest;
+use App\Http\Requests\UpdateFindRequest;
+use App\Http\Requests\CreateFindRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Mailers\AppMailer;
 use App\Models\FindEvent;
 use App\Models\Person;
 use App\Repositories\FindRepository;
 use App\Repositories\ListValueRepository;
+use App\Repositories\CollectionRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PiwikTracker;
 
-/**
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
- */
 class FindController extends Controller
 {
     public function __construct()
@@ -113,6 +112,17 @@ class FindController extends Controller
             $finds = $adjusted_finds;
         }
 
+        // Get the fields a user can choose from in order to filter through the finds
+        // Add the collections as a full list, it's currently still feasible
+        // that all collections can be added to the facet filter
+        $fields = $this->list_values->getFindTemplate();
+        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function($title, $identifier){
+           return [
+               'value' => $identifier,
+               'label' => $title
+           ];
+        })->values();
+
         return response()->view('pages.finds-list', [
             'finds' => $finds,
             'filterState' => [
@@ -122,6 +132,7 @@ class FindController extends Controller
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
+                'collection' => $request->input('collection'),
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),
@@ -130,8 +141,8 @@ class FindController extends Controller
                 'embargo' => (boolean) $request->input('embargo', false),
                 'showmap' => $request->input('showmap', null)
             ],
-            'fields' => $this->list_values->getFindTemplate(),
-            'link' => $linkHeader
+            'fields' => $fields,
+            'link' => $linkHeader,
         ])->header('Link', $linkHeader);
     }
 
@@ -152,13 +163,13 @@ class FindController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param CreateFindRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, UserRepository $users)
+    public function store(CreateFindRequest $request, UserRepository $users)
     {
-        $input = $request->json()->all();
+        $input = $request->getInput();
 
         $user = $request->user();
 
@@ -214,30 +225,23 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ShowFindRequest $request
-     *
+     * @param  ShowFindRequest           $request
      * @return \Illuminate\Http\Response
      */
     public function show(ShowFindRequest $request)
     {
-        $find = $request->getFind();
-
         $user = $request->user();
 
-        // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
-        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-            && ! in_array('onderzoeker', $user->getRoles())) {
-            if (! empty($find['findSpot']['location']['lat'])) {
-                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
-                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
-                $find['findSpot']['location']['accuracy'] = 7000;
-            }
-        }
+        $find = $request->getFind();
+        $find = $this->transformFind($find, $user);
 
         $users = new UserRepository();
 
         // Check if the user of the find allows their name to be displayed on the find details
-        $findUser = $users->getById($find['person']['identifier']);
+        // With imported finds, person can also be empty, so we need to take that into account
+        if (! empty($find['person']['identifier'])) {
+            $findUser = $users->getById($find['person']['identifier']);
+        }
 
         $publicUserInfo = [];
 
@@ -268,20 +272,56 @@ class FindController extends Controller
     }
 
     /**
+     * Transform the find based on the role of the user
+     * and its relationship to the find
+     *
+     * @param  array $find
+     * @param  User  $user
+     * @return array
+     */
+    private function transformFind($find, $user)
+    {
+        // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
+        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && ! in_array('onderzoeker', $user->getRoles())) {
+            if (! empty($find['findSpot']['location']['lat'])) {
+                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
+                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
+                $find['findSpot']['location']['accuracy'] = 7000;
+            }
+        }
+
+        // If the object of the find is not linked to a collection, hide the objectNr property of the object
+        // unless the user is the owner of the find (or is a registrator or adminstrator)
+        if (! (!empty($user) &&  ($user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') == $user->id))
+            && ! empty($find['object']['objectNr']) && empty($find['object']['collection'])
+        ) {
+            unset($find['object']['objectNr']);
+        }
+
+        return $find;
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
-     * @param EditFindRequest $requst
-     *
+     * @param  EditFindRequest           $request
      * @return \Illuminate\Http\Response
      */
     public function edit(EditFindRequest $request)
     {
         $find = $request->getFind();
-        //$find = $this->finds->expandValues($findId, $request->user());
+
+        // Get the collection of the find, could be empty as well
+        $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
+
+        if (! empty($collection)) {
+            $find['object']['collection'] = $collection;
+        }
 
         return view('pages.finds-create', [
             'fields' => $this->list_values->getFindTemplate(),
-            'find' => $find,
+            'find' => $find
         ]);
     }
 
@@ -292,32 +332,26 @@ class FindController extends Controller
      * @param  int                       $findId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $findId)
+    public function update(UpdateFindRequest $request, $findId)
     {
         $find_node = $this->finds->getById($findId);
 
         if (! empty($find_node)) {
-            $input = $request->json()->all();
-
-            $user = $request->user();
-
-            if (empty($user)) {
-                abort('401');
-            }
+            $input = $request->input();
 
             $images = [];
 
-            // Check for images, they need special processing before the Neo4j writing is initiated
+            // Check for images, they need special processing before the Neo4j processing is initiated
             if (! empty($input['object']['photograph'])) {
                 foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {
                         list($name, $name_small, $width, $height) = $this->processImage($image);
 
                         $images[] = [
-                        'src' => $request->root() . '/uploads/' . $name,
-                        'resized' => $request->root() . '/uploads/' . $name_small,
-                        'width' => $width,
-                        'height' => $height
+                            'src' => $request->root() . '/uploads/' . $name,
+                            'resized' => $request->root() . '/uploads/' . $name_small,
+                            'width' => $width,
+                            'height' => $height
                         ];
                     } else {
                         $images[] = $image;
@@ -326,7 +360,7 @@ class FindController extends Controller
             }
 
             $input['object']['photograph'] = $images;
-            $input['person'] = ['id' => $user->id];
+            $input['person'] = ['id' => $request->getOwnerId()];
 
             $find = new FindEvent();
             $find->setNode($find_node);
@@ -334,10 +368,13 @@ class FindController extends Controller
             try {
                 $find->update($input);
 
-                $this->registerPiwikEvent($user->id, 'Update', @$input['object']['objectValidationStatus']);
+                $this->registerPiwikEvent($request->user()->id, 'Update', @$input['object']['objectValidationStatus']);
 
                 return response()->json(['url' => '/finds/' . $findId, 'id' => $findId]);
             } catch (\Exception $ex) {
+                \Log::error($ex->getMessage());
+                \Log::error($ex->getTraceAsString());
+
                 return response()->json(
                     [
                         'error' => $ex->getMessage()
@@ -381,8 +418,8 @@ class FindController extends Controller
 
         $public_path = public_path('uploads/');
 
-        $image_name = $image_config['name'];
-        $image_name_small = 'small_' . $image_config['name'];
+        $image_name = str_random(6) . '_' . $image_config['name'];
+        $image_name_small = 'small_' . $image_name;
 
         $image->save($public_path . $image_name);
         $width = $image->width();

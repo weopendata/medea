@@ -36,8 +36,11 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::resource('finds', 'FindController');
     Route::resource('api/finds', 'Api\FindController');
+    Route::get('api/collections', 'Api\CollectionController@search');
 
     Route::resource('persons', 'UserController');
+
+    Route::resource('collections', 'CollectionController');
 
     Route::group(['middleware' => 'auth'], function () {
         Route::get('api/statistics', 'Api\StatisticsController@index');
@@ -62,7 +65,12 @@ Route::group(['middleware' => 'web'], function () {
             Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
         });
 
+        Route::get('api/users', 'Api\UserController@index');
+
         Route::group(['middleware' => 'roles:administrator'], function () {
+            Route::resource('collections', 'CollectionController');
+            Route::put('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@linkUser');
+            Route::delete('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@unlinkUser');
             Route::get('api/export', 'Api\ExportController@export');
         });
 

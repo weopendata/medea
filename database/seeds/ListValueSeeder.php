@@ -157,7 +157,6 @@ class ListValueSeeder extends Seeder
             'schedebeslag',
             'schildknop',
             'sleutel',
-            'sleutel',
             'slot (of onderdeel)',
             'speelgoed',
             'speelstuk',

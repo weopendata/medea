@@ -48,7 +48,7 @@
       <label>Categorie</label>
       <select class="ui search dropdown category" v-model="find.object.objectCategory" style="max-width: 16em">
         <option>onbekend</option>
-        <option v-for="opt in fields.object.category" :value="opt" v-text="opt"></option>
+        <option v-for="opt in fields.object.category" :value="opt" v-text="opt" track-by="$index"></option>
       </select>
       <div class="ui message" v-if="!HelpText.create">
         <p>
@@ -213,7 +213,7 @@
   </p>
 </step>
 
-<step number="2" title="Foto's" class="required" :class="{completed:step2valid}" data-step="2" data-intro="Er moeten minstens 2 foto's opgeladen worden: de voor- en achterkant van het object.">
+<step number="2" title="Foto's" :class="{required:! this.user || !this.user.registrator}" :class="{completed:step2valid}" data-step="2" data-intro="Er moeten minstens 2 foto's opgeladen worden: de voor- en achterkant van het object.">
   <p>
     Foto's zijn zeer belangrijk voor dit platform. Hier zijn enkele tips:
   </p>
@@ -243,11 +243,11 @@
       <input type="file">
     </div>
   </div>
-  <p v-if="!hasImages" style="color:red">
+  <p v-if="!hasImages && ! this.user.registrator" style="color:red">
     Zorg voor minstens 2 foto's
   </p>
   <p>
-    <button class="ui button" :class="{green:hasImages}" :disabled="!hasImages" @click.prevent="toStep(3)">Volgende stap</button>
+    <button class="ui button" :class="{green:hasImages}" :disabled="! step2valid" @click.prevent="toStep(3)">Volgende stap</button>
   </p>
 </step>
 
@@ -319,6 +319,13 @@
     </div>
   </div>
 
+  <div class="two fields">
+    <div class="field">
+      <label>Inventaris nummer</label>
+      <input type="text" v-model="find.object.objectNr" placeholder="Inventaris nummer">
+    </div>
+  </div>
+
   <h4 class="required">Dimensies</h4>
   <div class="three fields" v-if="show.lengte||show.breedte||show.diepte">
     <div class="field" v-if="show.lengte">
@@ -367,6 +374,12 @@
   <div class="field">
     <div v-if="find.object.productionEvent.productionClassification.length">
       <add-classification-form :cls.sync="cls" v-for="cls in find.object.productionEvent.productionClassification"></add-classification-form>
+      <div class="ui message" v-if="!HelpText.create">
+        <p>
+          Kies hier welk soort informatie je wil toevoegen aan deze vondstfiche. <b>'Typologie'</b> laat je toe om deze vondst toe te wijzen aan een bepaald objecttype. Je kunt ook verwijzen naar een <b>'Gelijkaardige vondst'</b>, bijvoorbeeld afkomstig uit een opgraving. In beide gevallen kun je de datering preciseren en verwijzen naar een boek, internetpagina of andere gepubliceerde bron. Als de vondst op deze fiche zelf in detail beschreven en besproken werd in een publicatie, kies dan voor de laatste optie <b>'Publicatie van deze vondst'</b>. Zo kun je een verwijzing naar die bron toevoegen, en de voornaamste informatie uit die bron aan deze fiche koppelen.
+        </p>
+      </div>
+      <br>
       <p>
         <button class="ui green button" @click.prevent="toStep(5)">Volgende stap</button>
       </p>
@@ -385,8 +398,17 @@
   </div>
 </step>
 
+<step number="5" title="Linken aan een collectie / persoon" v-if="user.administrator">
+  <div class="field">
+    <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection" placeholder="Koppel aan een collectie"></add-collections>
+  </div>
+  <div class="field">
+    <add-persons @select="assignPerson" @remove="removePerson" :person.sync="person" placeholder="Koppel aan een persoon"></add-persons>
+  </div>
+</step>
+
+<step :number="user.administrator ? 6 : 5" title="Klaar met vondstfiche">
 <div class="grouped fields">
-  <h3>5. Klaar met vondstfiche</h3>
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
     <label>Bijkomende opmerkingen</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
@@ -426,8 +448,11 @@
     Huidige status: @{{currentStatus}}
   </p>
 </div>
+</step>
 
-<div v-if="submittable||step==5">
+
+
+<div v-if="submittable || (user.administrator && step==5 || !user.administrator && step == 6)">
   <p v-if="submitting&&toValidate" style="color:#090">
     Bedankt, jouw vondstfiche wordt bewaard en doorgestuurd voor validatie.
     <br>Je krijgt een verwittiging van de uitkomst zodra dit is gebeurd.
@@ -435,12 +460,28 @@
   <p v-if="submitting&&!toValidate" style="color:#090">
     Bedankt, jouw vondstfiche wordt bewaard.
   </p>
-  <div v-if="!submitting" class="field">
-    <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
-    <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+  <div v-show="confirmNextMessage" class="ui success message visible">
+    <button class="ui button green pull-right" type="button" @click="confirmNext">OK!</button>
+    <div class="header">
+      De vondst werd opgeslaan
+    </div>
+    <p>U kan nu een volgende vondst ingeven</p>
   </div>
-  <div v-else>
-    <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
+  <div v-show="! confirmNextMessage">
+    <div v-if="!submitting" class="field">
+      <div class="ui checkbox" v-if="user.registrator && !isEditing">
+        <br>
+        <input type="checkbox" v-model="addAnother" id="addAnother">
+        <label for="addAnother">
+          <b>Nog een vondst toevoegen met dezelfde data</b>
+        </label>
+      </div><br><br>
+      <button v-if="!toValidate" class="ui orange button" type="submit">Voorlopig bewaren</button>
+      <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
+    </div>
+    <div v-else>
+      <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
+    </div>
   </div>
 </div>
 <div class="field" v-if="!submittable">

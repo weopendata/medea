@@ -1,5 +1,5 @@
 <template>
-  <div class="ui form" @submit.prevent="submit" :action="submitAction">
+  <div class="ui form" @submit.prevent :action="submitAction">
     <div class="ui warning message visible" v-if="validation.feedback">
       <p>
         <b>De vondst werd aangepast door de detectorist. Vink aan welke velden ok zijn, indien alles ok is bevonden kan de vondst goedgekeurd worden en is ze gevalideerd. </b>
@@ -77,7 +77,10 @@ export default {
     },
     // Order validations: most recent first
     validationList () {
-      return JSON.parse(this.json).sort((a, b) => b.timestamp.localeCompare(a.timestamp)) || []
+      try {
+        return JSON.parse(this.json).sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+      } catch (e) {}
+      return []
     },
     hasFeedback () {
       return Object.values(this.feedback).filter(Boolean).length > 0
