@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Everyman\Neo4j\Relationship;
 use App\Repositories\UserRepository;
+use App\Repositories\CollectionRepository;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
@@ -415,6 +416,7 @@ class Person extends Base implements Authenticatable
     {
         $person = [];
         $person['created_at'] = substr($this->created_at, 0, 10);
+        $person['identifier'] = $this->id;
 
         // Iterate over the default fillable fields
         foreach ($this->fillable as $property) {
@@ -511,6 +513,16 @@ class Person extends Base implements Authenticatable
         }
 
         return $roles;
+    }
+
+    /**
+     * Get the related collections for this user
+     *
+     * @return array
+     */
+    public function getCollections()
+    {
+        return app(CollectionRepository::class)->getForUser($this->id);
     }
 
     public function __get($key)

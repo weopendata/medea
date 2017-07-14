@@ -24,6 +24,7 @@
       <facet label="Techniek" prop="technique" :options="fields.object.technique"></facet>
       <facet label="Oppervlaktebehandeling" prop="modification" :options="modificationFields"></facet>
       <facet label="Categorie" prop="category" :options="fields.object.category"></facet>
+      <facet label="Collecties" prop="collection" :options="fields.collections"></facet>
     </div>
   </div>
 </template>
@@ -69,7 +70,8 @@ export default {
         period: null,
         technique: null,
         modification: null,
-        objectMaterial: true
+        objectMaterial: true,
+        collections: null,
       }, showFacets)
     }
   },
@@ -100,7 +102,6 @@ export default {
   methods: {
     restore (filter) {
       if (filter.state) {
-        //
         if (filter.name === this.name) {
           this.name = ''
           filter = backupState
@@ -116,7 +117,6 @@ export default {
       for (let key in filter) {
         this.model[key] = filter[key] || null
       }
-      console.log(inert(this.model))
       this.$root.fetch()
     },
     toggle (filter, value) {

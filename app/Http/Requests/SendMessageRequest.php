@@ -18,12 +18,12 @@ class SendMessageRequest extends Request
         // The user can only be contacted if he allows it so through his profile settings
         $userId = $request->input('user_id');
 
-        if (empty($userId)) {
-            abort(400);
-        }
-
         // Get the user
         $user = $users->getById($userId);
+
+        if (empty($user)) {
+            abort(400);
+        }
 
         $person = new Person();
         $person->setNode($user);
@@ -40,6 +40,7 @@ class SendMessageRequest extends Request
     public function rules()
     {
         return [
+            'user_id' => 'required',
             'message' => 'required|min:10',
         ];
     }

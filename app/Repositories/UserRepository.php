@@ -149,7 +149,7 @@ class UserRepository extends BaseRepository
      *
      * @param Node    $classification
      * @param integer $personId
-     * @param string  $vote_type      agree|disagree
+     * @param string  $vote_type agree|disagree
      *
      * @return Relationship
      */
@@ -211,6 +211,47 @@ class UserRepository extends BaseRepository
 
         foreach ($results as $result) {
             $userNodes[] = $result->current();
+        }
+
+        return $userNodes;
+    }
+
+    /**
+     * Returns a list of person by name
+     *
+     * @param string $name
+     * @param int    $limit
+     * @param int    $offset
+     * @return array
+     */
+    public function getByName($name, $limit = 10, $offset = 0)
+    {
+        $client = $this->getClient();
+
+        $queryString = 'MATCH (n:person)
+        WHERE n.firstName =~ {queryString} OR n.lastName =~ {queryString}
+        RETURN n 
+        SKIP {offset} LIMIT {limit}';
+
+        $variables = [
+            'queryString' => '(?i).*' . $name . '.*',
+            'offset'      => $offset,
+            'limit'       => $limit,
+        ];
+
+        $cypherQuery = new Query($client, $queryString, $variables);
+        $results = $cypherQuery->getResultSet();
+        $userNodes = [];
+
+        foreach ($results as $result) {
+            $result = $result->current();
+
+            $userNodes[] = [
+                'identifier' => $result->getId(),
+                'firstName'  => $result->getProperty('firstName'),
+                'lastName'   => $result->getProperty('lastName'),
+            ];
+
         }
 
         return $userNodes;
@@ -309,8 +350,8 @@ class UserRepository extends BaseRepository
             $result = $row['n'];
 
             $users[] = [
-                'user_id' => $result->getId(),
-                'searches' => json_decode($result->savedSearches, true)
+                'user_id'  => $result->getId(),
+                'searches' => json_decode($result->savedSearches, true),
             ];
         }
 

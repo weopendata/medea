@@ -11,12 +11,6 @@ use Carbon\Carbon;
 /**
  * The base class for a node in the graph
  * Because this class is almost inherently complex
- * some MD functionalities have been suppressed
- *
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- * @SuppressWarnings(PHPMD.NPathComplexity)
- * @SuppressWarnings(PHPMD.TooManyMethods)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Base
 {
@@ -88,64 +82,50 @@ class Base
 
     public function __construct($properties = [])
     {
-        if (! empty($properties)) {
-            $client = self::getClient();
+        if (empty($properties)) {
+            return;
+        }
 
-            $this->node = $client->makeNode();
+        $client = self::getClient();
 
-            $generalId = $this->createMedeaId();
+        $this->node = $client->makeNode();
 
-            $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
-            $this->node->setProperty('name', static::$NODE_NAME)->save();
+        $generalId = $this->createMedeaId();
 
-            // Set the properties of the model
-            $this->setProperties($properties);
+        $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
+        $this->node->setProperty('name', static::$NODE_NAME)->save();
 
-            $this->node->save();
+        // Set the properties of the model
+        $this->setProperties($properties);
 
-            // Check if timestamps need to be added
-            // if so, add created_at and updated_at
-            if ($this->timestamps) {
-                $this->addTimestamps();
-            }
+        $this->node->save();
 
-            // Create related models through recursion
-            // these models need to be consistent, meaning once they are created
-            // they need to have the same URI throughout the life cycle
-            foreach ($this->relatedModels as $relationshipName => $config) {
-                // Check if the related model is required
-                if (empty($properties[$config['key']]) && @$config['required']) {
-                    abort(400, "The property '" . $config['key'] .
-                        "'' is required in order to create the model '" . static::$NODE_NAME . "'");
-                } elseif (! empty($properties[$config['key']])) {
-                    $input = $properties[$config['key']];
+        // Check if timestamps need to be added
+        // if so, add created_at and updated_at
+        if ($this->timestamps) {
+            $this->addTimestamps();
+        }
 
-                    if (! empty($input)) {
-                        $model = null;
+        // Create related models through recursion
+        // these models need to be consistent, meaning once they are created
+        // they need to have the same URI throughout the life cycle
+        foreach ($this->relatedModels as $relationshipName => $config) {
+            // Check if the related model is required
+            if (empty($properties[$config['key']]) && @$config['required']) {
+                abort(400, "The property '" . $config['key'] .
+                    "'' is required in order to create the model '" . static::$NODE_NAME . "'");
 
-                        if (is_array($input) && ! $this->isAssoc($input)) {
-                            foreach ($input as $entry) {
-                                $model_name = 'App\Models\\' . $config['model_name'];
-                                $model = new $model_name($entry);
-                                $model->save();
+            } elseif (! empty($properties[$config['key']])) {
+                $input = $properties[$config['key']];
 
-                                if (! empty($model)) {
-                                    $this->makeRelationship($model, $relationshipName);
+                if (! empty($input)) {
+                    $model = null;
 
-                                    if (! empty($config['reverse_relationship'])) {
-                                        $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
-                                    }
-                                }
-                            }
-                        } else {
-                            if (! empty($config['link_only']) && $config['link_only']) {
-                                // Fetch the node and create the relationship
-                                $model = $this->searchNode($input['id'], $config['model_name']);
-                            } else {
-                                $model_name = 'App\Models\\' . $config['model_name'];
-                                $model = new $model_name($input);
-                                $model->save();
-                            }
+                    if (is_array($input) && ! $this->isAssoc($input)) {
+                        foreach ($input as $entry) {
+                            $model_name = 'App\Models\\' . $config['model_name'];
+                            $model = new $model_name($entry);
+                            $model->save();
 
                             if (! empty($model)) {
                                 $this->makeRelationship($model, $relationshipName);
@@ -155,35 +135,52 @@ class Base
                                 }
                             }
                         }
+                    } else {
+                        if (! empty($config['link_only']) && $config['link_only']) {
+                            // Fetch the node and create the relationship
+                            $model = $this->searchNode($input['id'], $config['model_name']);
+                        } else {
+                            $model_name = 'App\Models\\' . $config['model_name'];
+                            $model = new $model_name($input);
+                            $model->save();
+                        }
+
+                        if (! empty($model)) {
+                            $this->makeRelationship($model, $relationshipName);
+
+                            if (! empty($config['reverse_relationship'])) {
+                                $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                            }
+                        }
                     }
                 }
             }
+        }
 
-            foreach ($this->implicitModels as $config) {
-                $relationship = $config['relationship'];
-                $model_config = $config['config'];
+        foreach ($this->implicitModels as $config) {
+            $relationship = $config['relationship'];
+            $model_config = $config['config'];
 
-                $input = @$properties[$model_config['key']];
+            $input = @$properties[$model_config['key']];
 
-                if (! empty($input)) {
-                    // We can have multiple instances of an implicit node (e.g. multiple dimensions)
-                    // Check which of the cases it is by checking whether the array is associative or not
-                    if (is_array($input) && ! $this->isAssoc($input)) {
-                        foreach ($input as $entry) {
-                            $related_node = $this->createImplicitNode($entry, $model_config);
-
-                            if (! empty($related_node)) {
-                                // Make the relationship
-                                $this->node->relateTo($related_node, $relationship)->save();
-                            }
-                        }
-                    } else {
-                        $related_node = $this->createImplicitNode($input, $model_config);
+            if (! empty($input)) {
+                // We can have multiple instances of an implicit node (e.g. multiple dimensions)
+                // Check which of the cases it is by checking whether the array is associative or not
+                if (is_array($input) && ! $this->isAssoc($input)) {
+                    foreach ($input as $entry) {
+                        $related_node = $this->createImplicitNode($entry, $model_config);
 
                         if (! empty($related_node)) {
                             // Make the relationship
                             $this->node->relateTo($related_node, $relationship)->save();
                         }
+                    }
+                } else {
+                    $related_node = $this->createImplicitNode($input, $model_config);
+
+                    if (! empty($related_node)) {
+                        // Make the relationship
+                        $this->node->relateTo($related_node, $relationship)->save();
                     }
                 }
             }
@@ -217,6 +214,7 @@ class Base
                     // Keep track of the related models by the returned identifiers
                     // The identifiers that we get and are not in this list, we need to delete
                     $related_identifiers = [];
+
                     if (! empty($input)) {
                         if (is_array($input) && ! $this->isAssoc($input)) {
                             foreach ($input as $entry) {
@@ -239,8 +237,24 @@ class Base
                             }
                         } else {
                             if (! empty($config['link_only']) && $config['link_only']) {
-                                // Fetch the node and create the relationship
+                                // Destroy the relationships, those are temporary
+                                // Remove the link between the end node and this node
+                                $model_name = 'App\Models\\' . $config['model_name'];
+
+                                $relationships = $this->getRelationships($model_name::$NODE_TYPE);
+
+                                foreach ($relationships as $relationship) {
+                                    $relationship->delete();
+                                }
+
+                                // Fetch the node of the related model and create the relationship
                                 $model = $this->searchNode($input['id'], $config['model_name']);
+
+                                if (! empty($model)) {
+                                    $this->makeRelationship($model, $relationshipName);
+
+                                    $model->getNode()->relateTo($this->getNode(), $config['reverse_relationship'])->save();
+                                }
                             } else {
                                 // Check if an identifier is provided, if not, perform a create
                                 if (empty($input['identifier'])) {
@@ -282,11 +296,15 @@ class Base
                             }
                         }
                     }
-
                 } elseif (! empty($config['link_only']) && $config['link_only']) {
+                    // Remove the link between the end node and this node
                     $model_name = 'App\Models\\' . $config['model_name'];
-                    $model = new $model_name();
-                    $model->delete();
+
+                    $relationships = $this->getRelationships($model_name::$NODE_TYPE);
+
+                    foreach ($relationships as $relationship) {
+                        $relationship->delete();
+                    }
                 }
             }
 
@@ -703,7 +721,7 @@ class Base
      * @param integer $nodeId
      * @param string  $model
      *
-     * @return null|Node
+     * @return null|Model
      */
     protected function searchNode($nodeId, $model)
     {
@@ -781,7 +799,7 @@ class Base
      * @param string $rel_type
      * @param string $endnode_type
      *
-     * @return
+     * @return ResultSet
      */
     protected function getRelatedNodes($rel_type, $endnode_type)
     {
@@ -794,6 +812,35 @@ class Base
         $cypher_query = new Query($this->getClient(), $query);
 
         return $cypher_query->getResultSet();
+    }
+
+    /**
+     * Retrieve the relationships between a specified node
+     * and the current node
+     *
+     * @param  string $nodeType     The type of the node
+     * @param  string $relationship The type of the relationship
+     * @return array
+     */
+    protected function getRelationships($nodeType)
+    {
+        $nodeId = $this->node->getId();
+
+        $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[r]-(end:$nodeType)
+                  WHERE id(n) = $nodeId
+                  RETURN r";
+
+        $cypher_query = new Query($this->getClient(), $query);
+
+        $results = $cypher_query->getResultSet();
+
+        $relationships = [];
+
+        foreach ($results as $result) {
+            $relationships[] = $result['r'];
+        }
+
+        return $relationships;
     }
 
     protected function isAssoc($arr)
