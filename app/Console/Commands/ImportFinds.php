@@ -73,7 +73,6 @@ class ImportFinds extends Command
 
                         if (! $validatedValue) {
                             throw new \Exception("The value $value for property $property is not correct. Make sure it's a correct value (check the authority lists)");
-
                         }
 
                         $value = $validatedValue;
@@ -452,7 +451,7 @@ class ImportFinds extends Command
     }
 
     /**
-     * Set the production classification ruler
+     * Set the production classification ruler nation
      *
      * @param  array  $find
      * @param  string $value

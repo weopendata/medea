@@ -34,6 +34,8 @@ class CollectionRepository extends BaseRepository
     /**
      * Return a simle list of the all collections
      * This list is a mapping between id's and the title of the collection
+     *
+     * @return array
      */
     public function getList()
     {
@@ -73,9 +75,9 @@ class CollectionRepository extends BaseRepository
         $variables = [];
 
         $queryString = 'MATCH (n:collection)
-        OPTIONAL MATCH (n:collection)-[p1:P109]->(person:person)
-        OPTIONAL MATCH (n:collection)-[p2:P109]->(institution:E40)-[P131]->(institutionAppellation:E82)
-        RETURN n as collection, n.title as collectionTitle, collect(person) as person, collect(institutionAppellation) as instNames';
+        OPTIONAL MATCH (n)-[p1:P109]->(person:person)
+        OPTIONAL MATCH (n)-[p2:P109]->(institution:E40)-[P131]->(institutionAppellation:E82)
+        RETURN n as collection, n.title as collectionTitle, collect(distinct person) as person, collect(institutionAppellation) as instNames';
 
         if (! empty($sortBy)) {
             // Statements in functions don't seem to work with the jadell library
