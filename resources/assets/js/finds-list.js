@@ -21,7 +21,9 @@ function getPaging (header) {
   if (typeof header === 'string') {
     return parseLinkHeader(header) || {}
   }
-  return header && header.map && header.map.Link && parseLinkHeader(header.map.Link[0]) || {}
+
+  const linkHeader = header && header.map && header.map.Link || header.map.link
+  return linkHeader && parseLinkHeader(linkHeader[0]) || {}
 }
 
 let listQuery, heatmapQuery
