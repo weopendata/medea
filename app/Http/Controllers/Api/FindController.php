@@ -66,8 +66,8 @@ class FindController extends Controller
                     if (! empty($find['grid']) || ! empty($find['lat'])) {
                         list($lat, $lon) = explode(',', $find['grid']);
 
-                        $find['lat'] = $lat; //round(($find['lat'] / 2), 2) * 2;
-                        $find['lng'] = $lon; //round(($find['lng'] / 2), 2) * 2;
+                        $find['lat'] = $lat;
+                        $find['lng'] = $lon;
 
                         $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
                         $find['accuracy'] = max(7000, $accuracy);
