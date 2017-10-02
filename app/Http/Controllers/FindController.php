@@ -40,7 +40,8 @@ class FindController extends Controller
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
-        $order = $request->input('order', null);
+        // Default ordering is "created at", sorted in a descending way
+        $order = $request->input('order', '-identifier');
 
         $order_flow = 'ASC';
         $order_by = 'findDate';
@@ -93,14 +94,15 @@ class FindController extends Controller
 
             $user = $request->user();
 
+            // Make sure only authorized users have access to specific location information
             foreach ($finds as $find) {
                 if (empty($user) || (! empty($find['finderId']) && $find['finderId'] != $user->id)
                     && ! in_array('onderzoeker', $user->getRoles())) {
                     if (! empty($find['grid']) || ! empty($find['lat'])) {
                         list($lat, $lon) = explode(',', $find['grid']);
 
-                        $find['lat'] = $lat; //round(($find['lat'] / 2), 2) * 2;
-                        $find['lng'] = $lon; //round(($find['lng'] / 2), 2) * 2;
+                        $find['lat'] = $lat;
+                        $find['lng'] = $lon;
 
                         $find['accuracy'] = 7000;
                     }

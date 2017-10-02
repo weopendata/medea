@@ -188,6 +188,11 @@ new window.Vue({
     }
   },
   ready () {
+    // If the order by is empty when the app is ready,
+    // make sure the default sorting is set to the id, in a descending way
+    if (!this.filterState.order) {
+      this.filterState.order = '-identifier'
+    }
     if (!this.finds || !this.finds.length) {
       this.fetch()
     }

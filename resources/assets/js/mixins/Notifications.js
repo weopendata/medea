@@ -24,7 +24,6 @@ export default {
       console.warn(data)
     },
     notifSuccess ({data}) {
-      console.log('Notifications updated', data.data.length)
       this.notifications = data.data
       this.notifUnread = data.unread
       this.notifLast = new Date().getTime()
