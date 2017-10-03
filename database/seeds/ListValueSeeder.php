@@ -73,7 +73,7 @@ class ListValueSeeder extends Seeder
             'koperlegering',
             'ijzer',
             'lood',
-            'tin, loodtin',
+            'tin of loodtin',
             'goud',
             'zilver',
         ];
@@ -95,7 +95,7 @@ class ListValueSeeder extends Seeder
             'weide',
             'akker',
             'strand',
-            'hof',
+            'tuin of erf',
             'gestorte grond',
             'andere',
         ];
@@ -107,7 +107,7 @@ class ListValueSeeder extends Seeder
             'weide',
             'akker',
             'strand',
-            'hof',
+            'tuin of erf',
             'gestorte grond',
             'andere',
         ];
