@@ -141,7 +141,6 @@
     </div>
     <div class="eight wide field">
       <label>&nbsp;</label>
-      <button v-if="show.map" @click.prevent="showOnMap" class="ui button">Omzetten naar coördinaten</button>
       <button v-else @click.prevent="showOnMap" class="ui button" :class="{blue:find.findSpot.location.address.locationAddressLocality}">
         Aanduiden op kaart
       </button>
@@ -201,10 +200,6 @@
         <option value="2000">Gemeenteniveau</option>
       </select>
     </div>
-    <div class="five wide field" v-if="show.map">
-      <label>&nbsp;</label>
-      <button v-if="show.map" @click.prevent="reverseGeocode" class="ui button">Coördinaten bevestigen</button>
-    </div>
   </div>
   <div class="ui message" v-if="(show.co||show.map)&&!HelpText.create">
     <p>
@@ -212,7 +207,7 @@
     </p>
   </div>
   <p>
-    <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="toStep(2)">Bevestig locatie</button>
+    <button class="ui button" v-if="show.map" :class="{green:step1valid}" :disabled="!step1valid" @click.prevent="handleStep1()">Bevestig locatie</button>
   </p>
 </step>
 

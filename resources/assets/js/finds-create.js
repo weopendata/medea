@@ -335,6 +335,11 @@ new window.Vue({
     changeMarker (event) {
       console.log(event, 'dragged')
     },
+    // Combined step that handles the geocoding of the address and goes to step 2
+    handleStep1 () {
+      this.reverseGeocode()
+      this.toStep(2)
+    },
     reverseGeocode () {
       var google = window.google
       var self = this
@@ -448,7 +453,6 @@ new window.Vue({
         delete this.find.person
       }
 
-      console.log(JSON.parse(JSON.stringify(this.find)))
       return this.find
     },
     submitSuccess (res) {
