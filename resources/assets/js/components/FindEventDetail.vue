@@ -147,7 +147,6 @@ export default {
       return this.find.findSpot.location || {}
     },
     markerNeeded () {
-      console.log(this.location.lat)
       return this.map.zoom < 21 - Math.log2(this.location.accuracy)
     },
     markerPosition () {

@@ -69,7 +69,6 @@ export default {
       if (!pub) {
         return
       }
-      console.log(pub)
       return [
         (pub.author || 'Auteur'),
         (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),

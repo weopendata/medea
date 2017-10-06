@@ -223,7 +223,6 @@
         if (range) {
           this.cls.productionClassificationCulturePeople = range.period
         }
-        console.log('set', year, range && range.period)
       },
       getSource (index) {
         const source = this.cls.productionClassificationSource

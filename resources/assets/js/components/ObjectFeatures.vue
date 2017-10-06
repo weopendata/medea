@@ -9,8 +9,14 @@
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address && find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
+    <dt v-if="find.findSpot.findSpotType">Type vindplaats</dt>
+    <dd>{{find.findSpot.findSpotType}}</dd>
+    <dt v-if="find.findSpot.findSpotTitle">Lokale plaatsnaam</dt>
+    <dd>{{find.findSpot.findSpotTitle}}</dd>
+    </div>
   </dl>
   <dl v-if="finder&&finder.name">
+    <br/>
     <dt-check v-if="validating" prop="finder.name"></dt-check>
     <dt>Vinder</dt>
     <dd>

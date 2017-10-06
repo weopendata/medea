@@ -111,7 +111,7 @@
       Kies het type vindplaats. Als je het niet weet, laat dit veld dan leeg.
     </p>
   </div>
-  <div class="field" v-if="show.place">
+  <div class="field">
     <label>Lokale plaatsnaam</label>
     <input type="text" v-model="find.findSpot.findSpotTitle" placeholder="">
   </div>

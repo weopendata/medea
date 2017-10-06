@@ -293,6 +293,13 @@ class FindController extends Controller
             }
         }
 
+        // Filter out the findSpotTitle and findSpotType for
+        // - any person who is not the finder, nor a researcher nor an administrator
+        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') != $user->id)) {
+            unset($find['findSpot']['findSpotType']);
+            unset($find['findSpot']['findSpotTitle']);
+        }
+
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
         // unless the user is the owner of the find (or is a registrator or adminstrator)
         if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') == $user->id))
