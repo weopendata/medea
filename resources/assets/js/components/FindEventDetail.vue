@@ -1,10 +1,4 @@
 <template>
-  <meta property="og:url"           content="{{findDetailLink}}" />
-  <meta property="og:type"          content="website" />
-  <meta property="og:title"         content="MEDEA vondst: {{findTitle}}" />
-  <meta property="og:description"   content="MEDEA vondst" />
-  <meta property="og:image"         content="{{firstImage}}" />
-
   <article style="max-width:900px;margin:2em auto;">
     <div class="ui warning message visible" v-if="showRemarks">
       <p>
@@ -162,7 +156,7 @@ export default {
   },
   computed: {
     findDetailLink () {
-      return window.location.href + '/finds/' + this.find.identifier
+      return window.location.href
     },
     firstImage () {
       if (this.find.object && this.find.object.photograph && this.find.object.photograph.length) {

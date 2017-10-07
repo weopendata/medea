@@ -303,11 +303,20 @@ class FindController extends Controller
             }
         }
 
+        // Build the necessary meta data so that it can be indexed properly by search engines
+        $meta = [];
+        $meta['og:image'] = array_get($find, 'object.photograph.0.resized');
+        $meta['og:title'] = makeFindTitle($find);
+        $meta['og:description'] = 'MEDEA vondst';
+        $meta['og:url'] = \Request::url();
+        $meta['og:meta'] = 'website';
+
         return view('pages.finds-detail', [
             'fields' => $this->list_values->getFindTemplate(),
             'find' => $find,
             'publicUserInfo' => $publicUserInfo,
             'contact' => env('ADMIN_EMAIL')
+            'meta' => $meta
         ]);
     }
 

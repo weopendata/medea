@@ -1,6 +1,7 @@
 @extends('main')
 
 @section('title', 'Vondst ' . $find['identifier'])
+@section('meta', $meta)
 
 @section('content')
 <find-event-detail v-if="find" :find="find" :user="user"></find-event-detail>

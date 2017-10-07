@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?{{ Config::get('app.version') }}"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - MEDEA</title>
+    @if (!empty($meta))
+      <!--<meta property="og:image" content="https://medea.weopendata.com/uploads/small_8670_Schoenzool_1981.JPG">-->
+      @foreach ($meta as $property => $content)
+        <meta property="{{$property}}" content="{{$content}}">
+      @endforeach
+    @endif
 </head>
 
 <body>
