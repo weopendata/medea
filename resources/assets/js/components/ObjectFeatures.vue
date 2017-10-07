@@ -72,7 +72,7 @@
     <dd>{{find.updated_at | fromDate}}</dd>
   </dl>
   <dl>
-    <dt>Toegevoegd op</dt>
+    <dt>Toegevoegd</dt>
     <dd>{{find.created_at | fromDate}}</dd>
   </dl>
   <dl v-if="find.object.validated_at">
@@ -90,7 +90,7 @@
       <dd><a v-if="find.object.collection && find.object.collection.title" :href="'/collections/' + find.object.collection.identifier">{{ find.object.collection.title }}</a><span v-else>Niet gespecificeerd</span></dd>
     </dl>
     <dl v-if="find.object.objectNr">
-      <dt>Inventaris nummer</dt>
+      <dt>Inventarisnummer</dt>
       <dd>{{find.object.objectNr}}</dd>
     </dl>
   </template>

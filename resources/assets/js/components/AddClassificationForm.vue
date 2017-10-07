@@ -7,13 +7,46 @@
         <button class="ui button" @click.prevent="setMainType('Gelijkaardige vondst')">Gelijkaardige vondst</button>
         <button class="ui button" @click.prevent="setMainType('Publicatie van deze vondst')">Publicatie van deze vondst</button>
       </div>
+      <div class="help-block">
+          Kies hier welk soort informatie je wil toevoegen aan deze vondstfiche. 'Typologie' laat je toe om deze vondst toe te wijzen aan een bepaald objecttype. Je kunt ook verwijzen naar een 'Gelijkaardige vondst', bijvoorbeeld afkomstig uit een opgraving. In beide gevallen kun je de datering preciseren en verwijzen naar een boek, internetpagina of andere gepubliceerde bron. Als de vondst op deze fiche zelf in detail beschreven en besproken werd in een publicatie, kies dan voor de laatste optie 'Publicatie van deze vondst'. Zo kun je een verwijzing naar die bron toevoegen, en de voornaamste informatie uit die bron aan deze fiche koppelen.
+      </div>
     </div>
     <div v-else>
+      <!-- Bron -->
+      <div class="field field-publications" v-if="! isSourceRequired">
+        <div class="ui grid">
+          <div class="twelve wide column">
+            <label for="description">Bron
+              <span v-if="isSourceRequired" class="required">*</span>
+            </label>
+            <div class="help-block">
+              Verwijs hier naar de publicatie waarin deze vondst beschreven staat.
+            </div>
+          </div>
+          <div class="four wide column" v-if="cls.publication && cls.publication.length">
+            <label for="description">Specificatie</label>
+            <div class="help-block">
+              Preciseer hier een locatie (pagina, figuur) in de aangehaalde bron (optioneel).
+            </div>
+          </div>
+        </div>
+        <div class="ui grid" v-for="(index, pub) in cls.publication" style="margin-top:0;">
+          <div class="twelve wide column">
+            <input-publication :model="pub" :index="index"></input-publication>
+          </div>
+          <div class="four wide column">
+            <input type="text" :value="getSource(index)" @input="setSource(index, $event.target.value)">
+          </div>
+        </div>
+        <br>
+        <select-publication :model="pub"></select-publication>
+        <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
+      </div>
       <!-- Vindplaats -->
       <div class="required field">
-        <label>{{ isTypology ? 'Type' : 'Vindplaats' }}</label>
+        <label>{{ isSourceRequired ? 'Vindplaats/Type' : isTypology ? 'Type' : 'Vindplaats' }}</label>
         <input type="text" v-model="cls.productionClassificationValue" :list="isTypology && 'types'">
-        <div class="help-block">{{ isTypology ? 'Vul hier de naam van het type in, zoals weergegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de naam in van de vindplaats van de gelijkaardige vondst.' }}</div>
+        <div class="help-block">{{ isSourceRequired ? 'Vul hier in aan welk type de auteur deze vondst toewijst, en/of met welke andere vondst(en) hij het voorwerp vergelijkt (optioneel).' : isTypology ? 'Vul hier de naam van het type in, zoals weergegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de naam in van de vindplaats van de gelijkaardige vondst.' }}</div>
       </div>
       <!-- Periode & Heerser -->
       <div class="two fields" @change="limitPeriod">
@@ -36,16 +69,16 @@
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering van</label>
           <input-date :model.sync="cls.startDate"></input-date>
-          <div class="help-block">{{ isTypology ? 'Vul hier de startdatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de startdatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel).' }}</div>
+          <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de startdatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de startdatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel).' }}</div>
         </div>
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering tot</label>
           <input-date :model.sync="cls.endDate"></input-date>
-          <div class="help-block">{{ isTypology ? 'Vul hier de einddatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de einddatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel.)' }}</div>
+          <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum/einddatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de einddatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de einddatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel.)' }}</div>
         </div>
       </div>
       <!-- Bron -->
-      <div class="field field-publications">
+      <div class="field field-publications" v-if="! isSourceRequired">
         <div class="ui grid">
           <div class="twelve wide column">
             <label for="description">Bron

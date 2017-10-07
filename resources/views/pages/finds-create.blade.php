@@ -319,8 +319,8 @@
 
   <div class="two fields">
     <div class="field">
-      <label>Inventaris nummer</label>
-      <input type="text" v-model="find.object.objectNr" placeholder="Inventaris nummer">
+      <label>Inventarisnummer</label>
+      <input type="text" v-model="find.object.objectNr" placeholder="Inventarisnummer">
     </div>
   </div>
 
@@ -397,6 +397,9 @@
 </step>
 
 <step number="5" title="Linken aan een collectie / persoon" v-if="user.administrator">
+  <div class="help-block" v-if="!HelpText.create">
+      Geef hier aan tot welke collectie deze vondst hoort.
+  </div>
   <div class="field">
     <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection" placeholder="Koppel aan een collectie"></add-collections>
   </div>
@@ -410,7 +413,7 @@
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
     <label>Bijkomende opmerkingen</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
-    <p>
+    <p v-if="!HelpText.create">
       Voeg hier belangrijke informatie over de vondst toe die niet eerder in het formulier aan bod kwam.
     </p>
   </div>
@@ -422,7 +425,7 @@
     </p>
   </div>
 
-  <label for="toValidate">Je kan jouw vondstfiche bewaren en meteen doorsturen voor validatie of tijdelijk bewaren als voorlopige versie.</label>
+  <label for="toValidate">Je kan jouw vondstfiche tijdelijk bewaren als voorlopige versie of ze nu volledig opslaan en meteen doorsturen voor validatie.</label>
   <div class="field">
     <div class="ui radio checkbox">
       <input type="radio" tabindex="0" name="toValidate" v-model="find.object.objectValidationStatus" value="Klaar voor validatie">
