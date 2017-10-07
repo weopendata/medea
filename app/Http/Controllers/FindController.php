@@ -315,7 +315,7 @@ class FindController extends Controller
             'fields' => $this->list_values->getFindTemplate(),
             'find' => $find,
             'publicUserInfo' => $publicUserInfo,
-            'contact' => env('ADMIN_EMAIL')
+            'contact' => env('ADMIN_EMAIL'),
             'meta' => $meta
         ]);
     }
