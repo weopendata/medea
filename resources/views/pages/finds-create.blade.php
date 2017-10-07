@@ -61,7 +61,7 @@
       <label>Datering per periode</label>
       <select class="ui search dropdown category" v-model="find.object.period" style="max-width: 16em">
         <option>onbekend</option>
-        <option v-for="opt in fields.classification.period" :value="opt" v-text="opt"></option>
+        <option v-for="value in fields.classification.period" :value="$key" v-text="$key + ' (' + value + ')'"></option>
       </select>
       <div class="ui message" v-if="!HelpText.create">
         <p>
@@ -519,7 +519,6 @@ window.categoryMap = {
 window.fields = {!! json_encode($fields) !!};
 @if (isset($find))
 window.initialFind = {!! json_encode($find) !!};
-console.log('finds.edit:', window.initialFind)
 @endif
 </script>
 <script src="{{ asset('js/finds-create.js') }}?{{ Config::get('app.version') }}"></script>

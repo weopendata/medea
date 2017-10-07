@@ -36,7 +36,7 @@ class ListValueRepository
          * find spot type
 
          classification:
-         * period
+         * period (we need to add the time range here as well)
          * rulernation
          * date (century wise)
          * type

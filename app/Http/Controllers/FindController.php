@@ -17,6 +17,7 @@ use App\Repositories\ObjectRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use PiwikTracker;
 
 class FindController extends Controller
@@ -156,10 +157,46 @@ class FindController extends Controller
     public function create()
     {
         if (Auth::check()) {
-            return view('pages.finds-create', ['fields' => $this->list_values->getFindTemplate()]);
+            $fields = $this->list_values->getFindTemplate();
+            $fields = $this->transformPeriods($fields);
+
+            return view('pages.finds-create', ['fields' => $fields]);
         }
 
         return redirect('/');
+    }
+
+    /**
+     * Transform the periods and add the timerange of the period to it
+     *
+     * @param  array $fields
+     * @return array
+     */
+    private function transformPeriods($fields)
+    {
+       $periodFields = [
+            'Bronstijd' => '-2000 / -801',
+            'IJzertijd' => '-800 / -58',
+            'Romeins' => '-57 / 400',
+            'vroegmiddeleeuws' => '401 / 900',
+            'middeleeuws' => '401 / 1500',
+            'volmiddeleeuws' => '901 / 1500',
+            'laatmiddeleeuws' => '1201 / 1500',
+            'postmiddeleeuws' => '1501 / 1900',
+            'modern' => '1901 / ' . Carbon::now()->year,
+            'Wereldoorlog I' => '1914 / 1918',
+            'Wereldoorlog II' => '1940 / 1945'
+        ];
+
+        $periodFields = array_only($periodFields, $fields['classification']['period']);
+
+        $fields['classification']['period'] = [];
+
+        foreach ($periodFields as $name => $range) {
+            $fields['classification']['period'][$name] = $range;
+        }
+
+        return $fields;
     }
 
     /**
