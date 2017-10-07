@@ -16,7 +16,6 @@ new window.Vue({
     }
   },
   ready () {
-    console.log(JSON.parse(JSON.stringify(window.initialFind)))
     if (window.initialFind && window.initialFind.identifier) {
       this.find = window.initialFind;
     } else {
@@ -36,7 +35,7 @@ new window.Vue({
     'user': {
       deep: true,
       handler (user) {
-        localStorage.debugUser = JSON.stringify(user) 
+        localStorage.debugUser = JSON.stringify(user)
       }
     }
   },

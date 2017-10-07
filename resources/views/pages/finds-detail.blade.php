@@ -61,6 +61,7 @@
 @section('script')
 <script type="text/javascript">
 var initialFind = {!! json_encode($find) !!};
+window.contact = {!! json_encode($contact) !!};
 window.fields = {!! json_encode($fields) !!};
 @if (!empty($publicUserInfo))
 window.publicUserInfo = {!! json_encode($publicUserInfo) !!};

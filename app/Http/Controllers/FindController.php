@@ -306,7 +306,8 @@ class FindController extends Controller
         return view('pages.finds-detail', [
             'fields' => $this->list_values->getFindTemplate(),
             'find' => $find,
-            'publicUserInfo' => $publicUserInfo
+            'publicUserInfo' => $publicUserInfo,
+            'contact' => env('ADMIN_EMAIL')
         ]);
     }
 

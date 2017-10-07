@@ -53,6 +53,11 @@
           Bewerken
         </a>
       </div>
+      <div class="card-bar text-right">
+        <a href="mailto:{{contact}}?Subject=MEDEA vondst {{find.identifier}}" target="_top">
+          Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
+        </a>
+      </div>
     </div>
     <br>
     <div class="wrapper-white-disabled">
@@ -143,6 +148,9 @@ export default {
     }
   },
   computed: {
+    contact () {
+      return window.contact
+    },
     location () {
       return this.find.findSpot.location || {}
     },
