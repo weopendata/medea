@@ -67,6 +67,14 @@ window.fields = {!! json_encode($fields) !!};
 window.publicUserInfo = {!! json_encode($publicUserInfo) !!};
 @endif
 </script>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10&appId={{env('FB_APP_ID')}}";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 <script src="{{ asset('js/finds-detail.js') }}?{{ Config::get('app.version') }}"></script>
 <script src="{{ asset('assets/js/photoswipe.min.js') }}"></script>
 <link href="{{ asset('assets/css/photoswipe.min.css') }}" rel="stylesheet" type="text/css">
