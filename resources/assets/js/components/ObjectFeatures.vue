@@ -9,6 +9,8 @@
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address && find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
+    <dt>Coordinaatprecisie</dt>
+    <dd>{{humanizedAccuracy}}&nbsp;</dd>
     <dt v-if="find.findSpot.findSpotType">Type vindplaats</dt>
     <dd>{{find.findSpot.findSpotType}}</dd>
     <dt v-if="find.findSpot.findSpotTitle">Lokale plaatsnaam</dt>
@@ -107,6 +109,32 @@ function sameValues(array) {
 export default {
   props: ['find', 'feedback', 'validating'],
   computed: {
+    humanizedAccuracy () {
+      if (! this.find.findSpot || ! this.find.findSpot.location || ! this.find.findSpot.location.accuracy) {
+        return;
+      }
+
+      var acc = this.find.findSpot.location.accuracy
+
+      switch (acc) {
+        case "1":
+          return "1 - 5m (GPS)"
+        case "5":
+          return "5 - 20m"
+        case "20":
+          return "20 - 50m"
+        case "50":
+          return "50 - 100m"
+        case "100":
+          return "100 - 500m"
+        case "500":
+          return "500 - 2000m"
+        case "2000":
+          return "Gemeenteniveau"
+      }
+
+      return acc
+    },
     finder () {
       return window.publicUserInfo
     },

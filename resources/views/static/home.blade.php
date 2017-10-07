@@ -78,6 +78,9 @@
       <div class="pw-strength-line"></div>
     </div>
     <div v-for="msg in errors.password" v-text="msg" class="input"></div>
+    <div class="help-box">
+      Een sterk wachtwoord kan bijvoorbeeld een zin zijn van 4 woorden. Er worden geen verplichte karakters verwacht zoals symbolen of hoofdletters, <a target="_blank" href="https://blogs.dropbox.com/tech/2012/04/zxcvbn-realistic-password-strength-estimation/">de sterkte wordt berekend op hoe uiteenlopend het wachtwoord is samengesteld.</a>
+    </div>
   </div>
   <h3>Rollen</h3>
   <p>Welk rol(len) wil je opnemen op het MEDEA platform?</p>
