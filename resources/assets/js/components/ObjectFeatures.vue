@@ -9,8 +9,8 @@
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address && find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
-    <dt>Coordinaatprecisie</dt>
-    <dd>{{humanizedAccuracy}}&nbsp;</dd>
+    <dt v-if="validating">Coordinaatprecisie</dt>
+    <dd v-if="validating">{{humanizedAccuracy}}&nbsp;</dd>
     <dt v-if="find.findSpot.findSpotType">Type vindplaats</dt>
     <dd>{{find.findSpot.findSpotType}}</dd>
     <dt v-if="find.findSpot.findSpotTitle">Lokale plaatsnaam</dt>
