@@ -7,6 +7,7 @@
         <p v-if="cls && cls.productionClassificationType">
           <br>
           <button type="submit" class="ui button" :class="{green:submittable}" :disabled="!submittable">Toevoegen</button>
+          <button type="submit" class="ui button" @click="cancel">Annuleren</button>
         </p>
       </div>
     </div>
@@ -34,6 +35,9 @@ export default {
     }
   },
   methods: {
+    cancel () {
+      this.cls = emptyClassification()
+    },
     formdata () {
       return this.cls
     },
