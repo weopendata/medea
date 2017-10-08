@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Repositories\ObjectRepository;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\NotificationRepository;
+use App\Http\Requests\DeleteClassificationRequest;
 use PiwikTracker;
 
 class ClassificationController extends Controller
@@ -43,6 +44,10 @@ class ClassificationController extends Controller
         if (empty($classification_node)) {
             return response()->json(['errors' => ['message' => 'Something has gone wrong, make sure the object exists.']], 404);
         }
+
+        // Link the user and the classification
+        $user = auth()->user();
+        $this->classifications->linkClassificationToUser($classification_node, $user->getNode());
 
         // Add the referenced publications to the classification node
         $this->classifications->linkPublications($classification_node, $referencedPublications);
@@ -214,7 +219,7 @@ class ClassificationController extends Controller
         ]);
     }
 
-    public function destroy($objectId, $classification_id)
+    public function destroy(DeleteClassificationRequest $request, $objectId, $classification_id)
     {
         $deleted = $this->classifications->delete($classification_id);
 

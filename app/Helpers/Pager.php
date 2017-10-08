@@ -9,8 +9,8 @@ class Pager
         $paging = [];
 
         // Check if limit and offset are integers
-        if (!is_integer((int)$limit) || !is_integer((int)$offset)) {
-            \App::abort(400, "Please make sure limit and offset are integers.");
+        if (! is_integer((int)$limit) || ! is_integer((int)$offset)) {
+            \App::abort(400, 'Please make sure limit and offset are integers.');
         }
 
         // Calculate the paging parameters and pass them with the data object
@@ -27,11 +27,14 @@ class Pager
         }
         if ($offset > 0 && $total_rows > 0) {
             $previous = $offset - $limit;
+
             if ($previous < 0) {
                 $previous = 0;
             }
+
             $paging['previous'] = [$previous, $limit];
         }
+
         return $paging;
     }
 }

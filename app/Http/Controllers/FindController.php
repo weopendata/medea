@@ -7,6 +7,7 @@ use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\UpdateFindRequest;
 use App\Http\Requests\CreateFindRequest;
 use App\Http\Requests\ShowFindRequest;
+use App\Http\Requests\DeleteFindRequest;
 use App\Mailers\AppMailer;
 use App\Models\FindEvent;
 use App\Models\Person;
@@ -361,6 +362,30 @@ class FindController extends Controller
             unset($find['object']['objectNr']);
         }
 
+        // Add the user names of the classifications
+        $classifications = app()->make('App\Repositories\ClassificationRepository');
+
+        $objectClassifications = array_get($find, 'object.productionEvent.productionClassification', []);
+        $enrichedClassifications = [];
+
+        foreach ($objectClassifications as $objectClassification) {
+            $creator = $classifications->getUser($objectClassification['identifier']);
+
+            if (! empty($creator)) {
+                $objectClassification['addedBy'] = $creator->getProperty('firstName') . ' ' . $creator->getProperty('lastName');
+
+                if (! empty($user) && $user->id == $creator->getId()) {
+                    $objectClassification['addedByUser'] = true;
+                }
+            }
+
+            $enrichedClassifications[] = $objectClassification;
+        }
+
+        if (! empty($objectClassifications)) {
+            $find['object']['productionEvent']['productionClassification'] = $enrichedClassifications;
+        }
+
         return $find;
     }
 
@@ -381,8 +406,11 @@ class FindController extends Controller
             $find['object']['collection'] = $collection;
         }
 
+        $fields = $this->list_values->getFindTemplate();
+        $fields = $this->transformPeriods($fields);
+
         return view('pages.finds-create', [
-            'fields' => $this->list_values->getFindTemplate(),
+            'fields' => $fields,
             'find' => $find
         ]);
     }
@@ -455,14 +483,8 @@ class FindController extends Controller
      * @param  int                       $findId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($findId, Request $request)
+    public function destroy($findId, DeleteFindRequest $request)
     {
-        $user = $request->user();
-
-        if (empty($user)) {
-            abort('401');
-        }
-
         $this->finds->delete($findId);
 
         return response()->json(['success' => true]);

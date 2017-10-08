@@ -2,14 +2,16 @@
 
 namespace App\Http\Requests;
 
-class DeleteUserRequest extends Request
+use Illuminate\Http\Request as HttpRequest;
+
+class DeleteFindRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(HttpRequest $request)
     {
         return ! empty(auth()->user()) && auth()->user()->hasRole('administrator');
     }

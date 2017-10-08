@@ -39,7 +39,7 @@
         <time v-if="cls.updated_at!==cls.created_at" :title="cls.updated_at" style="margin-left:1em">update op {{cls.updated_at | fromDate}}</time>
       </span>
       <div style="float:right">
-        <button class="btn" @click.prevent.stop="rm" v-if="$root.user.administrator"><i class="trash icon"></i></button>
+        <button class="btn" @click.prevent.stop="rm" v-if="removable"><i class="trash icon"></i></button>
       </div>
     </div>
   </div>
@@ -51,8 +51,11 @@ import { fromDate, urlify, fromPublication } from '../const.js'
 export default {
   props: ['cls', 'obj'],
   computed: {
+    removable () {
+      return this.$root.user.administrator || this.cls.addedByUser
+    },
     creator () {
-      return this.cls && this.cls.person && this.cls.person.name
+      return this.cls && this.cls.addedBy
     },
     multiPub () {
       return this.pubs && this.pubs.length > 1

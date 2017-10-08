@@ -26,7 +26,7 @@ class UserController extends Controller
     /**
      * Returns a user list
      *
-     * @param Request $request
+     * @param  Request $request
      * @return array
      */
     public function index(Request $request)

@@ -250,7 +250,7 @@ class UserController extends Controller
         $queryString = $this->buildQueryString($request);
 
         if ($offset > 0) {
-            $pageInfo['first'] = [0, 0];
+            $pageInfo['first'] = [0, 50];
         }
 
         return array_map(function ($info) use ($url, $queryString) {
