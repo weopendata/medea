@@ -93,6 +93,25 @@ new window.Vue({
       }
       return true
     },
+    resetFilters () {
+      this.filterState = {
+        category: null,
+        status: null,
+        embargo: null,
+        period: null,
+        technique: null,
+        modification: null,
+        objectMaterial: null,
+        collections: null
+      };
+
+      // Apply default states
+      if (! this.filterState.status) {
+        this.filterState.status = 'Gepubliceerd'
+      }
+
+      this.fetch()
+    },
     fetch () {
       var model = inert(this.filterState)
       var type = model.type

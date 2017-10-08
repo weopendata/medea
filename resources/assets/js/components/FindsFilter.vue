@@ -9,6 +9,16 @@
       </form>
     </div>
 
+    <div class="ui">
+      <div class="field">
+        <button class="ui icon button" @click="resetFilters()">
+          Reset filters
+          <i class="refresh icon"></i>
+        </button>
+      </div>
+    </div>
+
+    <br/>
     <div class="facets">
       <div v-if="$root.user.email" class="facet">
         <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
@@ -100,6 +110,9 @@ export default {
     }
   },
   methods: {
+    resetFilters () {
+      this.$parent.resetFilters()
+    },
     restore (filter) {
       if (filter.state) {
         if (filter.name === this.name) {
