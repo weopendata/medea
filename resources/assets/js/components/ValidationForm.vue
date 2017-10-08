@@ -102,7 +102,6 @@ export default {
       }
     },
     submitSuccess ({data}) {
-      console.log('Validation', data)
       this.result = data.success ? 'Status van de vondst: ' + this.status : 'Er ging iets fout'
       if (data.success) {
         setTimeout(function () {
@@ -135,7 +134,6 @@ export default {
         imgRemarks: this.imgRemarks,
         remarks: this.remarks
       }
-      console.log('Submitting', JSON.parse(JSON.stringify(data)))
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
     }
   },
@@ -166,7 +164,6 @@ export default {
 
     // Fill in the previous validation feedback
     if (this.json && this.validation && this.validation.objectValidationStatus !== 'Gepubliceerd') {
-      console.log('This find has been validated before and the status was', this.validation.objectValidationStatus)
       this.remarks = this.validation.remarks
 
       const photograph = this.$parent.find.object.photograph

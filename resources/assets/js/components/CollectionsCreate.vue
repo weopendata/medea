@@ -77,7 +77,6 @@ export default {
       this.$set('collection.institutions', evt.target.value)
     },
     formdata () {
-      console.log('formdata')
       const { institutions } = this.collection
 
       // Apply outgoing transformers

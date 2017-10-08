@@ -38,7 +38,6 @@ import {inert} from '../const.js';
 
 var backupState = { myfinds: false }
 
-
 var modificationFields = [
   'meerdere',
   'email (cloissoné)',
@@ -59,6 +58,7 @@ export default {
   props: ['name', 'model', 'saved'],
   data () {
     const showFacets = ls('showFacets') || {}
+
     return {
       fields: window.fields,
       modificationFields: modificationFields,

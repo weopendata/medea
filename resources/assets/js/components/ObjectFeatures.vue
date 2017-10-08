@@ -125,7 +125,6 @@ export default {
       }
 
       var acc = this.find.findSpot.location.accuracy
-      console.log(acc)
 
       switch (acc) {
         case 1:

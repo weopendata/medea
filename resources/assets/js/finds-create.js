@@ -227,7 +227,6 @@ new window.Vue({
       return this.validation.feedback || {}
     },
     validation () {
-      console.log(this.validationList[0])
       return this.validationList[0] || {
           feedback: {}
         }
@@ -333,7 +332,6 @@ new window.Vue({
       }
     },
     changeMarker (event) {
-      console.log(event, 'dragged')
     },
     // Combined step that handles the geocoding of the address and goes to step 2
     handleStep1 () {

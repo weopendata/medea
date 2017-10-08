@@ -8,6 +8,7 @@ import DevBar from './components/DevBar'
 import Notifications from './mixins/Notifications'
 import HelpText from './mixins/HelpText'
 import { inert, toPublicBounds, findTitle } from './const.js'
+import ls from 'local-storage'
 
 import parseLinkHeader from 'parse-link-header'
 
@@ -35,7 +36,7 @@ new window.Vue({
       paging: getPaging(window.link),
       finds: window.initialFinds || [],
       fetching: false,
-      filterState: window.filterState || console.error('filterState warning') || {},
+      filterState: ls('filterState') || window.filterState || console.error('filterState warning') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -95,9 +96,9 @@ new window.Vue({
     fetch () {
       var model = inert(this.filterState)
       var type = model.type
-      if (model.status == 'Gepubliceerd') {
+      /*if (model.status == 'Gepubliceerd') {
         delete model.status
-      }
+      }*/
       if (model.name) {
         delete model.name
       }
@@ -144,6 +145,9 @@ new window.Vue({
             console.error('List: could not fetch finds heatmap')
           })
       }
+
+      // Store the state in local storage
+      ls('filterState', model)
     },
     mapToggle (v) {
       if (this.filterState.type === v) {

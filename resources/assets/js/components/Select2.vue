@@ -44,7 +44,6 @@
           setTimeout(() => this.loaded(), 1000)
           return
         }
-        console.log('build select', loaded, ready)
 
         if(this.value && this.value !== {}){
           this.options.data = [this.value]
@@ -68,7 +67,6 @@
       }
     },
     attached () {
-      console.log('attach select', loaded, ready)
       this.load()
     },
     destroyed () {
