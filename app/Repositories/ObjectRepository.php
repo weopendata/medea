@@ -168,6 +168,14 @@ class ObjectRepository extends BaseRepository
 
         $typeNode = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);
 
+        // Add the name of the user who approved the find
+        if ($status == 'Gepubliceerd') {
+            $user = auth()->user();
+            $fullName = $user->firstName . ' ' . $user->lastName;
+
+            $objectNode->setProperty('validated_by', $fullName)->save();
+        }
+
         if (! empty($feedback)) {
             // Append the feedback if feedback already exists
             $currentFeedback = $objectNode->getProperty('feedback');

@@ -340,6 +340,11 @@ class FindController extends Controller
             }
         }
 
+        // Only administrators can see who published the find
+        if (empty($user) || ! in_array('administrator', $user->getRoles())) {
+            unset($find['object']['validated_by']);
+        }
+
         // Filter out the findSpotTitle and findSpotType for
         // - any person who is not the finder, nor a researcher nor an administrator
         if (empty($user) || (! $user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') != $user->id)) {

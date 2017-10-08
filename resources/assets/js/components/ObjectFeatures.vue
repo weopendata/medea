@@ -27,6 +27,10 @@
       &nbsp;
     </dd>
   </dl>
+  <dl v-if="user.administrator && find.object.validated_by">
+    <dt>Gepubliceerd door</dt>
+    <dd>{{find.object.validated_by}}</dd>
+  </dl>
   <h4>Object</h4>
   <dl v-if="find.object.objectDescription">
     <dt-check v-if="validating" prop="objectDescription"></dt-check>
@@ -137,6 +141,9 @@ export default {
     },
     finder () {
       return window.publicUserInfo
+    },
+    user () {
+      return window.medeaUser
     },
     periodOverruled () {
       const periods = (this.find.object.productionEvent.productionClassification || [])

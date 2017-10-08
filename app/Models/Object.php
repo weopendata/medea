@@ -127,6 +127,9 @@ class Object extends Base
         ],
         [
             'name' => 'validated_at',
+        ],
+        [
+            'name' => 'validated_by'
         ]
     ];
 

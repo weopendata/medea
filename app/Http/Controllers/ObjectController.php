@@ -44,7 +44,7 @@ class ObjectController extends Controller
             $embargo = (string) $input['embargo'];
         }
 
-        // The third argument must be the whole validation input
+        // The third argument must be the entire validation input
         $this->objects->setValidationStatus($objectId, $input['objectValidationStatus'], $input, $embargo);
 
         // Add a notification for the user
