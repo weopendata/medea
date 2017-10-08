@@ -105,11 +105,6 @@ new window.Vue({
         collections: null
       };
 
-      // Apply default states
-      if (! this.filterState.status) {
-        this.filterState.status = 'Gepubliceerd'
-      }
-
       this.fetch()
     },
     fetch () {
