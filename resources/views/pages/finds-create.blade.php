@@ -416,6 +416,10 @@
     <p v-if="!HelpText.create">
       Voeg hier belangrijke informatie over de vondst toe die niet eerder in het formulier aan bod kwam.
     </p>
+    <div class="ui message" v-if="!HelpText.create && user.detectorist">
+      Als deze vondst een bepaald nummer heeft in je eigen collectie, kun je dat hier invullen. Je kunt op nummer zoeken via het
+      zoekveld linksboven op de vondstlijst.
+    </div>
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
   <div class="ui message" v-if="!HelpText.create">

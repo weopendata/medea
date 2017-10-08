@@ -15,11 +15,9 @@ window.initialCollection = {!! json_encode($collection) !!};
 @endif
 window.fields = {!! json_encode($fields ?? [
   'collectionType' => [
-    'prive collectie',
-    'heemkundige collectie',
-    'museumcollectie',
-    'bibliotheekcollectie',
-    'archiefcollectie',
+    'Fysieke collectie van instelling of vereniging',
+    'Gecentraliseerde registratie van detectievondsten',
+    'Kortstondig registratieproject',
   ]
 ]) !!};
 </script>

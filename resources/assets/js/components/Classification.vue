@@ -2,7 +2,8 @@
   <div class="card card-center cls-card">
     <div class="card-textual">
       <p v-if="cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.productionClassificationType || cls.startDate || cls.endDate">
-        <span class="cls-labeled" v-if="cls.productionClassificationType">Type <b>{{cls.productionClassificationType}}</b></span>
+        <span class="cls-labeled" v-if="cls.productionClassificationType">ClassificatieType <b>{{cls.productionClassificationType}}</b></span>
+        <span class="cls-labeled" v-if="cls.productionClassificationValue">Type <b>{{cls.productionClassificationValue}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationCulturePeople">Periode <b>{{cls.productionClassificationCulturePeople}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Heerser <b>{{cls.productionClassificationRulerNation}}</b></span>
         <span class="cls-labeled" v-if="cls.startDate||cls.endDate">Datering <b>{{ vC(cls.startDate) }} - {{ vC(cls.endDate, cls.startDate) }}</b></span>

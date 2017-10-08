@@ -245,11 +245,9 @@ class ListValueSeeder extends Seeder
     public function getCollectionTypeAuthorityList()
     {
         return [
-           'prive collectie',
-           'heemkundige collectie',
-           'museumcollectie',
-           'bibliotheekcollectie',
-           'archiefcollectie',
+            'Fysieke collectie van instelling of vereniging',
+            'Gecentraliseerde registratie van detectievondsten',
+            'Kortstondig registratieproject',
         ];
     }
 
