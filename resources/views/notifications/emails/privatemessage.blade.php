@@ -6,13 +6,23 @@
 </head>
 <body>
     <p>
-        Uw heeft een nieuw bericht van {{ $sender->firstName }} {{ $sender->lastName}}.
+        Beste {{$recipient->firstName}} {{$recipient->lastName}},
     </p>
     <p>
-        {!! nl2br(e($message)) !!}
+        {{ $sender->firstName }} {{ $sender->lastName}} heeft je een bericht gestuurd via MEDEA:
     </p>
     <p>
-        U kan enkel antwoorden door de persoon via zijn email, {{ $sender->email }} te contacteren.
+        <i>{!! nl2br(e($message)) !!}</i>
+    </p>
+    <p>
+        Je kunt dit bericht beantwoorden door deze persoon te contacteren via zijn emailadres {{ $sender->email }}
+    </p>
+    <p>
+        Met vriendelijke groeten,<br/>
+        Het MEDEA team
+    </p>
+    <p>
+        <a href="vondsten.be" target="_blank">vondsten.be</a> || info: <a href="blog.vondsten.be" target="_blank">blog.vondsten.be</a> || Facebook: MEDEAvondsten
     </p>
 </body>
 </html>

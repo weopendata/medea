@@ -21,7 +21,7 @@ class AppMailer
      *
      * @var string
      */
-    protected $from = 'no-reply@medea.weopendata.com';
+    protected $from = 'no-reply@vondsten.be';
 
     /**
      * The recipient of the email.
@@ -184,7 +184,7 @@ class AppMailer
     {
         $this->to = $recipient->email;
         $this->view = 'notifications.emails.privatemessage';
-        $this->data = ['message' => $message, 'sender' => $sender];
+        $this->data = ['message' => $message, 'sender' => $sender, 'recipient' => $recipient];
         $this->subject = 'MEDEA - Nieuw bericht';
         $this->deliver();
     }

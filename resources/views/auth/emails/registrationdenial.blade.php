@@ -5,16 +5,20 @@
     <title>MEDEA registratie</title>
 </head>
 <body>
-    <h3>Beste {{ $user->firstName . ' ' . $user->lastName }}</h3>
     <p>
-        Uw registratie werd niet goedgekeurd. U kan u opnieuw proberen registreren of contact opnemen met het MEDEA team.
+        Beste {{ $user->firstName . ' ' . $user->lastName }},
+    </p>
+    <p>
+        Je registratie op MEDEA werd niet goedgekeurd. Op de MEDEA-website vind je een overzicht van de verschillende gebruikersrollen.
+        Bij verdere vragen kun je contact opnemen met het MEDEA-team via de contactgegevens onderaan deze mail.
     </p>
 
-    <p>
-    Vriendelijke groeten,
+   <p>
+        Met vriendelijke groeten,<br/>
+        Het MEDEA team
     </p>
     <p>
-    Het MEDEA team
+        <a href="vondsten.be" target="_blank">vondsten.be</a> || info: <a href="blog.vondsten.be" target="_blank">blog.vondsten.be</a> || Facebook: MEDEAvondsten
     </p>
 </body>
 </html>

@@ -24,7 +24,7 @@ class RegistrationController extends Controller
     {
         $user = $this->users->confirmUser($token);
 
-        if (!empty($user)) {
+        if (! empty($user)) {
             $person = new Person();
             $person->setNode($user);
 
@@ -45,7 +45,7 @@ class RegistrationController extends Controller
     {
         $user = $this->users->denyUser($token);
 
-        if (!empty($user)) {
+        if (! empty($user)) {
             $person = new Person();
             $person->setNode($user);
 

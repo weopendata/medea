@@ -149,7 +149,7 @@ class UserRepository extends BaseRepository
      *
      * @param Node    $classification
      * @param integer $personId
-     * @param string  $vote_type agree|disagree
+     * @param string  $vote_type      agree|disagree
      *
      * @return Relationship
      */
@@ -219,9 +219,9 @@ class UserRepository extends BaseRepository
     /**
      * Returns a list of person by name
      *
-     * @param string $name
-     * @param int    $limit
-     * @param int    $offset
+     * @param  string $name
+     * @param  int    $limit
+     * @param  int    $offset
      * @return array
      */
     public function getByName($name, $limit = 10, $offset = 0)
@@ -230,7 +230,7 @@ class UserRepository extends BaseRepository
 
         $queryString = 'MATCH (n:person)
         WHERE n.firstName =~ {queryString} OR n.lastName =~ {queryString}
-        RETURN n 
+        RETURN n
         SKIP {offset} LIMIT {limit}';
 
         $variables = [
