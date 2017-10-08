@@ -27,7 +27,7 @@
       </dl>
       <br>
       <div>
-        {{ collection.description }}
+        <span v-html="collection.description"></span>
       </div>
     </div>
     <div class="card-bar">

@@ -41,6 +41,13 @@ class CollectionController extends Controller
         $sortOrder = $request->input('sortOrder', 'DESC');
 
         $collections = $this->collections->getAll($limit, $offset, $sortBy, $sortOrder);
+
+        // Linkify all info fields of the collections
+        foreach ($collections as &$collection) {
+            $info = $collection['description'];
+            $collection['description'] = $this->makeClickable($info);
+        }
+
         $totalCollections = $this->collections->countAllCollections();
 
         $queryString = $this->buildQueryString($request);
@@ -70,6 +77,17 @@ class CollectionController extends Controller
             'fields'      => '',
             'link'        => $linkHeader,
         ]);
+    }
+
+    private function makeClickable ($collectionInfo)
+    {
+        $regex = '#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#';
+
+        return preg_replace_callback($regex, function ($matches) {
+            return "<a href=\"{$matches[0]}\" target=\"_blank\">{$matches[0]}</a>";
+            },
+            $collectionInfo
+        );
     }
 
     /**
