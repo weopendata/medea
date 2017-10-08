@@ -9,8 +9,10 @@
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address && find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
-    <dt v-if="validating">Coordinaatprecisie</dt>
-    <dd v-if="validating">{{humanizedAccuracy}}&nbsp;</dd>
+    <dt v-if="canUserSeeDetails">Coordinaten</dt>
+    <dd v-if="canUserSeeDetails">{{humanizedCoordinates}}</dd>
+    <dt v-if="validating || canUserSeeDetails">Coordinaatprecisie</dt>
+    <dd v-if="validating || canUserSeeDetails">{{humanizedAccuracy}}&nbsp;</dd>
     <dt v-if="find.findSpot.findSpotType">Type vindplaats</dt>
     <dd>{{find.findSpot.findSpotType}}</dd>
     <dt v-if="find.findSpot.findSpotTitle">Lokale plaatsnaam</dt>
@@ -33,9 +35,8 @@
   </dl>
   <h4>Object</h4>
   <dl v-if="find.object.objectDescription">
-    <dt-check v-if="validating" prop="objectDescription"></dt-check>
-    <dt>Beschrijving</dt>
-    <dd>{{find.object.objectDescription}}</dd>
+    <dt v-if="canUserSeeDetails">Beschrijving</dt>
+    <dd v-if="canUserSeeDetails">{{find.object.objectDescription}}</dd>
   </dl>
   <dl v-if="find.object.objectInscription&&find.object.objectInscription.objectInscriptionNote">
     <dt-check v-if="validating" prop="objectInscriptionNote"></dt-check>
@@ -113,27 +114,33 @@ function sameValues(array) {
 export default {
   props: ['find', 'feedback', 'validating'],
   computed: {
+    humanizedCoordinates () {
+      if (this.find.findSpot && this.find.findSpot.location && this.find.findSpot.location.lat) {
+        return this.find.findSpot.location.lat + ', ' + this.find.findSpot.location.lng
+      }
+    },
     humanizedAccuracy () {
       if (! this.find.findSpot || ! this.find.findSpot.location || ! this.find.findSpot.location.accuracy) {
         return;
       }
 
       var acc = this.find.findSpot.location.accuracy
+      console.log(acc)
 
       switch (acc) {
-        case "1":
+        case 1:
           return "1 - 5m (GPS)"
-        case "5":
+        case 5:
           return "5 - 20m"
-        case "20":
+        case 20:
           return "20 - 50m"
-        case "50":
+        case 50:
           return "50 - 100m"
-        case "100":
+        case 100:
           return "100 - 500m"
-        case "500":
+        case 500:
           return "500 - 2000m"
-        case "2000":
+        case 2000:
           return "Gemeenteniveau"
       }
 
@@ -141,6 +148,14 @@ export default {
     },
     finder () {
       return window.publicUserInfo
+    },
+    canUserSeeDetails () {
+      // The coordinates returned from the API are already transformed according to the role of the user
+      if (! this.user || this.user.isGuest || ! this.user.id) {
+        return false
+      }
+
+      return this.user.administrator || this.user.onderzoeker || this.user.id == this.finder.id
     },
     user () {
       return window.medeaUser

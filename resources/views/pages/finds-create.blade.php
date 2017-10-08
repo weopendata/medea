@@ -411,7 +411,7 @@
 <step :number="user.administrator ? 6 : 5" title="Klaar met vondstfiche">
 <div class="grouped fields">
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
-    <label>Bijkomende opmerkingen</label>
+    <label>Bijkomende opmerkingen (dit wordt niet publiek weergegeven)</label>
     <textarea-growing v-model="find.object.objectDescription"></textarea-growing>
     <p v-if="!HelpText.create">
       Voeg hier belangrijke informatie over de vondst toe die niet eerder in het formulier aan bod kwam.

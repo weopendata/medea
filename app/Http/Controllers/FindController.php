@@ -345,11 +345,12 @@ class FindController extends Controller
             unset($find['object']['validated_by']);
         }
 
-        // Filter out the findSpotTitle and findSpotType for
+        // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
         if (empty($user) || (! $user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
+            unset($find['object']['objectDescription']);
         }
 
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
