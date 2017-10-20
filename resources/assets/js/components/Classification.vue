@@ -69,15 +69,51 @@ export default {
     }
   },
   methods: {
+    // Build a literature citation for the given publication based on its type
     cite (pub) {
       if (!pub) {
         return
       }
-      return [
-        (pub.author || 'Auteur'),
-        (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
-        (pub.publicationTitle || 'Titel')
-      ].join('') + ', ' + pub.pubLocation
+      console.log(pub);
+      switch (pub.publicationType) {
+        case 'boek':
+          return this.citeBook(pub);
+        case 'boekbijdrage':
+          return this.citeBookAttribution(pub);
+        case 'tijdschriftartikel':
+          return this.citeArticle(pub);
+        case 'internetbron':
+          return this.citeInternetSource(pub);
+        default:
+          return [
+            (pub.author || 'Auteur'),
+            (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
+            (pub.publicationTitle || 'Titel')
+            ].join('') + ', ' + pub.pubLocation
+      }
+    },
+    citeBook (pub) {
+      return (pub.author || 'Unknown Author') + ', '
+        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+        + (pub.publicationTitle || 'Unknown title')
+        + ', ' + pub.pubLocation + '.';
+    },
+    citeArticle (pub) {
+      return (pub.author || 'Unknown Author') + ', '
+        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+        + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
+        + ', ' + pub.pubLocation + '.';
+    },
+    citeBookAttribution (pub) {
+      return (pub.author || 'Unknown Author') + ', '
+        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+        + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
+        + ', ' + pub.pubLocation + '.';
+    },
+    citeInternetSource (pub) {
+      return (pub.author ? pub.author + ', ' : '')
+        + ', ' + (pub.publicationTitle ? pub.publicationTitle : "Unknown title")
+        + ', ' + pub.pubLocation + '.';
     },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {

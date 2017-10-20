@@ -75,7 +75,7 @@
       <input type="text" v-model="find.findDate" placeholder="YYYY-MM-DD" @blur="blurDate" style="max-width: 16em ">
       <button type="button" class="ui basic button" v-if="find.findDate!=='onbekend'" @click="find.findDate='onbekend'">onbekend</button>
     </div>
-    <div class="ui message" v-if="find.findDate >= '2016-04-01'">
+    <div class="ui visible warning message" v-if="find.findDate >= '2016-04-01'">
       Vergeet deze recente vondst niet aan te melden bij Onroerend Erfgoed. Je kunt daarvoor het MEDEA-ID gebruiken dat je na afwerking bovenaan je vondstfiche zult vinden. Als je je vondst al meldde, kun je het OE-meldingsnummer opnemen in het veld 'eigen inventarisnummer'.
     </div>
     <div class="ui message" v-if="!HelpText.create || !validFindDate">

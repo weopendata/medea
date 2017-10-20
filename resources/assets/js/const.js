@@ -71,6 +71,7 @@ export function emptyClassification () {
 const TYPE_AUTHOR = 'author'
 const TYPE_COAUTHOR = 'coauthor'
 const TYPE_PUBLISHER = 'publisher'
+const TYPE_EDITOR = 'editor'
 
 const TYPE = 'publicationCreationActorType'
 const NAME = 'publicationCreationActorName'
@@ -96,31 +97,24 @@ export function fromPublication (p) {
 
 export function toPublication (p) {
   p = inert(p)
-  const author = [p.author, p.coauthor].filter(Boolean).join(' & ')
+
+  const authorNames = p.author.split('&', 2)
+  var authorArr = []
+
+  for (var i = 0; i < authorNames.length; i++) {
+    authorArr.push({[NAME] : authorNames[i].trim(), [TYPE] : TYPE_AUTHOR})
+  }
+
+  var timeSpan = p.pubTimeSpan ? {date : p.pubTimeSpan} : null
+  var location = p.pubLocation ? {publicationCreationLocationAppellation: p.pubLocation} : null
+
   return Object.assign(p, {
-    publicationCreation: [
-
+    publicationCreation: {
       // Include author if available
-      author && {
-        publicationCreationActor: {
-          [NAME]: author,
-          [TYPE]: TYPE_AUTHOR
-        }
-      } || null,
-
-      // Include publisher if available
-      (p.publisher || p.pubTimeSpan || p.pubLocation) && {
-        publicationCreationActor: p.publisher && {
-          [NAME]: p.publisher,
-          [TYPE]: TYPE_PUBLISHER
-        } || null,
-        publicationCreationTimeSpan: { date: p.pubTimeSpan },
-        publicationCreationLocation: p.pubLocation && {
-          publicationCreationLocationAppellation: p.pubLocation
-        }
-      } || null
-
-    ].filter(Boolean)
+      publicationCreationActor: authorArr,
+      publicationCreationTimeSpan: timeSpan,
+      publicationCreationLocation: location
+    }
   })
 }
 
