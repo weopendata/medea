@@ -74,7 +74,7 @@ export default {
       if (!pub) {
         return
       }
-      console.log(pub);
+
       switch (pub.publicationType) {
         case 'boek':
           return this.citeBook(pub);
