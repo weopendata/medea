@@ -119,6 +119,17 @@
               <input type="text" v-model="editing.parentVolume" placeholder="Het volume of de jaargang van het tijdschrift.">
             </div>
           </div>
+          <div class="one field" v-if="editing.publicationType == 'boekbijdrage'">
+            <div class="required field">
+              <label>Titel boek</label>
+              <input type="text" v-model="editing.parentTitle" placeholder="De titel van het boek">
+            </div>
+            <div class="required field">
+              <label>Redacteur</label>
+              <input type="text" v-model="editing.editor">
+              <small class="helper">Vul hier de namen in van de redacteur(s), op dezelfde manier als bij het auteurs veld.</small>
+            </div>
+          </div>
           <div :class="editing.publicationType == 'internetbron' ? 'field' : 'required field'">
             <label>Namen van de auteurs</label>
             <input type="text" v-model="editing.author" >
@@ -312,7 +323,7 @@
           case 'boek':
             return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation
           case 'boekbijdrage':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation
+            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation && pub.editor && pub.parentTitle
           case 'tijdschriftartikel':
             return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
           case 'internetbron':
