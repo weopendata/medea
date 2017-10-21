@@ -78,27 +78,29 @@ const NAME = 'publicationCreationActorName'
 const ACTOR = 'publicationCreationActor'
 
 export function fromPublication (p) {
+  console.log(p)
   p = inert(p)
-  //console.log(p)
+
   const creations = (p.publicationCreation || [])
-  const publisher = creations.find(a => !a[ACTOR] || a[ACTOR][TYPE] !== TYPE_AUTHOR) || {}
 
   // Get author, their names and split them
-  let authors = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_AUTHOR)
-  authors = authors && authors[ACTOR] && authors[ACTOR][NAME] || []
+  let authorsCreation = creations.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_AUTHOR) || {}
+  let authors = authorsCreation && authorsCreation[ACTOR] && authorsCreation[ACTOR] || []
 
-  console.log(creations)
-  console.log(authors)
+  console.log("before assign:");
+  console.log(p)
 
   return Object.assign(p, {
-    author: authors,
-    pubTimeSpan: p.publicationCreationTimeSpan && p.publicationCreationTimeSpan.date || '',
-    pubLocation: p.publicationCreationLocation && p.publicationCreationLocation.publicationCreationLocationAppellation || ''
+    author: authors.map((a) => {return a[NAME]}).join(' & '),
+    pubTimeSpan: authorsCreation.publicationCreationTimeSpan && authorsCreation.publicationCreationTimeSpan.date || '',
+    pubLocation: authorsCreation.publicationCreationLocation && authorsCreation.publicationCreationLocation.publicationCreationLocationAppellation || '',
+    parentVolume: p.publication ? p.publication.publicationVolume : null,
+    parentTitle: p.publication ? p.publication.publicationTitle : null,
   })
 }
 
 export function toPublication (p) {
-  p = inert(p)
+   p = inert(p)
 
   const authorNames = p.author.split('&', 2)
   var authorArr = []
@@ -109,15 +111,38 @@ export function toPublication (p) {
 
   var timeSpan = p.pubTimeSpan ? {date : p.pubTimeSpan} : null
   var location = p.pubLocation ? {publicationCreationLocationAppellation: p.pubLocation} : null
+  var relatedPublication = null;
+
+  if (p.publicationType == 'tijdschriftartikel') {
+    relatedPublication = {publicationVolume: p.parentVolume, publicationTitle: p.parentTitle}
+  }
+
+  if (relatedPublication) {
+    return Object.assign(p, {
+      publicationCreation: [
+        {
+          // Include author if available
+          publicationCreationActor: authorArr,
+          publicationCreationTimeSpan: timeSpan,
+          publicationCreationLocation: location
+        }
+      ]
+    },
+    {
+      publication: relatedPublication
+    })
+  }
 
   return Object.assign(p, {
-    publicationCreation: {
-      // Include author if available
-      publicationCreationActor: authorArr,
-      publicationCreationTimeSpan: timeSpan,
-      publicationCreationLocation: location
-    }
-  })
+      publicationCreation: [
+        {
+          // Include author if available
+          publicationCreationActor: authorArr,
+          publicationCreationTimeSpan: timeSpan,
+          publicationCreationLocation: location
+        }
+      ]
+    });
 }
 
 export function urlify (u) {

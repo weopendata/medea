@@ -102,7 +102,7 @@
             <div class="required field">
               <label>Type publicatie</label>
               <select class="ui dropdown" v-model="editing.publicationType">
-                <option selected>boek</option>
+                <option>boek</option>
                 <option>tijdschriftartikel</option>
                 <option>boekbijdrage</option>
                 <option>internetbron</option>
@@ -111,8 +111,12 @@
           </div>
           <div class="one field" v-if="editing.publicationType == 'tijdschriftartikel'">
             <div class="required field">
-              <label>Volume title</label>
-              <input type="text" v-model="editing.publicationVolume" placeholder="Het volume of de jaargang van het tijdschrift.">
+              <label>Titel tijdschrift</label>
+              <input type="text" v-model="editing.parentTitle" placeholder="De titel van het tijdschrift.">
+            </div>
+            <div class="required field">
+              <label>Volume</label>
+              <input type="text" v-model="editing.parentVolume" placeholder="Het volume of de jaargang van het tijdschrift.">
             </div>
           </div>
           <div :class="editing.publicationType == 'internetbron' ? 'field' : 'required field'">
@@ -121,7 +125,7 @@
             <small class="helper">{{placeholder('author')}}</small>
           </div>
           <div class="three fields" v-if="editing.publicationType != 'internetbron'">
-            <div class="required field" v-if="editing.publicationType != 'tijdschriftartikel'">
+            <div class="required field">
               <label>Jaar van uitgave</label>
               <input type="text" v-model="editing.pubTimeSpan" :placeholder="placeholder('timespan')">
             </div>
@@ -200,7 +204,8 @@
           title : {
             boek: "De titel van het boek.",
             boekbijdrage: "De titel van de boekbijdrage",
-            tijdschriftartikel: "De titel van het artikel."
+            tijdschriftartikel: "De titel van het artikel.",
+            internetbron: "Vul hier de titel van de webpagina of het referentienummer van de databankrecord in."
           },
           timespan: {
             boek: "Het jaartal boekpublicatie.",
@@ -309,7 +314,7 @@
           case 'boekbijdrage':
             return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation
           case 'tijdschriftartikel':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.publicationVolume && pub.publicationPages
+            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
           case 'internetbron':
             return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.publicationContact
           default:
@@ -328,8 +333,6 @@
         this.editingIndex = -1
       },
       savePublication () {
-        //console.log(toPublication(this.editing));
-
         this.$set('cls.publication[editingIndex]', toPublication(this.editing))
         this.closePublication()
       },

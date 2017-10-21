@@ -10,6 +10,13 @@ class Publication extends Base
     protected $hasUniqueId = true;
 
     protected $relatedModels = [
+        'P106' => [
+            'key' => 'publication',
+            'model_name' => 'Publication',
+            'cascade_delete' => true,
+            'required' => false,
+            'reverse_relationship' => ''
+        ],
     ];
 
     protected $implicitModels = [
