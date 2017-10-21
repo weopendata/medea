@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
+use App\Http\Requests\ShowFindRequest;
 use App\Helpers\Pager;
 use App\Http\Requests\FindApiRequest;
 
@@ -142,10 +141,82 @@ class FindController extends Controller
      * @param  int                       $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show($id, ShowFindRequest $request)
     {
-        $find = $this->finds->expandValues($id, $request->user());
+        $user = $request->user();
+
+        $find = $request->getFind();
+        $find = $this->transformFind($find, $user);
+        //$find = $this->finds->expandValues($id, $request->user());
 
         return response()->json($find);
+    }
+
+    /**
+     * Transform the find based on the role of the user
+     * and its relationship to the find
+     *
+     * @param  array $find
+     * @param  User  $user
+     * @return array
+     */
+    private function transformFind($find, $user)
+    {
+        // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
+        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && ! in_array('onderzoeker', $user->getRoles())) {
+            if (! empty($find['findSpot']['location']['lat'])) {
+                $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
+                $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
+                $find['findSpot']['location']['accuracy'] = 7000;
+            }
+        }
+
+        // Only administrators can see who published the find
+        if (empty($user) || ! in_array('administrator', $user->getRoles())) {
+            unset($find['object']['validated_by']);
+        }
+
+        // Filter out the findSpotTitle, findSpotType, objectDescription for
+        // - any person who is not the finder, nor a researcher nor an administrator
+        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') != $user->id)) {
+            unset($find['findSpot']['findSpotType']);
+            unset($find['findSpot']['findSpotTitle']);
+            unset($find['object']['objectDescription']);
+        }
+
+        // If the object of the find is not linked to a collection, hide the objectNr property of the object
+        // unless the user is the owner of the find (or is a registrator or adminstrator)
+        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') == $user->id))
+            && ! empty($find['object']['objectNr']) && empty($find['object']['collection'])
+        ) {
+            unset($find['object']['objectNr']);
+        }
+
+        // Add the user names of the classifications
+        $classifications = app()->make('App\Repositories\ClassificationRepository');
+
+        $objectClassifications = array_get($find, 'object.productionEvent.productionClassification', []);
+        $enrichedClassifications = [];
+
+        foreach ($objectClassifications as $objectClassification) {
+            $creator = $classifications->getUser($objectClassification['identifier']);
+
+            if (! empty($creator)) {
+                $objectClassification['addedBy'] = $creator->getProperty('firstName') . ' ' . $creator->getProperty('lastName');
+
+                if (! empty($user) && $user->id == $creator->getId()) {
+                    $objectClassification['addedByUser'] = true;
+                }
+            }
+
+            $enrichedClassifications[] = $objectClassification;
+        }
+
+        if (! empty($objectClassifications)) {
+            $find['object']['productionEvent']['productionClassification'] = $enrichedClassifications;
+        }
+
+        return $find;
     }
 }
