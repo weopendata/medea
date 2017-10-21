@@ -15,13 +15,6 @@
     <div class="card card-center fe-card">
       <div class="card-textual">
         <h1 class="card-title">{{findTitle}}</h1>
-        <div id="fb-root"></div>
-        <div class="card-bar text-left">
-          <div class="fb-share-button"
-            data-href="www.google.com"
-            data-layout="button">
-        </div>
-      </div>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
             <object-features :find="find" :feedback.sync="feedback" :validating="validating"></object-features>
@@ -46,6 +39,14 @@
               ></rectangle>
             </google-map>
           </div>
+        </div>
+      </div>
+      <br/>
+      <div id="fb-root"></div>
+      <div class="card-textual ui form">
+        <div class="fb-share-button"
+          data-href="www.google.com"
+          data-layout="button">
         </div>
       </div>
       <div class="card-textual ui form">

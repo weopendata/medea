@@ -46,7 +46,7 @@
   <dl v-if="find.object.dimensions && find.object.dimensions.length">
     <dt-check v-if="validating" prop="dimensions"></dt-check>
     <dt>Dimensies</dt>
-    <dd v-for="dim in find.object.dimensions">{{dim.dimensionType == 'diepte' ? 'hoogte/dikte' : dim.dimensionType}}: {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
+    <dd v-for="dim in find.object.dimensions">{{dim.dimensionType == 'diepte' ? 'dikte/hoogte' : dim.dimensionType}}: {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
   </dl>
   <dl v-if="find.object.objectMaterial">
   <dt-check v-if="validating" prop="objectMaterial"></dt-check>

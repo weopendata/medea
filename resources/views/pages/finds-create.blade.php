@@ -335,7 +335,7 @@
       <dim-input :dim="dims.breedte"></dim-input>
     </div>
     <div class="field" v-if="show.diepte">
-      <label>Hoogte/dikte</label>
+      <label>Dikte/hoogte</label>
       <dim-input :dim="dims.diepte"></dim-input>
     </div>
     <div class="field" v-if="!show.lengte||!show.breedte||!show.diepte">
