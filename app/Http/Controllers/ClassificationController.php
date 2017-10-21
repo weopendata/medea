@@ -85,6 +85,14 @@ class ClassificationController extends Controller
             }
 
             $classification['publication'] = $newPublications;
+        } else {
+            unset($classification['publication']);
+            unset($classification['publicationPages']);
+        }
+
+        // Clean up the classification
+        if (! empty($classification['productionClassificationSource'])) {
+            $classification['productionClassificationSource'] = collect($classification['productionClassificationSource'])->filter()->values()->toArray();
         }
 
         return [

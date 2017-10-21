@@ -7,7 +7,7 @@ export default {
   methods: {
     submit () {
       var data = this.formdata()
-      console.log('Submitting', JSON.parse(JSON.stringify(data)))
+
       if (!this.submittable) {
         return console.warn('Tried to submit before submittable');
       }

@@ -81,8 +81,9 @@ export function fromPublication (p) {
   const creations = (p.publicationCreation || [])
 
   // Get author, their names and split them
-  let authorsCreation = creations.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_AUTHOR) || {}
+  let authorsCreation = creations.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_AUTHOR || a[ACTOR][TYPE] === TYPE_AUTHOR) || {}
   let authors = authorsCreation && authorsCreation[ACTOR] || []
+  authors = [].concat(authors)
 
   let editors = []
 
@@ -91,8 +92,9 @@ export function fromPublication (p) {
     var bookCreation = (p.publication.publicationCreation || [])
 
     // Get the editors
-    let editorsCreation = bookCreation.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_EDITOR) || {}
+    let editorsCreation = bookCreation.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_EDITOR || a[ACTOR][TYPE] === TYPE_EDITOR) || {}
     editors = editorsCreation && editorsCreation[ACTOR] || []
+    editors = [].concat(editors)
 
     return Object.assign(p, {
       author: authors.map((a) => {return a[NAME]}).join(' & '),
