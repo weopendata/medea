@@ -101,10 +101,10 @@ export default {
     citeArticle (pub) {
       if (pub.parentVolume) {
         return (pub.author || 'Unknown Author') + ', '
-        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
-        + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
-        + ', ' + pub.parentTitle + ' ' + pub.parentVolume
-        + ': ' + pub.publicationPages + '.'
+          + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+          + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
+          + ', ' + pub.parentTitle + ' ' + pub.parentVolume
+          + ': ' + pub.publicationPages + '.'
       }
 
       return (pub.author || 'Unknown Author') + ', '
@@ -116,10 +116,10 @@ export default {
       // backwards compatible
       if (pub.editor) {
         return (pub.author || 'Unknown Author') + ', '
-        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
-        + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
-        + ', ' + pub.parentTitle + ' (ed. ' + pub.editor + ')'
-        + ', ' + pub.pubLocation + ': ' + pub.publicationPages + '.'
+          + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+          + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
+          + ', ' + pub.parentTitle + ' (ed. ' + pub.editor + ')'
+          + ', ' + pub.pubLocation + ': ' + pub.publicationPages + '.'
       }
 
       return (pub.author || 'Unknown Author') + ', '
@@ -128,9 +128,16 @@ export default {
         + ', ' + pub.pubLocation + '.'
     },
     citeInternetSource (pub) {
+      if (pub.parentTitle) {
+        return (pub.author ? pub.author + ', ' : '')
+          + (pub.publicationTitle ? pub.publicationTitle : "Unknown title")
+          + ', ' + pub.parentTitle
+          + ', ' + pub.pubLocation
+      }
+
       return (pub.author ? pub.author + ', ' : '')
-        + ', ' + (pub.publicationTitle ? pub.publicationTitle : "Unknown title")
-        + ', ' + pub.pubLocation + '.'
+        + (pub.publicationTitle ? pub.publicationTitle : "Unknown title")
+        + ', ' + pub.pubLocation
     },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {

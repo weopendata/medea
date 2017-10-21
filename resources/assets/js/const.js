@@ -76,8 +76,6 @@ const NAME = 'publicationCreationActorName'
 const ACTOR = 'publicationCreationActor'
 
 export function fromPublication (p) {
-  console.log("building (from)")
-  console.log(p)
   p = inert(p)
 
   const creations = (p.publicationCreation || [])
@@ -129,10 +127,6 @@ export function toPublication (p) {
   var location = p.pubLocation ? {publicationCreationLocationAppellation: p.pubLocation} : null
   var relatedPublication = null;
 
-  if (p.publicationType == 'tijdschriftartikel') {
-    relatedPublication = {publicationVolume: p.parentVolume, publicationTitle: p.parentTitle}
-  }
-
   if (p.publicationType == 'boekbijdrage') {
     const editorNames = p.editor.split('&', 2)
     var editorArr = []
@@ -163,6 +157,14 @@ export function toPublication (p) {
     {
       publication: book
     })
+  }
+
+  if (p.publicationType == 'tijdschriftartikel') {
+    relatedPublication = {publicationVolume: p.parentVolume, publicationTitle: p.parentTitle}
+  }
+
+  if (p.publicationType == 'internetbron') {
+    relatedPublication = {publicationTitle: p.parentTitle}
   }
 
   if (relatedPublication) {

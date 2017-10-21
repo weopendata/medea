@@ -130,6 +130,12 @@
               <small class="helper">Vul hier de namen in van de redacteur(s), op dezelfde manier als bij het auteurs veld.</small>
             </div>
           </div>
+          <div class="one field" v-if="editing.publicationType == 'internetbron'">
+            <div class="required field">
+              <label>Titel website / databank</label>
+              <input type="text" v-model="editing.parentTitle" placeholder="De titel van de website of databank.">
+            </div>
+          </div>
           <div :class="editing.publicationType == 'internetbron' ? 'field' : 'required field'">
             <label>Namen van de auteurs</label>
             <input type="text" v-model="editing.author" >
@@ -149,7 +155,11 @@
               <input type="text" v-model="editing.publicationPages" :placeholder="placeholder('pages')">
             </div>
           </div>
-          <div class="field">
+          <div class="required field" v-if="editing.publicationType == 'internetbron'">
+            <label>URL</label>
+            <input type="text" v-model="editing.publicationContact" placeholder="De volledige URL van de webpagina of databankrecord">
+          </div>
+          <div class="field" v-else>
             <label>URL van de publicatie</label>
             <input type="text" v-model="editing.publicationContact">
           </div>
@@ -216,7 +226,7 @@
             boek: "De titel van het boek.",
             boekbijdrage: "De titel van de boekbijdrage",
             tijdschriftartikel: "De titel van het artikel.",
-            internetbron: "Vul hier de titel van de webpagina of het referentienummer van de databankrecord in."
+            internetbron: "Webpaginatitel / databankrecord nummer"
           },
           timespan: {
             boek: "Het jaartal boekpublicatie.",
@@ -254,7 +264,7 @@
         if (element == 'author' && pubType != 'internetbron') {
           return "Vul hier de namen van de auteur(s) van de publicatie in, in het formaat: voornaam naam. Vermeld maximaal twee namen, gescheiden door een &-teken. Bij meer dan twee auteurs , vermeld je enkel de eerste, gevolgd door: et al. Vb. C. Renfrew/C. Renfrew &amp; P. Bahn/C. Renfrew et al.";
         } else if (element == 'author' && pubType == 'internetbron') {
-          return 'Vul hier de naam van de auteu van de webpagina of databankrecord (optioneel)'
+          return 'Vul hier de naam van de auteur van de webpagina of databankrecord (optioneel)'
         }
 
         return this.placeholders[element] && pubType && this.placeholders[element][pubType] ? this.placeholders[element][pubType] : ''
@@ -327,7 +337,7 @@
           case 'tijdschriftartikel':
             return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
           case 'internetbron':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.publicationContact
+            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.publicationContact && pub.parentTitle
           default:
             return false;
         }
