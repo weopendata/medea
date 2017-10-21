@@ -90,7 +90,6 @@ export function fromPublication (p) {
 
   // Special treatment for 'boekbijdrage'
   if (p.publicationType == 'boekbijdrage' && p.publication) {
-    console.log("returning boekbijdrage");
     var bookCreation = (p.publication.publicationCreation || [])
 
     // Get the editors
@@ -153,7 +152,7 @@ export function toPublication (p) {
       publicationTitle: p.parentTitle
     }
 
-    var r = Object.assign(p, {
+    return Object.assign(p, {
       publicationCreation: [
         {
           // Include author if available
@@ -164,10 +163,6 @@ export function toPublication (p) {
     {
       publication: book
     })
-
-    console.log("made:")
-    console.log(r)
-    return r
   }
 
   if (relatedPublication) {

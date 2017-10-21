@@ -96,24 +96,41 @@ export default {
       return (pub.author || 'Unknown Author') + ', '
         + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
         + (pub.publicationTitle || 'Unknown title')
-        + ', ' + pub.pubLocation + '.';
+        + ', ' + pub.pubLocation + '.'
     },
     citeArticle (pub) {
+      if (pub.parentVolume) {
+        return (pub.author || 'Unknown Author') + ', '
+        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+        + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
+        + ', ' + pub.parentTitle + ' ' + pub.parentVolume
+        + ': ' + pub.publicationPages + '.'
+      }
+
       return (pub.author || 'Unknown Author') + ', '
         + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
         + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
-        + ', ' + pub.pubLocation + '.';
+        + ', ' + pub.pubLocation + '.'
     },
     citeBookAttribution (pub) {
+      // backwards compatible
+      if (pub.editor) {
+        return (pub.author || 'Unknown Author') + ', '
+        + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
+        + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
+        + ', ' + pub.parentTitle + ' (ed. ' + pub.editor + ')'
+        + ', ' + pub.pubLocation + ': ' + pub.publicationPages + '.'
+      }
+
       return (pub.author || 'Unknown Author') + ', '
         + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
         + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
-        + ', ' + pub.pubLocation + '.';
+        + ', ' + pub.pubLocation + '.'
     },
     citeInternetSource (pub) {
       return (pub.author ? pub.author + ', ' : '')
         + ', ' + (pub.publicationTitle ? pub.publicationTitle : "Unknown title")
-        + ', ' + pub.pubLocation + '.';
+        + ', ' + pub.pubLocation + '.'
     },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {
