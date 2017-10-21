@@ -130,7 +130,11 @@ import ObjectFeatures from './ObjectFeatures'
 import PhotoswipeThumb from './PhotoswipeThumb'
 import ValidationForm from './ValidationForm'
 
-import { findTitle, toPublicBounds } from '../const.js'
+import { toPublicBounds } from '../const.js'
+
+function sameValues(array) {
+  return !!array.reduce((a, b) => a === b ? a : NaN )
+}
 
 export default {
   props: ['user', 'find'],
@@ -146,7 +150,6 @@ export default {
         center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
         zoom: 10,
         identifier: this.find.identifier,
-        title: findTitle(this.find),
         position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
       },
       loaded: false,
@@ -155,7 +158,38 @@ export default {
       }
     }
   },
+  methods () {
+    goToFinds : {
+      window.location = '/finds'
+    }
+  },
   computed: {
+    findTitle () {
+      if (! this.find) {
+        return 'De vondst bestaat niet'
+      }
+
+      const title = (this.find.object ? [
+        this.find.object.objectCategory || 'ongeïdentificeerd',
+        this.periodOverruled,
+        this.find.object.objectMaterial
+        ] : [
+        this.find.category || 'ongeïdentificeerd',
+        this.periodOverruled,
+        this.find.material
+        ]).filter(f => f && f !== 'onbekend').join(', ')
+
+      return title + ' (ID-' + this.find.identifier + ')'
+    },
+    periodOverruled () {
+      const periods = (this.find.object.productionEvent.productionClassification || [])
+        .map(c => c.productionClassificationCulturePeople)
+        .filter(Boolean)
+      if (periods.length > 1 && !sameValues(periods)) {
+        return 'onzeker'
+      }
+      return periods[0]
+    },
     findDetailLink () {
       return window.location.href
     },
@@ -181,9 +215,6 @@ export default {
     },
     rectangleBounds () {
       return toPublicBounds(this.location)
-    },
-    findTitle () {
-      return findTitle(this.find)
     },
     finder () {
       return window.publicUserInfo || {}

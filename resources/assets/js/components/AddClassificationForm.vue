@@ -12,6 +12,36 @@
       </div>
     </div>
     <div v-else>
+      <!-- Source -->
+      <div class="field field-publications" v-if="isSourceRequired">
+        <div class="ui grid">
+          <div class="twelve wide column">
+            <label for="description">Bron
+              <span v-if="isSourceRequired" class="required">*</span>
+            </label>
+            <div class="help-block">
+              Verwijs hier naar de publicatie waarin deze vondst beschreven staat.
+            </div>
+          </div>
+          <div class="four wide column" v-if="cls.publication && cls.publication.length">
+            <label for="description">Specificatie</label>
+            <div class="help-block">
+              Preciseer hier een locatie (pagina, figuur) in de aangehaalde bron (optioneel).
+            </div>
+          </div>
+        </div>
+        <div class="ui grid" v-for="(index, pub) in cls.publication" style="margin-top:0;">
+          <div class="twelve wide column">
+            <input-publication :model="pub" :index="index"></input-publication>
+          </div>
+          <div class="four wide column">
+            <input type="text" :value="getSource(index)" @input="setSource(index, $event.target.value)">
+          </div>
+        </div>
+        <br>
+        <select-publication :model="pub"></select-publication>
+        <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
+      </div>
       <!-- Find place -->
       <div class="required field">
         <label>{{ isSourceRequired ? 'Vindplaats/Type' : isTypology ? 'Type' : 'Vindplaats' }}</label>
@@ -47,7 +77,7 @@
           <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum/einddatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de einddatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de einddatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel.)' }}</div>
         </div>
       </div>
-     <!-- Source -->
+      <!-- Source -->
       <div class="field field-publications" v-if="! isSourceRequired">
         <div class="ui grid">
           <div class="twelve wide column">
@@ -55,7 +85,7 @@
               <span v-if="isSourceRequired" class="required">*</span>
             </label>
             <div class="help-block">
-              Verwijs hier naar de publicatie waarin deze vondst beschreven staat.
+              {{ isTypology ? "Vul hier de publicatie in die het type beschrijft. Typ de auteursnaam of titel in, en kies de correcte publicatie. Als de publicatie nog niet in de lijst staat, klik dan op de knop 'bron toevoegen' om deze toe te voegen. Je kunt meerdere publicaties linken aan een classificatie." : "Vul hier de publicatie in waarin de gelijkaardige vondst beschreven staat. Typ de auteursnaam of titel in, en kies de correcte publicatie. Als de publicatie nog niet in de lijst staat, klik dan op de knop 'bron toevoegen' om deze toe te voegen. Je kunt meerdere publicaties linken aan een classificatie." }}
             </div>
           </div>
           <div class="four wide column" v-if="cls.publication && cls.publication.length">

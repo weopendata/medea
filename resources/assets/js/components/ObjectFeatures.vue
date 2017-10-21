@@ -30,7 +30,7 @@
     </dd>
   </dl>
   <dl v-if="user.administrator && find.object.validated_by">
-    <dt>Gepubliceerd door</dt>
+    <dt>Gevalideerd door</dt>
     <dd>{{find.object.validated_by}}</dd>
   </dl>
   <h4>Object</h4>

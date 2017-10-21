@@ -137,7 +137,7 @@
     </div>
     <div class="six wide required field" v-bind:class="{six:show.address,eight:!show.address}">
       <label v-text="show.address||show.map?'Stad/Gemeente':'Straat en/of Gemeente/stad'">Stad/Gemeente</label>
-      <input type="text" v-model="find.findSpot.location.address.locationAddressLocality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v.coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
+      <input type="text" v-model="find.findSpot.location.address.locationAddressLocality" :placeholder="find.findSpot.location.lat?'Automatisch o.b.v. coördinaten':''" @keydown.enter.prevent.stop="showOnMap">
     </div>
     <div class="eight wide field">
       <label>&nbsp;</label>
@@ -181,11 +181,11 @@
   </div>
   <div class="fields" v-if="show.co||show.map">
     <div class="three wide field">
-      <label>Breedtegraad</label>
+      <label>Breedtegraad (WGS 84)</label>
       <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
     </div>
     <div class="three wide field">
-      <label>Lengtegraad</label>
+      <label>Lengtegraad (WGS 84)</label>
       <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
     </div>
     <div class="four wide field" v-if="show.map">

@@ -1,8 +1,8 @@
 <template>
   <div class="card card-center cls-card">
+    <div class="cls-type" v-if="cls.productionClassificationType">Classificatietype: <b>{{cls.productionClassificationType}}</b></div>
     <div class="card-textual">
-      <p v-if="cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.productionClassificationType || cls.startDate || cls.endDate">
-        <span class="cls-labeled" v-if="cls.productionClassificationType">ClassificatieType <b>{{cls.productionClassificationType}}</b></span>
+      <p v-if="cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.startDate || cls.endDate">
         <span class="cls-labeled" v-if="cls.productionClassificationValue">Type <b>{{cls.productionClassificationValue}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationCulturePeople">Periode <b>{{cls.productionClassificationCulturePeople}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Heerser <b>{{cls.productionClassificationRulerNation}}</b></span>
@@ -182,6 +182,14 @@ export default {
 }
 .cls-card {
   padding-top: 16px;
+}
+.cls-type {
+  padding-left: 1rem;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999;
+  margin: .5rem 1rem .5rem 0;
+  padding: 2px 2px 2px 1rem;
 }
 .cls-creator  {
   padding-left: 1rem;

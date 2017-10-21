@@ -108,6 +108,7 @@ new window.Vue({
       this.fetch()
     },
     fetch () {
+      console.log("fetch")
       var model = inert(this.filterState)
       var type = model.type
       /*if (model.status == 'Gepubliceerd') {
@@ -211,9 +212,9 @@ new window.Vue({
     if (!this.filterState.order) {
       this.filterState.order = '-identifier'
     }
-    if (!this.finds || !this.finds.length) {
-      this.fetch()
-    }
+
+    this.fetch()
+
     if (this.filterState.type && !this.loaded) {
       load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
       this.loaded = true
