@@ -232,10 +232,10 @@
     {period: 'Bronstijd', min: -2000, max: -801},
     {period: 'IJzertijd', min: -800, max: -58},
     {period: 'Romeins', min: -57, max: 400},
-    {period: 'vroegmiddeleeuws', min: 401, max: 900},
+    /*{period: 'vroegmiddeleeuws', min: 401, max: 900},*/
     {period: 'middeleeuws', min: 401, max: 1500},
-    {period: 'volmiddeleeuws', min: 901, max: 1500},
-    {period: 'laatmiddeleeuws', min: 1201, max: 1500},
+    /*{period: 'volmiddeleeuws', min: 901, max: 1500},
+    {period: 'laatmiddeleeuws', min: 1201, max: 1500},*/
     {period: 'postmiddeleeuws', min: 1501, max: 1900},
     {period: 'modern', min: 1901, max: new Date().getFullYear()},
     {period: 'Wereldoorlog I', min: 1914, max: 1918},
