@@ -127,7 +127,7 @@
           <div class="two fields">
             <div class="required field">
               <label v-on:mouseover="this.tt.title = ! this.tt.title">Titel</label>
-              <input type="text" v-model="editing.publicationTitle" :placeholder="placeholder('title')">
+              <auto-input facet="title" :placeholder="placeholder('title')" :val.sync="editing.publicationTitle"></auto-input>
             </div>
             <div class="required field">
               <label>Type publicatie</label>
@@ -142,7 +142,7 @@
           <div class="one field" v-if="editing.publicationType == 'tijdschriftartikel'">
             <div class="required field">
               <label>Titel tijdschrift</label>
-              <input type="text" v-model="editing.parentTitle" placeholder="De titel van het tijdschrift.">
+              <auto-input facet="title" placeholder="De titel van het tijdschrift." :val.sync="editing.parentTitle"></auto-input>
             </div>
             <div class="required field">
               <label>Volume</label>
@@ -152,23 +152,23 @@
           <div class="one field" v-if="editing.publicationType == 'boekbijdrage'">
             <div class="required field">
               <label>Titel boek</label>
-              <input type="text" v-model="editing.parentTitle" placeholder="De titel van het boek">
+              <auto-input facet="title" placeholder="De titel van het boek." :val.sync="editing.parentTitle"></auto-input>
             </div>
             <div class="required field">
               <label>Redacteur</label>
-              <input type="text" v-model="editing.editor">
+              <auto-input facet="author" placeholder="" :val.sync="editing.editor"></auto-input>
               <small class="helper">Vul hier de namen in van de redacteur(s), op dezelfde manier als bij het auteurs veld.</small>
             </div>
           </div>
           <div class="one field" v-if="editing.publicationType == 'internetbron'">
             <div class="required field">
               <label>Titel website / databank</label>
-              <input type="text" v-model="editing.parentTitle" placeholder="De titel van de website of databank.">
+              <auto-input facet="title" placeholder="De titel van de website of databank." :val.sync="editing.parentTitle"></auto-input>
             </div>
           </div>
           <div :class="editing.publicationType == 'internetbron' ? 'field' : 'required field'">
             <label>Namen van de auteurs</label>
-            <input type="text" v-model="editing.author" >
+            <auto-input facet="author" placeholder="" :val.sync="editing.author"></auto-input>
             <small class="helper">{{placeholder('author')}}</small>
           </div>
           <div class="three fields" v-if="editing.publicationType != 'internetbron'">
@@ -222,8 +222,9 @@
 <script>
   import TextareaGrowing from './TextareaGrowing';
   import InputDate from './InputDate';
-  import InputPublication from './InputPublication.vue'
-  import SelectPublication from './SelectPublication.vue'
+  import InputPublication from './InputPublication.vue';
+  import SelectPublication from './SelectPublication.vue';
+  import AutoInput from './AutoInput.vue';
 
   import { fromPublication, toPublication } from '../const.js'
 
@@ -281,7 +282,9 @@
         return parseInt(this.cls.startDate) > parseInt(this.cls.endDate)
       },
       validPublication () {
-        return this.isValidPublication(this.editing)
+        if (this.editing.publicationType) {
+          return this.isValidPublication(this.editing)
+        }
       },
       isSourceRequired () {
         return this.cls.productionClassificationType === 'Publicatie van deze vondst'
@@ -292,7 +295,7 @@
         const pubType = this.editing.publicationType
 
         if (element == 'author' && pubType != 'internetbron') {
-          return "Vul hier de namen van de auteur(s) van de publicatie in, in het formaat: voornaam naam. Vermeld maximaal twee namen, gescheiden door een &-teken. Bij meer dan twee auteurs , vermeld je enkel de eerste, gevolgd door: et al. Vb. C. Renfrew/C. Renfrew &amp; P. Bahn/C. Renfrew et al.";
+          return "Vul hier de namen van de auteur(s) van de publicatie in, in het formaat: voornaam naam. Vermeld maximaal twee namen, gescheiden door een &-teken. Bij meer dan twee auteurs , vermeld je enkel de eerste, gevolgd door: et al. Vb. C. Renfrew/C. Renfrew & P. Bahn/C. Renfrew et al.";
         } else if (element == 'author' && pubType == 'internetbron') {
           return 'Vul hier de naam van de auteur van de webpagina of databankrecord (optioneel)'
         }
@@ -367,7 +370,7 @@
           case 'tijdschriftartikel':
             return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
           case 'internetbron':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.publicationContact && pub.parentTitle
+            return pub && pub.publicationTitle && pub.publicationType && pub.publicationContact && pub.parentTitle
           default:
             return false;
         }
@@ -426,7 +429,8 @@
       InputDate,
       InputPublication,
       SelectPublication,
-      TextareaGrowing
+      TextareaGrowing,
+      AutoInput
     }
   }
 </script>

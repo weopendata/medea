@@ -108,7 +108,6 @@ new window.Vue({
       this.fetch()
     },
     fetch () {
-      console.log("fetch")
       var model = inert(this.filterState)
       var type = model.type
       /*if (model.status == 'Gepubliceerd') {

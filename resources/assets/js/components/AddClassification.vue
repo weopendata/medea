@@ -28,7 +28,13 @@ export default {
   },
   computed: {
     submittable () {
-      return this.cls.productionClassificationType || this.cls.productionClassificationPeriod || this.cls.productionClassificationRulerNation || this.cls.productionClassificationDescription
+      if (this.cls.productionClassificationType == 'Typologie') {
+        return this.cls.productionClassificationValue
+      } else if (this.cls.productionClassificationType == 'Gelijkaardige vondst') {
+        return this.cls.productionClassificationValue
+      } else if (this.cls.productionClassificationType) {
+        return this.cls.productionClassificationValue && this.cls.publication && this.cls.publication.length > 0
+      }
     },
     submitAction () {
       return '/objects/' + this.object.identifier + '/classifications'

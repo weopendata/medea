@@ -49,6 +49,7 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::get('api/publications', 'Api\PublicationController@search');
         Route::get('api/publications/{id}', 'Api\PublicationController@getById');
+        Route::get('api/suggestions', 'Api\SuggestionController@suggest');
 
         Route::group(['middleware' => 'roles:validator|detectorist'], function () {
             Route::post('objects/{id}/validation', 'ObjectController@validation');
