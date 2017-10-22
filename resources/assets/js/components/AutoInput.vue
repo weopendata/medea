@@ -125,6 +125,7 @@ ul {
 }
 ul li {
     float: none;
+    font-size: 18px;
     background-color: white;
     cursor: pointer;
     cursor: hand;
