@@ -33,7 +33,7 @@ export default {
       } else if (this.cls.productionClassificationType == 'Gelijkaardige vondst') {
         return this.cls.productionClassificationValue
       } else if (this.cls.productionClassificationType) {
-        return this.cls.productionClassificationValue && this.cls.publication && this.cls.publication.length > 0
+        return this.cls.publication && this.cls.publication.length > 0
       }
     },
     submitAction () {
