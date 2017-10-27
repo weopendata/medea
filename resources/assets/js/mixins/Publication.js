@@ -17,8 +17,8 @@ export default {
           return this.citeInternetSource(pub);
         default:
           return [
-            (pub.author || 'Auteur'),
-            (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
+            (pub.author || ''),
+            (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ' '),
             (pub.publicationTitle || 'Titel')
             ].join('') + ', ' + pub.pubLocation
       }
