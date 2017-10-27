@@ -43,7 +43,7 @@
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
       <!-- Find place -->
-      <div class="required field">
+      <div class="{{ isSourceRequired ? 'field' : 'required field'}}">
         <label>{{ isSourceRequired ? 'Vindplaats/Type' : isTypology ? 'Type' : 'Vindplaats' }}</label>
         <input type="text" v-model="cls.productionClassificationValue" :list="isTypology && 'types'">
         <div class="help-block">{{ isSourceRequired ? 'Vul hier in aan welk type de auteur deze vondst toewijst, en/of met welke andere vondst(en) hij het voorwerp vergelijkt (optioneel).' : isTypology ? 'Vul hier de naam van het type in, zoals weergegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de naam in van de vindplaats van de gelijkaardige vondst.' }}</div>
