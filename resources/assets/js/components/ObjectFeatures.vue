@@ -9,9 +9,9 @@
     <dt-check v-if="validating" prop="location"></dt-check>
     <dt>Locatie</dt>
     <dd>{{find.findSpot.location.address && find.findSpot.location.address.locationAddressLocality}}&nbsp;</dd>
-    <dt v-if="canUserSeeDetails">Coordinaten</dt>
+    <dt v-if="canUserSeeDetails">Coördinaten</dt>
     <dd v-if="canUserSeeDetails">{{humanizedCoordinates}}</dd>
-    <dt v-if="validating || canUserSeeDetails">Coordinaatprecisie</dt>
+    <dt v-if="validating || canUserSeeDetails">Coördinaatprecisie</dt>
     <dd v-if="validating || canUserSeeDetails">{{humanizedAccuracy}}&nbsp;</dd>
     <dt v-if="find.findSpot.findSpotType">Type vindplaats</dt>
     <dd>{{find.findSpot.findSpotType}}</dd>
@@ -116,7 +116,7 @@ export default {
   computed: {
     humanizedCoordinates () {
       if (this.find.findSpot && this.find.findSpot.location && this.find.findSpot.location.lat) {
-        return this.find.findSpot.location.lat + ', ' + this.find.findSpot.location.lng
+        return this.find.findSpot.location.lng + ' O , ' + this.find.findSpot.location.lat + ' N (WGS84)'
       }
     },
     humanizedAccuracy () {

@@ -173,6 +173,7 @@ class Object extends Base
     {
         $fulltextProperties = [
             'objectCategory',
+            'objectNr',
             'objectDescription',
             'material',
             'surfaceTreatment',

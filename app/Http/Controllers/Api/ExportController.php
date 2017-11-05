@@ -18,6 +18,8 @@ class ExportController extends Controller
 
     public function export(ExportFindsRequest $request)
     {
+        set_time_limit(300);
+
         $writer = Writer::createFromFileObject(new \SplTempFileObject());
         $writer->setDelimiter(';');
         $writer->setNewline("\r\n");

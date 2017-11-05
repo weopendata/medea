@@ -90,7 +90,7 @@
             <add-classification :object="find.object" v-if="user.vondstexpert"></add-classification>
             <p>&nbsp;</p>
           </div>
-          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (user.email!==find.person.email)">
+          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (!find.person.email || user.email!==find.person.email)">
             <div v-if="user.administrator">
               U kan deze vondst zien omdat u administrator bent, maar kan niet valideren.
               Om te kunnen valideren moet u eerst de validator rol krijgen.
@@ -101,7 +101,7 @@
             Deze vondstfiche staat onder embargo.
             <p>&nbsp;</p>
           </div>
-          <div v-if="(user.email==find.person.email)">
+          <div v-if="(find.person && user.email==find.person.email)">
             <h1 v-if="find.object.objectValidationStatus == 'Klaar voor validatie'" class="status-lg">
               Je vondstfiche wordt gevalideerd.
               <small>Je krijgt een notificatie wanneer de validator de vonstfiche beoordeeld heeft.</small>
@@ -229,7 +229,7 @@ export default {
         ' via ' + window.location.href
     },
     showRemarks () {
-      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.user.email === this.find.person.email
+      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.find.person && this.user.email === this.find.person.email
     },
     validating () {
       return this.user.validator && this.find.object.objectValidationStatus == 'Klaar voor validatie'
@@ -239,7 +239,7 @@ export default {
       // Validator if 'Klaar voor validatie'
       // Admin     always
       var s = this.find.object.objectValidationStatus
-      return this.user.email && (
+      return this.user.email && (this.find.person &&
         (this.user.email === this.find.person.email && ['Aan te passen', 'Voorlopige versie'].indexOf(s) !== -1) ||
         (this.user.validator && s === 'Klaar voor validatie') ||
         this.user.administrator

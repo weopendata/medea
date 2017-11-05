@@ -115,7 +115,7 @@ export default {
 </script>
 
 <style>
-ul {
+#list ul {
     background-color: #fff;
     background: rgba(255,255,255,0);
     list-style: none;
@@ -123,7 +123,7 @@ ul {
     border: black;
     z-index: 999;
 }
-ul li {
+#list ul li {
     float: none;
     font-size: 18px;
     background-color: white;
