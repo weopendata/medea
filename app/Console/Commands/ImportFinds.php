@@ -298,6 +298,23 @@ class ImportFinds extends Command
         return $find;
     }
 
+    private function setHeight($find, $value)
+    {
+        $find = $this->initObject($find);
+
+        if (empty($find['object']['dimensions'])) {
+            $find['object']['dimensions'] = [];
+        }
+
+        $find['object']['dimensions'][] = [
+            'dimensionType' => 'diepte',
+            'dimensionUnit' => 'mm',
+            'measurementValue' => (double) $value
+        ];
+
+        return $find;
+    }
+
     private function setDiameter($find, $value)
     {
         $find = $this->initObject($find);
@@ -423,7 +440,7 @@ class ImportFinds extends Command
         return $find;
     }
 
-     /**
+    /**
      * Set the end date on classification
      *
      * @param  array  $find
@@ -434,6 +451,36 @@ class ImportFinds extends Command
     {
         $find = $this->initClassification($find);
         $find['object']['productionEvent']['productionClassification'][0]['endDate'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the type of classification
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setClassificationType($find, $value)
+    {
+        $find = $this->initClassification($find);
+        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationType'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the value of classification
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setClassificationValue($find, $value)
+    {
+        $find = $this->initClassification($find);
+        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationValue'] = $value;
 
         return $find;
     }

@@ -65,7 +65,7 @@
         return this.uri
       },
       filterUri () {
-        return '/finds?collection=' + this.collection.identifier
+        return '/finds?collection=' + this.collection.identifier + '&status=Gepubliceerd'
       },
       canEdit () {
         return window.medeaUser && window.medeaUser.administrator

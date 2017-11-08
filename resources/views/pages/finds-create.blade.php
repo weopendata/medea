@@ -180,12 +180,12 @@
     </map>
   </div>
   <div class="fields" v-if="show.co||show.map">
-    <div class="three wide field">
-      <label>Breedtegraad (WGS 84)</label>
+    <div class="four wide field">
+      <label>Breedtegraad <small>(WGS 84)</small></label>
       <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lat" :step="accuracyStep/100000" placeholder="lat">
     </div>
-    <div class="three wide field">
-      <label>Lengtegraad (WGS 84)</label>
+    <div class="four wide field">
+      <label>Lengtegraad <small>(WGS 84)</small></label>
       <input type="number" pattern="[0-9]+([\.,][0-9]+)?" v-model="find.findSpot.location.lng" :step="accuracyStep/100000" placeholder="lng">
     </div>
     <div class="four wide field" v-if="show.map">
@@ -321,6 +321,10 @@
     <div class="field">
       <label>Inventarisnummer</label>
       <input type="text" v-model="find.object.objectNr" placeholder="Inventarisnummer">
+      <div class="ui message" v-if="!HelpText.create">
+        Als deze vondst een bepaald nummer heeft in je eigen collectie, kun je dat hier invullen. Je kunt op nummer zoeken via het
+        zoekveld linksboven op de vondstlijst.
+      </div>
     </div>
   </div>
 
@@ -396,7 +400,7 @@
   </div>
 </step>
 
-<step number="5" title="Linken aan een collectie / persoon" v-if="user.administrator">
+<step number="5" title="Linken aan een collectie / persoon" v-if="user.administrator || user.registrator">
   <div class="help-block" v-if="!HelpText.create">
       Geef hier aan tot welke collectie deze vondst hoort.
   </div>
@@ -408,7 +412,7 @@
   </div>
 </step>
 
-<step :number="user.administrator ? 6 : 5" title="Klaar met vondstfiche">
+<step :number="user.administrator || user.registrator ? 6 : 5" title="Klaar met vondstfiche">
 <div class="grouped fields">
   <div class="field" :class="{error:validation.feedback.objectDescription}" data-step="3" data-intro="Onzekerheden mag je vermelden bij de beschrijving van het object.">
     <label>Bijkomende opmerkingen (dit wordt niet publiek weergegeven)</label>
@@ -416,10 +420,6 @@
     <p v-if="!HelpText.create">
       Voeg hier belangrijke informatie over de vondst toe die niet eerder in het formulier aan bod kwam.
     </p>
-    <div class="ui message" v-if="!HelpText.create && user.detectorist">
-      Als deze vondst een bepaald nummer heeft in je eigen collectie, kun je dat hier invullen. Je kunt op nummer zoeken via het
-      zoekveld linksboven op de vondstlijst.
-    </div>
   </div>
   <div data-step="4" data-intro="Als je de vondstfiche laat valideren kan je ze niet meer aanpassen.">
   <div class="ui message" v-if="!HelpText.create">

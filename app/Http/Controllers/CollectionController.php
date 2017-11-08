@@ -153,7 +153,7 @@ class CollectionController extends Controller
      * @param  int                             $collectionId
      * @return array|\Illuminate\Http\Response
      */
-    public function edit(Request $request, $collectionId)
+    public function edit(UpdateCollectionRequest $request, $collectionId)
     {
         $collection = $this->collections->expandValues($collectionId);
 
