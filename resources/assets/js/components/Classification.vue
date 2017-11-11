@@ -59,7 +59,6 @@ export default {
       return this.$root.user.administrator || this.cls.addedByUser
     },
     creator () {
-      console.log(this.cls)
       return this.cls && this.cls.addedBy
     },
     multiPub () {

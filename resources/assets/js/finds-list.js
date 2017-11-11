@@ -122,7 +122,6 @@ new window.Vue({
       if (model.type) {
         delete model.type
       }
-      console.log(model)
       var query = Object.keys(model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
       }).filter(Boolean).join('&')
