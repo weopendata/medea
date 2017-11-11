@@ -61,7 +61,7 @@
         <div class="field">
           <label>Heerser</label>
           <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
-          <div class="help-block">Alleen voor munten: Welke heerser was destijds aan de macht?</div>
+          <div class="help-block">Onder welke heerser (bijv. Nero) of welk volk (bijv. Eburonen) is de munt geslagen?</div>
         </div>
       </div>
       <!-- Date -->

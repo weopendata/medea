@@ -136,7 +136,7 @@ class FindController extends Controller
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
-                'collection' => $request->input('collection'),
+                'collection' => (integer) $request->input('collection'),
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),

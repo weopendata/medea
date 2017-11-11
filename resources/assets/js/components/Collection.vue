@@ -46,6 +46,7 @@
 <script>
   import ObjectFeatures from './ObjectFeatures';
   import { fromDate, incomingCollection } from '../const'
+  import ls from 'local-storage'
 
   export default {
     props: ['initialCollection'],
@@ -65,6 +66,21 @@
         return this.uri
       },
       filterUri () {
+        var filter = {
+          category: null,
+          status: 'Gepubliceerd',
+          embargo: null,
+          period: null,
+          technique: null,
+          modification: null,
+          objectMaterial: null,
+          collections: null,
+        };
+
+        filter.collection=this.collection.identifier
+
+        ls('filterState', filter)
+
         return '/finds?collection=' + this.collection.identifier + '&status=Gepubliceerd'
       },
       canEdit () {

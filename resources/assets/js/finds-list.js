@@ -36,7 +36,7 @@ new window.Vue({
       paging: getPaging(window.link),
       finds: window.initialFinds || [],
       fetching: false,
-      filterState: ls('filterState') || window.filterState || console.error('filterState warning') || {},
+      filterState:  window.filterState || ls('filterState') || console.error('filterState warning') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -122,6 +122,7 @@ new window.Vue({
       if (model.type) {
         delete model.type
       }
+      console.log(model)
       var query = Object.keys(model).map(function(key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
       }).filter(Boolean).join('&')

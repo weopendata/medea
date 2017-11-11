@@ -2,7 +2,7 @@
   <div class="card card-center cls-card">
     <div class="cls-type" v-if="cls.productionClassificationType">Classificatietype: <b>{{cls.productionClassificationType}}</b></div>
     <div class="card-textual">
-      <p v-if="cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.startDate || cls.endDate">
+      <p v-if="cls.productionClassificationValue || cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.startDate || cls.endDate">
         <span class="cls-labeled" v-if="cls.productionClassificationValue">Type <b>{{cls.productionClassificationValue}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationCulturePeople">Periode <b>{{cls.productionClassificationCulturePeople}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Heerser <b>{{cls.productionClassificationRulerNation}}</b></span>
@@ -59,6 +59,7 @@ export default {
       return this.$root.user.administrator || this.cls.addedByUser
     },
     creator () {
+      console.log(this.cls)
       return this.cls && this.cls.addedBy
     },
     multiPub () {
