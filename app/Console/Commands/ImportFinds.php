@@ -85,6 +85,10 @@ class ImportFinds extends Command
 
                 $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
 
+                if (empty($find['findDate'])) {
+                    $find['findDate'] = 'onbekend';
+                }
+
                 $adminId = $this->getAdminId();
 
                 if (empty($adminId)) {
