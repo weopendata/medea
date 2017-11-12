@@ -243,7 +243,7 @@ class FindController extends Controller
 
             // Send a confirmation email to the user
             $input['identifier'] = $findId;
-            app(AppMailer::class)->sendNewFindEmail($user, makeFindTitle($input), $findId);
+            app(AppMailer::class)->sendNewFindEmail($user, makeFindTitle($input), $findId, $input['object']['objectValidationStatus']);
 
             // and log the create event
             $this->registerPiwikEvent($user->id, 'Create', $input['object']['objectValidationStatus']);

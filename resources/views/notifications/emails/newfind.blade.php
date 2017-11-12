@@ -14,9 +14,15 @@
     <p>
     {{$title}}
     </p>
-    <p>
-      Deze melding zal worden behandeld door een validator. Klik <a href="{{url('/finds/' . $findId)}}">hier</a> om de vondst te bekijken.
-    </p>
+    @if ($status == 'Voorlopige versie')
+        <p>
+          Deze melding is momenteel voorlopig opgeslagen. Klik <a href="{{url('/finds/' . $findId)}}">hier</a> om ze te bekijken, te bewerken en te laten valideren voor publicatie.
+        </p>
+    @else
+        <p>
+          Deze melding zal worden behandeld door een validator. Klik <a href="{{url('/finds/' . $findId)}}">hier</a> om de vondst te bekijken.
+        </p>
+    @endif
     <p>
         Met vriendelijke groeten,<br/>
         Het MEDEA team
