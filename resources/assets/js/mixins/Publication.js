@@ -35,7 +35,7 @@ export default {
           + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
           + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
           + ', ' + pub.parentTitle + ' ' + pub.parentVolume
-          + ': ' + pub.publicationPages + '.'
+          + (pub.publicationPages ? ': ' + pub.publicationPages : '' ) + '.'
       }
 
       return (pub.author || 'Unknown Author') + ', '
@@ -50,7 +50,7 @@ export default {
           + (pub.pubTimeSpan ? pub.pubTimeSpan : '') + '. '
           + (pub.publicationTitle ? "'" + pub.publicationTitle + "'" : "'Unknown title'")
           + ', ' + pub.parentTitle + ' (ed. ' + pub.editor + ')'
-          + ', ' + pub.pubLocation + ': ' + pub.publicationPages + '.'
+          + ', ' + pub.pubLocation + (pub.publicationPages ? ': ' + pub.publicationPages : '' ) + '.'
       }
 
       return (pub.author || 'Unknown Author') + ', '

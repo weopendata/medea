@@ -11,13 +11,15 @@
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
         Bron:
-        {{ cite(singlePub) }}
+        {{ citeClassificationPublication(singlePub) }}
+        {{ (cls.productionClassificationSource && cls.productionClassificationSource[0] && cls.productionClassificationSource[0] != '__no_pages_specified__' ? ' ' + " pagina's : " + cls.productionClassificationSource[0] : '') }}
         <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationContact"></a>
       </p>
       <p v-if="multiPub">
         Bronnen:
-        <span v-for="pub in pubs" style="display:block">
-          {{ cite(pub) }}
+        <span track-by="$index" v-for="pub in pubs" style="display:block">
+          {{ citeClassificationPublication(pub) }}
+          {{ publicationPages($index) }}
           <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
@@ -72,6 +74,12 @@ export default {
     }
   },
   methods: {
+    publicationPages (index) {
+      return (this.cls.productionClassificationSource && this.cls.productionClassificationSource[index] && this.cls.productionClassificationSource[index] != '__no_pages_specified__' ? " pagina's: " + this.cls.productionClassificationSource[index] : '')
+    },
+    citeClassificationPublication (pub) {
+      return this.cite(pub)
+    },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {
         return !y1 ? '?' : y1 < 0 ? -y1 + ' v.C.' : y1 + ' n.C.'

@@ -62,8 +62,10 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {
             Route::resource('objects/{id}/classifications', 'ClassificationController');
-            Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
-            Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+            Route::post('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
+            Route::post('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+            Route::delete('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@deleteVote');
+            Route::delete('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@deleteVote');
         });
 
         Route::get('api/users', 'Api\UserController@index');

@@ -52,7 +52,6 @@ export default {
       this.cls = emptyClassification()
     },
     submitError ({data}) {
-      console.warn(data)
       this.$root.fetch()
     }
   },

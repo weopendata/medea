@@ -171,7 +171,7 @@ class ImportFinds extends Command
      * Set publication page
      *
      * @param  array  $find
-     * @param  string $id
+     * @param  string $value
      * @return array
      */
     private function setPublicationPage($find, $value)
