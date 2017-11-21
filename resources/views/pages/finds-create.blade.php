@@ -473,7 +473,7 @@
     <p>U kan nu een volgende vondst ingeven</p>
   </div>
   <div v-show="! confirmNextMessage">
-    <div v-if="!submitting" class="field">
+    <div v-if="!submitting && !submitted" class="field">
       <div class="ui checkbox" v-if="user.registrator && !isEditing">
         <br>
         <input type="checkbox" v-model="addAnother" id="addAnother">
@@ -485,7 +485,12 @@
       <button v-if="toValidate" class="ui button" type="submit" :class="{green:submittable}" :disabled="!submittable">Bewaren en laten valideren</button>
     </div>
     <div v-else>
-      <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
+      <div v-if="!submitted">
+        <button type="button" class="ui disabled grey button" disabled>Even geduld...</button>
+      </div>
+      <div v-else="submitted">
+        <button type="button" class="ui disabled grey button" disabled>Vondst toegevoegd</button>
+      </div>
     </div>
   </div>
 </div>
