@@ -6,6 +6,8 @@ use App\Models\FindEvent;
 use App\Repositories\FindRepository;
 use App\Repositories\ClassificationRepository;
 use App\Traits\ValidateFields;
+use Everyman\Neo4j\Client;
+use Everyman\Neo4j\Cypher\Query;
 use Illuminate\Console\Command;
 use League\Csv\Reader;
 
@@ -81,7 +83,19 @@ class ImportFinds extends Command
                     }
                 }
 
-                $find['object']['objectValidationStatus'] = 'Gepubliceerd';
+                $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
+
+                if (empty($find['findDate'])) {
+                    $find['findDate'] = 'onbekend';
+                }
+
+                $adminId = $this->getAdminId();
+
+                if (empty($adminId)) {
+                    $this->error('There was no admin user found, please make sure the Medea Admin user has been added so it can be used to be attached to this find.');
+                }
+
+                $find['person']['id'] = $adminId;
 
                 // Store the find and return the result (success or not)
                 $findId = app(FindRepository::class)->store($find);
@@ -131,10 +145,33 @@ class ImportFinds extends Command
     }
 
     /**
+     * Get the admin user ID of the platform
+     *
+     * return integer
+     */
+    private function getAdminId()
+    {
+         $neo4j_config = \Config::get('database.connections.neo4j');
+
+        // Create an admin
+        $client = new Client($neo4j_config['host'], $neo4j_config['port']);
+        $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
+
+        $query = 'MATCH (person:person) WHERE person.firstName="Medea" and person.lastName="Admin" return person';
+
+        $cypherQuery = new Query($client, $query, []);
+
+        $results = $cypherQuery->getResultSet();
+
+        // We assume that the platform was seeded already, which includes adding an admin user
+        return $results[0]['person']->getId();
+    }
+
+    /**
      * Set publication page
      *
      * @param  array  $find
-     * @param  string $id
+     * @param  string $value
      * @return array
      */
     private function setPublicationPage($find, $value)
@@ -258,6 +295,23 @@ class ImportFinds extends Command
 
         $find['object']['dimensions'][] = [
             'dimensionType' => 'lengte',
+            'dimensionUnit' => 'mm',
+            'measurementValue' => (double) $value
+        ];
+
+        return $find;
+    }
+
+    private function setHeight($find, $value)
+    {
+        $find = $this->initObject($find);
+
+        if (empty($find['object']['dimensions'])) {
+            $find['object']['dimensions'] = [];
+        }
+
+        $find['object']['dimensions'][] = [
+            'dimensionType' => 'diepte',
             'dimensionUnit' => 'mm',
             'measurementValue' => (double) $value
         ];
@@ -390,7 +444,7 @@ class ImportFinds extends Command
         return $find;
     }
 
-     /**
+    /**
      * Set the end date on classification
      *
      * @param  array  $find
@@ -401,6 +455,36 @@ class ImportFinds extends Command
     {
         $find = $this->initClassification($find);
         $find['object']['productionEvent']['productionClassification'][0]['endDate'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the type of classification
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setClassificationType($find, $value)
+    {
+        $find = $this->initClassification($find);
+        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationType'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the value of classification
+     *
+     * @param  array  $find
+     * @param  string $value
+     * @return array
+     */
+    private function setClassificationValue($find, $value)
+    {
+        $find = $this->initClassification($find);
+        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationValue'] = $value;
 
         return $find;
     }

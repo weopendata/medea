@@ -18,7 +18,7 @@
         Het MEDEA team
     </p>
     <p>
-        <a href="vondsten.be" target="_blank">vondsten.be</a> || info: <a href="blog.vondsten.be" target="_blank">blog.vondsten.be</a> || Facebook: MEDEAvondsten
+        <a href="vondsten.be" target="_blank">vondsten.be</a> || info: <a href="blog.vondsten.be" target="_blank">blog.vondsten.be</a> || Facebook: <a href="https://www.facebook.com/pg/MEDEAvondsten" target="_blank">MEDEAvondsten</a>
     </p>
 </body>
 </html>

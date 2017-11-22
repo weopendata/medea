@@ -1,8 +1,8 @@
 <template>
   <div class="card card-center cls-card">
+    <div class="cls-type" v-if="cls.productionClassificationType">Classificatietype: <b>{{cls.productionClassificationType}}</b></div>
     <div class="card-textual">
-      <p v-if="cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.productionClassificationType || cls.startDate || cls.endDate">
-        <span class="cls-labeled" v-if="cls.productionClassificationType">ClassificatieType <b>{{cls.productionClassificationType}}</b></span>
+      <p v-if="cls.productionClassificationValue || cls.productionClassificationCulturePeople || cls.productionClassificationRulerNation || cls.startDate || cls.endDate">
         <span class="cls-labeled" v-if="cls.productionClassificationValue">Type <b>{{cls.productionClassificationValue}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationCulturePeople">Periode <b>{{cls.productionClassificationCulturePeople}}</b></span>
         <span class="cls-labeled" v-if="cls.productionClassificationRulerNation">Heerser <b>{{cls.productionClassificationRulerNation}}</b></span>
@@ -11,13 +11,15 @@
       <p class="cls-p" v-if="cls.productionClassificationDescription" v-text="cls.productionClassificationDescription"></p>
       <p v-if="singlePub">
         Bron:
-        {{ cite(singlePub) }}
+        {{ citeClassificationPublication(singlePub) }}
+        {{ (cls.productionClassificationSource && cls.productionClassificationSource[0] && cls.productionClassificationSource[0] != '__no_pages_specified__' ? ', spec. ' + cls.productionClassificationSource[0] + '.' : '') }}
         <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationContact"></a>
       </p>
       <p v-if="multiPub">
         Bronnen:
-        <span v-for="pub in pubs" style="display:block">
-          {{ cite(pub) }}
+        <span track-by="$index" v-for="pub in pubs" style="display:block">
+          {{ citeClassificationPublication(pub) }}
+          {{ publicationPages($index) }}
           <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
@@ -49,8 +51,11 @@
 <script>
 import { fromDate, urlify, fromPublication } from '../const.js'
 
+import Publication from '../mixins/Publication.js'
+
 export default {
   props: ['cls', 'obj'],
+  mixins: [Publication],
   computed: {
     removable () {
       return this.$root.user.administrator || this.cls.addedByUser
@@ -69,15 +74,11 @@ export default {
     }
   },
   methods: {
-    cite (pub) {
-      if (!pub) {
-        return
-      }
-      return [
-        (pub.author || 'Auteur'),
-        (pub.pubTimeSpan ? ' (' + pub.pubTimeSpan + '). ' : ''),
-        (pub.publicationTitle || 'Titel')
-      ].join('') + ', ' + pub.pubLocation
+    publicationPages (index) {
+      return (this.cls.productionClassificationSource && this.cls.productionClassificationSource[index] && this.cls.productionClassificationSource[index] != '__no_pages_specified__' ? ", spec. " + this.cls.productionClassificationSource[index] + '.' : '')
+    },
+    citeClassificationPublication (pub) {
+      return this.cite(pub)
     },
     vC (y1, y2) {
       if (y1 < 0 || y2 < 0) {
@@ -122,6 +123,14 @@ export default {
 }
 .cls-card {
   padding-top: 16px;
+}
+.cls-type {
+  padding-left: 1rem;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999;
+  margin: .5rem 1rem .5rem 0;
+  padding: 2px 2px 2px 1rem;
 }
 .cls-creator  {
   padding-left: 1rem;

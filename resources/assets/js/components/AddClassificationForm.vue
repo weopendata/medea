@@ -12,8 +12,8 @@
       </div>
     </div>
     <div v-else>
-      <!-- Bron -->
-      <div class="field field-publications" v-if="! isSourceRequired">
+      <!-- Source -->
+      <div class="field field-publications" v-if="isSourceRequired">
         <div class="ui grid">
           <div class="twelve wide column">
             <label for="description">Bron
@@ -42,13 +42,13 @@
         <select-publication :model="pub"></select-publication>
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
-      <!-- Vindplaats -->
-      <div class="required field">
+      <!-- Find place -->
+      <div class="{{ isSourceRequired ? 'field' : 'required field'}}">
         <label>{{ isSourceRequired ? 'Vindplaats/Type' : isTypology ? 'Type' : 'Vindplaats' }}</label>
         <input type="text" v-model="cls.productionClassificationValue" :list="isTypology && 'types'">
         <div class="help-block">{{ isSourceRequired ? 'Vul hier in aan welk type de auteur deze vondst toewijst, en/of met welke andere vondst(en) hij het voorwerp vergelijkt (optioneel).' : isTypology ? 'Vul hier de naam van het type in, zoals weergegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de naam in van de vindplaats van de gelijkaardige vondst.' }}</div>
       </div>
-      <!-- Periode & Heerser -->
+      <!-- Period & Ruler -->
       <div class="two fields" @change="limitPeriod">
         <div class="field" @change="limitDateRange">
           <label>Periode</label>
@@ -61,10 +61,10 @@
         <div class="field">
           <label>Heerser</label>
           <input type="text" v-model="cls.productionClassificationRulerNation" placeholder="(Alleen voor munten)" list="nations">
-          <div class="help-block">Alleen voor munten: Welke heerser was destijds aan de macht?</div>
+          <div class="help-block">Onder welke heerser (bijv. Nero) of welk volk (bijv. Eburonen) is de munt geslagen?</div>
         </div>
       </div>
-      <!-- Datering -->
+      <!-- Date -->
       <div class="two fields" @change="limitPeriod">
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering van</label>
@@ -77,7 +77,7 @@
           <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum/einddatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de einddatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de einddatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel.)' }}</div>
         </div>
       </div>
-      <!-- Bron -->
+      <!-- Source -->
       <div class="field field-publications" v-if="! isSourceRequired">
         <div class="ui grid">
           <div class="twelve wide column">
@@ -107,7 +107,7 @@
         <select-publication :model="pub"></select-publication>
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
-      <!-- Opmerking -->
+      <!-- Remark -->
       <div class="field">
         <label for="description">Opmerking</label>
         <textarea-growing id="description" :model.sync="cls.productionClassificationDescription"></textarea-growing>
@@ -117,6 +117,7 @@
       </div>
     </div>
 
+    <!-- Add publication -->
     <div class="ui dimmer modals page transition visible active" v-if="editing" @click="closePublication">
       <div class="ui modal transition visible active" @click.stop>
         <div class="header">
@@ -125,11 +126,11 @@
         <div class="content">
           <div class="two fields">
             <div class="required field">
-              <label>Titel</label>
-              <input type="text" v-model="editing.publicationTitle">
+              <label v-on:mouseover="this.tt.title = ! this.tt.title">Titel</label>
+              <auto-input facet="title" :placeholder="placeholder('title')" :val.sync="editing.publicationTitle"></auto-input>
             </div>
             <div class="required field">
-              <label>Type</label>
+              <label>Type publicatie</label>
               <select class="ui dropdown" v-model="editing.publicationType">
                 <option>boek</option>
                 <option>tijdschriftartikel</option>
@@ -138,25 +139,57 @@
               </select>
             </div>
           </div>
-          <div class="required field">
-            <label>Auteurs (meerdere namen gescheiden door komma)</label>
-            <input type="text" v-model="editing.author">
+          <div class="one field" v-if="editing.publicationType == 'tijdschriftartikel'">
+            <div class="required field">
+              <label>Titel tijdschrift</label>
+              <auto-input facet="title" placeholder="De titel van het tijdschrift." :val.sync="editing.parentTitle"></auto-input>
+            </div>
+            <div class="required field">
+              <label>Volume</label>
+              <input type="text" v-model="editing.parentVolume" placeholder="Het volume of de jaargang van het tijdschrift.">
+            </div>
           </div>
-          <div class="three fields">
-            <div class="field">
+          <div class="one field" v-if="editing.publicationType == 'boekbijdrage'">
+            <div class="required field">
+              <label>Titel boek</label>
+              <auto-input facet="title" placeholder="De titel van het boek." :val.sync="editing.parentTitle"></auto-input>
+            </div>
+            <div class="required field">
+              <label>Redacteur</label>
+              <auto-input facet="author" placeholder="" :val.sync="editing.editor"></auto-input>
+              <small class="helper">Vul hier de namen in van de redacteur(s), op dezelfde manier als bij het auteurs veld.</small>
+            </div>
+          </div>
+          <div class="one field" v-if="editing.publicationType == 'internetbron'">
+            <div class="required field">
+              <label>Titel website / databank</label>
+              <auto-input facet="title" placeholder="De titel van de website of databank." :val.sync="editing.parentTitle"></auto-input>
+            </div>
+          </div>
+          <div :class="editing.publicationType == 'internetbron' ? 'field' : 'required field'">
+            <label>Namen van de auteurs</label>
+            <auto-input facet="author" placeholder="" :val.sync="editing.author"></auto-input>
+            <small class="helper">{{placeholder('author')}}</small>
+          </div>
+          <div class="three fields" v-if="editing.publicationType != 'internetbron'">
+            <div class="required field">
               <label>Jaar van uitgave</label>
-              <input type="text" v-model="editing.pubTimeSpan">
+              <input type="text" v-model="editing.pubTimeSpan" :placeholder="placeholder('timespan')">
             </div>
-            <div class="field">
+            <div class="required field">
               <label>Plaats van uitgave</label>
-              <input type="text" v-model="editing.pubLocation">
+              <input type="text" v-model="editing.pubLocation" :placeholder="placeholder('place')">
             </div>
-            <div class="field">
+            <div :class="editing.publicationType == 'boekbijdrage' ? 'field' : 'required field'" v-if="editing.publicationType == 'boekbijdrage' || editing.publicationType == 'tijdschriftartikel'">
               <label>Pagina's</label>
-              <input type="text" v-model="editing.publicationVolume">
+              <input type="text" v-model="editing.publicationPages" :placeholder="placeholder('pages')">
             </div>
           </div>
-          <div class="field">
+          <div class="required field" v-if="editing.publicationType == 'internetbron'">
+            <label>URL</label>
+            <input type="text" v-model="editing.publicationContact" placeholder="De volledige URL van de webpagina of databankrecord">
+          </div>
+          <div class="field" v-else>
             <label>URL van de publicatie</label>
             <input type="text" v-model="editing.publicationContact">
           </div>
@@ -189,8 +222,9 @@
 <script>
   import TextareaGrowing from './TextareaGrowing';
   import InputDate from './InputDate';
-  import InputPublication from './InputPublication.vue'
-  import SelectPublication from './SelectPublication.vue'
+  import InputPublication from './InputPublication.vue';
+  import SelectPublication from './SelectPublication.vue';
+  import AutoInput from './AutoInput.vue';
 
   import { fromPublication, toPublication } from '../const.js'
 
@@ -198,10 +232,10 @@
     {period: 'Bronstijd', min: -2000, max: -801},
     {period: 'IJzertijd', min: -800, max: -58},
     {period: 'Romeins', min: -57, max: 400},
-    {period: 'vroegmiddeleeuws', min: 401, max: 900},
+    /*{period: 'vroegmiddeleeuws', min: 401, max: 900},*/
     {period: 'middeleeuws', min: 401, max: 1500},
-    {period: 'volmiddeleeuws', min: 901, max: 1500},
-    {period: 'laatmiddeleeuws', min: 1201, max: 1500},
+    /*{period: 'volmiddeleeuws', min: 901, max: 1500},
+    {period: 'laatmiddeleeuws', min: 1201, max: 1500},*/
     {period: 'postmiddeleeuws', min: 1501, max: 1900},
     {period: 'modern', min: 1901, max: new Date().getFullYear()},
     {period: 'Wereldoorlog I', min: 1914, max: 1918},
@@ -214,7 +248,30 @@
       return {
         editing: null,
         fields: window.fields.classification,
-        types: ['2.1', '2.2', '2.3']
+        types: ['2.1', '2.2', '2.3'],
+        tt : {
+          title : false
+        },
+        placeholders : {
+          title : {
+            boek: "De titel van het boek.",
+            boekbijdrage: "De titel van de boekbijdrage",
+            tijdschriftartikel: "De titel van het artikel.",
+            internetbron: "Webpaginatitel / databankrecord nummer"
+          },
+          timespan: {
+            boek: "Het jaartal boekpublicatie.",
+            tijdschriftartikel: "Het jaartal van het artikel"
+          },
+          place : {
+            boek: "Plaats uitgave van het boek.",
+            boekbijdrage: "Plaats uitgave van het boek."
+          },
+          pages : {
+            tijdschriftartikel: "Beginpagina - eindpagina",
+            boekbijdrage: "Beginpagina - eindpagina"
+          }
+        }
       }
     },
     computed: {
@@ -225,13 +282,26 @@
         return parseInt(this.cls.startDate) > parseInt(this.cls.endDate)
       },
       validPublication () {
-        return this.isValidPublication(this.editing)
+        if (this.editing.publicationType) {
+          return this.isValidPublication(this.editing)
+        }
       },
       isSourceRequired () {
         return this.cls.productionClassificationType === 'Publicatie van deze vondst'
       }
     },
     methods: {
+      placeholder (element) {
+        const pubType = this.editing.publicationType
+
+        if (element == 'author' && pubType != 'internetbron') {
+          return "Vul hier de namen van de auteur(s) van de publicatie in, in het formaat: voornaam naam. Vermeld maximaal twee namen, gescheiden door een &-teken. Bij meer dan twee auteurs , vermeld je enkel de eerste, gevolgd door: et al. Vb. C. Renfrew/C. Renfrew & P. Bahn/C. Renfrew et al.";
+        } else if (element == 'author' && pubType == 'internetbron') {
+          return 'Vul hier de naam van de auteur van de webpagina of databankrecord (optioneel)'
+        }
+
+        return this.placeholders[element] && pubType && this.placeholders[element][pubType] ? this.placeholders[element][pubType] : ''
+      },
       setMainType (type) {
         this.cls.productionClassificationType = type
       },
@@ -288,7 +358,22 @@
         }
       },
       isValidPublication (pub) {
-        return pub && pub.publicationTitle && pub.publicationType && pub.author
+        if (! pub.publicationType) {
+          return false;
+        }
+
+        switch (pub.publicationType) {
+          case 'boek':
+            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation
+          case 'boekbijdrage':
+            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation && pub.editor && pub.parentTitle
+          case 'tijdschriftartikel':
+            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
+          case 'internetbron':
+            return pub && pub.publicationTitle && pub.publicationType && pub.publicationContact && pub.parentTitle
+          default:
+            return false;
+        }
       },
       editPublication (pub, index) {
         this.editing = fromPublication(pub)
@@ -344,7 +429,8 @@
       InputDate,
       InputPublication,
       SelectPublication,
-      TextareaGrowing
+      TextareaGrowing,
+      AutoInput
     }
   }
 </script>

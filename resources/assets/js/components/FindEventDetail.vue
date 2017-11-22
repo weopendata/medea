@@ -15,13 +15,6 @@
     <div class="card card-center fe-card">
       <div class="card-textual">
         <h1 class="card-title">{{findTitle}}</h1>
-        <div id="fb-root"></div>
-        <div class="card-bar text-left">
-          <div class="fb-share-button"
-            data-href="www.google.com"
-            data-layout="button">
-        </div>
-      </div>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
             <object-features :find="find" :feedback.sync="feedback" :validating="validating"></object-features>
@@ -46,6 +39,14 @@
               ></rectangle>
             </google-map>
           </div>
+        </div>
+      </div>
+      <br/>
+      <div id="fb-root"></div>
+      <div class="card-textual ui form">
+        <div class="fb-share-button"
+          data-href="www.google.com"
+          data-layout="button">
         </div>
       </div>
       <div class="card-textual ui form">
@@ -89,7 +90,7 @@
             <add-classification :object="find.object" v-if="user.vondstexpert"></add-classification>
             <p>&nbsp;</p>
           </div>
-          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (user.email!==find.person.email)">
+          <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (!find.person.email || user.email!==find.person.email)">
             <div v-if="user.administrator">
               U kan deze vondst zien omdat u administrator bent, maar kan niet valideren.
               Om te kunnen valideren moet u eerst de validator rol krijgen.
@@ -100,7 +101,7 @@
             Deze vondstfiche staat onder embargo.
             <p>&nbsp;</p>
           </div>
-          <div v-if="(user.email==find.person.email)">
+          <div v-if="(find.person && user.email==find.person.email)">
             <h1 v-if="find.object.objectValidationStatus == 'Klaar voor validatie'" class="status-lg">
               Je vondstfiche wordt gevalideerd.
               <small>Je krijgt een notificatie wanneer de validator de vonstfiche beoordeeld heeft.</small>
@@ -129,7 +130,11 @@ import ObjectFeatures from './ObjectFeatures'
 import PhotoswipeThumb from './PhotoswipeThumb'
 import ValidationForm from './ValidationForm'
 
-import { findTitle, toPublicBounds } from '../const.js'
+import { toPublicBounds } from '../const.js'
+
+function sameValues(array) {
+  return !!array.reduce((a, b) => a === b ? a : NaN )
+}
 
 export default {
   props: ['user', 'find'],
@@ -145,7 +150,6 @@ export default {
         center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
         zoom: 10,
         identifier: this.find.identifier,
-        title: findTitle(this.find),
         position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
       },
       loaded: false,
@@ -154,7 +158,38 @@ export default {
       }
     }
   },
+  methods () {
+    goToFinds : {
+      window.location = '/finds'
+    }
+  },
   computed: {
+    findTitle () {
+      if (! this.find) {
+        return 'De vondst bestaat niet'
+      }
+
+      const title = (this.find.object ? [
+        this.find.object.objectCategory || 'ongeïdentificeerd',
+        this.periodOverruled,
+        this.find.object.objectMaterial
+        ] : [
+        this.find.category || 'ongeïdentificeerd',
+        this.periodOverruled,
+        this.find.material
+        ]).filter(f => f && f !== 'onbekend').join(', ')
+
+      return title + ' (ID-' + this.find.identifier + ')'
+    },
+    periodOverruled () {
+      const periods = (this.find.object.productionEvent.productionClassification || [])
+        .map(c => c.productionClassificationCulturePeople)
+        .filter(Boolean)
+      if (periods.length > 1 && !sameValues(periods)) {
+        return 'onzeker'
+      }
+      return periods[0]
+    },
     findDetailLink () {
       return window.location.href
     },
@@ -181,9 +216,6 @@ export default {
     rectangleBounds () {
       return toPublicBounds(this.location)
     },
-    findTitle () {
-      return findTitle(this.find)
-    },
     finder () {
       return window.publicUserInfo || {}
     },
@@ -197,7 +229,7 @@ export default {
         ' via ' + window.location.href
     },
     showRemarks () {
-      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.user.email === this.find.person.email
+      return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.find.person && this.user.email === this.find.person.email
     },
     validating () {
       return this.user.validator && this.find.object.objectValidationStatus == 'Klaar voor validatie'
@@ -207,7 +239,7 @@ export default {
       // Validator if 'Klaar voor validatie'
       // Admin     always
       var s = this.find.object.objectValidationStatus
-      return this.user.email && (
+      return this.user.email && (this.find.person &&
         (this.user.email === this.find.person.email && ['Aan te passen', 'Voorlopige versie'].indexOf(s) !== -1) ||
         (this.user.validator && s === 'Klaar voor validatie') ||
         this.user.administrator

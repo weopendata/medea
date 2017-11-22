@@ -193,6 +193,7 @@ new window.Vue({
       step: initialFind.identifier ? 0 : 1,
       submitAction: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds',
       redirectTo: window.initialFind ? '/finds/' + window.initialFind.identifier : '/finds?myfinds=yes',
+      formSubmitted: false,
       // App state
       user: window.medeaUser
     }
@@ -260,6 +261,9 @@ new window.Vue({
     },
     submittable () {
       return !this.toValidate || (this.step1valid && this.step2valid && this.step3valid)
+    },
+    submitted () {
+      return this.formSubmitted
     },
 
     // Step 1
@@ -454,12 +458,12 @@ new window.Vue({
       return this.find
     },
     submitSuccess (res) {
+      this.formSubmitted = true
+
       if (this.addAnother) {
         this.confirmNextMessage = true
-
         this.find.object.photograph = []
-      }
-     else{
+      } else {
         window.location.href = res.data.url || this.redirectTo
       }
     }

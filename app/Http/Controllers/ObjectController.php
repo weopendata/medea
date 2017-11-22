@@ -80,6 +80,12 @@ class ObjectController extends Controller
         }
 
         $userId = $this->objects->getRelatedUserId($objectId);
+
+        // It could be that the user ID does not exists, finds can be imported as well
+        if (empty($userId)) {
+            return;
+        }
+
         $user = $this->users->getById($userId);
 
         // User not found

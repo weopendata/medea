@@ -64,7 +64,7 @@ new window.Vue({
       }
     },
     submit () {
-      this.user._token = 'PUT'
+      this.user._token = window.csrf
       this.user.verified = undefined
       this.user.password = undefined
       this.user.email = undefined

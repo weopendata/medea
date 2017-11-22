@@ -46,7 +46,7 @@
     <a href="/finds/create?startIntro" style="float:right" class="ui basic small button">Nieuwe vondst</a>
   @endif
 
-    <h2 id="register">Registreren</h2>
+  <h2 id="register">Registreren</h2>
   </div>
   <h3>Contactgegevens</h3>
   <div class="ui message">
@@ -79,7 +79,7 @@
     </div>
     <div v-for="msg in errors.password" v-text="msg" class="input"></div>
     <div class="help-box">
-      Een sterk wachtwoord kan bijvoorbeeld een zin zijn van 4 woorden. Er worden geen verplichte karakters verwacht zoals symbolen of hoofdletters, <a target="_blank" href="https://blogs.dropbox.com/tech/2012/04/zxcvbn-realistic-password-strength-estimation/">de sterkte wordt berekend op hoe uiteenlopend het wachtwoord is samengesteld.</a>
+      Een sterk wachtwoord kan bijvoorbeeld een zin zijn van 4 woorden. Er worden geen verplichte karakters verwacht zoals symbolen of hoofdletters,de sterkte wordt berekend op hoe uiteenlopend het wachtwoord is samengesteld.
     </div>
   </div>
   <h3>Rollen</h3>

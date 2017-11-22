@@ -161,13 +161,14 @@ class AppMailer
      * @param  Person  $user   The user that has created the find
      * @param  string  $title  The title of the find
      * @param  integer $findId The ID of the find
+     * @param  string  $status The status of the find
      * @return void
      */
-    public function sendNewFindEmail(Person $user, $title, $findId)
+    public function sendNewFindEmail(Person $user, $title, $findId, $status = null)
     {
         $this->to = $user->email;
         $this->view = 'notifications.emails.newfind';
-        $this->data = compact('user', 'title', 'findId');
+        $this->data = compact('user', 'title', 'findId', 'status');
         $this->subject = 'Nieuwe vondst';
         $this->deliver();
     }

@@ -136,7 +136,7 @@ class FindController extends Controller
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
-                'collection' => $request->input('collection'),
+                'collection' => (integer) $request->input('collection'),
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),
@@ -179,10 +179,7 @@ class FindController extends Controller
             'Bronstijd' => '-2000 / -801',
             'IJzertijd' => '-800 / -58',
             'Romeins' => '-57 / 400',
-            'vroegmiddeleeuws' => '401 / 900',
             'middeleeuws' => '401 / 1500',
-            'volmiddeleeuws' => '901 / 1500',
-            'laatmiddeleeuws' => '1201 / 1500',
             'postmiddeleeuws' => '1501 / 1900',
             'modern' => '1901 / ' . Carbon::now()->year,
             'Wereldoorlog I' => '1914 / 1918',
@@ -246,7 +243,7 @@ class FindController extends Controller
 
             // Send a confirmation email to the user
             $input['identifier'] = $findId;
-            app(AppMailer::class)->sendNewFindEmail($user, makeFindTitle($input), $findId);
+            app(AppMailer::class)->sendNewFindEmail($user, makeFindTitle($input), $findId, $input['object']['objectValidationStatus']);
 
             // and log the create event
             $this->registerPiwikEvent($user->id, 'Create', $input['object']['objectValidationStatus']);
@@ -316,7 +313,7 @@ class FindController extends Controller
             'fields' => $this->list_values->getFindTemplate(),
             'find' => $find,
             'publicUserInfo' => $publicUserInfo,
-            'contact' => env('ADMIN_EMAIL'),
+            'contact' => 'info@vondsten.be',
             'meta' => $meta
         ]);
     }

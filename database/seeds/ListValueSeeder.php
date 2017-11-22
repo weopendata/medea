@@ -147,6 +147,7 @@ class ListValueSeeder extends Seeder
             'muntgewicht',
             'musketkogel',
             'muziekinstrument',
+            'onbekend',
             'overig gereedschap',
             'pelgrimsampul',
             'pijlpunt',
@@ -183,6 +184,7 @@ class ListValueSeeder extends Seeder
             'middeleeuws',
             'postmiddeleeuws',
             'modern',
+            'onbekend',
             'Wereldoorlog I',
             'Wereldoorlog II',
         ];

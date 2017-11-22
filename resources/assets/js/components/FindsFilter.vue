@@ -82,6 +82,7 @@ export default {
         modification: null,
         objectMaterial: true,
         collections: null,
+        collection: true
       }, showFacets)
     }
   },

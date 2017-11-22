@@ -36,7 +36,7 @@ new window.Vue({
       paging: getPaging(window.link),
       finds: window.initialFinds || [],
       fetching: false,
-      filterState: ls('filterState') || window.filterState || console.error('filterState warning') || {},
+      filterState:  window.filterState || ls('filterState') || console.error('filterState warning') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -211,9 +211,9 @@ new window.Vue({
     if (!this.filterState.order) {
       this.filterState.order = '-identifier'
     }
-    if (!this.finds || !this.finds.length) {
-      this.fetch()
-    }
+
+    this.fetch()
+
     if (this.filterState.type && !this.loaded) {
       load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
       this.loaded = true

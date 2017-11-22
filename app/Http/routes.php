@@ -49,6 +49,7 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::get('api/publications', 'Api\PublicationController@search');
         Route::get('api/publications/{id}', 'Api\PublicationController@getById');
+        Route::get('api/suggestions', 'Api\SuggestionController@suggest');
 
         Route::group(['middleware' => 'roles:validator|detectorist'], function () {
             Route::post('objects/{id}/validation', 'ObjectController@validation');
@@ -61,14 +62,15 @@ Route::group(['middleware' => 'web'], function () {
 
         Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {
             Route::resource('objects/{id}/classifications', 'ClassificationController');
-            Route::resource('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
-            Route::resource('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+            Route::post('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@agree');
+            Route::post('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@disagree');
+            Route::delete('objects/{id}/classifications/{classification_id}/agree', 'ClassificationController@deleteVote');
+            Route::delete('objects/{id}/classifications/{classification_id}/disagree', 'ClassificationController@deleteVote');
         });
 
         Route::get('api/users', 'Api\UserController@index');
 
         Route::group(['middleware' => 'roles:administrator'], function () {
-            Route::resource('collections', 'CollectionController');
             Route::put('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@linkUser');
             Route::delete('collections/{collection_id}/persons/{user_id}', 'CollectionUserController@unlinkUser');
             Route::get('api/export', 'Api\ExportController@export');

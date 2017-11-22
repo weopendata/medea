@@ -26,12 +26,10 @@
     <div class="ui secondary green pointing menu">
       <a href="/" class="item {{ Request::is('/') ? 'active' : '' }}">Home</a>
       <a href="/finds" class="item {{ Request::is('finds') ? 'active' : '' }}">Vondsten</a>
+      <a class="item {{ Request::is('collections') ? 'active' : '' }}" href="/collections">Collecties</a>
       @if (!Auth::guest())
         <a href="/persons" class="item {{ Request::is('persons') ? 'active' : '' }}">Leden</a>
         <a href="/finds/create" class="item {{ (Request::is('finds/create') ? 'active' : '') }}" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
-        @if (Auth::user()->hasRole('administrator'))
-          <a class="item {{ Request::is('collections') ? 'active' : '' }}" href="/collections">Collecties</a>
-        @endif
         <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}">Over MEDEA</a>
       @else
         <a class="item" href="{{ env('CMS', 'http://medea-cms.weopendata.com') }}">Over MEDEA</a>

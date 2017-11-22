@@ -117,7 +117,7 @@ export default {
   watch: {
     collection: {
       deep:true,handler (c) {
-        console.log(inert(c))
+        //console.log(inert(c))
       }
     }
   },

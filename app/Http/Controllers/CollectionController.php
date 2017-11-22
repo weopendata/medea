@@ -6,6 +6,7 @@ use App\Helpers\Pager;
 use App\Http\Requests\CreateCollectionRequest;
 use App\Http\Requests\DeleteCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
+use App\Http\Requests\EditCollectionRequest;
 use App\Models\Collection;
 use App\Repositories\CollectionRepository;
 use Illuminate\Http\Request;
@@ -153,7 +154,7 @@ class CollectionController extends Controller
      * @param  int                             $collectionId
      * @return array|\Illuminate\Http\Response
      */
-    public function edit(Request $request, $collectionId)
+    public function edit(EditCollectionRequest $request, $collectionId)
     {
         $collection = $this->collections->expandValues($collectionId);
 

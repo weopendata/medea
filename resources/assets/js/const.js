@@ -69,8 +69,7 @@ export function emptyClassification () {
 
 // Publication helpers
 const TYPE_AUTHOR = 'author'
-const TYPE_COAUTHOR = 'coauthor'
-const TYPE_PUBLISHER = 'publisher'
+const TYPE_EDITOR = 'editor'
 
 const TYPE = 'publicationCreationActorType'
 const NAME = 'publicationCreationActorName'
@@ -78,50 +77,124 @@ const ACTOR = 'publicationCreationActor'
 
 export function fromPublication (p) {
   p = inert(p)
+
   const creations = (p.publicationCreation || [])
-  const publisher = creations.find(a => !a[ACTOR] || a[ACTOR][TYPE] !== TYPE_AUTHOR) || {}
 
   // Get author, their names and split them
-  let authors = creations.find(a => a[ACTOR] && a[ACTOR][TYPE] === TYPE_AUTHOR)
-  authors = authors && authors[ACTOR] && authors[ACTOR][NAME].split('&', 2) || []
+  let authorsCreation = creations.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_AUTHOR || a[ACTOR][TYPE] === TYPE_AUTHOR) || {}
+  let authors = authorsCreation && authorsCreation[ACTOR] || []
+  authors = [].concat(authors)
+
+  let editors = []
+
+  // Special treatment for 'boekbijdrage'
+  if (p.publicationType == 'boekbijdrage' && p.publication) {
+    var bookCreation = (p.publication.publicationCreation || [])
+
+    // Get the editors
+    let editorsCreation = bookCreation.find(a => a[ACTOR] && a[ACTOR].length && a[ACTOR][0][TYPE] === TYPE_EDITOR || a[ACTOR][TYPE] === TYPE_EDITOR) || {}
+    editors = editorsCreation && editorsCreation[ACTOR] || []
+    editors = [].concat(editors)
+
+    return Object.assign(p, {
+      author: authors.map((a) => {return a[NAME]}).join(' & '),
+      editor: editors.map((a) => {return a[NAME]}).join(' & '),
+      pubTimeSpan: editorsCreation.publicationCreationTimeSpan && editorsCreation.publicationCreationTimeSpan.date || '',
+      pubLocation: editorsCreation.publicationCreationLocation && editorsCreation.publicationCreationLocation.publicationCreationLocationAppellation || '',
+      parentTitle: p.publication ? p.publication.publicationTitle : null
+    })
+  }
 
   return Object.assign(p, {
-    author: (authors[0] || '').trim(),
-    coauthor: (authors[1] || '').trim(),
-    publisher: publisher[ACTOR] && publisher[ACTOR][NAME] || '',
-    pubTimeSpan: publisher.publicationCreationTimeSpan && publisher.publicationCreationTimeSpan.date || '',
-    pubLocation: publisher.publicationCreationLocation && publisher.publicationCreationLocation.publicationCreationLocationAppellation || ''
+    author: authors.map((a) => {return a[NAME]}).join(' & '),
+    pubTimeSpan: authorsCreation.publicationCreationTimeSpan && authorsCreation.publicationCreationTimeSpan.date || '',
+    pubLocation: authorsCreation.publicationCreationLocation && authorsCreation.publicationCreationLocation.publicationCreationLocationAppellation || '',
+    parentVolume: p.publication ? p.publication.publicationVolume : null,
+    parentTitle: p.publication ? p.publication.publicationTitle : null
   })
 }
 
+// TODO: separate logic for publications that have nested structures such as tijdschriftartikel and boekbijdrage
 export function toPublication (p) {
-  p = inert(p)
-  const author = [p.author, p.coauthor].filter(Boolean).join(' & ')
+   p = inert(p)
+
+  const authorNames = p.author.split('&', 2)
+  var authorArr = []
+
+  for (var i = 0; i < authorNames.length; i++) {
+    authorArr.push({[NAME] : authorNames[i].trim(), [TYPE] : TYPE_AUTHOR})
+  }
+
+  var timeSpan = p.pubTimeSpan ? {date : p.pubTimeSpan} : null
+  var location = p.pubLocation ? {publicationCreationLocationAppellation: p.pubLocation} : null
+  var relatedPublication = null;
+
+  if (p.publicationType == 'boekbijdrage') {
+    const editorNames = p.editor.split('&', 2)
+    var editorArr = []
+
+    for (var i = 0; i < editorNames.length; i++) {
+      editorArr.push({[NAME] : editorNames[i].trim(), [TYPE] : TYPE_EDITOR})
+    }
+
+    var book = {
+      publicationCreation : [
+        {
+         publicationCreationActor : editorArr,
+         publicationCreationTimeSpan: timeSpan,
+         publicationCreationLocation: location
+       },
+      ],
+      publicationTitle: p.parentTitle
+    }
+
+    return Object.assign(p, {
+      publicationCreation: [
+        {
+          // Include author if available
+          publicationCreationActor: authorArr,
+        }
+      ]
+    },
+    {
+      publication: book
+    })
+  }
+
+  if (p.publicationType == 'tijdschriftartikel') {
+    relatedPublication = {publicationVolume: p.parentVolume, publicationTitle: p.parentTitle}
+  }
+
+  if (p.publicationType == 'internetbron') {
+    relatedPublication = {publicationTitle: p.parentTitle}
+  }
+
+  if (relatedPublication) {
+    return Object.assign(p, {
+      publicationCreation: [
+        {
+          // Include author if available
+          publicationCreationActor: authorArr,
+          publicationCreationTimeSpan: timeSpan,
+          publicationCreationLocation: location
+        }
+      ]
+    },
+    {
+      publication: relatedPublication
+    })
+  }
+
   return Object.assign(p, {
-    publicationCreation: [
-
-      // Include author if available
-      author && {
-        publicationCreationActor: {
-          [NAME]: author,
-          [TYPE]: TYPE_AUTHOR
+      publicationCreation: [
+        {
+          // Include author if available
+          publicationCreationActor: authorArr,
+          publicationCreationTimeSpan: timeSpan,
+          publicationCreationLocation: location
         }
-      } || null,
-
-      // Include publisher if available
-      (p.publisher || p.pubTimeSpan || p.pubLocation) && {
-        publicationCreationActor: p.publisher && {
-          [NAME]: p.publisher,
-          [TYPE]: TYPE_PUBLISHER
-        } || null,
-        publicationCreationTimeSpan: { date: p.pubTimeSpan },
-        publicationCreationLocation: p.pubLocation && {
-          publicationCreationLocationAppellation: p.pubLocation
-        }
-      } || null
-
-    ].filter(Boolean)
-  })
+      ]
+    });
 }
 
 export function urlify (u) {

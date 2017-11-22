@@ -25,8 +25,8 @@ class ClassificationController extends Controller
     /**
      * Add a classification to an object
      *
-     * @param $objectId             integer The id of the object
-     * @param $classification array   The classification of the object
+     * @param integer $objectId       The id of the object
+     * @param array   $classification The classification of the object
      *
      * @return Node
      */
@@ -85,6 +85,21 @@ class ClassificationController extends Controller
             }
 
             $classification['publication'] = $newPublications;
+        } else {
+            unset($classification['publication']);
+            unset($classification['publicationPages']);
+        }
+
+        // Clean up the classification
+        if (! empty($classification['productionClassificationSource'])) {
+            $classification['productionClassificationSource'] = collect($classification['productionClassificationSource'])
+            ->map(function ($val) {
+                if (empty($val)) {
+                    return '__no_pages_specified__';
+                }
+
+                return $val;
+            })->values()->toArray();
         }
 
         return [
@@ -96,8 +111,8 @@ class ClassificationController extends Controller
     /**
      * Add a like/dislike and add a link to the person
      *
-     * @param $objectId                integer The id of the object
-     * @param $classification_id integer The classification id
+     * @param integer $objectId          The id of the object
+     * @param integer $classification_id The classification id
      *
      * @return Node
      */
@@ -123,7 +138,9 @@ class ClassificationController extends Controller
 
             $disagree = $classification->getProperty('disagree');
 
-            $disagree--;
+            if ($disagree > 0) {
+               $disagree--;
+            }
 
             $classification->setProperty('disagree', $disagree)->save();
         }
@@ -144,9 +161,9 @@ class ClassificationController extends Controller
     /**
      * Add a like/dislike and add a link to the person
      *
-     * @param $objectId                integer The id of the object
-     * @param $classification_id integer The classification id
-     * @param $request  Request
+     * @param integer $objectId          The id of the object
+     * @param integer $classification_id The classification id
+     * @param Request $request
      *
      * @return Node
      */
@@ -172,7 +189,9 @@ class ClassificationController extends Controller
             $vote_relationship->delete();
             $agree = $classification->getProperty('agree');
 
-            $agree--;
+            if ($agree > 0) {
+                $agree--;
+            }
 
             $classification->setProperty('agree', $agree)->save();
         }
@@ -185,6 +204,53 @@ class ClassificationController extends Controller
             $user->getNode()->relateTo($classification, 'disagree')->save();
 
             return $disagree;
+        }
+
+        return [];
+    }
+
+    /**
+     * Remove a vote of a user
+     *
+     * @param $objectId                integer The id of the object
+     * @param $classification_id integer The classification id
+     * @param $request  Request
+     *
+     * @return Node
+     */
+    public function deleteVote($objectId, $classification_id, Request $request)
+    {
+        $user = $request->user();
+        $user_id = $user->id;
+
+        $classification = $this->objects->getClassification($objectId, $classification_id);
+
+        // Get the current votes of the user and adjust where necessary
+        $vote_relationship = $this->classifications->getVoteOfUser($classification_id, $user_id);
+
+        if (! empty($vote_relationship) && ! empty($classification)) {
+            // Check which vote he casted, if he agreed, abort.
+            // if he disagreed, remove link, adjust disagree count
+            $type = $vote_relationship->getType();
+            $vote_relationship->delete();
+
+            if ($type == 'disagree') {
+                $disagree = $classification->getProperty('disagree');
+
+                if ($disagree > 0) {
+                    $disagree--;
+                }
+
+                $classification->setProperty('disagree', $disagree)->save();
+            } else {
+                $agree = $classification->getProperty('agree');
+
+                if ($agree > 0) {
+                    $agree--;
+                }
+
+                $classification->setProperty('agree', $agree)->save();
+            }
         }
 
         return [];
