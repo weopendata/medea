@@ -12,7 +12,7 @@
       <p v-if="singlePub">
         Bron:
         {{ citeClassificationPublication(singlePub) }}
-        {{ (cls.productionClassificationSource && cls.productionClassificationSource[0] && cls.productionClassificationSource[0] != '__no_pages_specified__' ? ' ' + " pagina's : " + cls.productionClassificationSource[0] : '') }}
+        {{ (cls.productionClassificationSource && cls.productionClassificationSource[0] && cls.productionClassificationSource[0] != '__no_pages_specified__' ? ', spec. ' + cls.productionClassificationSource[0] + '.' : '') }}
         <a :href="singlePub.publicationContact" v-if="singlePub.publicationContact" v-text="singlePub.publicationContact"></a>
       </p>
       <p v-if="multiPub">
@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     publicationPages (index) {
-      return (this.cls.productionClassificationSource && this.cls.productionClassificationSource[index] && this.cls.productionClassificationSource[index] != '__no_pages_specified__' ? " pagina's: " + this.cls.productionClassificationSource[index] : '')
+      return (this.cls.productionClassificationSource && this.cls.productionClassificationSource[index] && this.cls.productionClassificationSource[index] != '__no_pages_specified__' ? ", spec. " + this.cls.productionClassificationSource[index] + '.' : '')
     },
     citeClassificationPublication (pub) {
       return this.cite(pub)
