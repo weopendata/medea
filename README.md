@@ -4,7 +4,7 @@ The goal of the MEDEA projects is to bring together find experts, researchers an
 ## Requirements
 
 * Database: Neo4j 2.2.x (higher or lower versions will most likely break the application)
-* PHP 5.6+
+* PHP7.0
 * MariaDB 10.10 (or equivalent)
 
 ### Full text support

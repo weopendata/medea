@@ -45,7 +45,7 @@
       <div id="fb-root"></div>
       <div class="card-textual ui form">
         <div class="fb-share-button"
-          data-href="www.google.com"
+          :data-href="'/finds/' + find.identifier"
           data-layout="button">
         </div>
       </div>
