@@ -271,7 +271,6 @@ class FindRepository extends BaseRepository
             $withStatement[] = 'period';
             $orderStatement = "period.value $orderFlow";
         } elseif ($orderBy == 'findDate') {
-            //$matchStatements[] = "(find:E10)-[P4]-(findDate:E52)"; // Is already part of the initial statement
             $withStatement[] = 'findDate';
             $orderStatement = "findDate.value $orderFlow";
         }
@@ -288,7 +287,7 @@ class FindRepository extends BaseRepository
                     $variables[$config['nodeName']] = (int) $filters[$property];
                 }
 
-                if (! empty($config['with'])) {
+                if (! empty($config['with']) && ! in_array($config['with'], $this->getDefaultWithProperties())) {
                     $withStatement[] = $config['with'];
                 }
             }
@@ -315,6 +314,16 @@ class FindRepository extends BaseRepository
             'orderStatement',
             'variables'
         );
+    }
+
+    /**
+     * Get the default properties that are present in the with statement
+     *
+     * @return array
+     */
+    private function getDefaultWithProperties()
+    {
+        return ['classifications', 'location', 'latitude', 'longitude', 'locality', 'material', 'period', 'category', 'photograph', 'collection'];
     }
 
     /**
@@ -475,6 +484,15 @@ class FindRepository extends BaseRepository
                     $tmp[$key] = $val->current()->resized;
                 } elseif ($key == 'collection' && $val->getProperty('title')) {
                     $tmp['collectionTitle'] = $val->getProperty('title');
+                } elseif ($key == 'classifications') {
+                    $tmp['classificationCount'] = 0;
+                    $classifications = [];
+
+                    foreach ($val as $classification) {
+                        $classifications[] = $classification->getId();
+                    }
+
+                    $tmp['classificationCount'] = collect($classifications)->unique()->count();
                 }
             }
 
