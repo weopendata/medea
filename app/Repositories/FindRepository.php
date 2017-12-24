@@ -185,20 +185,20 @@ class FindRepository extends BaseRepository
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
 
         $withProperties = [
-           'distinct find',
-           'validation',
-           'findDate',
-           'locality',
-           'person',
-           'count(distinct pClass) as pClassCount',
-           'lat',
-           'lng',
-           'material',
-           'category',
-           'period',
-           'photograph',
-           'location',
-           'collection',
+            'find',
+            'findDate',
+            'person',
+            'validation',
+            '[p in (object)-[:P108]-(:E12)-[:P41]-(:E17) | last(nodes(p))] as classifications',
+            '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53) | last(nodes(p))] as location',
+            '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P87]-(:E47{name:"lat"}) | last(nodes(p))] as latitude',
+            '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P87]-(:E47{name:"lng"}) | last(nodes(p))] as longitude',
+            '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P89]-(:E53)-[:P87]-(:E45)|last(nodes(p))] as locality',
+            '[p in (object:E22)-[:P45]-(:E57) | last(nodes(p))] as material',
+            '[p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p))] as period',
+            '[p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p))] as category',
+            '[p in (object:E22)-[:P62]-(:E38) | last(nodes(p))] as photograph',
+            '[p in (object:E22)-[:P24]-(:E78) | last(nodes(p))] as collection',
         ];
 
         $withStatements = array_merge($withStatement, $withProperties);
@@ -216,16 +216,9 @@ class FindRepository extends BaseRepository
         $fullMatchStatement = rtrim($fullMatchStatement, ',');
 
         $query = "MATCH $fullMatchStatement
-        OPTIONAL MATCH (object:E22)-[producedBy:P108]-(productionEvent:E12)-[P41]-(pClass:E17)
-        OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53)-[P89]-(address:E53), (address:E53)-[localityRel:P87]-(locality:locationAddressLocality), (location:E53)-[latRel:P87]-(lat:E47{name:\"lat\"}), (location:E53)-[lngRel:P87]-(lng:E47{name:\"lng\"})
-        OPTIONAL MATCH (object:E22)-[P45]-(material:E57)
-        OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:\"period\"})
-        OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:\"objectCategory\"})
-        OPTIONAL MATCH (object:E22)-[P62]-(photograph:E38)
-        OPTIONAL MATCH (object:E22)-[P24]-(collection:E78)
-        WITH $withStatement
         WHERE $whereStatement
-        RETURN distinct find, id(find) as identifier, findDate.value as findDate, locality.value as locality, validation.value as validation, person.email as email, id(person) as finderId, pClassCount as classificationCount, lat.value as lat, lng.value as lng, material.value as material, category.value as category, period.value as period, collect(photograph.resized) as photograph, location.accuracy as accuracy, location.geoGrid as grid, collection
+        WITH $withStatement
+        RETURN distinct find, id(find) as identifier, classifications, findDate.value as findDate, validation.value as validation, person.email as email, id(person) as finderId, head(period).value as period, head(material).value as material, head(category).value as category, head(collection) as collection, photograph, head(latitude).value as lat, head(longitude).value as lng, head(locality).value as locality, head(location).accuracy as accuracy, head(location).geoGrid as grid
         ORDER BY $orderStatement
         SKIP $offset
         LIMIT $limit";
@@ -268,7 +261,7 @@ class FindRepository extends BaseRepository
             $variables['validationStatus'] = $validationStatus;
         }
 
-        $withStatement = ['distinct find', 'validation', 'person'];
+        $withStatement = ['validation', 'person'];
 
         // In our query find.id is aliased as identifier
         $orderStatement = 'identifier ' . $orderFlow;
@@ -449,8 +442,8 @@ class FindRepository extends BaseRepository
         $statement = $chunks[0];
 
         $countQuery = $statement . ' RETURN count(distinct find) as findCount';
-
         $countQuery = new Query($this->getClient(), $countQuery, $variables);
+
         $results = $countQuery->getResultSet();
 
         $countResult = $results->current();
@@ -479,7 +472,7 @@ class FindRepository extends BaseRepository
                 if (! is_object($val)) {
                     $tmp[$key] = $val;
                 } elseif ($key == 'photograph' && $val->count()) {
-                    $tmp[$key] = $val->current();
+                    $tmp[$key] = $val->current()->resized;
                 } elseif ($key == 'collection' && $val->getProperty('title')) {
                     $tmp['collectionTitle'] = $val->getProperty('title');
                 }
