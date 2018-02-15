@@ -193,7 +193,7 @@ class FindRepository extends BaseRepository
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53) | last(nodes(p))] as location',
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P87]-(:E47{name:"lat"}) | last(nodes(p))] as latitude',
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P87]-(:E47{name:"lng"}) | last(nodes(p))] as longitude',
-            '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P89]-(:E53)-[:P87]-(:E45)|last(nodes(p))] as locality',
+            '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P89]-(:E53)-[:P87]-(:locationAddressLocality)|last(nodes(p))] as locality',
             '[p in (object:E22)-[:P45]-(:E57) | last(nodes(p))] as material',
             '[p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p))] as period',
             '[p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p))] as category',
