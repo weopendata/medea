@@ -134,6 +134,8 @@ class FindRepository extends BaseRepository
     {
         extract($this->getQueryStatements($filters, '', '', $validationStatus));
 
+        $withStatement[] = 'find';
+        $withStatement = array_unique($withStatement);
         $withStatement = implode(', ', $withStatement);
 
         $fullMatchStatement = $initialStatement;
