@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-img">
-      <a :href="uri" class="card-img-abs" v-if="cardCover" :style="cardCover"></a>
+      <a :href="uri" class="card-img-abs" v-if="cardCover" :style="{ 'background-image': 'url(\'' + find.photograph + '\')' }"></a>
       <a :href="uri" class="card-img-abs" v-else style="background:#fff"></a>
     </div>
     <div class="card-content">
@@ -72,9 +72,7 @@ export default {
       return this.find.lat
     },
     cardCover () {
-      return this.find.photograph && {
-        backgroundImage: 'url(' + encodeURI(this.find.photograph) + ')'
-      }
+      return this.find.photograph;
     },
     uri () {
       return '/finds/' + this.find.identifier
