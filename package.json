@@ -27,7 +27,7 @@
     "laravel-elixir": "*",
     "less-loader": "^2.2.2",
     "local-storage": "^1.4.2",
-    "lodash": "^3.10.1",
+    "lodash": "^4.17.13",
     "parse-link-header": "^0.4.1",
     "semantic-ui-css": "^2.2",
     "vue": "^1.0.15",
