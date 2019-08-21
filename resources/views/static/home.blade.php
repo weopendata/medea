@@ -10,9 +10,11 @@
   <div class="hero">
     <form method="GET" action="/finds" class="ui container">
       <p class="lead" data-step="1" data-intro="Deze intro zal je begeleiden bij het registreren van een vondst.">Welkom op het <strong>MEDEA</strong> platform, een community platform dat experten, onderzoekers en detectoristen samenbrengt.</p>
+      @if (isset($stats))
       <p>
         Verken <b>{{ $stats['validatedFinds'] }}</b> metaalvondsten die we samen in Vlaanderen in kaart brachten
       </p>
+      @endif
       <p>
         <span class="ui action input" style="width: 30%;">
           <input type="text" placeholder="Search..." name="query">

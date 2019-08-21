@@ -82,9 +82,11 @@ class FindRepository extends BaseRepository
 
                     $classification_id = $relationship->getEndNode()->getId();
 
-                    foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
-                        if ($classification['identifier'] == $classification_id) {
-                            $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
+                    if (! empty($find['object']) && ! empty($find['object']['productionClassification'])) {
+                        foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
+                            if ($classification['identifier'] == $classification_id) {
+                                $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
+                            }
                         }
                     }
                 }
