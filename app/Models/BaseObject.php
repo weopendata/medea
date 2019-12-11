@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Repositories\CollectionRepository;
 
-class Object extends Base
+class BaseObject extends Base
 {
     public static $NODE_TYPE = 'E22';
     public static $NODE_NAME = 'object';

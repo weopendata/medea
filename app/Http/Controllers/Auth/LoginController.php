@@ -2,36 +2,29 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Repositories\UserRepository;
-use Validator;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Person;
-use App\Mailers\AppMailer;
+use App\Repositories\UserRepository;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\MessageBag;
-use PiwikTracker;
 
-/**
- * @deprecated
- */
-class AuthController extends Controller
+class LoginController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
-    | Registration & Login Controller
+    | Login Controller
     |--------------------------------------------------------------------------
     |
-    | This controller handles the registration of new users, as well as the
-    | authentication of existing users. By default, this controller uses
-    | a simple trait to add these behaviors. Why don't you explore it?
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
     |
     */
 
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
+    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login / registration.
@@ -78,6 +71,7 @@ class AuthController extends Controller
                     return redirect($this->redirectTo);
                 } else {
                     $message_bag = new MessageBag();
+
                     return redirect()->back()->with('errors', $message_bag->add('password', 'Het wachtwoord is incorrect.'));
                 }
             } else {
@@ -99,44 +93,6 @@ class AuthController extends Controller
         return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
 
-    public function register(Request $request, AppMailer $mailer)
-    {
-        $input = $request->json()->all();
-
-        $validator = $this->validator($input);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        // Check if the user already exists
-        if (! $this->users->userExists($input['email'])) {
-            // Rework the input slightly to match the expected graph format
-            $input = $this->restructureUserInput($input);
-
-            $user = $this->users->store($input);
-
-            $mailer->sendRegistrationToAdmin($user);
-
-            return response()->json(['message' => 'Uw registratie is doorgevoerd, een admin moet deze echter wel nog goedkeuren. Hou ook uw SPAM folder in uw inbox in de gaten, de bevestiging kan bij sommige daar terecht komen.']);
-        } else {
-            return response()->json(['email' => ['Een gebruiker met dit email adres is reeds geregistreerd.']], 400);
-        }
-    }
-
-    private function restructureUserInput($input)
-    {
-        $input['personContacts'] = [
-            $input['email']
-        ];
-
-        if (! empty($input['phone'])) {
-            $input['personContacts'][] = $input['phone'];
-        }
-
-        return $input;
-    }
-
     /**
      * Register a login/logout event
      *
@@ -153,21 +109,5 @@ class AuthController extends Controller
             $piwikTracker->setUserId($userId);
             $piwikTracker->doTrackEvent('User', $action, $userId);
         }
-    }
-
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array                                      $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'firstName' => 'required|max:255',
-            'lastName' => 'required|max:255',
-            'email' => 'required|email|max:255',
-            'password' => 'required|min:6',
-        ]);
     }
 }

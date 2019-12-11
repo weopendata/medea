@@ -34,7 +34,7 @@
     </form>
   </div>
 {!! Form::open(array(
-'action' => 'Auth\AuthController@register',
+'action' => 'Auth\RegisterController@register',
 'novalidate' => '',
 'class' => 'ui register-container form',
 '@submit.prevent' => 'submit',

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Object;
+use App\Models\BaseObject;
 use App\Models\ProductionClassification;
 use App\Models\ProductionEvent;
 use Everyman\Neo4j\Cypher\Query;
@@ -13,13 +13,13 @@ class ObjectRepository extends BaseRepository
 {
     public function __construct()
     {
-        parent::__construct(Object::$NODE_TYPE, Object::class);
+        parent::__construct(BaseObject::$NODE_TYPE, BaseObject::class);
     }
 
     public function store($properties = [])
     {
         // Create and save a new object
-        $object = new Object($properties);
+        $object = new BaseObject($properties);
 
         $object->save();
 
@@ -163,7 +163,7 @@ class ObjectRepository extends BaseRepository
             }
         }
 
-        $object = new Object();
+        $object = new BaseObject();
         $object->setNode($objectNode);
 
         $typeNode = $object->createValueNode('objectValidationStatus', ['E55', 'objectValidationStatus'], $status);

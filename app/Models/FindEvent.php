@@ -12,7 +12,7 @@ class FindEvent extends Base
     protected $relatedModels = [
         'P12' => [
             'key' => 'object',
-            'model_name' => 'Object',
+            'model_name' => 'BaseObject',
             'cascade_delete' => true,
             'reverse_relationship' => 'P12'
         ],
