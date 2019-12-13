@@ -13,7 +13,7 @@
 
             <div class="field{{ $errors->has('email') ? ' error' : '' }}">
                 <label>Emailadres</label>
-                <input type="email" name="email" value="{{ $email or old('email') }}">
+                <input type="email" name="email" value="{{ $email ?? old('email') }}">
                 @if ($errors->has('email'))
                     <div class="ui negative message">
                         {{ $errors->first('email') }}
