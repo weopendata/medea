@@ -6,8 +6,8 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.7.*",
-        "laravelcollective/html": "5.*",
+        "laravel/framework": "6.0.*",
+        "laravelcollective/html": "6.*",
         "everyman/neo4jphp": "dev-master",
         "sendgrid/sendgrid": "7.2",
         "intervention/image": "^2.3",

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Repositories\CollectionRepository;
+use Illuminate\Support\Arr;
 
 class BaseObject extends Base
 {
@@ -184,7 +185,7 @@ class BaseObject extends Base
         $description = '';
 
         foreach ($fulltextProperties as $property) {
-            if (! empty($value = array_get($properties, $property))) {
+            if (! empty($value = Arr::get($properties, $property))) {
                 $description .= $value . ' ';
             }
         }

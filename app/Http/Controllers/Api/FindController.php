@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\Pager;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FindApiRequest;
+use App\Http\Requests\ShowFindRequest;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
-use App\Http\Requests\ShowFindRequest;
-use App\Helpers\Pager;
-use App\Http\Requests\FindApiRequest;
+use Illuminate\Support\Arr;
 
 /**
  * This controller provides an API on top of FindEvent nodes, but also on Object nodes.
@@ -179,7 +180,7 @@ class FindController extends Controller
 
         // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
-        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') != $user->id)) {
+        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
             unset($find['object']['objectDescription']);
@@ -187,7 +188,7 @@ class FindController extends Controller
 
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
         // unless the user is the owner of the find (or is a registrator or adminstrator)
-        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') == $user->id))
+        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
             && ! empty($find['object']['objectNr']) && empty($find['object']['collection'])
         ) {
             unset($find['object']['objectNr']);
@@ -196,7 +197,7 @@ class FindController extends Controller
         // Add the user names of the classifications
         $classifications = app()->make('App\Repositories\ClassificationRepository');
 
-        $objectClassifications = array_get($find, 'object.productionEvent.productionClassification', []);
+        $objectClassifications = Arr::get($find, 'object.productionEvent.productionClassification', []);
         $enrichedClassifications = [];
 
         foreach ($objectClassifications as $objectClassification) {
