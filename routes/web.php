@@ -43,6 +43,8 @@ Route::resource('api/finds', 'Api\FindController');
 Route::get('api/collections', 'Api\CollectionController@search');
 
 Route::group(['middleware' => 'auth'], function () {
+    Route::resource('persons', 'UserController');
+
     Route::get('api/statistics', 'Api\StatisticsController@index');
     Route::get('api/notifications', 'Api\NotificationController@index');
     Route::post('api/notifications/{id}', 'Api\NotificationController@setRead');
@@ -67,3 +69,4 @@ Route::get('settings', 'UserController@mySettings');
 Route::get('settings/{id}', 'UserController@userSettings');
 
 Auth::routes();
+Route::get('/logout', 'Auth\LoginController@logout');

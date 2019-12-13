@@ -84,11 +84,15 @@ class LoginController extends Controller
         }
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         $this->registerPiwikEvent(Auth::user()->email, 'Logout');
 
-        Auth::guard($this->getGuard())->logout();
+        $this->guard()->logout();
+
+        $request->session()->flush();
+
+        $request->session()->regenerate();
 
         return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
@@ -103,8 +107,8 @@ class LoginController extends Controller
     private function registerPiwikEvent($userId, $action)
     {
         if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {
-            PiwikTracker::$URL = env('PIWIK_URI');
-            $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
+            \PiwikTracker::$URL = env('PIWIK_URI');
+            $piwikTracker = new \PiwikTracker(env('PIWIK_SITE_ID'));
 
             $piwikTracker->setUserId($userId);
             $piwikTracker->doTrackEvent('User', $action, $userId);
