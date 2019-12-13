@@ -9,12 +9,11 @@
         "laravel/framework": "5.7.*",
         "laravelcollective/html": "5.*",
         "everyman/neo4jphp": "dev-master",
-        "sendgrid/sendgrid": "~4.0",
+        "sendgrid/sendgrid": "7.2",
         "intervention/image": "^2.3",
         "piwik/piwik-php-tracker": "^1.0",
         "league/csv": "^8.1",
-        "barryvdh/laravel-ide-helper": "^2.4",
-        "laravel/tinker": "^1.0"
+        "barryvdh/laravel-ide-helper": "^2.4"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
