@@ -77,7 +77,6 @@ class RegisterController extends Controller
 
     public function register(Request $request, AppMailer $mailer)
     {
-        info("hiii");
         $input = $request->json()->all();
 
         $validator = $this->validator($input);

@@ -25,7 +25,7 @@ class UpdateFindRequest extends Request
         //   Admin:     any role
         $this->user = $request->user();
 
-        $findId = $request->finds;
+        $findId = $request->find;
 
         $this->find = $finds->expandValues($findId);
 
