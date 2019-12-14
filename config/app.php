@@ -135,9 +135,9 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\Notifications\NotificationServiceProvider::class,
-        //Laravel\Tinker\TinkerServiceProvider::class,
+        Laravel\Tinker\TinkerServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        //Collective\Html\HtmlServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
 
         /*
          * Application Service Providers...
