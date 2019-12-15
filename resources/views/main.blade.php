@@ -10,7 +10,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - MEDEA</title>
     @if (!empty($meta))
-      <!--<meta property="og:image" content="https://medea.weopendata.com/uploads/small_8670_Schoenzool_1981.JPG">-->
       @foreach ($meta as $property => $content)
         <meta property="{{$property}}" content="{{$content}}">
       @endforeach
@@ -70,25 +69,11 @@
 </div>
 
 @yield('content')
+<div id="app">
+  @yield('component')
+</div>
 
-<br style="clear:both;">
-<footer>
-  <div class="ui container">
-    <div style="float:right">
-      <a target="_blank" href="https://blog.vondsten.be/over-medea/contact">Contact</a> &nbsp; &middot; &nbsp;
-      <a href="/feedback">Feedback</a>
-    </div>
-    <p>
-      <a href="https://blog.vondsten.be/gebruikersvoorwaarden">Gebruikersvoorwaarden</a>
-    </p>
-    <p>
-      <a href="https://creativecommons.org/licenses/by-nc/4.0/">
-        <img src="https://licensebuttons.net/l/by-nc/4.0/80x15.png" style="vertical-align:middle">
-        <span style="opacity:.5;font-size:12px">We gebruiken een open content licentie</span>
-      </a>
-    </p>
-  </div>
-</footer>
+@yield('footer')
 
 <script type="text/javascript">
 _paq = [];
@@ -112,22 +97,25 @@ medeaUser.email = '{{ Auth::user()->email }}';
 @endif
 </script>
 
+<script src="/js/main.js?{{ Config::get('app.version') }}"></script>
+
 @if (Config::get('app.debug'))
-  <script src="/js/vendor.js"></script>
+  <!--<script src="/js/vendor.js"></script>-->
   <script type="text/javascript">
-  Vue.config.devtools = true
-  Vue.config.debug = true
+  //window.Vue.config.devtools = true
+  //window.Vue.config.debug = true
   </script>
 @else
-  <script src="/js/vendor.min.js?{{ Config::get('app.version') }}"></script>
+  <!--<script src="/js/vendor.min.js?{{ Config::get('app.version') }}"></script>-->
 @endif
 
 @section('script')
 @show
-<script src="/js/main.js?{{ Config::get('app.version') }}"></script>
+
+@stack('scripts')
 
 <script type="text/javascript">
-$('nav .ui.dropdown').dropdown()
+
 </script>
 
 @if (Config::get('app.debug'))

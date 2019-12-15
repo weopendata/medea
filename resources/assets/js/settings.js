@@ -7,7 +7,7 @@ var id = window.user.id
 delete window.user.email
 
 new window.Vue({
-  el: 'body',
+  el: #app,
   data () {
     return {
       id: id,
@@ -84,7 +84,7 @@ new window.Vue({
       this.errors = response.data
     }
   },
-  attached () {
+  mounted () {
     $('.ui.checkbox', this.$el).checkbox()
   },
   mixins: [Notifications]

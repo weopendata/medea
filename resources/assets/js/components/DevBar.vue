@@ -44,7 +44,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .devbar {
   position: relative;
   z-index: 2;

@@ -74,18 +74,21 @@
     }
   }
 </script>
-<style lang="sass">
-  .collections {
-    margin-bottom: 1em; }
-    .collection {
+<style lang="scss">
+  .collections
+  {
+    margin-bottom: 1em;
+  }
+  .collection {
       padding: 5px 10px;
   }
-    .remove {
+  .remove {
       margin-right: .5rem;
       cursor:pointer;
       padding: 5px 10px;
       &:hover {
         background:red;
         color:white;
-  } }
+      }
+  }
 </style>

@@ -2,6 +2,7 @@ var path = require('path')
 var elixir = require('laravel-elixir')
 require('laravel-elixir-webpack-ex')
 require('laravel-elixir-livereload')
+require('laravel-elixir-vueify-2.0');
 
 /*
  |--------------------------------------------------------------------------
@@ -47,5 +48,6 @@ elixir(function (mix) {
     },
     './public/js', 'resources/assets/js'
   )
+  mix.browserify('main.js');
   mix.livereload()
 })

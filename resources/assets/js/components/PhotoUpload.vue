@@ -36,14 +36,14 @@ export default {
       return this.$parent.$parent.validation.imgRemarks
     }
   },
-  attached () {
-    var container = $(this.$el)
+  mounted () {
+    /*var container = $(this.$el)
     $('.photo-upload-inp', container).on('dragenter dragover', function () {
       container.addClass('dragging')
     })
     $('.photo-upload-inp', container).on('drop dragend dragleave', function () {
       container.removeClass('dragging')
-    })
+    })*/
   },
   methods: {
     warn (...msg) {
@@ -102,7 +102,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
   .photo-upload {
     position:relative;
     &:after {

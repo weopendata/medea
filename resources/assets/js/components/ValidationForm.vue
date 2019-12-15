@@ -11,13 +11,13 @@
         <div class="field">
           <label>Is deze vonstfiche klaar voor publicatie? Duid aan wat van toepassing is.</label>
           <div class="ui checkbox">
-            <input type="checkbox" tabindex="0" class="hidden" v-model="remove">
+            <input type="checkbox" tabindex="0" v-model="remove">
             <label>Deze vondst hoort niet thuis op MEDEA</label>
           </div>
         </div>
         <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
+            <input type="checkbox" tabindex="0" v-model="embargo">
             <label>Deze vondstfiche bevat gevoelige informatie (plaats onder embargo)</label>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default {
       this.imgRemarks = remarks
     }
   },
-  attached () {
+  mounted () {
     $('.ui.checkbox', this.$el).checkbox()
 
     // Fill in the previous validation feedback

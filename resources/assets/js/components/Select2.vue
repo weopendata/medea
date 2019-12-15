@@ -49,7 +49,7 @@
           this.options.data = [this.value]
         }
 
-        const $elem = $(this.$el)
+        /*const $elem = $(this.$el)
           .select2(this.options)
           // emit event on change.
           .on('select2:select', (ev) => {
@@ -63,10 +63,10 @@
           })
           .on('select2:unselecting', (ev) => {
             this.$emit('select', {})
-          })
+          })*/
       }
     },
-    attached () {
+    mounted () {
       this.load()
     },
     destroyed () {

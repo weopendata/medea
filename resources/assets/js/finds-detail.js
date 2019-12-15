@@ -4,7 +4,7 @@ import DevBar from './components/DevBar'
 import Notifications from './mixins/Notifications'
 
 new window.Vue({
-  el: 'body',
+  el: #app,
   components: {
     DevBar,
     FindEventDetail

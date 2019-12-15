@@ -55,7 +55,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .collections {
   margin-bottom: 1em;
 }

@@ -43,7 +43,7 @@
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
       <!-- Find place -->
-      <div class="{{ isSourceRequired ? 'field' : 'required field'}}">
+      <div :class="isSourceRequired ? 'field' : 'required field'">
         <label>{{ isSourceRequired ? 'Vindplaats/Type' : isTypology ? 'Type' : 'Vindplaats' }}</label>
         <input type="text" v-model="cls.productionClassificationValue" :list="isTypology && 'types'">
         <div class="help-block">{{ isSourceRequired ? 'Vul hier in aan welk type de auteur deze vondst toewijst, en/of met welke andere vondst(en) hij het voorwerp vergelijkt (optioneel).' : isTypology ? 'Vul hier de naam van het type in, zoals weergegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de naam in van de vindplaats van de gelijkaardige vondst.' }}</div>
@@ -68,12 +68,12 @@
       <div class="two fields" @change="limitPeriod">
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering van</label>
-          <input-date :model.sync="cls.startDate"></input-date>
+          <input-date v-model="cls.startDate"></input-date>
           <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de startdatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de startdatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel).' }}</div>
         </div>
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering tot</label>
-          <input-date :model.sync="cls.endDate"></input-date>
+          <input-date v-model="cls.endDate"></input-date>
           <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum/einddatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de einddatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de einddatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel.)' }}</div>
         </div>
       </div>
@@ -110,7 +110,7 @@
       <!-- Remark -->
       <div class="field">
         <label for="description">Opmerking</label>
-        <textarea-growing id="description" :model.sync="cls.productionClassificationDescription"></textarea-growing>
+        <textarea-growing id="description" v-model="cls.productionClassificationDescription"></textarea-growing>
         <div class="help-block">
           Voeg hier eventueel een opmerking toe aan je classificatie (optioneel).
         </div>
@@ -196,7 +196,7 @@
           <br>
         </div>
         <div class="actions">
-          <div class="ui {{ validPublication ? 'green' : 'grey disabled' }} button" @click="savePublication">
+          <div :class="validPublication ? 'ui green button' : 'ui grey disabled button'" @click="savePublication">
             <i class="checkmark icon"></i>
             Bewaren
           </div>
@@ -212,9 +212,9 @@
       <option v-for="opt in fields.type" :value="opt"></option>
     </datalist>
     <datalist id="nations">
-      <option value="Napoleon">
-      <option value="Caesar">
-      <option value="Cleopatra">
+      <option value="Napoleon"/>
+      <option value="Caesar"/>
+      <option value="Cleopatra"/>
     </datalist>
   </div>
 </template>
@@ -413,7 +413,8 @@
         }
       }
     },
-    attached () {
+    mounted () {
+      console.log("hi");
       if (!this.cls.publication) {
         this.$set('cls.publication', [])
       }

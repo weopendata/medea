@@ -157,7 +157,7 @@
     </div>
     <div class="field">
       <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showEmail">
+        <input type="checkbox" tabindex="0" v-model="user.showEmail">
         <label>
           <b>Toon mijn emailadres op mijn profiel.</b>
         </label>
@@ -175,7 +175,7 @@
     </div>
     <div class="field">
       <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="user.showNameOnPublicFinds">
+        <input type="checkbox" tabindex="0" v-model="user.showNameOnPublicFinds">
         <label>
           <b>Vermeld mijn naam op publiek toegankelijke vondstfiches</b>
         </label>
@@ -183,7 +183,7 @@
     </div>
     <div class="field">
     {{--  <div class="ui checkbox">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="user.passContactInfoToAgency">
+        <input type="checkbox" tabindex="0" v-model="user.passContactInfoToAgency">
         <label>
           <b>Mijn naam mag bij meldingen aan AOE doorgegeven worden</b>
           <br>Alleen toevalsvondsten en vondsten ouder dan april 2016 zullen gemeld worden aan Agentschap Onroerend Erfgoed
@@ -198,7 +198,7 @@
     </p>
     <div class="field">
       <div class="ui checkbox disabled">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.detectorist">
+        <input type="checkbox" tabindex="0" v-model="roles.detectorist">
         <label>
           <b>Detectorist</b>
           <br>Je kan je eigen vonsten documenteren en publiceren.
@@ -207,7 +207,7 @@
     </div>
     <div class="field">
       <div class="ui checkbox disabled">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.registrator">
+        <input type="checkbox" tabindex="0" v-model="roles.registrator">
         <label>
           <b>Registrator</b>
           <br>Je kan vondsten van anderen documenteren en publiceren in het kader van een bestaande collectie of project.
@@ -216,7 +216,7 @@
     </div>
     <div class="field">
       <div class="ui checkbox disabled">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.validator">
+        <input type="checkbox" tabindex="0" v-model="roles.validator">
         <label>
           <b>Validator</b>
           <br>Je gaat na of gemelde vondsten in orde zijn voor publicatie.
@@ -225,7 +225,7 @@
     </div>
     <div class="field">
       <div class="ui checkbox disabled">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.vondstexpert">
+        <input type="checkbox" tabindex="0" v-model="roles.vondstexpert">
         <label>
           <b>Vondstexpert</b>
           <br>Je hebt expertise op basis van praktijk- en/of onderzoekservaring die je wil inzetten om vondsten te bestuderen en classificeren.
@@ -234,7 +234,7 @@
     </div>
     <div class="field" v-model="roles.vondstexpert">
       <div class="ui checkbox disabled">
-        <input type="checkbox" tabindex="0" class="hidden" v-model="roles.onderzoeker">
+        <input type="checkbox" tabindex="0" v-model="roles.onderzoeker">
         <label>
           <b>Onderzoeker</b>
           <br>Je hebt toegang tot exacte vondstlocaties

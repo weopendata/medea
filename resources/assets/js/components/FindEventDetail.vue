@@ -4,13 +4,13 @@
       <p>
         De validator heeft enkele opmerkingen bij validatie.
       </p>
-      <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
+      <p><a class="ui orange button" :href="'/finds/' + find.identifier + '/edit'">Vondst bewerken</a></p>
     </div>
     <div class="ui warning message visible" v-if="find.object.objectValidationStatus == 'Voorlopige versie'">
       <p>
         Dit is een voorlopige versie
       </p>
-      <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
+      <p><a class="ui orange button" :href="'/finds/' + find.identifier + '/edit'">Vondst bewerken</a></p>
     </div>
     <div class="card card-center fe-card">
       <div class="card-textual">
@@ -28,10 +28,10 @@
               </div>
             </div>
             <google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
-              <marker
+              <google-marker
                 v-if="markerNeeded"
                 :position.sync="markerPosition"
-              ></marker>
+              ></google-marker>
               <rectangle
                 v-else
                 :bounds.sync="rectangleBounds"
@@ -56,13 +56,13 @@
         </div>
       </div>
       <div class="card-bar text-right" v-if="editable">
-        <a class="btn" href="/finds/{{find.identifier}}/edit">
+        <a class="btn" :href="'/finds/' + find.identifier + '/edit'">
           <i class="pencil icon"></i>
           Bewerken
         </a>
       </div>
       <div class="card-bar text-right">
-        <a href="mailto:{{contact}}?Subject=MEDEA vondst {{find.identifier}}" target="_top">
+        <a :href="'mailto:' + contact + '?Subject=MEDEA vondst ' + find.identifier" target="_top">
           Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
         </a>
       </div>
@@ -121,7 +121,7 @@
 
 <script>
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
-import {load, Map as GoogleMap, Marker, Rectangle} from 'vue-google-maps'
+import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle} from 'vue-google-maps'
 
 import AddClassification from './AddClassification'
 import Classification from './Classification'
@@ -158,8 +158,8 @@ export default {
       }
     }
   },
-  methods () {
-    goToFinds : {
+  methods: {
+    goToFinds () {
       window.location = '/finds'
     }
   },
@@ -272,7 +272,7 @@ export default {
     Classification,
     DtCheck,
     Rectangle,
-    Marker,
+    GoogleMarker,
     GoogleMap,
     ObjectFeatures,
     PhotoswipeThumb,

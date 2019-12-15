@@ -1,6 +1,7 @@
 <template>
   <div class="ui very relaxed items">
-    <find-event v-for="f in finds" :find="f" :user="user"></find-event>
+    hi
+    <!--<find-event v-for="f in finds" :find="f" :user="user"></find-event>
     <div v-if="!finds.length" class="finds-empty">
       <h1>
         Geen resultaten
@@ -24,15 +25,19 @@
       <p v-if="!user.isGuest">
         <button type="button" class="ui large button" :class="{green:favName}" @click.prevent="toggleFav" :disabled="showFavName&&!favName"><i class="ui alarm icon"></i> Zoekopdracht {{ exists ? 'verwijderen uit' : 'toevoegen aan' }} favorieten</button>
       </p>
-    </div>
+    </div>-->
   </div>
 </template>
+
 <script>
-import FindEvent from './FindEvent'
+//import FindEvent from './FindEvent'
 import { inert, fromQuery } from '../const.js'
 
 export default {
   props: ['user', 'finds', 'paging'],
+  mounted () {
+    console.log("findslisted mouned");
+  },
   data () {
     return {
       favName: '',
@@ -77,7 +82,7 @@ export default {
     }
   },
   components: {
-    FindEvent
+    //FindEvent
   }
 }
 </script>

@@ -1,7 +1,7 @@
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
-import {load, Map as GoogleMap, Marker, Rectangle, InfoWindow} from 'vue-google-maps'
+import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle, InfoWindow} from 'vue-google-maps'
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
 import DevBar from './components/DevBar'
 
@@ -9,6 +9,8 @@ import Notifications from './mixins/Notifications'
 import HelpText from './mixins/HelpText'
 import { inert, toPublicBounds, findTitle } from './const.js'
 import ls from 'local-storage'
+
+import $ from 'jquery';
 
 import parseLinkHeader from 'parse-link-header'
 
@@ -30,13 +32,16 @@ function getPaging (header) {
 let listQuery, heatmapQuery
 
 new window.Vue({
-  el: 'body',
+  mounted () {
+    console.log("goodmorning");
+  },
+  el: #app,
   data () {
     return {
       paging: getPaging(window.link),
       finds: window.initialFinds || [],
       fetching: false,
-      filterState:  window.filterState || ls('filterState') || console.error('filterState warning') || {},
+      filterState:  window.filterState || ls('filterState') || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -164,6 +169,7 @@ new window.Vue({
       ls('filterState', model)
     },
     mapToggle (v) {
+      console.log("TOLGGE");
       if (this.filterState.type === v) {
         this.$set('filterState.type', false)
       } else {
@@ -287,7 +293,7 @@ new window.Vue({
     FindsList,
     MapControls,
     GoogleMap,
-    Marker,
+    GoogleMarker,
     InfoWindow,
     Rectangle
   }
