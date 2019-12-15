@@ -102,8 +102,6 @@ class Neo4jUserProvider implements UserProvider
     {
         $users = $this->person_label->getNodes('email', $credentials['email']);
 
-        info($users);
-
         if ($users->count() > 0) {
             $user_node = $users[0];
 
