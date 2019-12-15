@@ -4131,8 +4131,8 @@ lru-cache@^4.0.1:
     yallist "^2.0.0"
 
 macaddress@^0.2.8:
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.9.tgz#3579b8b9acd5b96b4553abf0f394185a86813cb3"
 
 magic-string@^0.14.0:
   version "0.14.0"
@@ -6630,6 +6630,12 @@ vue-template-validator@^1.0.0:
   resolved "https://registry.yarnpkg.com/vue-template-validator/-/vue-template-validator-1.1.5.tgz#22d1ee77d0647c1ab14ff7eb01865942d9b3c458"
   dependencies:
     chalk "^1.1.1"
+
+vue-typeahead@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/vue-typeahead/-/vue-typeahead-2.3.2.tgz#b0c10f1f9f64a2c667bff70a0166908ebd5ac904"
+  dependencies:
+    babel-runtime "^6.0.0"
 
 vue@^1.0.15:
   version "1.0.28"
