@@ -13,11 +13,11 @@
         <thead>
           <tr>
             <th width="50">Actief</th>
-            <th class="th-sortable" :class="$sortBy != 'firstName' ? '' : ($sortOrder == 'DESC' ? 'down' : 'up')">
-              <a :href="'?sortBy=firstName&sortOrder=' + $sortOrder == 'DESC' ? 'ASC' : 'DESC'">Voornaam</a>
+            <th class="th-sortable" :class="sortBy != 'firstName' ? '' : (sortOrder == 'DESC' ? 'down' : 'up')">
+              <a :href="'?sortBy=firstName&sortOrder=' + sortOrder == 'DESC' ? 'ASC' : 'DESC'">Voornaam</a>
             </th>
-            <th class="th-sortable" :class="$sortBy != 'lastName' ? '' : ($sortOrder == 'DESC' ? 'down' : 'up')">
-              <a :href="'?sortBy=lastName&sortOrder=' + $sortOrder == 'DESC' ? 'ASC' : 'DESC'">Achternaam</a>
+            <th class="th-sortable" :class="sortBy != 'lastName' ? '' : (sortOrder == 'DESC' ? 'down' : 'up')">
+              <a :href="'?sortBy=lastName&sortOrder=' + sortOrder == 'DESC' ? 'ASC' : 'DESC'">Achternaam</a>
             </th>
             <th>Detectorist</th>
             <th>Vondstexpert</th>
@@ -75,14 +75,25 @@
         user: {},
         paging: {},
         stats: {},
+        sortBy: '',
+        sortOrder: ''
       }
     },
-    mounted() {
-      console.log("hiiii");
+    created() {
       this.users = window.users;
       this.user = window.medeaUser;
       this.paging = window.paging;
       this.stats = window.stats;
+      this.sortBy = window.sortBy;
+      this.sortOrder = window.sortOrder;
+
+      if (! this.stats) {
+        this.stats = {}
+      }
+
+      if (! this.paging) {
+        this.paging = {};
+      }
     },
     components: {
       TrUser

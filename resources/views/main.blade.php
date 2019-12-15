@@ -18,6 +18,9 @@
 
 <body>
 
+@section('script')
+@show
+
 <div id="app">
   <nav-bar></nav-bar>
   @yield('component')
@@ -62,9 +65,6 @@ medeaUser.email = '{{ Auth::user()->email }}';
 @else
   <!--<script src="/js/vendor.min.js?{{ Config::get('app.version') }}"></script>-->
 @endif
-
-@section('script')
-@show
 
 @if (Config::get('app.debug'))
 <script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript" async defer></script>
