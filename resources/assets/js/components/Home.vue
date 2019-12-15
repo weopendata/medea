@@ -238,14 +238,8 @@
 
   export default {
     mounted () {
-      console.log("mounted home");
       this.user = window.medeaUser;
       this.stats = window.stats;
-    },
-    watch: {
-      roles (v) {
-        console.log(v)
-      }
     },
     data () {
       return {
@@ -299,7 +293,6 @@
         ].filter(Boolean).join('\n')
       },
       submittable () {
-        console.log(this.score);
         if (this.score < 2) {
           return false
         }
@@ -310,14 +303,13 @@
 
         if (!this.registered && this.reg.firstName && this.reg.lastName && this.reg.email && this.reg.password) {
           if (this.roles.vondstexpert && !this.reg.expertise) {
-            console.log("no");
             return false
           }
 
           if (this.roles.onderzoeker && (!this.reg.research || !this.reg.affiliation || !this.reg.function)) {
             return false
           }
-          console.log(this.roles);
+
           for (let key in this.roles) {
             if (this.roles[key]) {
               return true
@@ -365,9 +357,8 @@
         this.errors = res.data
       }
     },
-    ready () {
-      $('.ui.checkbox').checkbox()
-      $('nav .ui.dropdown').dropdown()
+    mounted () {
+      $('.ui.checkbox').checkbox();
     },
     mixins: [Ajax, Notifications],
     components: {

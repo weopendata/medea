@@ -27,6 +27,7 @@
     "dependencies": {
         "local-storage": "^1.4.2",
         "parse-link-header": "^1.0.1",
+        "semantic-ui-transition": "^2.3.1",
         "vue-google-maps": "^0.1.15",
         "vue-resource": "^1.5.1",
         "vue-textarea-autosize": "^1.1.1",

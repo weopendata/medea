@@ -1,7 +1,5 @@
 window.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
-//window.Vue = require('vue');
-
 global.$ = global.jQuery = require('jquery');
 
 $.ajaxSetup({
@@ -10,19 +8,11 @@ $.ajaxSetup({
   }
 });
 
-/*window.Vue.http.headers.common['X-CSRF-TOKEN'] = window.csrf;
-
-new Vue({
-    el: #app
-});*/
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
-//require('./bootstrap');
 
 import Vue from 'vue';
 import VueResource from 'vue-resource';
@@ -45,7 +35,9 @@ Vue.http.headers.common['X-CSRF-TOKEN'] = window.csrf;
 const files = require.context('./', true, /\.vue$/i);
 files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
+Vue.component('nav-bar', require('./components/NavBar.vue').default);
 Vue.component('home', require('./components/Home.vue').default);
+Vue.component('users-overview', require('./components/UsersOverview.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
