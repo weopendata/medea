@@ -7,6 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?{{ Config::get('app.version') }}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.min.css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - MEDEA</title>
     @if (!empty($meta))
@@ -17,6 +18,8 @@
 </head>
 
 <body>
+<script src="https://cdn.jsdelivr.net/npm/intro.js@2.9.3/intro.min.js"></script>
+
 
 @section('script')
 @show
