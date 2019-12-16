@@ -27,7 +27,7 @@
                 <i class="magnify icon"></i>
               </div>
             </div>
-            <google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
+            <!--<google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
               <google-marker
                 v-if="markerNeeded"
                 :position.sync="markerPosition"
@@ -37,7 +37,7 @@
                 :bounds.sync="rectangleBounds"
                 :options="rectangleOptions"
               ></rectangle>
-            </google-map>
+            </google-map>-->
           </div>
         </div>
       </div>
@@ -121,7 +121,8 @@
 
 <script>
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
-import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle} from 'vue-google-maps'
+//import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle} from 'vue-google-maps'
+import { GmapMap, GmapMarker, GmapCircle, GmapRectangle, GmapInfoWindow } from 'vue2-google-maps';
 
 import AddClassification from './AddClassification'
 import Classification from './Classification'
@@ -271,9 +272,9 @@ export default {
     AddClassification,
     Classification,
     DtCheck,
-    Rectangle,
-    GoogleMarker,
-    GoogleMap,
+    GmapRectangle,
+    GmapMarker,
+    GmapMap,
     ObjectFeatures,
     PhotoswipeThumb,
     ValidationForm,

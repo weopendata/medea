@@ -1,7 +1,7 @@
 import FindsList from './components/FindsList'
 import FindsFilter from './components/FindsFilter'
 import MapControls from './components/MapControls'
-import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle, InfoWindow} from 'vue-google-maps'
+//import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle, InfoWindow} from 'vue-google-maps'
 // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
 import DevBar from './components/DevBar'
 

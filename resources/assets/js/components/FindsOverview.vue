@@ -62,8 +62,8 @@
   import FindsList from '@/components/FindsList'
   import FindsFilter from '@/components/FindsFilter'
   import MapControls from '@/components/MapControls'
-  import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle, InfoWindow} from 'vue-google-maps'
-  // import {load, Map, Marker, Circle} from 'vue-google-maps/src/main.js'
+  //import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle, InfoWindow} from 'vue-google-maps'
+  import { GmapMap, GmapMarker, GmapCircle, GmapRectangle, GmapInfoWindow } from 'vue2-google-maps';
   import DevBar from '@/components/DevBar'
 
 import Notifications from '@/mixins/Notifications'
@@ -73,7 +73,7 @@ import ls from 'local-storage'
 
 import $ from 'jquery';
 
-import parseLinkHeader from 'parse-link-header'
+import parseLinkHeader from 'parse-link-header';
 
 const HEATMAP_RADIUS = 0.05;
 
@@ -376,10 +376,10 @@ export default {
     FindsFilter,
     FindsList,
     MapControls,
-    GoogleMap,
-    GoogleMarker,
-    InfoWindow,
-    Rectangle
+    GmapMap,
+    GmapMarker,
+    GmapInfoWindow,
+    GmapRectangle
   }
 }
 </script>

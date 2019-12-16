@@ -1,6 +1,6 @@
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 import extend from 'deep-extend'
-import { load, Map, GoogleMarker, Circle, Rectangle } from 'vue-google-maps'
+//import { load, Map, GoogleMarker, Circle, Rectangle } from 'vue-google-maps'
 
 import AddClassificationForm from './components/AddClassificationForm'
 import DevBar from './components/DevBar'
