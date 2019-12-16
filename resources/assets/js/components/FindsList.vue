@@ -1,7 +1,6 @@
 <template>
   <div class="ui very relaxed items">
-    hi
-    <!--<find-event v-for="f in finds" :find="f" :user="user"></find-event>
+    <find-event v-for="f in finds" :find="f" :user="user"></find-event>
     <div v-if="!finds.length" class="finds-empty">
       <h1>
         Geen resultaten
@@ -25,19 +24,16 @@
       <p v-if="!user.isGuest">
         <button type="button" class="ui large button" :class="{green:favName}" @click.prevent="toggleFav" :disabled="showFavName&&!favName"><i class="ui alarm icon"></i> Zoekopdracht {{ exists ? 'verwijderen uit' : 'toevoegen aan' }} favorieten</button>
       </p>
-    </div>-->
+    </div>
   </div>
 </template>
 
 <script>
-//import FindEvent from './FindEvent'
+import FindEvent from '@/components/FindEvent'
 import { inert, fromQuery } from '../const.js'
 
 export default {
-  props: ['user', 'finds', 'paging'],
-  mounted () {
-    console.log("findslisted mouned");
-  },
+  props: ['user', 'finds', 'paging', 'saved'],
   data () {
     return {
       favName: '',
@@ -61,28 +57,29 @@ export default {
       return this.currentPage
     },
     exists () {
-      return this.$root.saved.filter(s => s.name === this.$root.filterName).length
+      console.log(this.filterName);
+      return this.saved.filter(s => s.name === this.filterName).length
     }
   },
   methods: {
     to (q) {
-      this.$root.filterState.offset = q.offset
-      this.$root.fetch()
+      //this.$root.filterState.offset = q.offset
+      this.$emit('filtersChanged', {offset: q.offset})
     },
     toggleFav () {
       if (this.exists) {
-        this.$root.$emit('rmSearch')
+        this.$emit('rmSearch')
       } else if (!this.showFavName) {
         this.showFavName = true
       } else if (this.favName) {
-        this.$root.$emit('saveSearch', this.favName)
+        this.$emit('saveSearch', this.favName)
         this.favName = ''
         this.showFavName = false
       }
     }
   },
   components: {
-    //FindEvent
+    FindEvent
   }
 }
 </script>

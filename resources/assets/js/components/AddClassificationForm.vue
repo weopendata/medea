@@ -414,7 +414,6 @@
       }
     },
     mounted () {
-      console.log("hi");
       if (!this.cls.publication) {
         this.$set('cls.publication', [])
       }
