@@ -163,15 +163,11 @@ export default {
   methods: {
     updateFilterName (name) {
       this.filterName = name;
-
-      console.log(this.filterName, "this.filtenrame");
     },
     filtersChanged (v) {
       if (v) {
         this.filterState = Object.assign(v, this.filterState);
       }
-      console.log(this.filterState);
-      console.log("go fetch");
       this.fetch();
     },
     relevant (find) {
@@ -255,7 +251,6 @@ export default {
       ls('filterState', model)
     },
     mapToggle (v) {
-      console.log("TOLGGE");
       if (this.filterState.type === v) {
         this.$set('filterState.type', false)
       } else {
@@ -292,7 +287,7 @@ export default {
       .then(res => {
         //
       }).catch(err => {
-        console.log(err, "nooo");
+
       });
     },
     mapFocus (position, accuracy) {
@@ -312,7 +307,6 @@ export default {
     rmSearch () {
       // Remove from saved searches
       this.user.savedSearches = JSON.stringify(this.saved.filter(s => s.name !== this.filterName && s.name && s.name.length > 0))
-      console.log(this.user.savedSearches);
       //this.persistSearches()
     }
   },

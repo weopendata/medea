@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import $ from 'jquery';
+
   let loaded = false
   let ready = false
 

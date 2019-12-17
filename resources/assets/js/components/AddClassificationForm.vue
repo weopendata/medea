@@ -30,16 +30,16 @@
             </div>
           </div>
         </div>
-        <div class="ui grid" v-for="(index, pub) in cls.publication" style="margin-top:0;">
+        <div class="ui grid" v-for="(pub, index) in cls.publication" style="margin-top:0;">
           <div class="twelve wide column">
-            <input-publication :model="pub" :index="index"></input-publication>
+            <input-publication :publication="pub" :index="index"></input-publication>
           </div>
           <div class="four wide column">
             <input type="text" :value="getSource(index)" @input="setSource(index, $event.target.value)">
           </div>
         </div>
         <br>
-        <select-publication :model="pub"></select-publication>
+        <select-publication @publicationSelect="addExistingPublication"></select-publication>
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
       <!-- Find place -->
@@ -68,12 +68,12 @@
       <div class="two fields" @change="limitPeriod">
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering van</label>
-          <input-date v-model="cls.startDate"></input-date>
+          <input-date :model="cls.startDate" @update="updateStartDate"></input-date>
           <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de startdatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de startdatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel).' }}</div>
         </div>
         <div class="field" :class="{error: validRange, required: isTypology}">
           <label>Datering tot</label>
-          <input-date v-model="cls.endDate"></input-date>
+          <input-date :model="cls.endDate" @update="updateEndDate"></input-date>
           <div class="help-block">{{ isSourceRequired ? 'Vul hier de startdatum/einddatum in van de datering die de auteur aan deze vondst toewijst.' : isTypology ? 'Vul hier de einddatum in van dit type, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\').' : 'Vul hier de einddatum van de gelijkaardige vondst in, zoals aangegeven in de literatuur (waar je naar verwijst in het veld \'Bron\') (optioneel.)' }}</div>
         </div>
       </div>
@@ -95,16 +95,18 @@
             </div>
           </div>
         </div>
-        <div class="ui grid" v-for="(index, pub) in cls.publication" style="margin-top:0;">
+        <pre>{{cls.publication}}</pre>
+        <div class="ui grid" v-for="(pub, index) in cls.publication" style="margin-top:0;">
           <div class="twelve wide column">
-            <input-publication :model="pub" :index="index"></input-publication>
+            <pre>{{pub}}</pre>
+            <input-publication :publication="pub" :index="index"></input-publication>
           </div>
           <div class="four wide column">
             <input type="text" :value="getSource(index)" @input="setSource(index, $event.target.value)">
           </div>
-          <select-publication :model="pub"></select-publication>
         </div>
         <br>
+        <select-publication @publicationSelect="addExistingPublication"></select-publication>
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
       <!-- Remark -->
@@ -182,9 +184,15 @@
       }
     },
     methods: {
+      updateStartDate (value) {
+        this.cls.startDate = value;
+      },
+      updateEndDate (value) {
+        this.cls.endDate = value;
+      },
       closePublicationModal () {
         if (!this.isValidPublication(this.cls.publication[this.editingIndex])) {
-          this.rmPublication(this.editingIndex)
+          this.rmPublication(this.editingIndex);
         }
 
         this.editing = null
@@ -212,19 +220,34 @@
         this.editing = fromPublication(pub)
         this.editingIndex = index;
       },
-      addPublication (pub) {
-        /*pub = pub || {}
-        this.cls.publication.push(pub)
-        this.editPublication(pub, this.cls.publication.length - 1)*/
-        this.editing = fromPublication(pub);
+      async addExistingPublication (id) {
         this.editingIndex = null;
+        this.editing = null;
+
+        var response = await this.fetchPublication(id);
+
+        if (response.data) {
+          this.cls.publication.push(response.data);
+        }
       },
-      savePublication (pub) {
-        this.cls.publication.push(pub);
-        console.log(pub);
-        console.log(this.cls.publication);
+      fetchPublication (id) {
+        return axios.get('/api/publications/' + id);
+      },
+      addPublication (pub) {
+        pub = pub || {}
+        this.cls.publication.push(pub)
+        this.editPublication(pub, this.cls.publication.length - 1)
+        /*this.editing = fromPublication(pub);
+        this.editingIndex = this.cls.publication.length > 0 ? this.cls.publication.length - 1 : 0;*/
+      },
+      savePublication (publicationObject) {
+        var index = publicationObject.index;
+        var publication = toPublication(publicationObject.publication);
+        this.$set(this.cls.publication, this.editingIndex, publication);
+        //this.cls.publication.push(pub);
 
         this.editing = null;
+        this.editingIndex = -1;
       },
       rmPublication (index) {
         if (typeof index === 'number') {
@@ -273,16 +296,18 @@
       },
       setSource (index, value) {
         if (!this.cls.productionClassificationSource || typeof this.cls.productionClassificationSource !== 'object') {
-          this.$set('cls.productionClassificationSource', {})
+          this.$set(this.cls.productionClassificationSource, {});
         }
-        this.$set('cls.productionClassificationSource[' + index + ']', value)
+
+        this.$set(this.cls.productionClassificationSource, index, value);
       },
     },
     mounted () {
-      if (!this.cls.publication) {
-        this.$set('cls.publication', [])
+      if (! this.cls.publication) {
+        this.$set(this.cls.publication, [])
       }
-      // $('select.ui.dropdown').dropdown()
+
+      $('select.ui.dropdown').dropdown()
     },
     created: function () {
       window.addEventListener('keydown', this.keydown);

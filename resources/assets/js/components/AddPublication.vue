@@ -86,6 +86,10 @@
           <i class="unlinkify icon"></i>
           Referentie verwijderen
         </div>
+        <div class="ui gray button" @click="closePublication">
+          <i class="unlinkify icon"></i>
+          Annuleer
+        </div>
       </div>
     </div>
   </div>
@@ -100,7 +104,6 @@
     name: 'add-publication',
     props: ['publication', 'editingIndex'],
     mounted () {
-      console.log("mounted the add publication modal");
       if (this.publication) {
         this.editing = this.publication;
       } else {

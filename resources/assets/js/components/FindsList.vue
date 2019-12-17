@@ -57,7 +57,6 @@ export default {
       return this.currentPage
     },
     exists () {
-      console.log(this.filterName);
       return this.saved.filter(s => s.name === this.filterName).length
     }
   },

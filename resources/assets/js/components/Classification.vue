@@ -17,9 +17,9 @@
       </p>
       <p v-if="multiPub">
         Bronnen:
-        <span track-by="$index" v-for="pub in pubs" style="display:block">
+        <span v-for="(pub, index) in pubs" style="display:block">
           {{ citeClassificationPublication(pub) }}
-          {{ publicationPages($index) }}
+          {{ publicationPages(index) }}
           <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
