@@ -102,9 +102,9 @@
           <div class="four wide column">
             <input type="text" :value="getSource(index)" @input="setSource(index, $event.target.value)">
           </div>
+          <select-publication :model="pub"></select-publication>
         </div>
         <br>
-        <select-publication :model="pub"></select-publication>
         <button type="button" class="ui gray button" @click="addPublication">Bron toevoegen</button>
       </div>
       <!-- Remark -->
@@ -117,96 +117,15 @@
       </div>
     </div>
 
-    <!-- Add publication -->
-    <div class="ui dimmer modals page transition visible active" v-if="editing" @click="closePublication">
-      <div class="ui modal transition visible active" @click.stop>
-        <div class="header">
-          <h2>Publicatie bewerken</h2>
-        </div>
-        <div class="content">
-          <div class="two fields">
-            <div class="required field">
-              <label v-on:mouseover="this.tt.title = ! this.tt.title">Titel</label>
-              <auto-input facet="title" :placeholder="placeholder('title')" :val.sync="editing.publicationTitle"></auto-input>
-            </div>
-            <div class="required field">
-              <label>Type publicatie</label>
-              <select class="ui dropdown" v-model="editing.publicationType">
-                <option>boek</option>
-                <option>tijdschriftartikel</option>
-                <option>boekbijdrage</option>
-                <option>internetbron</option>
-              </select>
-            </div>
-          </div>
-          <div class="one field" v-if="editing.publicationType == 'tijdschriftartikel'">
-            <div class="required field">
-              <label>Titel tijdschrift</label>
-              <auto-input facet="title" placeholder="De titel van het tijdschrift." :val.sync="editing.parentTitle"></auto-input>
-            </div>
-            <div class="required field">
-              <label>Volume</label>
-              <input type="text" v-model="editing.parentVolume" placeholder="Het volume of de jaargang van het tijdschrift.">
-            </div>
-          </div>
-          <div class="one field" v-if="editing.publicationType == 'boekbijdrage'">
-            <div class="required field">
-              <label>Titel boek</label>
-              <auto-input facet="title" placeholder="De titel van het boek." :val.sync="editing.parentTitle"></auto-input>
-            </div>
-            <div class="required field">
-              <label>Redacteur</label>
-              <auto-input facet="author" placeholder="" :val.sync="editing.editor"></auto-input>
-              <small class="helper">Vul hier de namen in van de redacteur(s), op dezelfde manier als bij het auteurs veld.</small>
-            </div>
-          </div>
-          <div class="one field" v-if="editing.publicationType == 'internetbron'">
-            <div class="required field">
-              <label>Titel website / databank</label>
-              <auto-input facet="title" placeholder="De titel van de website of databank." :val.sync="editing.parentTitle"></auto-input>
-            </div>
-          </div>
-          <div :class="editing.publicationType == 'internetbron' ? 'field' : 'required field'">
-            <label>Namen van de auteurs</label>
-            <auto-input facet="author" placeholder="" :val.sync="editing.author"></auto-input>
-            <small class="helper">{{placeholder('author')}}</small>
-          </div>
-          <div class="three fields" v-if="editing.publicationType != 'internetbron'">
-            <div class="required field">
-              <label>Jaar van uitgave</label>
-              <input type="text" v-model="editing.pubTimeSpan" :placeholder="placeholder('timespan')">
-            </div>
-            <div class="required field">
-              <label>Plaats van uitgave</label>
-              <input type="text" v-model="editing.pubLocation" :placeholder="placeholder('place')">
-            </div>
-            <div :class="editing.publicationType == 'boekbijdrage' ? 'field' : 'required field'" v-if="editing.publicationType == 'boekbijdrage' || editing.publicationType == 'tijdschriftartikel'">
-              <label>Pagina's</label>
-              <input type="text" v-model="editing.publicationPages" :placeholder="placeholder('pages')">
-            </div>
-          </div>
-          <div class="required field" v-if="editing.publicationType == 'internetbron'">
-            <label>URL</label>
-            <input type="text" v-model="editing.publicationContact" placeholder="De volledige URL van de webpagina of databankrecord">
-          </div>
-          <div class="field" v-else>
-            <label>URL van de publicatie</label>
-            <input type="text" v-model="editing.publicationContact">
-          </div>
-          <br>
-        </div>
-        <div class="actions">
-          <div :class="validPublication ? 'ui green button' : 'ui grey disabled button'" @click="savePublication">
-            <i class="checkmark icon"></i>
-            Bewaren
-          </div>
-          <div class="ui gray button" @click="rmPublication">
-            <i class="unlinkify icon"></i>
-            Referentie verwijderen
-          </div>
-        </div>
-      </div>
-    </div>
+    <add-publication
+    v-if="editing"
+    @rmPublication="rmPublication"
+    @savePublication="savePublication"
+    :publication="editing"
+    :editingIndex="editingIndex"
+    @close="closePublicationModal"
+    >
+    </add-publication>
 
     <datalist id="types">
       <option v-for="opt in fields.type" :value="opt"></option>
@@ -224,7 +143,7 @@
   import InputDate from './InputDate';
   import InputPublication from './InputPublication.vue';
   import SelectPublication from './SelectPublication.vue';
-  import AutoInput from './AutoInput.vue';
+  import AddPublication from './AddPublication.vue';
 
   import { fromPublication, toPublication } from '../const.js'
 
@@ -248,30 +167,7 @@
       return {
         editing: null,
         fields: window.fields.classification,
-        types: ['2.1', '2.2', '2.3'],
-        tt : {
-          title : false
-        },
-        placeholders : {
-          title : {
-            boek: "De titel van het boek.",
-            boekbijdrage: "De titel van de boekbijdrage",
-            tijdschriftartikel: "De titel van het artikel.",
-            internetbron: "Webpaginatitel / databankrecord nummer"
-          },
-          timespan: {
-            boek: "Het jaartal boekpublicatie.",
-            tijdschriftartikel: "Het jaartal van het artikel"
-          },
-          place : {
-            boek: "Plaats uitgave van het boek.",
-            boekbijdrage: "Plaats uitgave van het boek."
-          },
-          pages : {
-            tijdschriftartikel: "Beginpagina - eindpagina",
-            boekbijdrage: "Beginpagina - eindpagina"
-          }
-        }
+        types: ['2.1', '2.2', '2.3']
       }
     },
     computed: {
@@ -281,26 +177,67 @@
       validRange () {
         return parseInt(this.cls.startDate) > parseInt(this.cls.endDate)
       },
-      validPublication () {
-        if (this.editing.publicationType) {
-          return this.isValidPublication(this.editing)
-        }
-      },
       isSourceRequired () {
         return this.cls.productionClassificationType === 'Publicatie van deze vondst'
       }
     },
     methods: {
-      placeholder (element) {
-        const pubType = this.editing.publicationType
-
-        if (element == 'author' && pubType != 'internetbron') {
-          return "Vul hier de namen van de auteur(s) van de publicatie in, in het formaat: voornaam naam. Vermeld maximaal twee namen, gescheiden door een &-teken. Bij meer dan twee auteurs , vermeld je enkel de eerste, gevolgd door: et al. Vb. C. Renfrew/C. Renfrew & P. Bahn/C. Renfrew et al.";
-        } else if (element == 'author' && pubType == 'internetbron') {
-          return 'Vul hier de naam van de auteur van de webpagina of databankrecord (optioneel)'
+      closePublicationModal () {
+        if (!this.isValidPublication(this.cls.publication[this.editingIndex])) {
+          this.rmPublication(this.editingIndex)
         }
 
-        return this.placeholders[element] && pubType && this.placeholders[element][pubType] ? this.placeholders[element][pubType] : ''
+        this.editing = null
+        this.editingIndex = -1
+      },
+      isValidPublication (pub) {
+        if (! pub.publicationType) {
+          return false;
+        }
+
+        switch (pub.publicationType) {
+          case 'boek':
+          return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation
+          case 'boekbijdrage':
+          return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation && pub.editor && pub.parentTitle
+          case 'tijdschriftartikel':
+          return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
+          case 'internetbron':
+          return pub && pub.publicationTitle && pub.publicationType && pub.publicationContact && pub.parentTitle
+          default:
+          return false;
+        }
+      },
+      editPublication (pub, index) {
+        this.editing = fromPublication(pub)
+        this.editingIndex = index;
+      },
+      addPublication (pub) {
+        /*pub = pub || {}
+        this.cls.publication.push(pub)
+        this.editPublication(pub, this.cls.publication.length - 1)*/
+        this.editing = fromPublication(pub);
+        this.editingIndex = null;
+      },
+      savePublication (pub) {
+        this.cls.publication.push(pub);
+        console.log(pub);
+        console.log(this.cls.publication);
+
+        this.editing = null;
+      },
+      rmPublication (index) {
+        if (typeof index === 'number') {
+          this.editingIndex = index
+        }
+
+        if (this.cls.productionClassificationSource) {
+          this.cls.productionClassificationSource[this.editingIndex] = null
+        }
+
+        this.cls.publication.splice(this.editingIndex, 1)
+        this.editing = null
+        this.editingIndex = -1
       },
       setMainType (type) {
         this.cls.productionClassificationType = type
@@ -308,13 +245,16 @@
       limitDateRange () {
         const period = this.cls.productionClassificationCulturePeople
         const range = dateRanges.find(r => r.period === period)
+
         if (range) {
-          if (range.min && (!this.cls.startDate || this.cls.startDate < range.min || this.cls.startDate >= range.max)) {
-            this.cls.startDate = range.min
-          }
-          if (range.max && (!this.cls.endDate || this.cls.endDate > range.max || this.cls.endDate <= range.min)) {
-            this.cls.endDate = range.max
-          }
+          return;
+        }
+
+        if (range.min && (!this.cls.startDate || this.cls.startDate < range.min || this.cls.startDate >= range.max)) {
+          this.cls.startDate = range.min
+        }
+        if (range.max && (!this.cls.endDate || this.cls.endDate > range.max || this.cls.endDate <= range.min)) {
+          this.cls.endDate = range.max
         }
       },
       limitPeriod () {
@@ -337,81 +277,6 @@
         }
         this.$set('cls.productionClassificationSource[' + index + ']', value)
       },
-      pubCheck () {
-        var empties = 0;
-        for (var i = 0; i < this.cls.publication.length; i++) {
-          empties += this.cls.publication[i].publicationTitle && this.cls.publication[i].publicationTitle.length ? 0 : 1
-        }
-        if (!empties) {
-          this.$nextTick(function () {
-            this.cls.publication.push({publicationTitle: ''})
-          })
-        } else if (empties > 1) {
-          this.$nextTick(function () {
-            for (var i = 0; i < this.cls.publication.length; i++) {
-              if (!this.cls.publication[i].publicationTitle.length) {
-                this.cls.publication.splice(i, 1)
-                break
-              }
-            }
-          })
-        }
-      },
-      isValidPublication (pub) {
-        if (! pub.publicationType) {
-          return false;
-        }
-
-        switch (pub.publicationType) {
-          case 'boek':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation
-          case 'boekbijdrage':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.pubLocation && pub.editor && pub.parentTitle
-          case 'tijdschriftartikel':
-            return pub && pub.publicationTitle && pub.publicationType && pub.author && pub.pubTimeSpan && pub.parentVolume && pub.parentTitle && pub.publicationPages
-          case 'internetbron':
-            return pub && pub.publicationTitle && pub.publicationType && pub.publicationContact && pub.parentTitle
-          default:
-            return false;
-        }
-      },
-      editPublication (pub, index) {
-        this.editing = fromPublication(pub)
-        this.editingIndex = index
-      },
-      closePublication () {
-        if (!this.isValidPublication(this.cls.publication[this.editingIndex])) {
-          this.rmPublication(this.editingIndex)
-        }
-        this.editing = null
-        this.editingIndex = -1
-      },
-      savePublication () {
-        this.$set('cls.publication[editingIndex]', toPublication(this.editing))
-        this.closePublication()
-      },
-      addPublication (pub) {
-        pub = pub || {}
-        this.cls.publication.push(pub)
-        this.editPublication(pub, this.cls.publication.length - 1)
-      },
-      rmPublication (index) {
-        if (typeof index === 'number') {
-          this.editingIndex = index
-        }
-        if (this.cls.productionClassificationSource) {
-          this.cls.productionClassificationSource[this.editingIndex] = null
-        }
-        this.cls.publication.splice(this.editingIndex, 1)
-        this.editing = null
-        this.editingIndex = -1
-      },
-      keydown (evt) {
-        evt = evt || window.event;
-        if (evt.keyCode == 27) {
-          this.closePublication()
-        }
-      }
     },
     mounted () {
       if (!this.cls.publication) {
@@ -430,7 +295,7 @@
       InputPublication,
       SelectPublication,
       TextareaGrowing,
-      AutoInput
+      AddPublication,
     }
   }
 </script>

@@ -10,11 +10,12 @@ export default {
       if (!window.PhotoSwipe) {
         return console.warn('PhotoSwipe missing')
       }
-      var el = this.$el
-      this.$dispatch('initPhotoswipe', {
+      var el = this.$el;
+
+      this.$emit('initPhotoswipe', {
         index: parseInt(this.index),
         getThumbBoundsFn () {
-          var pageYScroll = window.pageYOffset || document.documentElement.scrollTop; 
+          var pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
           var rect = el.getBoundingClientRect();
           return {
             x: rect.left,

@@ -1,5 +1,5 @@
 <template>
-  <form class="ui form" @submit.prevent="submit" :action="submitAction" style="margin: 5em 0 5em;">
+  <form class="ui form" @submit.prevent="submit" :action="'/objects/' + this.object.identifier + '/classifications'" style="margin: 5em 0 5em;">
     <h2>Classificeren</h2>
     <div class="card card-center cls-card">
       <div class="card-textual">
@@ -36,8 +36,13 @@ export default {
         return this.cls.publication && this.cls.publication.length > 0
       }
     },
-    submitAction () {
-      return '/objects/' + this.object.identifier + '/classifications'
+    submitAction: {
+      get () {
+        return '/objects/' + this.object.identifier + '/classifications'
+      },
+      set (v) {
+        //
+      }
     }
   },
   methods: {
@@ -48,11 +53,11 @@ export default {
       return this.cls
     },
     submitSuccess ({data}) {
-      this.$root.fetch()
-      this.cls = emptyClassification()
+      this.$emit('submitted');
+      this.cls = emptyClassification();
     },
     submitError ({data}) {
-      this.$root.fetch()
+      this.$emit('submitted');
     }
   },
   mixins: [Ajax],

@@ -1,7 +1,7 @@
 <template>
   <div>
     <p v-cloak class="ui container container-723 loading">Deze pagina wordt geladen...</p>
-    <form class="ui container container-723 form" @submit.prevent="submit" v-cloak="true">
+    <form class="ui container container-723 form" @submit.prevent="submit" v-cloak="true" novalidate>
       <div class="ui visible warning message" v-if="validation.remarks">
         <div class="header">
           Opmerking van de validator:
@@ -161,12 +161,12 @@
               <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
             </p>
           </div>
-          <GmapMap :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
-            <GmapRectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></GmapRectangle>
-            <GmapMarker v-if="marker.visible && markerNeeded"  :position.sync="latlng" :clickable="true" :draggable="true"></GmapMarker>
-            <GmapCircle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></GmapCircle>
+          <gmap-map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
+            <gmap-rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></gmap-rectangle>
+            <gmap-marker v-if="marker.visible && markerNeeded"  :position.sync="latlng" :clickable="true" :draggable="true"></gmap-marker>
+            <gmap-circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></gmap-circle>
             <div class="gm-panel" style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;" @click="showHelp('map')">Help</div>
-          </GmapMap>
+          </gmap-map>
         </div>
         <div class="fields" v-if="show.co||show.map">
           <div class="four wide field">
@@ -528,7 +528,7 @@
   import checkbox from 'semantic-ui-css/components/checkbox.min.js'
   import extend from 'deep-extend/lib/deep-extend.js'
   //import { load, Map, Marker as GoogleMarker, Circle as GoogleCircle, Rectangle } from 'vue-google-maps'
-  import { GmapMap, GmapMarker, GmapCircle, GmapRectangle } from 'vue2-google-maps';
+  //import { GmapMap, GmapMarker, GmapCircle, GmapRectangle } from 'vue2-google-maps';
 
   import AddClassificationForm from '@/components/AddClassificationForm'
   import DevBar from '@/components/DevBar'
@@ -871,7 +871,7 @@
       this.toStep(2)
     },
     reverseGeocode () {
-      var google = window.google
+      //var google = window.google
       var self = this
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
@@ -1035,10 +1035,10 @@
   components: {
     DevBar,
     Step,
-    GmapMap,
+    /*GmapMap,
     GmapMarker,
     GmapCircle,
-    GmapRectangle,
+    GmapRectangle,*/
     PhotoUpload,
     DimInput,
     FindEvent,

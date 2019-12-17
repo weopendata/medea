@@ -31,7 +31,7 @@
       </p>
     </div>
     <div class="card-bar card-bar-border">
-      <span v-if="$root.user.vondstexpert">
+      <span v-if="user.vondstexpert">
         <button class="btn" :class="{green:cls.me==='agree'}" @click.stop="agree"><i class="thumbs up icon"></i></button>
         <button class="btn" :class="{red:cls.me==='disagree'}" @click.stop="disagree"><i class="thumbs down icon"></i></button>
       </span>
@@ -56,9 +56,17 @@ import Publication from '../mixins/Publication.js'
 export default {
   props: ['cls', 'obj'],
   mixins: [Publication],
+  mounted () {
+    this.user = window.medeaUser || {};
+  },
+  data () {
+    return {
+      user: {}
+    }
+  },
   computed: {
     removable () {
-      return this.$root.user.administrator || this.cls.addedByUser
+      return this.user.administrator || this.cls.addedByUser
     },
     creator () {
       return this.cls && this.cls.addedBy
@@ -105,7 +113,10 @@ export default {
       })
     },
     rm () {
-      this.$http.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1)).then(this.$root.fetch)
+      axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1))
+        .then(response => {
+          this.$emit('removed');
+        })
     }
   },
   filters: {
