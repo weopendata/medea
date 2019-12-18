@@ -95,22 +95,44 @@ export default {
       return y1 || '?'
     },
     agree () {
-      this.cls[this.cls.me]--
-      this.$set('cls.me', this.cls.me === 'agree' ? null : 'agree')
-      this.cls[this.cls.me]++
-      this.$http({
-        method: this.cls.me ? 'POST' : 'DELETE',
-        url: '/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree'
-      })
+      if (this.cls.me) {
+        this.cls[this.cls.me]--;
+      }
+
+      var agreedValue = this.cls.me === 'agree' ? null : 'agree';
+
+      // $set
+      this.cls.me =  agreedValue;
+
+      if (this.cls.me) {
+        this.cls[this.cls.me]++;
+      }
+
+      if (this.cls.me) {
+        axios.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree');
+      } else {
+        axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree');
+      }
     },
     disagree () {
-      this.cls[this.cls.me]--
-      this.$set('cls.me', this.cls.me === 'disagree' ? null : 'disagree')
-      this.cls[this.cls.me]++
-      this.$http({
-        method: this.cls.me ? 'POST' : 'DELETE',
-        url: '/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree'
-      })
+      if (this.cls.me) {
+        this.cls[this.cls.me]--;
+      }
+
+      var disagreedValue = this.cls.me === 'disagree' ? null : 'disagree';
+
+      // $set
+      this.cls.me =  disagreedValue;
+
+      if (this.cls.me) {
+        this.cls[this.cls.me]++;
+      }
+
+      if (this.cls.me) {
+        axios.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree');
+      } else {
+        axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree');
+      }
     },
     rm () {
       axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1))

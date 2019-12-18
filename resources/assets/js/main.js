@@ -72,7 +72,6 @@ Vue.use(VueGoogleMaps, {
 
 Vue.use(VueResource);
 Vue.use(VueTextareaAutosize);
-Vue.component('v-select', vSelect);
 
 Vue.config.productionTip = false;
 Vue.http.headers.common['X-CSRF-TOKEN'] = window.csrf;
