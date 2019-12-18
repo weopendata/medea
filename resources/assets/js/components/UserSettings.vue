@@ -166,10 +166,6 @@
 
   import Notifications from '@/mixins/Notifications'
 
-  /*var email = window.user.email
-  var id = window.user.id
-  delete window.user.email*/
-
   export default {
     data () {
       return {

@@ -10,7 +10,7 @@
       verzameld buiten MEDEA om? Neem dan contact met de MEDEA-beheerder via <a href="mailto:info@vondsten.be">info@vondsten.be</a>.
     </div>
     <div class="ui very relaxed items">
-      <div class="">
+      <div>
         <span class="finds-order">Sorteren op:
           <a @click.prevent="sortBy('title')" :class="sortClass('title')">Titel</a>
           <a @click.prevent="sortBy('created_at')" :class="sortClass('created_at')">Datum aangemaakt</a>
