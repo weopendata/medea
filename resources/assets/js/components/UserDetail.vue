@@ -15,24 +15,37 @@
     <template v-if="profile.expertise || profile.bio || profile.research || profile.function || profile.affiliation">
       <h3>Over mij</h3>
       <template v-if="profile.function">
-        <p>
-          <b>Functie</b>: {{profile.function}}
-        </p>
+        <div>
+          <p>
+            <b>Functie</b>: {{profile.function}}
+          </p>
+        </div>
       </template>
       <template v-if="profile.affiliation">
-        <p>
-          <b>Instelling</b>: {{profile.affiliation}}
-        </p>
+        <div class="user_description">
+          <p>
+            <b>Instelling</b>: {{profile.affiliation}}
+          </p>
+        </div>
       </template>
-      <p>
-        <b>Onderzoek</b>: {{profile.research}}
-      </p>
-      <p>
-        <b>Bio</b>: {{profile.bio}}
-      </p>
-      <p>
-        <b>Expertise</b>: {{profile.expertise}}
-      </p>
+      <div class="user_description">
+        <p>
+          <b>Onderzoek</b>
+        </p>
+        <p>{{profile.research}}</p>
+      </div>
+      <div class="user_description">
+        <p>
+          <b>Bio</b>
+        </p>
+        <p style="white-space: pre;">{{profile.bio}}</p>
+      </div>
+      <div class="user_description">
+        <p>
+          <b>Expertise</b>
+        </p>
+        <p style="white-space: pre;">{{profile.expertise}}</p>
+      </div>
     </template>
 
   <template v-if="user.id != id">
@@ -153,3 +166,15 @@
     mixins: [Notifications]
   }
 </script>
+
+<style lang="scss">
+  .user_description {
+    margin-bottom: 20px;
+    margin-top: 5px;
+
+    p {
+      white-space: pre;
+      line-height: 0.8rem;
+    }
+  }
+</style>
