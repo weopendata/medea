@@ -20,37 +20,28 @@ import Ajax from '../mixins/Ajax'
 import SelectCollection from './SelectCollection'
 
 export default {
+  props: ['collections', 'profile', 'errors'],
   data () {
     return {
-      errors: {},
-      collections: window.collections || [],
-      profile: window.profile,
     }
   },
   methods: {
     assignCollection (collection) {
-      this.$http.put('/collections/' + collection.identifier + '/persons/' + this.profile.identifier)
-        .then(persons => {
-          this.errors = {}
-          this.collections.push(collection)
-        })
-        .catch(errors => {
-          this.errors = errors.data
-        })
+      this.$emit('assignCollection', collection);
     },
     remove (collection) {
-      this.$http.delete('/collections/' + collection.identifier + '/persons/' + this.profile.identifier)
-        .then(persons => {
-          this.errors = {}
-          this.collections.splice(this.collections.indexOf(collection), 1)
-        })
-        .catch(errors => {
-          this.errors = errors.data
-        })
+      this.$emit('removeCollection', collection);
     }
   },
   components: {
     SelectCollection
+  },
+  watch: {
+    errors (v) {
+      if (! v) {
+        this.errors = {};
+      }
+    }
   }
 }
 </script>

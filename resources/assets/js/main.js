@@ -91,8 +91,9 @@ Vue.component('nav-bar', require('./components/NavBar.vue').default);
 Vue.component('home', require('./components/Home.vue').default);
 Vue.component('users-overview', require('./components/UsersOverview.vue').default);
 Vue.component('finds-overview', require('./components/FindsOverview.vue').default);
-Vue.component('create-find', require('./components/CreateFind.vue').default)
-Vue.component('find-event-detail', require('./components/FindEventDetail.vue').default)
+Vue.component('create-find', require('./components/CreateFind.vue').default);
+Vue.component('find-event-detail', require('./components/FindEventDetail.vue').default);
+Vue.component('user-detail', require('./components/UserDetail.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

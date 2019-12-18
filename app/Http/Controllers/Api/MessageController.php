@@ -24,8 +24,12 @@ class MessageController extends Controller
         $recipient = new Person();
         $recipient->setNode($userNode);
 
-        $mailer->sendPlatformMessage($request->input('message'), $recipient, $request->user());
+        try {
+            $mailer->sendPlatformMessage($request->input('message'), $recipient, $request->user());
 
-        return redirect()->back()->with('message', 'Uw bericht werd verstuurd!');
+            return response()->json(['message' => 'Uw bericht werd verstuurd']);
+        } catch (\Exception $ex) {
+            return response()->json(['message' => 'Er is iets fout gelopen bij het versturen van uw bericht, contacteer de beheerder als dit probleem zich blijft voordoen.']);
+        }
     }
 }

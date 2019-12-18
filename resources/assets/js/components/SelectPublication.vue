@@ -1,14 +1,14 @@
 <template>
-    <model-list-select
-    style="width: 300px; display: inline-block;"
-    :list="publications"
-    option-value="id"
-    option-text="title"
-    v-model="selectedPublication"
-    placeholder="Zoeken in bestaande publicaties"
-    @searchchange="searchPublication"
-    >
-</model-list-select>
+  <model-list-select
+  style="width: 300px; display: inline-block;"
+  :list="publications"
+  option-value="id"
+  option-text="title"
+  v-model="selectedPublication"
+  placeholder="Zoeken in bestaande publicaties"
+  @searchchange="searchPublication"
+  >
+  </model-list-select>
 </template>
 
 <script>
