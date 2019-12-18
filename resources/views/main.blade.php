@@ -21,7 +21,6 @@
 <body>
 <script src="https://cdn.jsdelivr.net/npm/intro.js@2.9.3/intro.min.js"></script>
 
-
 @section('script')
 @show
 
@@ -60,18 +59,5 @@ medeaUser.email = '{{ Auth::user()->email }}';
 
 <script src="/js/main.js?{{ Config::get('app.version') }}"></script>
 
-@if (Config::get('app.debug'))
-  <!--<script src="/js/vendor.js"></script>-->
-  <script type="text/javascript">
-  //window.Vue.config.devtools = true
-  //window.Vue.config.debug = true
-  </script>
-@else
-  <!--<script src="/js/vendor.min.js?{{ Config::get('app.version') }}"></script>-->
-@endif
-
-@if (Config::get('app.debug'))
-<script src="//localhost:35729/livereload.js?snipver=1" type="text/javascript" async defer></script>
-@endif
 </body>
 </html>

@@ -10,9 +10,8 @@
       verzameld buiten MEDEA om? Neem dan contact met de MEDEA-beheerder via <a href="mailto:info@vondsten.be">info@vondsten.be</a>.
     </div>
     <div class="ui very relaxed items">
-      <div class="list-controls">
-        <span class="finds-order">
-          Sorteren op:
+      <div class="">
+        <span class="finds-order">Sorteren op:
           <a @click.prevent="sortBy('title')" :class="sortClass('title')">Titel</a>
           <a @click.prevent="sortBy('created_at')" :class="sortClass('created_at')">Datum aangemaakt</a>
         </span>
@@ -21,6 +20,8 @@
         </label>
       </div>
       <br>
+    </div>
+    <div class="ui very relaxed items">
       <collection v-for="collection in collections" :initial-collection="collection"></collection>
       <div v-if="!collections.length" class="finds-empty">
         <h1>
