@@ -50,9 +50,14 @@
 
   export default {
     props: ['initialCollection'],
+    mounted () {
+      if (! this.initialCollection && window.initialCollection) {
+        this.collection = incomingCollection(window.initialCollection)
+      }
+    },
     data() {
       return {
-        collection: incomingCollection(this.initialCollection)
+        collection: this.initialCollection ? incomingCollection(this.initialCollection) : {}
       };
     },
     computed: {
