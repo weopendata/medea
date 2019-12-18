@@ -55,28 +55,30 @@
   </div>
   @endif-->
 
-  <h3>Contact</h3>
-  <!--@if (@$profile['showEmail'])-->
-  <template v-if="profile.showEmail">
-  <p>
-    Email: <a :href="'mailto:' + profile.email">{{ profile.email }}</a>
-  </p>
-  </template>
-  <template v-else>
-    <form @submit.prevent="sendMessage" method="POST" class="ui form" style="max-width:25em">
-      <input type="hidden" name="user_id" :value="id">
-      <div class="field">
-        <label>Bericht aan {{ profile.firstName }}</label>
-        <textarea rows="3" name="message" v-model="message"></textarea>
+  <template v-if="user.id != id">
+    <h3>Contact</h3>
+    <!--@if (@$profile['showEmail'])-->
+    <template v-if="profile.showEmail">
+      <p>
+        Email: <a :href="'mailto:' + profile.email">{{ profile.email }}</a>
+      </p>
+    </template>
+    <template v-else>
+      <form @submit.prevent="sendMessage" method="POST" class="ui form" style="max-width:25em">
+        <input type="hidden" name="user_id" :value="id">
+        <div class="field">
+          <label>Bericht aan {{ profile.firstName }}</label>
+          <textarea rows="3" name="message" v-model="message"></textarea>
+        </div>
+        <div class="field">
+          <button type="submit" class="ui small blue button">Verzenden</button>
+        </div>
+      </form>
+      <div class="ui message" :class="messageStatus" v-if="messageSent != null" style="width: 250px;">
+        <i class="close icon"></i>
+        <p>{{messageResponse}}</p>
       </div>
-      <div class="field">
-        <button type="submit" class="ui small blue button">Verzenden</button>
-      </div>
-    </form>
-    <div class="ui message" :class="messageStatus" v-if="messageSent != null" style="width: 250px;">
-      <i class="close icon"></i>
-      <p>{{messageResponse}}</p>
-    </div>
+    </template>
   </template>
   <!--@endif-->
 
