@@ -25,7 +25,7 @@
       <div class="column">
         <div class="field">
           <label for="description">Geef feedback mee aan de detectorist over de gevraagde/gedane aanpassingen:</label>
-          <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
+          <textarea-growing id="description" :model="remarks" @input="updateRemarks"></textarea-growing>
         </div>
       </div>
     </div>
@@ -93,6 +93,9 @@ export default {
     }
   },
   methods: {
+    updateRemarks (value) {
+      this.remarks = value;
+    },
     checkAll() {
       for (const key in this.imgRemarks) {
         this.imgRemarks[key] = false

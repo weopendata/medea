@@ -112,7 +112,7 @@
       <!-- Remark -->
       <div class="field">
         <label for="description">Opmerking</label>
-        <textarea-growing id="description" v-model="cls.productionClassificationDescription"></textarea-growing>
+        <textarea-growing id="description" :model="cls.productionClassificationDescription" @input="updateDescription"></textarea-growing>
         <div class="help-block">
           Voeg hier eventueel een opmerking toe aan je classificatie (optioneel).
         </div>
@@ -184,6 +184,9 @@
       }
     },
     methods: {
+      updateDescription (value) {
+        this.cls.productionClassificationDescription = value;
+      },
       updateStartDate (value) {
         this.cls.startDate = value;
       },
