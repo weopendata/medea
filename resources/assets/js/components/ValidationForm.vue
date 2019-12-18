@@ -1,5 +1,5 @@
 <template>
-  <div class="ui form" @submit.prevent :action="submitAction">
+  <div class="ui form" @submit.prevent>
     <div class="ui warning message visible" v-if="validation.feedback">
       <p>
         <b>De vondst werd aangepast door de detectorist. Vink aan welke velden ok zijn, indien alles ok is bevonden kan de vondst goedgekeurd worden en is ze gevalideerd. </b>
