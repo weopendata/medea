@@ -6,7 +6,7 @@
         <div class="header">
           Opmerking van de validator:
         </div>
-        <div style="white-space:pre-wrap">@{{validation.remarks | json}}</div>
+        <div style="white-space:pre-wrap">{{validation.remarks | json}}</div>
       </div>
 
       <div class="ui visible warning message" v-if="hasFeedback">
@@ -439,7 +439,7 @@
             </div>
           </div>
           <p v-if="currentStatus!='Voorlopige versie'&&currentStatus!='Aan te passen'">
-            Huidige status: @{{currentStatus}}
+            Huidige status: {{currentStatus}}
           </p>
         </div>
       </step>
