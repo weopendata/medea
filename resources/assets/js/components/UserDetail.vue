@@ -78,7 +78,7 @@
     <li v-for="role in roles">{{ role }}</li>
   </ul>
 
-  <template v-if="collections">
+  <template v-if="collections && collections.length > 0">
     <div>
       <h3>Collecties:</h3>
       <user-collections
