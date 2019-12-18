@@ -256,7 +256,7 @@
   }
 </script>
 
-<style type="text/css">
+<style type="text/css" scoped>
 .nav-settings ul {
   list-style: none;
   margin: 0;

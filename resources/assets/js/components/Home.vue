@@ -178,7 +178,7 @@
       </div>
       <div v-if="registered" style="color:#090">
         <h3>Registratie wordt gevalideerd</h3>
-        <p>De administrator zal je registratie bevestigen. Dit kan even duren. In volgende iteraties van het platform kan dit automatisch gebeuren.</p>
+        <p>De administrator zal je registratie bevestigen en kan even duren. In volgende iteraties van het platform kan dit automatisch gebeuren.</p>
       </div>
     </form>
   </div>
