@@ -161,10 +161,10 @@
               <button class="ui green button" @click="hideHelp('map')">OK, niet meer tonen</button>
             </p>
           </div>
-          <gmap-map :center.sync="map.center" :zoom.sync="map.zoom" @g-click="setMarker" class="vue-map-size">
+          <gmap-map :center="map.center" :zoom="map.zoom" @click="setMarker" class="vue-map-size">
             <gmap-rectangle v-if="marker.visible" :bounds="publicBounds" :options="publicOptions"></gmap-rectangle>
-            <gmap-marker v-if="marker.visible && markerNeeded"  :position.sync="latlng" :clickable="true" :draggable="true"></gmap-marker>
-            <gmap-circle v-if="marker.visible&&!markerNeeded" :center.sync="latlng" :radius.sync="accuracy" :options="marker.options"></gmap-circle>
+            <gmap-marker v-if="marker.visible && markerNeeded" :position="latlng" :clickable="true" :draggable="true" @drag="setMarker"></gmap-marker>
+            <gmap-circle v-if="marker.visible&&!markerNeeded" :center="latlng" :radius="accuracy" :options="marker.options"></gmap-circle>
             <div class="gm-panel" style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;" @click="showHelp('map')">Help</div>
           </gmap-map>
         </div>
@@ -527,8 +527,6 @@
 
   import checkbox from 'semantic-ui-css/components/checkbox.min.js'
   import extend from 'deep-extend/lib/deep-extend.js'
-  //import { load, Map, Marker as GoogleMarker, Circle as GoogleCircle, Rectangle } from 'vue-google-maps'
-  //import { GmapMap, GmapMarker, GmapCircle, GmapRectangle } from 'vue2-google-maps';
 
   import AddClassificationForm from '@/components/AddClassificationForm'
   import DevBar from '@/components/DevBar'
@@ -866,22 +864,21 @@
         lng: event.latLng.lng()
       }
     },
-    changeMarker (event) {
-    },
     // Combined step that handles the geocoding of the address and goes to step 2
     handleStep1 () {
       this.reverseGeocode()
       this.toStep(2)
     },
     reverseGeocode () {
-      //var google = window.google
+      var google = window.google
       var self = this
       var a = this.find.findSpot.location.address
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
         location: this.latlng,
         region: 'be'
-      }, function (results, status) {
+      },
+      (results, status) => {
         if (status !== google.maps.GeocoderStatus.OK) {
           return console.warn('reverse geocoding: failed', status)
         } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
@@ -914,11 +911,13 @@
       var google = window.google
       var self = this
       var a = this.find.findSpot.location.address
+
       this.geocoder = this.geocoder || new google.maps.Geocoder()
       this.geocoder.geocode({
         address: (a.locationAddressStreet ? a.locationAddressStreet + (a.locationAddressNumber || '') + ' , ' : '') + (a.locationAddressPostalCode || '') + a.locationAddressLocality,
         region: 'be'
-      }, function (results, status) {
+      },
+      (results, status) => {
         if (status !== google.maps.GeocoderStatus.OK) {
           self.show.map = true
           return console.warn('geocoding failed', status)
@@ -927,6 +926,7 @@
           self.show.map = true
           return console.warn('no results', status)
         }
+
         var location = getCities(results)
         self.find.findSpot.location.address.locationAddressStreet = location.street
         self.find.findSpot.location.address.locationAddressLocality = location.locality
@@ -945,7 +945,7 @@
         self.show.map = true
 
         // Show address
-        if (location.street) {
+        if (location.postalCode) {
           self.show.address = true
         }
         self.$nextTick(function () {
@@ -1038,10 +1038,6 @@
   components: {
     DevBar,
     Step,
-    /*GmapMap,
-    GmapMarker,
-    GmapCircle,
-    GmapRectangle,*/
     PhotoUpload,
     DimInput,
     FindEvent,
