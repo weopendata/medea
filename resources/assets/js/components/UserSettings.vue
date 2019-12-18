@@ -220,11 +220,12 @@
     methods: {
       setDetectoristNumber (i, v) {
         var a = this.detectoristArray
-        a[i] = v
+        a[i] = v;
+
         if (a[3] || a[4]) {
-          this.$set('user.detectoristNumber', a.join('/'))
+          this.user.detectoristNumber = a.join('/');
         } else {
-          this.$set('user.detectoristNumber', null)
+          this.user.detectoristNumber = null;
         }
       },
       updateSettings () {
@@ -234,7 +235,7 @@
         this.user.personType = undefined
         this.user.savedSearches = undefined
 
-        axios.put('/persons/' + id, this.user)
+        axios.put('/persons/' + this.id, this.user)
         .then(response => {
           this.message = response.data.message
           this.errors = {}
