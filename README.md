@@ -12,6 +12,7 @@ To build the front-end, run:
 
 ```
 npm install
+npm run prod
 ```
 
 ### Full text support
