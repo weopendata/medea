@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use App\Repositories\CollectionRepository;
+use Illuminate\Support\Arr;
 
-class Object extends Base
+class BaseObject extends Base
 {
     public static $NODE_TYPE = 'E22';
     public static $NODE_NAME = 'object';
@@ -184,7 +185,7 @@ class Object extends Base
         $description = '';
 
         foreach ($fulltextProperties as $property) {
-            if (! empty($value = array_get($properties, $property))) {
+            if (! empty($value = Arr::get($properties, $property))) {
                 $description .= $value . ' ';
             }
         }

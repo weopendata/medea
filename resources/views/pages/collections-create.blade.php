@@ -3,10 +3,12 @@
 @section('title', 'Collecties')
 
 @section('content')
-<div id="app">
-  <collections-create></collections-create>
-</div>
 @endsection
+
+@section('component')
+  <collections-create></collections-create>
+@endsection
+
 
 @section('script')
 <script type="text/javascript">
@@ -21,6 +23,5 @@ window.fields = {!! json_encode($fields ?? [
   ]
 ]) !!};
 </script>
-<script src="{{ asset('js/collections-create.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection
 

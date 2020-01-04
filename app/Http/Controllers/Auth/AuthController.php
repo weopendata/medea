@@ -15,6 +15,9 @@ use App\Mailers\AppMailer;
 use Illuminate\Support\MessageBag;
 use PiwikTracker;
 
+/**
+ * @deprecated
+ */
 class AuthController extends Controller
 {
     /*

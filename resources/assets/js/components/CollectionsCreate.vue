@@ -21,7 +21,7 @@
       </div>
       <div class="field" :class="{ error: errors.description }">
         <label>Info</label>
-        <textarea-growing id="description" :model.sync="collection.description"></textarea-growing>
+        <textarea-growing id="description" :model="collection.description" @input="updateDescription"></textarea-growing>
         <div v-for="msg in errors.description" v-text="msg" class="input"></div>
       </div>
       <div class="field" :class="{ error: errors.institution }">
@@ -58,7 +58,7 @@ export default {
       collection: incomingCollection(window.initialCollection || {
         collectionType: 'prive collectie',
         description: '',
-        institution: [],
+        institutions: [],
         object: [],
         person: [],
         title: '',
@@ -73,8 +73,11 @@ export default {
     }
   },
   methods: {
+    updateDescription (value) {
+      this.collection.description = value;
+    },
     setInstitution (evt) {
-      this.$set('collection.institutions', evt.target.value)
+      this.collection.institutions = evt.target.value;
     },
     formdata () {
       const { institutions } = this.collection

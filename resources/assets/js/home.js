@@ -1,10 +1,45 @@
+window.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+//window.Vue = require('vue');
+
+global.$ = global.jQuery = require('jquery');
+
+$.ajaxSetup({
+  headers: {
+    'X-CSRF-TOKEN': window.csrf
+  }
+});
+
+/*window.Vue.http.headers.common['X-CSRF-TOKEN'] = window.csrf;
+
+new Vue({
+    el: #app
+});*/
+
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
+
+//require('./bootstrap');
+
+import Vue from 'vue';
+import VueResource from 'vue-resource';
+
+Vue.use(VueResource);
+
+Vue.http.headers.common['X-CSRF-TOKEN'] = window.csrf;
+
+
 import TextareaGrowing from './components/TextareaGrowing'
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
 
 import Ajax from './mixins/Ajax'
 import Notifications from './mixins/Notifications'
 
-new window.Vue({
+new Vue({
+  el: '#app',
   data () {
     return {
       show: {
@@ -116,8 +151,8 @@ new window.Vue({
   },
   ready () {
     $('.ui.checkbox').checkbox()
+    $('nav .ui.dropdown').dropdown()
   },
-  el: 'body',
   mixins: [Ajax, Notifications],
   components: {
     TextareaGrowing

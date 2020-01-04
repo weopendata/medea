@@ -3,14 +3,14 @@
 @section('title', 'Collectie ' . $collection['identifier'])
 
 @section('content')
-<div class="ui container">
-  <collection v-if="collection" :initial-collection="collection"></collection>
-</div>
+@endsection
+
+@section('component')
+  <collection></collection>
 @endsection
 
 @section('script')
 <script type="text/javascript">
 window.initialCollection = {!! json_encode($collection) !!};
 </script>
-<script src="{{ asset('js/collections-detail.js') }}?{{ Config::get('app.version') }}"></script>
 @endsection

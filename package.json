@@ -1,39 +1,38 @@
 {
-  "private": true,
-  "scripts": {
-    "dev": "gulp && gulp watch",
-    "build": "gulp",
-    "postinstall": "gulp"
-  },
-  "devDependencies": {
-    "babel-core": "6.7.7",
-    "babel-loader": "6.2.4",
-    "babel-plugin-transform-runtime": "^6.6.0",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-runtime": "5.8.35",
-    "css-loader": "^0.23.1",
-    "gulp": "^3.8.8",
-    "laravel-elixir-livereload": "^1.1.4",
-    "laravel-elixir-webpack-ex": "0.0.4",
-    "sass-loader": "^3.1.2",
-    "vue-html-loader": "^1.2.0",
-    "vue-loader": "8.2.3",
-    "vue-style-loader": "^1.0.0"
-  },
-  "dependencies": {
-    "bootstrap-sass": "^3.0.0",
-    "deep-extend": "^0.4.1",
-    "intro.js": "^2.3.0",
-    "laravel-elixir": "*",
-    "less-loader": "^2.2.2",
-    "local-storage": "^1.4.2",
-    "lodash": "^3.10.1",
-    "parse-link-header": "^0.4.1",
-    "semantic-ui-css": "^2.2",
-    "vue": "^1.0.15",
-    "vue-datetime-picker": "^0.1.1",
-    "vue-google-maps": "0.1.15",
-    "vue-resource": "^0.7.0",
-    "vue-typeahead": "^2.3.2"
-  }
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "npm run development -- --watch",
+        "watch-poll": "npm run watch -- --watch-poll",
+        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "prod": "npm run production",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    },
+    "devDependencies": {
+        "axios": "^0.19",
+        "bootstrap": "^4.1.0",
+        "cross-env": "^5.1",
+        "jquery": "^3.4.1",
+        "laravel-mix": "^4.0.7",
+        "lodash": "^4.17.13",
+        "popper.js": "^1.12",
+        "resolve-url-loader": "^2.3.1",
+        "sass": "^1.15.2",
+        "sass-loader": "^7.1.0",
+        "semantic-ui-css": "^2.2.14",
+        "vue": "^2.5.17",
+        "vue-template-compiler": "^2.6.11"
+    },
+    "dependencies": {
+        "deep-extend": "^0.6.0",
+        "local-storage": "^1.4.2",
+        "parse-link-header": "^1.0.1",
+        "semantic-ui-transition": "^2.3.1",
+        "vue-resource": "^1.5.1",
+        "vue-search-select": "^2.9.3",
+        "vue-textarea-autosize": "^1.1.1",
+        "vue-typeahead": "^2.3.2",
+        "vue2-google-maps": "^0.10.7"
+    }
 }

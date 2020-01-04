@@ -6,7 +6,7 @@
         <template v-if="collection.persons && collection.persons.length">
           <dt>Registratoren</dt>
           <dd>
-            <template v-for="(index, person) in collection.persons">
+            <template v-for="(person, index) in collection.persons">
               <span v-if="index">, </span>
               <a :href="'/persons/' + person.identifier">{{ person.firstName + ' ' + person.lastName }}</a>
             </template>
@@ -50,9 +50,14 @@
 
   export default {
     props: ['initialCollection'],
+    mounted () {
+      if (! this.initialCollection && window.initialCollection) {
+        this.collection = incomingCollection(window.initialCollection)
+      }
+    },
     data() {
       return {
-        collection: incomingCollection(this.initialCollection)
+        collection: this.initialCollection ? incomingCollection(this.initialCollection) : {}
       };
     },
     computed: {

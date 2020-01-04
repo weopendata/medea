@@ -3,9 +3,16 @@ The goal of the MEDEA projects is to bring together find experts, researchers an
 
 ## Requirements
 
-* Database: Neo4j 2.2.x (higher or lower versions will most likely break the application)
-* PHP7.0
+* Database: Neo4j 2.2.x
+* PHP7.2
 * MariaDB 10.10 (or equivalent)
+
+To install the application, please follow the installations steps [here](https://laravel.com/docs/6.x).
+To build the front-end, run:
+
+```
+npm install
+```
 
 ### Full text support
 
@@ -54,7 +61,7 @@ Finally, run this query in neo4j to start indexing:
 
 ## Development documentation
 
-## Export/Import data
+### Export/Import data
 
 https://github.com/jexp/neo4j-shell-tools
 

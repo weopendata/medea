@@ -23,7 +23,7 @@
 */
 
 Route::group(['middleware' => 'web'], function () {
-    Route::auth();
+    //Route::auth();
 
     Route::get('/', 'HomeController@index');
     Route::get('about', 'HomeController@about');

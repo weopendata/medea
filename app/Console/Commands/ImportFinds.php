@@ -3,12 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Models\FindEvent;
-use App\Repositories\FindRepository;
 use App\Repositories\ClassificationRepository;
+use App\Repositories\FindRepository;
 use App\Traits\ValidateFields;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use League\Csv\Reader;
 
 class ImportFinds extends Command
@@ -124,14 +125,14 @@ class ImportFinds extends Command
     {
         $find = app(FindRepository::class)->expandValues($findId);
 
-        $publicationId = array_get($row, 'publication');
+        $publicationId = Arr::get($row, 'publication');
 
         if (empty($publicationId)) {
             return;
         }
 
         // If the publication is added, a classification must exist!
-        $classification = array_get($find, 'object.productionEvent.productionClassification.0');
+        $classification = Arr::get($find, 'object.productionEvent.productionClassification.0');
 
         if (empty($classification)) {
             $this->error('No classification was found, we could not add the publication properties');

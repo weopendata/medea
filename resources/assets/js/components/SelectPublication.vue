@@ -1,52 +1,58 @@
 <template>
-  <select2 :options="options" @select="addPublication"></select2>
+  <model-list-select
+  style="width: 300px; display: inline-block;"
+  :list="publications"
+  option-value="id"
+  option-text="title"
+  v-model="selectedPublication"
+  placeholder="Zoeken in bestaande publicaties"
+  @searchchange="searchPublication"
+  >
+  </model-list-select>
 </template>
 
 <script>
-import Select2 from './Select2.vue'
+
+import ModelListSelect from 'vue-search-select/src/lib/ModelListSelect.vue';
 
 export default {
-  props: ['model'],
   data () {
     return {
-      options: {
-        width: '300px',
-        placeholder: 'Zoeken in bestaande publicaties',
-        ajax: {
-          url: '/api/publications',
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
-            return {
-              query: params.term,
-              page: params.page
-            };
-          },
-          processResults: function (data, params) {
-            params.page = params.page || 1
-
-            return {
-              results: data.map(({ identifier, title }) => ({ id: identifier, text: title })),
-              pagination: {
-                more: (params.page * 30) < data.total_count
-              }
-            }
-          },
-          cache: true
-        }
-      }
+      searchText: '',
+      publications: [],
+      selectedPublication: '',
     }
   },
   methods: {
+    searchPublication (value) {
+      axios.get('/api/publications?query=' + value)
+        .then(response => {
+          this.publications = [];
+
+          if (! response.data) {
+            return;
+          }
+
+          this.publications = response.data.map(({ identifier, title }) => ({ id: identifier, title: title }));
+        })
+    },
     addPublication (id) {
-      this.$parent.cls.publication.push({
+      this.$emit('publicationSelect', id);
+      this.searchText = '';
+      this.publications = [];
+      /*this.$parent.cls.publication.push({
         identifier: id,
         publicationTitle: ''
-      })
+      })*/
     }
   },
   components: {
-    Select2
+    ModelListSelect
+  },
+  watch: {
+    selectedPublication (id) {
+      this.addPublication(id);
+    }
   }
 }
 </script>

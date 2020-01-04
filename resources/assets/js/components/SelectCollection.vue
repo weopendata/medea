@@ -1,52 +1,48 @@
 <template>
-  <select2 :options="options" @select="select"></select2>
+  <model-list-select
+  style="width: 300px; display: inline-block;"
+  :list="collections"
+  option-value="identifier"
+  option-text="title"
+  v-model="selectedCollection"
+  :placeholder="placeholder"
+  @searchchange="searchCollection"
+  >
+  </model-list-select>
 </template>
 
 <script>
-import Select2 from './Select2.vue'
+import ModelListSelect from 'vue-search-select/src/lib/ModelListSelect.vue';
 
 export default {
   props: ['model', 'placeholder'],
   data () {
     return {
-      lastData: [],
-      options: {
-        width: '300px',
-        placeholder: this.placeholder,
-        ajax: {
-          url: '/api/collections',
-          dataType: 'json',
-          delay: 250,
-          data (params) {
-            return {
-              title: params.term,
-              page: params.page
-            };
-          },
-          processResults: (data, params) => {
-            this.lastData = data
-            params.page = params.page || 1
-
-            return {
-              results: data.map(({ identifier, title }) => ({ id: identifier || 1, text: title })),
-              pagination: {
-                more: (params.page * 30) < data.total_count
-              }
-            }
-          },
-          cache: true
-        }
-      }
+      collections: [],
+      selectedCollection: '',
     }
   },
   methods: {
-    select (id) {
-      const collection = this.lastData.find(p => p.identifier.toString() === id)
-      collection && this.$emit('select', collection)
+    searchCollection (value) {
+      this.collections = [];
+      axios.get('/api/collections?title=' + value)
+        .then(response => {
+          this.collections = response.data;
+        })
+    }
+  },
+  watch: {
+    async selectedCollection (v) {
+      var call = await axios.get('/collections/' + v);
+
+      if (call.data) {
+        this.$emit('select', call.data);
+        this.collections = [];
+      }
     }
   },
   components: {
-    Select2
+    ModelListSelect
   }
 }
 </script>

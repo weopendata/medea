@@ -75,7 +75,7 @@
     }
   }
 </script>
-<style lang="sass">
+<style lang="scss">
   .persons {
     margin-bottom: 1em; }
     .person {

@@ -1,7 +1,7 @@
 <template>
-  <div class="ui form" @change="$root.fetch()">
+  <div class="ui form" @change="filtersChanged()">
     <div class="field">
-      <form class="ui action input" @submit.prevent="$root.fetch()">
+      <form class="ui action input" @submit.prevent="filtersChanged()">
         <input type="text" v-model="model.query" placeholder="Zoeken..." style="width:100px">
         <button class="ui icon button" :class="{green:model.query}">
           <i class="search icon"></i>
@@ -20,9 +20,9 @@
 
     <br/>
     <div class="facets">
-      <div v-if="$root.user.email" class="facet">
+      <div v-if="user.email" class="facet">
         <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
-        <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="$root.user.validator">Te valideren vondsten</a>
+        <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="user.validator">Te valideren vondsten</a>
         <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
         <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
       </div>
@@ -45,8 +45,6 @@ import ls from 'local-storage'
 import FindEvent from './FindEvent.vue';
 import Facet from './Facet.vue';
 import {inert} from '../const.js';
-
-var backupState = { myfinds: false }
 
 var modificationFields = [
   'meerdere',
@@ -71,8 +69,10 @@ export default {
 
     return {
       fields: window.fields,
+      user: window.medeaUser || {},
       modificationFields: modificationFields,
       advanced: false,
+      backupState: { myfinds: false },
       show: Object.assign({
         category: true,
         status: true,
@@ -88,15 +88,23 @@ export default {
   },
   computed: {
     statusOptions () {
-      if (this.$root.user.administrator || this.model.myfinds) {
+      if (! this.user) {
+        return;
+      }
+
+      if (this.user.administrator || this.model.myfinds) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen', 'Voorlopige versie', 'Wordt verwijderd']
       }
-      if (this.$root.user.validator) {
+      if (this.user.validator) {
         return ['Gepubliceerd', 'Klaar voor validatie', 'Aan te passen']
       }
     },
     embargoOptions () {
-      if (this.$root.user.administrator || this.model.myfinds) {
+      if (! this.user) {
+        return;
+      }
+
+      if (this.user.administrator || this.model.myfinds) {
         return [{
           label: 'Onder embargo',
           value: true
@@ -107,20 +115,23 @@ export default {
       }
     },
     unnamed () {
-      return this.saved.filter(s => !s.name)
+      return this.savedSearches.filter(s => !s.name)
     }
   },
   methods: {
     resetFilters () {
       this.$parent.resetFilters()
     },
+    filtersChanged () {
+      this.$emit('filtersChanged');
+    },
     restore (filter) {
       if (filter.state) {
         if (filter.name === this.name) {
           this.name = ''
-          filter = backupState
+          filter = this.backupState
         } else {
-          backupState = inert(filter.state)
+          this.backupState = inert(filter.state)
           this.name = filter.name
           filter = filter.state
         }
@@ -131,7 +142,8 @@ export default {
       for (let key in filter) {
         this.model[key] = filter[key] || null
       }
-      this.$root.fetch()
+
+      this.$emit('filtersChanged');
     },
     toggle (filter, value) {
       if (!value) {
@@ -141,11 +153,12 @@ export default {
       }
       this.name = ''
       this.model.offset = 0
-      this.$root.fetch()
+
+      this.$emit('filtersChanged');
     },
     toggleMyfinds () {
       this.model.myfinds = this.model.myfinds ? false : 'yes';
-      this.$root.fetch()
+      this.$emit('filtersChanged');
     },
     sortBy (type) {
       if (this.model.order == type) {
@@ -155,7 +168,8 @@ export default {
       } else {
         this.model.order = type
       }
-      this.$root.fetch()
+
+      this.$emit('filtersChanged');
     }
   },
   ready () {

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Person;
 use Everyman\Neo4j\Cypher\Query;
+use Illuminate\Support\Arr;
 
 class UserRepository extends BaseRepository
 {
@@ -277,7 +278,7 @@ class UserRepository extends BaseRepository
             $person = new Person();
             $person->setNode($this->getById($userNode->getId()));
 
-            $personData = array_only($userNode->getProperties(), $fields);
+            $personData = Arr::only($userNode->getProperties(), $fields);
 
             // Don't add the default administrator to the list
             $personData['id'] = $userNode->getId();
@@ -323,7 +324,7 @@ class UserRepository extends BaseRepository
             $person = new Person();
             $person->setNode($userNode);
 
-            $personData = array_only($userNode->getProperties(), ['firstName', 'lastName', 'verified']);
+            $personData = Arr::only($userNode->getProperties(), ['firstName', 'lastName', 'verified']);
             $personData['id'] = $userNode->getId();
             $personData['personType'] = $person->getRoles();
 

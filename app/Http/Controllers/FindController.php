@@ -3,22 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Pager;
-use App\Http\Requests\EditFindRequest;
-use App\Http\Requests\UpdateFindRequest;
 use App\Http\Requests\CreateFindRequest;
-use App\Http\Requests\ShowFindRequest;
 use App\Http\Requests\DeleteFindRequest;
+use App\Http\Requests\EditFindRequest;
+use App\Http\Requests\ShowFindRequest;
+use App\Http\Requests\UpdateFindRequest;
 use App\Mailers\AppMailer;
 use App\Models\FindEvent;
 use App\Models\Person;
+use App\Repositories\CollectionRepository;
 use App\Repositories\FindRepository;
 use App\Repositories\ListValueRepository;
-use App\Repositories\CollectionRepository;
 use App\Repositories\ObjectRepository;
 use App\Repositories\UserRepository;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use PiwikTracker;
 
 class FindController extends Controller
@@ -186,7 +187,7 @@ class FindController extends Controller
             'Wereldoorlog II' => '1940 / 1945'
         ];
 
-        $periodFields = array_only($periodFields, $fields['classification']['period']);
+        $periodFields = Arr::only($periodFields, $fields['classification']['period']);
 
         $fields['classification']['period'] = [];
 
@@ -303,7 +304,7 @@ class FindController extends Controller
 
         // Build the necessary meta data so that it can be indexed properly by search engines
         $meta = [];
-        $meta['og:image'] = array_get($find, 'object.photograph.0.resized');
+        $meta['og:image'] = Arr::get($find, 'object.photograph.0.resized');
         $meta['og:title'] = makeFindTitle($find);
         $meta['og:description'] = 'MEDEA vondst';
         $meta['og:url'] = \Request::url();
@@ -345,7 +346,7 @@ class FindController extends Controller
 
         // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
-        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') != $user->id)) {
+        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
             unset($find['object']['objectDescription']);
@@ -353,7 +354,7 @@ class FindController extends Controller
 
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
         // unless the user is the owner of the find (or is a registrator or adminstrator)
-        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || array_get($find, 'person.identifier') == $user->id))
+        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
             && ! empty($find['object']['objectNr']) && empty($find['object']['collection'])
         ) {
             unset($find['object']['objectNr']);
@@ -362,7 +363,7 @@ class FindController extends Controller
         // Add the user names of the classifications
         $classifications = app()->make('App\Repositories\ClassificationRepository');
 
-        $objectClassifications = array_get($find, 'object.productionEvent.productionClassification', []);
+        $objectClassifications = Arr::get($find, 'object.productionEvent.productionClassification', []);
         $enrichedClassifications = [];
 
         foreach ($objectClassifications as $objectClassification) {

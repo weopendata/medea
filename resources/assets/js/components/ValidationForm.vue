@@ -1,5 +1,5 @@
 <template>
-  <div class="ui form" @submit.prevent :action="submitAction">
+  <div class="ui form" @submit.prevent>
     <div class="ui warning message visible" v-if="validation.feedback">
       <p>
         <b>De vondst werd aangepast door de detectorist. Vink aan welke velden ok zijn, indien alles ok is bevonden kan de vondst goedgekeurd worden en is ze gevalideerd. </b>
@@ -11,13 +11,13 @@
         <div class="field">
           <label>Is deze vonstfiche klaar voor publicatie? Duid aan wat van toepassing is.</label>
           <div class="ui checkbox">
-            <input type="checkbox" tabindex="0" class="hidden" v-model="remove">
+            <input type="checkbox" tabindex="0" v-model="remove">
             <label>Deze vondst hoort niet thuis op MEDEA</label>
           </div>
         </div>
         <div class="field">
           <div class="ui checkbox">
-            <input type="checkbox" tabindex="0" class="hidden" v-model="embargo">
+            <input type="checkbox" tabindex="0" v-model="embargo">
             <label>Deze vondstfiche bevat gevoelige informatie (plaats onder embargo)</label>
           </div>
         </div>
@@ -25,7 +25,7 @@
       <div class="column">
         <div class="field">
           <label for="description">Geef feedback mee aan de detectorist over de gevraagde/gedane aanpassingen:</label>
-          <textarea-growing id="description" :model.sync="remarks"></textarea-growing>
+          <textarea-growing id="description" :model="remarks" @input="updateRemarks"></textarea-growing>
         </div>
       </div>
     </div>
@@ -93,6 +93,9 @@ export default {
     }
   },
   methods: {
+    updateRemarks (value) {
+      this.remarks = value;
+    },
     checkAll() {
       for (const key in this.imgRemarks) {
         this.imgRemarks[key] = false
@@ -159,7 +162,7 @@ export default {
       this.imgRemarks = remarks
     }
   },
-  attached () {
+  mounted () {
     $('.ui.checkbox', this.$el).checkbox()
 
     // Fill in the previous validation feedback

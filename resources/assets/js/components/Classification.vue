@@ -17,9 +17,9 @@
       </p>
       <p v-if="multiPub">
         Bronnen:
-        <span track-by="$index" v-for="pub in pubs" style="display:block">
+        <span v-for="(pub, index) in pubs" style="display:block">
           {{ citeClassificationPublication(pub) }}
-          {{ publicationPages($index) }}
+          {{ publicationPages(index) }}
           <a :href="pub.publicationContact" v-if="pub.publicationContact" v-text="pub.publicationContact"></a>
         </span>
       </p>
@@ -31,7 +31,7 @@
       </p>
     </div>
     <div class="card-bar card-bar-border">
-      <span v-if="$root.user.vondstexpert">
+      <span v-if="user.vondstexpert">
         <button class="btn" :class="{green:cls.me==='agree'}" @click.stop="agree"><i class="thumbs up icon"></i></button>
         <button class="btn" :class="{red:cls.me==='disagree'}" @click.stop="disagree"><i class="thumbs down icon"></i></button>
       </span>
@@ -56,9 +56,17 @@ import Publication from '../mixins/Publication.js'
 export default {
   props: ['cls', 'obj'],
   mixins: [Publication],
+  mounted () {
+    this.user = window.medeaUser || {};
+  },
+  data () {
+    return {
+      user: {}
+    }
+  },
   computed: {
     removable () {
-      return this.$root.user.administrator || this.cls.addedByUser
+      return this.user.administrator || this.cls.addedByUser
     },
     creator () {
       return this.cls && this.cls.addedBy
@@ -87,25 +95,50 @@ export default {
       return y1 || '?'
     },
     agree () {
-      this.cls[this.cls.me]--
-      this.$set('cls.me', this.cls.me === 'agree' ? null : 'agree')
-      this.cls[this.cls.me]++
-      this.$http({
-        method: this.cls.me ? 'POST' : 'DELETE',
-        url: '/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree'
-      })
+      if (this.cls.me) {
+        this.cls[this.cls.me]--;
+      }
+
+      var agreedValue = this.cls.me === 'agree' ? null : 'agree';
+
+      // $set
+      this.cls.me =  agreedValue;
+
+      if (this.cls.me) {
+        this.cls[this.cls.me]++;
+      }
+
+      if (this.cls.me) {
+        axios.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree');
+      } else {
+        axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/agree');
+      }
     },
     disagree () {
-      this.cls[this.cls.me]--
-      this.$set('cls.me', this.cls.me === 'disagree' ? null : 'disagree')
-      this.cls[this.cls.me]++
-      this.$http({
-        method: this.cls.me ? 'POST' : 'DELETE',
-        url: '/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree'
-      })
+      if (this.cls.me) {
+        this.cls[this.cls.me]--;
+      }
+
+      var disagreedValue = this.cls.me === 'disagree' ? null : 'disagree';
+
+      // $set
+      this.cls.me =  disagreedValue;
+
+      if (this.cls.me) {
+        this.cls[this.cls.me]++;
+      }
+
+      if (this.cls.me) {
+        axios.post('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree');
+      } else {
+        axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1) + '/disagree');
+      }
     },
     rm () {
-      this.$http.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1)).then(this.$root.fetch)
+      axios.delete('/objects/' + this.obj + '/classifications/' + (this.cls.identifier || -1))
+        .then(response => {
+          this.$emit('removed');
+        })
     }
   },
   filters: {

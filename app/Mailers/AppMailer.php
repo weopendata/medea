@@ -5,7 +5,7 @@ namespace App\Mailers;
 use App\Models\Person;
 use Illuminate\Contracts\Mail\Mailer;
 use SendGrid;
-use SendGrid\Email;
+use SendGrid\Mail\Mail;
 
 class AppMailer
 {
@@ -63,6 +63,7 @@ class AppMailer
     public function sendResetLinkEmail(Person $user)
     {
         $this->to = $user->email;
+        $this->toName = $user->name;
         $this->view = 'auth.emails.password';
         $this->data = compact('user');
         $this->subject = 'Reset je wachtwoord';
@@ -78,6 +79,7 @@ class AppMailer
     public function sendEmailConfirmationTo(Person $user)
     {
         $this->to = $user->email;
+        $this->toName = $user->name;
         $this->view = 'auth.emails.confirm';
         $this->data = compact('user');
         $this->subject = 'Voltooi je registratie.';
@@ -93,6 +95,7 @@ class AppMailer
     public function sendRegistrationToAdmin(Person $user)
     {
         $this->to = env('ADMIN_EMAIL');
+        $this->toName = 'Admin';
         $this->view = 'auth.emails.adminconfirm';
 
         $roles_string = '';
@@ -117,6 +120,7 @@ class AppMailer
     public function sendRegistrationConfirmation(Person $user)
     {
         $this->to = $user->email;
+        $this->toName = $user->name;
         $this->view = 'auth.emails.registrationconfirmation';
         $this->data = compact('user');
         $this->subject = 'Uw registratie werd goedgekeurd!';
@@ -132,6 +136,7 @@ class AppMailer
     public function sendRegistrationDenial(Person $user)
     {
         $this->to = $user->email;
+        $this->toName = $user->name;
         $this->view = 'auth.emails.registrationdenial';
         $this->data = compact('user');
         $this->subject = 'Uw registratie werd niet goedgekeurd';
@@ -149,6 +154,7 @@ class AppMailer
     public function sendFindStatusUpdate(Person $user, $title, $findId)
     {
         $this->to = $user->email;
+        $this->toName = $user->name;
         $this->view = 'notifications.emails.statuschanged';
         $this->data = ['user' => $user, 'title' => $title, 'findId' => $findId];
         $this->subject = 'Uw vondst werd behandeld door een validator';
@@ -167,6 +173,7 @@ class AppMailer
     public function sendNewFindEmail(Person $user, $title, $findId, $status = null)
     {
         $this->to = $user->email;
+        $this->toName = $user->name;
         $this->view = 'notifications.emails.newfind';
         $this->data = compact('user', 'title', 'findId', 'status');
         $this->subject = 'Nieuwe vondst';
@@ -184,6 +191,7 @@ class AppMailer
     public function sendPlatformMessage($message, $recipient, $sender)
     {
         $this->to = $recipient->email;
+        $this->toName = $recipient->name;
         $this->view = 'notifications.emails.privatemessage';
         $this->data = ['message' => $message, 'sender' => $sender, 'recipient' => $recipient];
         $this->subject = 'MEDEA - Nieuw bericht';
@@ -198,19 +206,19 @@ class AppMailer
     public function deliver()
     {
         $html = view($this->view)
-                    ->with($this->data)
-                    ->render();
+        ->with($this->data)
+        ->render();
 
         if (env('APP_ENV') != 'production') {
             \Log::info($html);
         } else {
             $sendgrid = new SendGrid(env('SEND_GRID_API_KEY'));
-            $email = new Email();
+            $email = new Mail();
 
-            $email->addTo($this->to)
-            ->setFrom('no-reply@medea.weopendata.com')
-            ->setSubject($this->subject)
-            ->setHtml($html);
+            $email->addTo($this->to, $this->toName);
+            $email->setFrom('no-reply@vondsten.be');
+            $email->setSubject($this->subject);
+            $email->addContent("text/html", $html);
 
             $sendgrid->send($email);
         }

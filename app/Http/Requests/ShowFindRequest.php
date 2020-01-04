@@ -17,7 +17,7 @@ class ShowFindRequest extends FindApiRequest
         $finds = app(FindRepository::class);
 
         // Get the find
-        $this->find = $finds->expandValues($request->finds, $request->user());
+        $this->find = $finds->expandValues($request->find, $request->user());
 
         if (empty($this->find)) {
             abort(404);

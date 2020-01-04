@@ -51,7 +51,8 @@ class UserController extends Controller
             'paging' => $paging,
             'sortBy' => $sortBy,
             'sortOrder' => $sortOrder,
-            'users' => $users
+            'users' => $users,
+            'stats' => ''
         ]);
     }
 

@@ -1,10 +1,13 @@
 @extends('main')
 
 @section('title', 'Vondst ' . $find['identifier'])
-@section('meta', $meta)
+
+@section('component')
+<find-event-detail></find-event-detail>
+@endsection
 
 @section('content')
-<find-event-detail v-if="find" :find="find" :user="user"></find-event-detail>
+
 
 <!-- Root element of PhotoSwipe. Must have class pswp. -->
 <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
@@ -76,7 +79,6 @@ window.publicUserInfo = {!! json_encode($publicUserInfo) !!};
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10&appId={{env('FB_APP_ID')}}";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
-<script src="{{ asset('js/finds-detail.js') }}?{{ Config::get('app.version') }}"></script>
 <script src="{{ asset('assets/js/photoswipe.min.js') }}"></script>
 <link href="{{ asset('assets/css/photoswipe.min.css') }}" rel="stylesheet" type="text/css">
 @endsection

@@ -1,10 +1,20 @@
 <template>
-	<textarea v-model="model" rows="2"></textarea>
+	<textarea @blur="update" @input="update" :value="value" rows="2"></textarea>
 </template>
 
 <script>
 export default {
   props: ['model'],
+  computed: {
+    value () {
+        return this.model;
+    }
+  },
+  methods: {
+    update (evt) {
+        this.$emit('input', evt.target.value);
+    }
+  },
   watch: {
     model () {
     	this.$el.style.height = '58px'

@@ -145,8 +145,10 @@ class Person extends Base implements Authenticatable
         if (! empty($properties)) {
             parent::__construct($properties);
 
+            $hashedPassword = Hash::make($properties['password']);
+
             $this->node->setProperty('token', str_random(40));
-            $this->node->setProperty('password', Hash::make($properties['password']));
+            $this->node->setProperty('password', $hashedPassword);
             $this->node->save();
         }
     }

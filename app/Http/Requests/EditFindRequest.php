@@ -26,7 +26,7 @@ class EditFindRequest extends Request
         //   Admin:     any role
         $user = $request->user();
 
-        $findId = $request->finds;
+        $findId = $request->find;
 
         $this->find = $finds->expandValues($findId);
 

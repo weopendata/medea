@@ -27,12 +27,13 @@
     </div>
   </div>
 </template>
+
 <script>
-import FindEvent from './FindEvent'
+import FindEvent from '@/components/FindEvent'
 import { inert, fromQuery } from '../const.js'
 
 export default {
-  props: ['user', 'finds', 'paging'],
+  props: ['user', 'finds', 'paging', 'saved'],
   data () {
     return {
       favName: '',
@@ -56,21 +57,21 @@ export default {
       return this.currentPage
     },
     exists () {
-      return this.$root.saved.filter(s => s.name === this.$root.filterName).length
+      return this.saved.filter(s => s.name === this.filterName).length
     }
   },
   methods: {
     to (q) {
-      this.$root.filterState.offset = q.offset
-      this.$root.fetch()
+      //this.$root.filterState.offset = q.offset
+      this.$emit('filtersChanged', {offset: q.offset})
     },
     toggleFav () {
       if (this.exists) {
-        this.$root.$emit('rmSearch')
+        this.$emit('rmSearch')
       } else if (!this.showFavName) {
         this.showFavName = true
       } else if (this.favName) {
-        this.$root.$emit('saveSearch', this.favName)
+        this.$emit('saveSearch', this.favName)
         this.favName = ''
         this.showFavName = false
       }

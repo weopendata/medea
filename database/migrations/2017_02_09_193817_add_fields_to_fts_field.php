@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use App\Models\BaseObject;
 use Everyman\Neo4j\Client;
-use App\Models\Object;
 use Everyman\Neo4j\Cypher\Query;
+use Illuminate\Database\Migrations\Migration;
 
 class AddFieldsToFtsField extends Migration
 {
@@ -29,7 +29,7 @@ class AddFieldsToFtsField extends Migration
         foreach ($results as $result) {
             $objectNode = $result['value'];
 
-            $object = new Object();
+            $object = new BaseObject();
             $object->setNode($objectNode);
             $object->computeFtsField();
         }

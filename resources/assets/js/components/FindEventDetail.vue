@@ -4,13 +4,13 @@
       <p>
         De validator heeft enkele opmerkingen bij validatie.
       </p>
-      <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
+      <p><a class="ui orange button" :href="'/finds/' + find.identifier + '/edit'">Vondst bewerken</a></p>
     </div>
     <div class="ui warning message visible" v-if="find.object.objectValidationStatus == 'Voorlopige versie'">
       <p>
         Dit is een voorlopige versie
       </p>
-      <p><a class="ui orange button" href="/finds/{{find.identifier}}/edit">Vondst bewerken</a></p>
+      <p><a class="ui orange button" :href="'/finds/' + find.identifier + '/edit'">Vondst bewerken</a></p>
     </div>
     <div class="card card-center fe-card">
       <div class="card-textual">
@@ -21,23 +21,23 @@
           </div>
           <div class="column scrolling" :class="{'fe-validating':validating}">
             <div class="fe-imglist">
-              <div class="fe-img" v-for="image in find.object.photograph">
+              <div class="fe-img" v-for="(image, index) in find.object.photograph">
                 <dt-check v-if="validating" :prop="image.identifier" @change="$broadcast('imgRemark', image.identifier)"></dt-check>
-                <photoswipe-thumb :image="image" :index="$index"></photoswipe-thumb>
+                <photoswipe-thumb :image="image" :index="index" @initPhotoswipe="initPhotoswipe"></photoswipe-thumb>
                 <i class="magnify icon"></i>
               </div>
             </div>
-            <google-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
-              <marker
+            <gmap-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
+              <gmap-marker
                 v-if="markerNeeded"
                 :position.sync="markerPosition"
-              ></marker>
-              <rectangle
+              ></gmap-marker>
+              <gmap-rectangle
                 v-else
                 :bounds.sync="rectangleBounds"
                 :options="rectangleOptions"
-              ></rectangle>
-            </google-map>
+              ></gmap-rectangle>
+            </gmap-map>
           </div>
         </div>
       </div>
@@ -56,13 +56,13 @@
         </div>
       </div>
       <div class="card-bar text-right" v-if="editable">
-        <a class="btn" href="/finds/{{find.identifier}}/edit">
+        <a class="btn" :href="'/finds/' + find.identifier + '/edit'">
           <i class="pencil icon"></i>
           Bewerken
         </a>
       </div>
       <div class="card-bar text-right">
-        <a href="mailto:{{contact}}?Subject=MEDEA vondst {{find.identifier}}" target="_top">
+        <a :href="'mailto:' + contact + '?Subject=MEDEA vondst ' + find.identifier" target="_top">
           Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
         </a>
       </div>
@@ -82,12 +82,12 @@
                 <small v-if="find.object.productionEvent.productionClassification">Deze vondst werd {{find.object.productionEvent.productionClassification.length}} keer geclassicifeerd.</small>
               </h2>
             </div>
-            <classification v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
+            <classification @removed="fetch()" v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
             <div class="ui orange message" v-if="!find.object.productionEvent||!find.object.productionEvent.productionClassification||!find.object.productionEvent.productionClassification.length">
               <div class="ui header">Deze vondst is niet geclassificeerd</div>
               <p v-if="user.vondstexpert">Voeg jij een classificatie toe?</p>
             </div>
-            <add-classification :object="find.object" v-if="user.vondstexpert"></add-classification>
+            <add-classification @submitted="fetch()" :object="find.object" v-if="user.vondstexpert"></add-classification>
             <p>&nbsp;</p>
           </div>
           <h1 v-if="!user.validator&&find.object.objectValidationStatus !== 'Gepubliceerd' && (!find.person.email || user.email!==find.person.email)">
@@ -121,8 +121,6 @@
 
 <script>
 import checkbox from 'semantic-ui-css/components/checkbox.min.js'
-import {load, Map as GoogleMap, Marker, Rectangle} from 'vue-google-maps'
-
 import AddClassification from './AddClassification'
 import Classification from './Classification'
 import DtCheck from './DtCheck'
@@ -137,20 +135,17 @@ function sameValues(array) {
 }
 
 export default {
-  props: ['user', 'find'],
+  mounted () {
+    this.user = medeaUser || {};
+  },
   data () {
-    const location = this.find.findSpot.location || {}
     return {
+      find: null,
+      user: {},
       feedback: {},
       rectangleOptions: {
         fillOpacity: 0.1,
         strokeWeight: 1
-      },
-      map: {
-        center: location.lat && { lat: parseFloat(location.lat), lng: parseFloat(location.lng) },
-        zoom: 10,
-        identifier: this.find.identifier,
-        position: { lat: parseFloat(location.lat), lng: parseFloat(location.lng) }
       },
       loaded: false,
       show: {
@@ -158,12 +153,47 @@ export default {
       }
     }
   },
-  methods () {
-    goToFinds : {
+  methods: {
+    goToFinds () {
       window.location = '/finds'
+    },
+    fetch () {
+      axios.get('/api/finds/' + window.initialFind.identifier)
+      .then(response => {
+        this.find = response.data
+      });
+    },
+    initPhotoswipe (options) {
+      if (!window.PhotoSwipe) {
+        return console.warn('PhotoSwipe missing')
+      }
+
+      var pswpElement = document.querySelector('.pswp');
+      var items = this.find.object.photograph.map(img => {
+        return {
+          src: img.src,
+          msrc: img.resized,
+          w: img.width || 1600,
+          h: img.height || 900
+        }
+      })
+      var gallery = new window.PhotoSwipe(pswpElement, window.PhotoSwipeUI_Default, items, options);
+      gallery.init();
     }
   },
   computed: {
+    map () {
+      if (! this.location || ! this.location.lat) {
+        return {};
+      }
+
+      return {
+        center: this.location.lat && { lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng) },
+        zoom: 10,
+        identifier: this.find.identifier,
+        position: { lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng) }
+      }
+    },
     findTitle () {
       if (! this.find) {
         return 'De vondst bestaat niet'
@@ -246,34 +276,17 @@ export default {
       )
     }
   },
-  ready () {
-    load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
-  },
-  events: {
-    initPhotoswipe (options) {
-      if (!window.PhotoSwipe) {
-        return console.warn('PhotoSwipe missing')
-      }
-      var pswpElement = document.querySelector('.pswp');
-      var items = this.find.object.photograph.map(img => {
-        return {
-          src: img.src,
-          msrc: img.resized,
-          w: img.width || 1600,
-          h: img.height || 900
-        }
-      })
-      var gallery = new window.PhotoSwipe(pswpElement, window.PhotoSwipeUI_Default, items, options);
-      gallery.init();
+  created () {
+    if (window.initialFind && window.initialFind.identifier) {
+      this.find = window.initialFind;
+    } else {
+      this.fetch()
     }
   },
   components: {
     AddClassification,
     Classification,
     DtCheck,
-    Rectangle,
-    Marker,
-    GoogleMap,
     ObjectFeatures,
     PhotoswipeThumb,
     ValidationForm,

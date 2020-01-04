@@ -100,7 +100,7 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        $users = $this->person_label->getNodes('email', $user->email);
+        $users = $this->person_label->getNodes('email', $credentials['email']);
 
         if ($users->count() > 0) {
             $user_node = $users[0];
