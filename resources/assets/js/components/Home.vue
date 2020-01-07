@@ -239,7 +239,6 @@
   export default {
     mounted () {
       this.user = window.medeaUser;
-      this.stats = window.stats;
     },
     data () {
       return {
@@ -275,11 +274,13 @@
         errors: {},
         submitAction: 'register',
         registered: false,
-        user: null,
-        stats: {}
+        user: null
       }
     },
     computed: {
+      stats () {
+        return window.stats;
+      },
       biografieLabel() {
         return [
         this.roles.detectorist && 'Biografie',
