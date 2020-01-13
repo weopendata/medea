@@ -42,8 +42,10 @@ export default {
       if (typeof index === 'number') {
         this.notifications[index].read = 1
       }
-      this.notifUnread--
-      console.log('Set notification', n.id, 'as read')
+      if (this.notifUnread > 1) {
+        this.notifUnread--
+      }
+
       this.$http.post('/api/notifications/' + n.id, {read: 1})
 
       // Save for next page

@@ -22,7 +22,7 @@
               <i class="dropdown icon"></i>
               <div class="menu">
                 <div v-if="notifications && notifications.length > 0" v-cloak>
-                  <div class="item" v-for="n in notifications" v-text="n.message" :class="{read:n.read}" @click.stop="notifGo(n, $index)"></div>
+                  <div class="item" v-for="(n, index) in notifications" v-text="n.message" :class="{read:n.read}" @click.stop="notifGo(n, index)"></div>
                 </div>
                 <div v-else class="item" @click.stop>Er zijn geen meldingen</div>
               </div>

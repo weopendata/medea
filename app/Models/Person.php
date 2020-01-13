@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Support\Facades\Hash;
 use Everyman\Neo4j\Relationship;
 use App\Repositories\UserRepository;
@@ -11,7 +12,7 @@ use App\Repositories\CollectionRepository;
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class Person extends Base implements Authenticatable
+class Person extends Base implements Authenticatable, CanResetPassword
 {
     public static $NODE_TYPE = 'E21';
     public static $NODE_NAME = 'person';
@@ -340,6 +341,15 @@ class Person extends Base implements Authenticatable
         $password = Hash::make($password);
 
         $this->node->setProperty('password', $password)->save();
+    }
+
+    public function getEmailForPasswordReset()
+    {
+        return $this->node->getProperty('email');
+    }
+
+    public function sendPasswordResetNotification($token) {
+        //
     }
 
     public function update($properties)
