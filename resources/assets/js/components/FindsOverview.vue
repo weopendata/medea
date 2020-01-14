@@ -50,6 +50,7 @@
         @saveSearch="saveSearch"
         @rmSearch="rmSearch"
         @updateFilterName="updateFilterName"
+        @filtersChanged="filtersChanged"
         >
         </finds-list>
       </div>

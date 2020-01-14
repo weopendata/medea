@@ -141,28 +141,6 @@ export default {
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
     }
   },
-  events: {
-    imgRemark (index) {
-      var remarks = inert(this.imgRemarks)
-
-      // Fix php json_encode issue where objects are encoded as arrays
-      if (Array.isArray(remarks)) {
-        var oldRemarks = remarks
-        remarks = {}
-        for (var i = oldRemarks.length - 1; i >= 0; i--) {
-          remarks[i] = oldRemarks[i]
-        }
-      }
-
-      // Toggle the remark list
-      if (remarks[index]) {
-        delete remarks[index]
-      } else {
-        remarks[index] = []
-      }
-      this.imgRemarks = remarks
-    }
-  },
   mounted () {
     $('.ui.checkbox', this.$el).checkbox()
 
@@ -224,12 +202,7 @@ export default {
           }
         }
 
-        console.log(remarks, "new imgRemarks");
-
-        this.imgRemarks = remarks
-
-
-        //this.imgRemarks = imgRemarks;
+        this.imgRemarks = remarks;
       }
     }
   },
