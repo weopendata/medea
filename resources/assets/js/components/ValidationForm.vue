@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <photo-validation :model="remark" :index="index" v-for="(index, remark) in imgRemarks" v-if="remark!==false"></photo-validation>
+    <photo-validation :model="remark" :index="index" v-for="(remark, index) in imgRemarks" v-if="remark!==false"></photo-validation>
     <p v-if="result" v-text="result"></p>
     <p v-if="!remove&&valid">
       <button @click="post('Gepubliceerd')" class="ui green big button" :class="{green:valid}" :disabled="!valid">
@@ -137,6 +137,7 @@ export default {
         imgRemarks: this.imgRemarks,
         remarks: this.remarks
       }
+
       this.$http.post('/objects/' + this.obj + '/validation', data).then(this.submitSuccess, this.submitError)
     }
   },
@@ -191,6 +192,45 @@ export default {
 
       this.feedback = feedback
       this.imgRemarks = imgRemarks
+    }
+  },
+  watch: {
+    feedback: {
+      deep: true,
+      handler (v) {
+        const photograph = this.$parent.find.object.photograph;
+        const imgRemarks = {};
+
+        var remarks = inert(this.imgRemarks)
+        console.log(remarks, "old remarks");
+
+        // Fix php json_encode issue where objects are encoded as arrays
+        if (Array.isArray(remarks)) {
+          var oldRemarks = remarks
+          remarks = {}
+          for (var i = oldRemarks.length - 1; i >= 0; i--) {
+            remarks[i] = oldRemarks[i]
+          }
+        }
+
+        for (var i = 0; i < photograph.length; i++) {
+          const id = photograph[i].identifier
+
+          // Toggle the remark list
+          if (remarks[id] && !v[id]) {
+            delete remarks[id]
+          } else if (v[id] && !remarks[id]) {
+            remarks[id] = []
+          }
+        }
+
+        console.log(remarks, "new imgRemarks");
+
+        this.imgRemarks = remarks
+
+
+        //this.imgRemarks = imgRemarks;
+      }
     }
   },
   components: {

@@ -138,6 +138,15 @@ export default {
   mounted () {
     this.user = medeaUser || {};
   },
+  watch: {
+    feedback: {
+      deep: true,
+      handler (v) {
+        console.log(v);
+        console.log("hi");
+      }
+    }
+  },
   data () {
     return {
       find: null,
