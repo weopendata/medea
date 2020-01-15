@@ -180,7 +180,7 @@ export default {
         const imgRemarks = {};
 
         var remarks = inert(this.imgRemarks)
-        console.log(remarks, "old remarks");
+        //console.log(remarks, "old remarks");
 
         // Fix php json_encode issue where objects are encoded as arrays
         if (Array.isArray(remarks)) {

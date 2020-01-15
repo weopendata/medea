@@ -69,7 +69,7 @@ export default {
   props: ['index'],
   computed: {
     num () {
-      console.log(this.index, "index");
+      //console.log(this.index, "index");
       return parseInt(this.index) + 1
     }
   },

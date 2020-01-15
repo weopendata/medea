@@ -142,8 +142,6 @@ export default {
     feedback: {
       deep: true,
       handler (v) {
-        console.log(v);
-        console.log("hi");
       }
     }
   },

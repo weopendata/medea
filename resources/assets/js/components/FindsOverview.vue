@@ -167,8 +167,9 @@ export default {
     },
     filtersChanged (v) {
       if (v) {
-        this.filterState = Object.assign(v, this.filterState);
+        this.filterState = Object.assign(this.filterState, v);
       }
+
       this.fetch();
     },
     relevant (find) {
