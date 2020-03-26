@@ -2,76 +2,65 @@
   <div class="ui form">
     <div class="field persons__add">
       <label for="function">Koppelen aan een persoon</label>
-      <select2 :options="options" @select="select" :clear-value="false" :value="formattedValue"></select2>
+      <search-dropdown placeholder="Selecteer een persoon" :options="options" :value="formattedPerson" @search="searchPersons" @input="select" @remove="remove" />
     </div>
   </div>
 </template>
 <script>
-  import Select2 from './Select2.vue'
+  import SearchDropdown from './SearchDropdown'
 
   export default {
     props: ['person', 'placeholder'],
     data () {
       return {
-        lastData: [],
-        options: {
-          width: '300px',
-          placeholder: this.placeholder,
-          ajax: {
-            url: '/api/users',
-            dataType: 'json',
-            delay: 250,
-            data (params) {
-              return {
-                name: params.term,
-                page: params.page
-              };
-            },
-            processResults: (data, params) => {
-              this.lastData = data
-              params.page = params.page || 1
-
-              return {
-                results: data.map(({identifier, firstName, lastName}) => ({
-                  id: identifier === 0 ? "0" : identifier,
-                  text: firstName + ' ' + lastName
-                })),
-                pagination: {
-                  more: (params.page * 30) < data.total_count
-                }
-              }
-            },
-            cache: true
-          }
-        }
+        options: [],
       }
     },
     methods: {
-      select (id) {
-        const person = this.lastData.find(p => p.identifier == id)
+      select (person) {
         if (person) {
-          this.$emit('select', person)
-        }
-        else {
-          this.remove(this.person)
+          this.$emit('select', {identifier: person.id, name: person.name});
         }
       },
-      remove (person) {
-        this.$emit('remove', person)
+       searchPersons (query) {
+        axios.get('/api/users?name=' + name)
+        .then(response => {
+          this.options = [];
+
+          if (! response.data) {
+            return;
+          }
+
+          this.options = response.data.map(result => {
+            return {
+              id: result.identifier,
+              name:  result.firstName + ' ' + result.lastName
+            }
+          });
+        });
+      },
+      remove () {
+        this.$emit('remove')
       }
     },
     computed: {
-      formattedValue() {
-        if (this.person.firstName) {
+      formattedPerson() {
+        if (this.person) {
+          var name = this.person.name;
+
+          if (! name && this.person.firstName) {
+            name = this.person.firstName + ' ' + this.person.lastName;
+          }
+
           return {
             id: this.person.identifier === 0 ? "0" : this.person.identifier,
-            text: this.person.firstName + ' ' + this.person.lastName
+            name: name
           }
         }
       }
     },
     components: {
-      Select2
+      SearchDropdown
     }
   }
 </script>

@@ -397,6 +397,7 @@ class FindController extends Controller
     {
         $find = $request->getFind();
 
+        info($find['object']);
         // Get the collection of the find, could be empty as well
         $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
 
@@ -407,17 +408,9 @@ class FindController extends Controller
         $fields = $this->list_values->getFindTemplate();
         $fields = $this->transformPeriods($fields);
 
-        $collections = collect(app(CollectionRepository::class)->getList())->map(function($title, $identifier) {
-           return [
-               'id' => $identifier,
-               'text' => $title
-           ];
-        })->values();
-
         return view('pages.finds-create', [
             'fields' => $fields,
-            'find' => $find,
-            'collections' => $collections
+            'find' => $find
         ]);
     }
 
@@ -542,7 +535,7 @@ class FindController extends Controller
         } elseif ($status == 'Aan te passen') {
             $eventName .= 'ButNotSubmit';
         } else {
-            $eventName += 'ButUnexpectedStatus';
+            $eventName .= 'ButUnexpectedStatus';
         }
 
         if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {

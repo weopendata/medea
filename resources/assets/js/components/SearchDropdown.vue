@@ -1,15 +1,20 @@
 <template>
   <div>
     <multiselect
-    :value="dropdownValue"
-    :options="options"
-    :searchable="true"
-    @search-change="search"
-    label="name"
-    track-by="name"
-    @input="input"
-    :placeholder="placeholder"
+      :value="dropdownValue"
+      :options="options"
+      :searchable="true"
+      @search-change="search"
+      label="name"
+      track-by="name"
+      @input="input"
+      :placeholder="placeholder"
     >
+      <template v-slot:clear :clear="clear">
+        <div class="multiselect__clear" @mousedown.prevent="clear()">
+          <div>X</div>
+        </div>
+      </template>
     </multiselect>
   </div>
 </template>
@@ -37,18 +42,23 @@
       },
       input (value) {
         this.$emit('input', value);
-        //this.searchValue = '';
+      },
+      clear () {
+        this.$emit('remove');
       }
     },
     components: {
       Multiselect
-    },
-    watch: {
-      dropdownValue (v) {
-        console.log(v, "dropdownvalue changed");
-      }
     }
   }
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style lang="scss">
+.multiselect__clear {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  cursor: pointer;
+}
+</style>

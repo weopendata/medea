@@ -21,7 +21,6 @@ window.categoryMap = {
 window.fields = {!! json_encode($fields) !!};
 @if (isset($find))
 window.initialFind = {!! json_encode($find) !!};
-window.collections = {!! json_encode($collections) !!};
 @endif
 </script>
 @endsection

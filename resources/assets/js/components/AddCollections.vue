@@ -2,7 +2,7 @@
   <div class="ui form">
     <div class="field collections__add">
       <label for="function">Koppelen aan een collectie</label>
-      <search-dropdown placeholder="Selecteer een collectie" :options="options" :value="formattedCollection" @search="searchCollections" @input="select" />
+      <search-dropdown placeholder="Selecteer een collectie" :options="options" :value="formattedCollection" @search="searchCollections" @input="select" @remove="remove" />
     </div>
   </div>
 </template>
@@ -18,8 +18,6 @@
     },
     methods: {
       select (collection) {
-        //const collection = this.lastData.find(p => p.identifier == id)
-
         if (collection) {
           this.$emit('select', {identifier: collection.id, title: collection.name});
         }/* else {
@@ -27,7 +25,7 @@
         }*/
       },
       searchCollections (query) {
-        axios.get('/api/collections?' + query)
+        axios.get('/api/collections?title=' + query)
         .then(response => {
           this.options = [];
 
@@ -43,8 +41,8 @@
           });
         });
       },
-      remove (collection) {
-        this.$emit('remove', collection)
+      remove () {
+        this.$emit('remove')
       }
     },
     computed: {
@@ -52,11 +50,6 @@
         if (this.collection && this.collection.identifier) {
           return {id: this.collection.identifier === 0 ? "0" : this.collection.identifier, name: this.collection.title}
         }
-      }
-    },
-    watch: {
-      collection (v) {
-        console.log(v, "CHANGED");
       }
     },
     components: {
