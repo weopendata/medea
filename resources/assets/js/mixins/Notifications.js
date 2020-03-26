@@ -57,7 +57,7 @@ export default {
       ls('notifLast', this.notifLast)
     }
   },
-  ready () {
+  mounted () {
     if (!window.medeaUser.isGuest) {
       setTimeout(() => this.notifFetch(), 3000)
     }

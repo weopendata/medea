@@ -32,7 +32,7 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
-     * Return a simle list of the all collections
+     * Return a simple list of the all collections
      * This list is a mapping between id's and the title of the collection
      *
      * @return array

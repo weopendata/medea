@@ -172,7 +172,7 @@ export default {
       this.$emit('filtersChanged');
     }
   },
-  ready () {
+  mounted () {
     $('.ui.dropdown').dropdown()
   },
   watch: {

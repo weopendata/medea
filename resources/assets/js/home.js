@@ -149,7 +149,7 @@ new Vue({
       this.errors = res.data
     }
   },
-  ready () {
+  mounted () {
     $('.ui.checkbox').checkbox()
     $('nav .ui.dropdown').dropdown()
   },

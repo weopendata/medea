@@ -121,7 +121,7 @@ class FindController extends Controller
         // Add the collections as a full list, it's currently still feasible
         // that all collections can be added to the facet filter
         $fields = $this->list_values->getFindTemplate();
-        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function($title, $identifier){
+        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function($title, $identifier) {
            return [
                'value' => $identifier,
                'label' => $title
@@ -397,6 +397,7 @@ class FindController extends Controller
     {
         $find = $request->getFind();
 
+        info($find['object']);
         // Get the collection of the find, could be empty as well
         $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
 
@@ -534,7 +535,7 @@ class FindController extends Controller
         } elseif ($status == 'Aan te passen') {
             $eventName .= 'ButNotSubmit';
         } else {
-            $eventName += 'ButUnexpectedStatus';
+            $eventName .= 'ButUnexpectedStatus';
         }
 
         if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {

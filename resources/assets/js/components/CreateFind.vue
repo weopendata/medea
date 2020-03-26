@@ -394,10 +394,10 @@
           Geef hier aan tot welke collectie deze vondst hoort.
         </div>
         <div class="field">
-          <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection" placeholder="Koppel aan een collectie"></add-collections>
+          <add-collections @select="assignCollection" :collection="collection" @remove="removeCollection" placeholder="Koppel aan een collectie"></add-collections>
         </div>
         <div class="field">
-          <add-persons @select="assignPerson" @remove="removePerson" :person.sync="person" placeholder="Koppel aan een persoon"></add-persons>
+          <add-persons @select="assignPerson" @remove="removePerson" :person="person" placeholder="Koppel aan een persoon"></add-persons>
         </div>
       </step>
 
@@ -827,6 +827,7 @@
       this.find.object.objectDescription = value;
     },
     assignCollection (collection) {
+      console.log(collection, "selected");
       this.collection = collection
     },
     removeCollection () {
@@ -980,7 +981,7 @@
         delete this.find.object.collection
       }
 
-      if (this.person.firstName) {
+      if (this.person.firstName || this.person.name) {
         this.find.person = {id: this.person.identifier}
       } else {
         delete this.find.person
@@ -999,7 +1000,7 @@
       }
     }
   },
-  ready () {
+  mounted () {
     if (window.initialFind) {
       if (this.latlng.lat) {
         this.map.center = this.latlng

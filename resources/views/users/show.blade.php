@@ -13,7 +13,6 @@
     @if (isset($collections))
     <script type="text/javascript">
     window.profile = {!! json_encode($profile) !!};
-    window.collections = {!! json_encode($collections) !!};
     window.findCount = {!! json_encode($findCount) !!};
     window.profile = {!! json_encode($profile) !!};
     window.roles = {!! json_encode($roles) !!};
