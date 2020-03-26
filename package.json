@@ -33,6 +33,7 @@
         "vue-search-select": "^2.9.3",
         "vue-textarea-autosize": "^1.1.1",
         "vue-typeahead": "^2.3.2",
-        "vue2-google-maps": "^0.10.7"
+        "vue2-google-maps": "^0.10.7",
+        "vue-multiselect": "^2.1.3"
     }
 }

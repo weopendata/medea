@@ -2,75 +2,65 @@
   <div class="ui form">
     <div class="field collections__add">
       <label for="function">Koppelen aan een collectie</label>
-      <select2 :options="options" @select="select" :clear-value="false" :value="formattedValue"></select2>
+      <search-dropdown placeholder="Selecteer een collectie" :options="options" :value="formattedCollection" @search="searchCollections" @input="select" />
     </div>
   </div>
 </template>
 <script>
-  import Select2 from './Select2.vue'
+  import SearchDropdown from './SearchDropdown'
 
   export default {
     props: ['collection', 'placeholder'],
     data () {
       return {
-        collections: window.collections || [],
-        lastData: [],
-        options: {
-          width: '300px',
-          placeholder: this.placeholder,
-          allowClear: true,
-          ajax: {
-            url: '/api/collections',
-            dataType: 'json',
-            delay: 250,
-            data (params) {
-              return {
-                title: params.term,
-                page: params.page
-              };
-            },
-            processResults: (data, params) => {
-              this.lastData = data
-              params.page = params.page || 1
-
-              return {
-                results: data.map(({identifier, title}) => ({
-                  id: this.identifier === 0 ? "0" : identifier,
-                  text: title
-                })),
-                pagination: {
-                  more: (params.page * 30) < data.total_count
-                }
-              }
-            },
-            cache: true
-          }
-        }
+        options: [],
       }
     },
     methods: {
-      select (id) {
-        const collection = this.lastData.find(p => p.identifier == id)
-        if(collection){
-          this.$emit('select', collection)
-        }
-        else{
+      select (collection) {
+        //const collection = this.lastData.find(p => p.identifier == id)
+
+        if (collection) {
+          this.$emit('select', {identifier: collection.id, title: collection.name});
+        }/* else {
           this.remove(this.collection)
-        }
+        }*/
+      },
+      searchCollections (query) {
+        axios.get('/api/collections?' + query)
+        .then(response => {
+          this.options = [];
+
+          if (! response.data) {
+            return;
+          }
+
+          this.options = response.data.map(result => {
+            return {
+              id: result.identifier,
+              name:  result.title
+            }
+          });
+        });
       },
       remove (collection) {
         this.$emit('remove', collection)
       }
     },
     computed: {
-      formattedValue() {
-        if (this.collection.identifier) {
-          return {id: this.collection.identifier === 0 ? "0" : this.collection.identifier, text: this.collection.title}
+      formattedCollection() {
+        if (this.collection && this.collection.identifier) {
+          return {id: this.collection.identifier === 0 ? "0" : this.collection.identifier, name: this.collection.title}
         }
       }
     },
+    watch: {
+      collection (v) {
+        console.log(v, "CHANGED");
+      }
+    },
     components: {
-      Select2
+      SearchDropdown
     }
   }
 </script>

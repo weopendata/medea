@@ -394,7 +394,7 @@
           Geef hier aan tot welke collectie deze vondst hoort.
         </div>
         <div class="field">
-          <add-collections @select="assignCollection" @remove="removeCollection" :collection.sync="collection" placeholder="Koppel aan een collectie"></add-collections>
+          <add-collections @select="assignCollection" :collection="collection" @remove="removeCollection" placeholder="Koppel aan een collectie"></add-collections>
         </div>
         <div class="field">
           <add-persons @select="assignPerson" @remove="removePerson" :person.sync="person" placeholder="Koppel aan een persoon"></add-persons>
@@ -827,6 +827,7 @@
       this.find.object.objectDescription = value;
     },
     assignCollection (collection) {
+      console.log(collection, "selected");
       this.collection = collection
     },
     removeCollection () {

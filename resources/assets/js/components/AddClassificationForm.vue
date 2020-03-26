@@ -95,10 +95,8 @@
             </div>
           </div>
         </div>
-        <pre>{{cls.publication}}</pre>
         <div class="ui grid" v-for="(pub, index) in cls.publication" style="margin-top:0;">
           <div class="twelve wide column">
-            <pre>{{pub}}</pre>
             <input-publication :publication="pub" :index="index"></input-publication>
           </div>
           <div class="four wide column">

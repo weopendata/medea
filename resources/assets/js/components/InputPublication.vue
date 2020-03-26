@@ -1,6 +1,5 @@
 <template>
   <div>
-    <pre>{{this.publication}}</pre>
     <div class="ui action input" v-if="publication.identifier" :class="{error:publication.error}">
       <input type="text" :value="cite(t)" readonly>
       <button type="button" class="ui basic icon button" @click="$parent.rmPublication(index)">
