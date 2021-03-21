@@ -9,6 +9,9 @@
           <a href="/persons" class="item" :class="path == '/persons' ? 'active' : ''">Leden</a>
           <a href="/finds/create" class="item" :class="path == '/finds/create' ? 'active' : ''" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
         </template>
+        <template v-if="isAdmin">
+          <a href="/uploads" class="item" :class="path == '/uploads' ? 'active' : ''" data-step="3" data-intro="Klik hier om vondsten te importeren." id="uploads">Importeren</a>
+        </template>
         <a class="item" :href="cmsLink">Over MEDEA</a>
 
         <div class="right menu">
@@ -71,19 +74,22 @@
         return navClass;
       },
       isGuest () {
-        return ! this.user || ! this.user.email;
+        return ! this.user || ! this.user.email
+      },
+      isAdmin () {
+        return this.user && this.user.administrator
       },
       path () {
-        return window.location.pathname;
+        return window.location.pathname
       }
     },
     mounted() {
-      this.user = window.medeaUser;
-      this.cmsLink = window.cmsLink;
+      this.user = window.medeaUser
+      this.cmsLink = window.cmsLink
     },
     created () {
       $(document).ready(function() {
-        $('nav .ui.dropdown').dropdown();
+        $('nav .ui.dropdown').dropdown()
       });
     },
     mixins: [Notifications]

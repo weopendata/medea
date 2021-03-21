@@ -5,8 +5,8 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "6.0.*",
+        "php": ">=7.0",
+        "laravel/framework": "6.18.*",
         "laravelcollective/html": "6.*",
         "everyman/neo4jphp": "dev-master",
         "sendgrid/sendgrid": "7.2",
@@ -14,7 +14,8 @@
         "piwik/piwik-php-tracker": "^1.0",
         "league/csv": "^8.1",
         "barryvdh/laravel-ide-helper": "^2.4",
-        "laravel/helpers": "^1.1"
+        "laravel/helpers": "^1.1",
+        "pda/pheanstalk": "^4.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -52,7 +53,6 @@
             "php artisan vendor:publish --provider=\"Intervention\\Image\\ImageServiceProviderLaravel5\""
         ],
         "pre-update-cmd": [
-            "php artisan clear-compiled"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -61,6 +61,7 @@
     },
     "config": {
         "preferred-install": "dist",
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "platform-check": false
     }
 }

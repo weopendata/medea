@@ -29,6 +29,8 @@ Route::group(['middleware' => 'roles:validator|detectorist'], function () {
 Route::group(['middleware' => 'roles:administrator'], function () {
     Route::get('register/confirm/{token}', 'Auth\RegistrationController@confirmRegistration');
     Route::get('register/deny/{token}', 'Auth\RegistrationController@denyRegistration');
+    Route::resource('/uploads', 'UploadController');
+    Route::get('/api/uploads', 'UploadController@get');
 });
 
 Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {
