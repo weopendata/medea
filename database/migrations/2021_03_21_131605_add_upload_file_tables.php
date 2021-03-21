@@ -41,7 +41,7 @@ class AddUploadFileTables extends Migration
            $table->text('context')->nullable();
            $table->timestamps();
 
-           $table->foreign('import_job_id')->references('id')->on('import_jobs')->onDelete('CASCADE');
+           $table->foreign('import_jobs_id')->references('id')->on('import_jobs')->onDelete('CASCADE');
         });
     }
 
