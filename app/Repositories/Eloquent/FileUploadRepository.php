@@ -41,15 +41,29 @@ class FileUploadRepository
             ->orderByDesc('id')
             ->get()
             ->map(function ($result) {
+                $importJobs = $result
+                    ->importJobs
+                    ->map(function ($job) {
+                        return [
+                            'id' => $job->id,
+                            'status' => $job->status
+                        ];
+                    })
+                    ->toArray();
+
                 $result = $result->toArray();
 
-                return array_only($result, [
+                $result = array_only($result, [
                     'id',
                     'name',
                     'user_name',
                     'last_imported',
                     'created_at'
                 ]);
+
+                $result['import_jobs'] = $importJobs;
+
+                return $result;
             })
             ->toArray();
     }

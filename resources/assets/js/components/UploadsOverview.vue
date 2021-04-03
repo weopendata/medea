@@ -40,6 +40,33 @@
           </template>
         </dl>
       </div>
+
+      <div style="margin-top: 1rem;">
+        <h4>Import logs</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Lijn</th>
+              <th>Actie</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(log, index) in logs" :key="'upload_log_' + index">
+              <td>
+                {{ log.line_number }}
+              </td>
+              <td>
+                {{ log.action }}
+              </td>
+              <td>
+                {{ log.status }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 </template>
@@ -50,7 +77,8 @@
     props: ['uploads'],
     data () {
       return {
-        selectedUpload: {}
+        selectedUpload: {},
+        logs: []
       }
     },
     methods: {
@@ -59,6 +87,26 @@
       },
       displayAddUpload () {
         this.$emit('displayCreateUpload')
+      },
+      fetchLogs () {
+        if (!this.selectedUpload.id || !this.selectedUpload.import_jobs || this.selectedUpload.import_jobs.length === 0) {
+          return
+        }
+
+        let jobId = this.selectedUpload.import_jobs[0].id
+
+        axios.get('/api/uploads/' + jobId + '/logs')
+          .then(response => {
+            this.logs = response.data
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+    },
+    watch: {
+      selectedUpload (v) {
+        this.fetchLogs()
       }
     }
   }

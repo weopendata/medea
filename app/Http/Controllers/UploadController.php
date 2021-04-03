@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 
 use App\Repositories\Eloquent\FileUploadRepository;
+use App\Repositories\Eloquent\ImportLogRepository;
 use Illuminate\Http\Request;
 
 class UploadController extends Controller
@@ -19,11 +20,26 @@ class UploadController extends Controller
             ]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function get(Request $request)
     {
         $uploads = app(FileUploadRepository::class)->get();
 
         return response()->json($uploads);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLogs(Request $request, $importJobId)
+    {
+        $logs = app(ImportLogRepository::class)->getLogsForJob($importJobId);
+
+        return response()->json($logs);
     }
 
     public function show(Request $request)

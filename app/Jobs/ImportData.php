@@ -1,45 +1,42 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Jobs;
 
-use App\Constants\Notifications\NotificationEvents;
-use App\Events\Notifications\NotificationEvent;
-use App\Models\FindEvent;
 use App\Repositories\ClassificationRepository;
+use App\Repositories\Eloquent\FileUploadRepository;
 use App\Repositories\FindRepository;
-use App\Traits\ValidateFields;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
-use Illuminate\Console\Command;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use League\Csv\Reader;
 
-class ImportFinds extends Command
+class ImportData implements ShouldQueue
 {
-    use ValidateFields;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * @var integer
      */
-    protected $signature = 'medea:import-finds {file : The full path to the CSV file containing structured information about finds.}';
+    private $fileUploadId;
 
     /**
-     * The console command description.
-     *
-     * @var string
+     * @var
      */
-    protected $description = 'Import finds through a CSV file.';
+    protected $importJob;
 
     /**
-     * Create a new command instance.
+     * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($importJob)
     {
-        parent::__construct();
+        $this->importJob = $importJob;
     }
 
     /**
@@ -49,15 +46,24 @@ class ImportFinds extends Command
      */
     public function handle()
     {
-        $file = $this->argument('file');
+        $fileUpload = $this->importJob->fileUpload;
 
-        if (! file_exists($file)) {
-            $this->error('The file that was passed was not found, make sure that the path is correct.');
+        $filePath =  storage_path('app/' . $fileUpload->path);
+
+        if (! file_exists($filePath)) {
+            $this->importJob->status = 'failed';
+            $this->importJob->context = 'The CSV file could not be found.';
+            $this->importJob->save();
 
             return;
         }
 
-        $csv = Reader::createFromPath($file);
+        // Update the import job status
+        $this->importJob->status = 'running';
+        $this->importJob->save();
+
+        // Read the CSV file and process the data
+        $csv = Reader::createFromPath($filePath);
         $csv->setDelimiter(';');
 
         // Keep track of the (human) row index in the CSV
@@ -154,7 +160,7 @@ class ImportFinds extends Command
      */
     private function getAdminId()
     {
-         $neo4j_config = \Config::get('database.connections.neo4j');
+        $neo4j_config = \Config::get('database.connections.neo4j');
 
         // Create an admin
         $client = new Client($neo4j_config['host'], $neo4j_config['port']);
@@ -221,7 +227,7 @@ class ImportFinds extends Command
         return $find;
     }
 
-     /**
+    /**
      * Set the findSpotTitle
      *
      * @param  array  $find
@@ -613,5 +619,17 @@ class ImportFinds extends Command
         }
 
         return $find;
+    }
+
+    /**
+     * @param \Throwable $ex
+     */
+    public function failed(\Throwable $ex)
+    {
+        \Log::error($ex->getMessage());
+        \Log::error($ex->getTraceAsString());
+
+        $this->importJob->status = 'failed';
+        $this->importJob->save();
     }
 }

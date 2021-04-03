@@ -31,6 +31,7 @@ Route::group(['middleware' => 'roles:administrator'], function () {
     Route::get('register/deny/{token}', 'Auth\RegistrationController@denyRegistration');
     Route::resource('/uploads', 'UploadController');
     Route::get('/api/uploads', 'UploadController@get');
+    Route::get('/api/uploads/{import_job_id}/logs', 'UploadController@getLogs');
 });
 
 Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {

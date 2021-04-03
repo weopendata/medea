@@ -38,7 +38,7 @@ class BaseRepository
      */
     protected function getLabel()
     {
-        $client = $this->getclient();
+        $client = $this->getClient();
 
         // Return a label configured client, equivalent of only returning a certain eloquent model
         $label = $client->makeLabel($this->label);
