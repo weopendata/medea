@@ -47,7 +47,9 @@ class ImportFinds extends Command
      */
     public function handle()
     {
-        $file = $this->argument('file');
+        throw new \Exception("deprecated");
+
+        /*$file = $this->argument('file');
 
         if (! file_exists($file)) {
             $this->error('The file that was passed was not found, make sure that the path is correct.');
@@ -111,7 +113,7 @@ class ImportFinds extends Command
             }
 
             $index++;
-        }
+        }*/
     }
 
     /**

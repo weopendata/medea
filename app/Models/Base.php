@@ -91,11 +91,10 @@ class Base
 
         $client = self::getClient();
 
+        // TODO: do "makeNode" via the NodeService so we can add the multi-tenancy properties straight away
         $this->node = $client->makeNode();
 
         $generalId = $this->createMedeaId();
-
-        // TODO: add multi-tenancy label value to the created Label
 
         $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
         $this->node->setProperty('name', static::$NODE_NAME)->save();
@@ -789,8 +788,10 @@ class Base
     {
         $node_id = $this->node->getId();
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'end']);
+
         $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
-                  WHERE id(n) = $node_id AND end.name = '$node_name'
+                  WHERE id(n) = $node_id AND end.name = '$node_name' AND $tenantStatement
                   RETURN distinct end";
 
         $cypher_query = new Query($this->getClient(), $query);
@@ -810,8 +811,10 @@ class Base
     {
         $node_id = $this->node->getId();
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'end']);
+
         $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
-                  WHERE id(n) = $node_id
+                  WHERE id(n) = $node_id AND $tenantStatement
                   RETURN distinct end";
 
         $cypher_query = new Query($this->getClient(), $query);
@@ -831,8 +834,10 @@ class Base
     {
         $nodeId = $this->node->getId();
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'end']);
+
         $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[r]-(end:$nodeType)
-                  WHERE id(n) = $nodeId
+                  WHERE id(n) = $nodeId AND $tenantStatement
                   RETURN r";
 
         $cypher_query = new Query($this->getClient(), $query);
