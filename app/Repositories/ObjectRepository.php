@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\BaseObject;
 use App\Models\ProductionClassification;
 use App\Models\ProductionEvent;
+use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Relationship;
 use Carbon\Carbon;
@@ -35,17 +36,21 @@ class ObjectRepository extends BaseRepository
     /**
      * Add a classification to an object
      *
-     * @param  integer $objectId       The id of the object
-     * @param  array   $classification The configuration of the classification
+     * @param integer $objectId The id of the object
+     * @param array $classification The configuration of the classification
      * @return Node    The classification Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function addClassification($objectId, $classification)
     {
         $object = $this->getById($objectId);
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['object', 'productionEvent']);
+
         if (! empty($object)) {
             $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
-            WHERE id(object) = $objectId return productionEvent, object";
+            WHERE id(object) = $objectId AND $tenantStatement 
+            return productionEvent, object";
 
             $client = $this->getClient();
 
@@ -76,7 +81,8 @@ class ObjectRepository extends BaseRepository
     {
         // To make this more neat, we'll use a specific Cypher query to bypass the
         // productionEvent link that lies between object and classification
-        $query = "match (n)-[*2..2]-(classification) where id(n) = $objectId AND id(classification) = $classification_id return classification";
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'classification']);
+        $query = "match (n)-[*2..2]-(classification) where id(n) = $objectId AND id(classification) = $classification_id  AND $tenantStatement return classification";
 
         $client = $this->getClient();
 
@@ -99,8 +105,10 @@ class ObjectRepository extends BaseRepository
      */
     public function getRelatedUserId($objectId)
     {
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'find', 'person']);
+
         $queryString = "MATCH (n:object)-[P12]-(find:findEvent)-[P29]-(person:person)
-                WHERE id(n) = $objectId
+                WHERE id(n) = $objectId AND $tenantStatement
                 return person";
 
         $query = new Query($this->getClient(), $queryString);
@@ -125,8 +133,10 @@ class ObjectRepository extends BaseRepository
      */
     public function getRelatedFindEventId($objectId)
     {
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'find', 'person']);
+
         $queryString = "MATCH (n:object)-[P12]-(find:findEvent)
-                WHERE id(n) = $objectId
+                WHERE id(n) = $objectId AND $tenantStatement
                 return find";
 
         $query = new Query($this->getClient(), $queryString);

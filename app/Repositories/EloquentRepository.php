@@ -5,9 +5,6 @@ namespace App\Repositories;
 /**
  * Class EloquentRepository
  * @package App\Repositories
- *
- *
- * TODO: add multi-tenancy
  */
 class EloquentRepository
 {

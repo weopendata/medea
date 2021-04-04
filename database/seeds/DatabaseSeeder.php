@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\NodeService;
 use Illuminate\Database\Seeder;
 use App\Repositories\UserRepository;
 
@@ -25,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $label = $client->makeLabel('Person');
 
         // Get all of the Person node with the admin email
-        $nodes = $label->getNodes('email', 'foo@bar.com');
+        $nodes =  NodeService::getNodesForLabel($label, ['email' => 'foo@bar.com']);
 
         if ($nodes->count() == 0) {
             $users = new UserRepository();

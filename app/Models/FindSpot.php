@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\NodeConstants;
+use App\Services\NodeService;
+
 class FindSpot extends Base
 {
     public static $NODE_TYPE = 'E27';
@@ -59,7 +62,7 @@ class FindSpot extends Base
         $client = $this->getClient();
         $label = $client->makeLabel($this->getGeneralId());
 
-        $related_nodes = $label->getNodes();
+        $related_nodes = NodeService::getNodesForLabel($label);
 
         foreach ($related_nodes as $related_node) {
             // Get and delete all of the relationships

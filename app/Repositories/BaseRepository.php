@@ -36,16 +36,14 @@ class BaseRepository
     /**
      * Return the configured
      *
-     * @return Label
+     * @return \Everyman\Neo4j\Label
      */
     protected function getLabel()
     {
         $client = $this->getclient();
 
         // Return a label configured client, equivalent of only returning a certain eloquent model
-        $label = $client->makeLabel($this->label);
-
-        return $label;
+        return $client->makeLabel($this->label);
     }
 
     protected function getClient()

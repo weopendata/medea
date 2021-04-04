@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\NodeConstants;
+use App\Services\NodeService;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
@@ -314,7 +316,7 @@ class Base
             // Remove the tree of implicit nodes
             $uuid_label = $client->makeLabel($this->getGeneralId());
 
-            $implicit_nodes = $uuid_label->getNodes();
+            $implicit_nodes = NodeService::getNodesForLabel($uuid_label);
 
             foreach ($implicit_nodes as $implicit_node) {
                 $relationships = $implicit_node->getRelationships([]);

@@ -2,6 +2,7 @@
 
 namespace App\Extensions;
 
+use App\Services\NodeService;
 use Illuminate\Contracts\Auth\UserProvider;
 use App\Models\Person;
 use Illuminate\Support\Facades\Hash;
@@ -41,7 +42,7 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveById($identifier)
     {
-        $users = $this->person_label->getNodes('email', $identifier);
+        $users = NodeService::getNodesForLabel($this->person_label, ['email' => $identifier]);
 
         if ($users->count() > 0) {
             $person = new Person();
@@ -62,7 +63,7 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveByToken($identifier, $token)
     {
-        $users = $this->person_label->getNodes('email', $identifier);
+        $users = NodeService::getNodesForLabel($this->person_label, ['email' => $identifier]);
 
         if ($users->count() > 0) {
             $user = $users[0];
@@ -87,7 +88,7 @@ class Neo4jUserProvider implements UserProvider
      */
     public function updateRememberToken(Authenticatable $user, $token)
     {
-        $users = $this->person_label->getNodes('email', $user->email);
+        $users = NodeService::getNodesForLabel($this->person_label, ['email' => $user->email]);
 
         if ($users->count() > 0) {
             $user_node = $users[0];
@@ -106,7 +107,7 @@ class Neo4jUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        $users = $this->person_label->getNodes('email', $credentials['email']);
+        $users = NodeService::getNodesForLabel($this->person_label, ['email' => $credentials['email']]);
 
         if ($users->count() > 0) {
             $user_node = $users[0];

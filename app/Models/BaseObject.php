@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\NodeConstants;
 use App\Repositories\CollectionRepository;
+use App\Services\NodeService;
 use Illuminate\Support\Arr;
 
 class BaseObject extends Base
@@ -344,7 +346,7 @@ class BaseObject extends Base
         $client = $this->getClient();
         $label = $client->makeLabel($this->getGeneralId());
 
-        $related_nodes = $label->getNodes();
+        $related_nodes = NodeService::getNodesForLabel($label);
 
         foreach ($related_nodes as $related_node) {
             // Get and delete all of the relationships

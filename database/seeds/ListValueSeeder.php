@@ -1,5 +1,7 @@
 <?php
 
+use App\NodeConstants;
+use App\Services\NodeService;
 use Illuminate\Database\Seeder;
 
 /**
@@ -41,7 +43,7 @@ class ListValueSeeder extends Seeder
             $labels[] = $nameLabel;
 
             // Avoid duplicates
-            $duplicates = $nameLabel->getNodes();
+            $duplicates = NodeService::getNodesForLabel($nameLabel);
 
             foreach ($duplicates as $duplicate) {
                 $relationships = $duplicate->getRelationships();
