@@ -5,6 +5,12 @@ namespace App\Repositories;
 use App\Models\Collection;
 use Everyman\Neo4j\Cypher\Query;
 
+/**
+ * Class CollectionRepository
+ * @package App\Repositories
+ *
+ * TODO: add multi-tenancy
+ */
 class CollectionRepository extends BaseRepository
 {
     /**

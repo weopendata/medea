@@ -5,6 +5,13 @@ namespace App\Repositories;
 use App\Models\ProductionClassification;
 use Everyman\Neo4j\Cypher\Query;
 
+/**
+ * Class ClassificationRepository
+ * @package App\Repositories
+ *
+ *
+ * TODO: add multi-tenancy
+ */
 class ClassificationRepository extends BaseRepository
 {
     public function __construct()

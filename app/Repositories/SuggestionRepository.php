@@ -5,6 +5,14 @@ namespace App\Repositories;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Client;
 
+
+/**
+ * Class SuggestionRepository
+ * @package App\Repositories
+ *
+ *
+ * TODO: add multi-tenancy
+ */
 class SuggestionRepository
 {
     /**

@@ -4,6 +4,12 @@ namespace App\Repositories;
 
 use Everyman\Neo4j\Client;
 
+/**
+ * Class ListValueRepository
+ * @package App\Repositories
+ *
+ * TODO: add multi-tenancy
+ */
 class ListValueRepository
 {
     protected function getClient()

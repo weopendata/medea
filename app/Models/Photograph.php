@@ -10,7 +10,7 @@ class Photograph extends Base
     protected $relatedModels = [
     ];
 
-    protected $implicitMoodels = [
+    protected $implicitModels = [
     ];
 
     protected $properties = [

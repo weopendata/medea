@@ -158,6 +158,7 @@ class ImportFinds extends Command
         $client = new Client($neo4j_config['host'], $neo4j_config['port']);
         $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
 
+        // TODO: add multi-tenancy dependecy -> move all queries to repositories
         $query = 'MATCH (person:person) WHERE person.firstName="Medea" and person.lastName="Admin" return person';
 
         $cypherQuery = new Query($client, $query, []);

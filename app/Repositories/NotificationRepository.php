@@ -4,6 +4,13 @@ namespace App\Repositories;
 
 use App\Models\Eloquent\Notification;
 
+/**
+ * Class NotificationRepository
+ * @package App\Repositories
+ *
+ *
+ * TODO: add multi-tenancy
+ */
 class NotificationRepository extends EloquentRepository
 {
     public function __construct(Notification $notification)

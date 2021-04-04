@@ -9,6 +9,12 @@ use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Relationship;
 use Carbon\Carbon;
 
+/**
+ * Class ObjectRepository
+ * @package App\Repositories
+ *
+ * TODO: add multi-tenancy
+ */
 class ObjectRepository extends BaseRepository
 {
     public function __construct()

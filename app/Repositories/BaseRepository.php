@@ -22,6 +22,8 @@ class BaseRepository
             return [];
         }
 
+        // TODO: add multi-tenancy label check
+
         foreach ($node->getLabels() as $label) {
             if ($label->getName() == $this->label) {
                 return $node;
@@ -62,6 +64,8 @@ class BaseRepository
         $client = $this->getClient();
 
         $node = $client->getNode($id);
+
+        // TODO: add multi-tenancy label check
 
         if (! empty($node)) {
             // Check if the node is valid, namely does it have the correct label!

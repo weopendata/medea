@@ -6,6 +6,13 @@ use App\Models\Person;
 use Everyman\Neo4j\Cypher\Query;
 use Illuminate\Support\Arr;
 
+/**
+ * Class UserRepository
+ * @package App\Repositories
+ *
+ *
+ * TODO: add multi-tenancy
+ */
 class UserRepository extends BaseRepository
 {
     public function __construct()

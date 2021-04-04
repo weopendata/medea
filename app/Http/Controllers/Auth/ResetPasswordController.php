@@ -78,8 +78,6 @@ class ResetPasswordController extends Controller
             return redirect()->back()->withErrors(['email' => 'Het email adres werd niet gevonden']);
         }
 
-        info("hiiioii");
-
         try {
             $this->resetPassword($userNode, $credentials['password']);
 

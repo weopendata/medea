@@ -5,6 +5,13 @@ namespace App\Repositories;
 use Everyman\Neo4j\Cypher\Query;
 use App\Models\Publication;
 
+/**
+ * Class PublicationRepository
+ * @package App\Repositories
+ *
+ *
+ * TODO: add multi-tenancy
+ */
 class PublicationRepository extends BaseRepository
 {
     public function __construct()

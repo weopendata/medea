@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Everyman\Neo4j\Client;
 
+/**
+ * Class Neo4jUserProvider
+ * @package App\Extensions
+ *
+ * TODO: add multi-tenancy
+ */
 class Neo4jUserProvider implements UserProvider
 {
     public function __construct()

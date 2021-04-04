@@ -7,6 +7,13 @@ use App\Models\ProductionClassification;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
 
+/**
+ * Class FindRepository
+ * @package App\Repositories
+ *
+ *
+ * TODO: add multi-tenancy
+ */
 class FindRepository extends BaseRepository
 {
     public function __construct()
@@ -104,6 +111,11 @@ class FindRepository extends BaseRepository
      *
      * @param array $filters
      *
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $orderFlow
+     * @param string $validationStatus
      * @return array
      */
     public function getAllWithFilter(

@@ -71,6 +71,7 @@ class Base
     /**
      * Create a label (Everyman\Neo4j\Label)
      *
+     * @param  string $label
      * @return Label
      */
     protected static function makeLabel($label)
@@ -91,6 +92,8 @@ class Base
         $this->node = $client->makeNode();
 
         $generalId = $this->createMedeaId();
+
+        // TODO: add multi-tenancy label value to the created Label
 
         $this->node->setProperty($this->uniqueIdentifier, $generalId)->save();
         $this->node->setProperty('name', static::$NODE_NAME)->save();
