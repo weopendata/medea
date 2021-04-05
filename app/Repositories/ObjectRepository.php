@@ -139,7 +139,7 @@ class ObjectRepository extends BaseRepository
      */
     public function getRelatedFindEventId($objectId)
     {
-        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'find', 'person']);
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'find']);
 
         $queryString = "MATCH (n:object)-[P12]-(find:findEvent)
                 WHERE id(n) = $objectId AND $tenantStatement
