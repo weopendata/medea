@@ -571,8 +571,8 @@ class FindRepository extends BaseRepository
         'OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'category']) .
         'OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'material']) .
         ' WITH distinct find, category, period, material, person, lat, lng, location
-        WHERE id(find) = {findId} AND ' . $tenantStatement .
-            ' RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
+        WHERE id(find) = {findId}
+         RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
         person.showNameOnPublicFinds as showName, person.lastName as lastName, person.firstName as firstName, person.detectoristNumber as detectoristNumber, lat.value as latitude,
         lng.value as longitude, location.accuracy as accuracy, find.created_at as created_at';
 

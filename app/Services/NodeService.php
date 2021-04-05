@@ -120,7 +120,14 @@ class NodeService
             return new Row(self::getClient(), [], []);
         }
 
-        return $results->current();
+        // Push everything into 1 row, as that is what the Jadell getNodesForLabel does
+        $nodes = [];
+        
+        foreach ($results as $result) {
+            $nodes[] = $result[0];
+        }
+
+        return new Row(self::getClient(), [], $nodes);
     }
 
     /**
