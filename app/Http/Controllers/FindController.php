@@ -397,7 +397,6 @@ class FindController extends Controller
     {
         $find = $request->getFind();
 
-        info($find['object']);
         // Get the collection of the find, could be empty as well
         $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
 

@@ -14,6 +14,8 @@ use Everyman\Neo4j\Label;
  */
 class NodeService
 {
+    private static $client;
+
     /**
      * @param $id
      * @return \Everyman\Neo4j\Node|void
@@ -21,11 +23,7 @@ class NodeService
      */
     public static function getById($id)
     {
-        $neo4j_config = \Config::get('database.connections.neo4j');
-
-        // Create a new client with user and password
-        $client = new Client($neo4j_config['host'], $neo4j_config['port']);
-        $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
+        $client = self::getClient();
 
         $node = $client->getNode($id);
 
@@ -36,6 +34,24 @@ class NodeService
         if ($node->getProperty(NodeConstants::TENANT_LABEL) == env('DB_TENANCY_LABEL')) {
             return $node;
         }
+    }
+
+    /**
+     * @return Client
+     */
+    protected static function getClient()
+    {
+        if (!isset(self::$client)) {
+            $neo4j_config = \Config::get('database.connections.neo4j');
+
+            // Create a new client with user and password
+            $client = new Client($neo4j_config['host'], $neo4j_config['port']);
+            $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
+
+            self::$client = $client;
+        }
+
+        return self::$client;
     }
 
     /**
@@ -90,22 +106,6 @@ class NodeService
         $properties[NodeConstants::TENANT_LABEL] = self::getTenantLabelValue();
 
         return $label->getNodes($properties);
-    }
-
-    /**
-     * Get the Neo4j client
-     *
-     * @return Client
-     */
-    protected static function getClient()
-    {
-        $neo4jConfig = \Config::get('database.connections.neo4j');
-
-        // Create an admin
-        $client = new Client($neo4jConfig['host'], $neo4jConfig['port']);
-        $client->getTransport()->setAuth($neo4jConfig['username'], $neo4jConfig['password']);
-
-        return $client;
     }
 
     /**
