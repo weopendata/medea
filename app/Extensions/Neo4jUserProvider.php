@@ -12,16 +12,20 @@ use Everyman\Neo4j\Client;
 /**
  * Class Neo4jUserProvider
  * @package App\Extensions
- *
- * TODO: add multi-tenancy
  */
 class Neo4jUserProvider implements UserProvider
 {
+    /**
+     * Neo4jUserProvider constructor.
+     */
     public function __construct()
     {
         $this->person_label = $this->getPersonLabel();
     }
 
+    /**
+     * @return \Everyman\Neo4j\Label
+     */
     private function getPersonLabel()
     {
         $neo4j_config = \Config::get('database.connections.neo4j');

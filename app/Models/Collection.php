@@ -32,6 +32,7 @@ class Collection extends Base
      * @param array $institutions
      *
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function createInstitution($institution)
     {

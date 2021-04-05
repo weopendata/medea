@@ -9,6 +9,7 @@ class BaseRepository
 {
     /**
      * BaseRepository constructor.
+     *
      * @param $label
      * @param $model
      */
@@ -18,6 +19,11 @@ class BaseRepository
         $this->model = $model;
     }
 
+    /**
+     * @param integer $id
+     * @return array|\Everyman\Neo4j\Node|null
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function getById($id)
     {
         $client = $this->getClient();
@@ -25,7 +31,7 @@ class BaseRepository
         $node = $client->getNode($id);
 
         if (empty($node)) {
-            return [];
+            return;
         }
 
         foreach ($node->getLabels() as $label) {
@@ -104,6 +110,7 @@ class BaseRepository
      * @param integer
      *
      * @return array
+     * @throws \Everyman\Neo4j\Exception
      */
     public function expandValues($id)
     {

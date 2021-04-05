@@ -12,17 +12,22 @@ use Everyman\Neo4j\Cypher\Query;
 /**
  * Class FindRepository
  * @package App\Repositories
- *
- *
- * TODO: add multi-tenancy
  */
 class FindRepository extends BaseRepository
 {
+    /**
+     * FindRepository constructor.
+     */
     public function __construct()
     {
         parent::__construct(FindEvent::$NODE_TYPE, FindEvent::class);
     }
 
+    /**
+     * @param $properties
+     * @return int
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function store($properties)
     {
         $find = new FindEvent($properties);
@@ -39,6 +44,7 @@ class FindRepository extends BaseRepository
      * @param integer $limit
      * @param integer $offset
      * @return array
+     * @throws \Everyman\Neo4j\Exception
      */
     public function getForPerson($person, $limit = 20, $offset = 0)
     {
@@ -254,6 +260,14 @@ class FindRepository extends BaseRepository
         return compact('query', 'variables');
     }
 
+    /**
+     * @param $filters
+     * @param $orderBy
+     * @param $orderFlow
+     * @param $validationStatus
+     * @return array
+     * @throws \Exception
+     */
     private function getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus)
     {
         $matchStatements = [];
@@ -326,12 +340,8 @@ class FindRepository extends BaseRepository
             }
         }
 
-        // Add the multi-tenancy
-        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'object', 'find']);
-
-        if (!empty($tenantStatement)) {
-            $whereStatements[] = $tenantStatement;
-        }
+        // Add the multi-tenancy statement
+        $whereStatements[] = NodeService::getTenantWhereStatement(['person', 'object', 'find']);
 
         $matchStatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);

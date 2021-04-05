@@ -10,9 +10,6 @@ use PhpParser\Node;
 /**
  * Class ClassificationRepository
  * @package App\Repositories
- *
- *
- * TODO: add multi-tenancy
  */
 class ClassificationRepository extends BaseRepository
 {

@@ -10,18 +10,16 @@ use Everyman\Neo4j\Client;
 /**
  * Class SuggestionRepository
  * @package App\Repositories
- *
- *
- * TODO: add multi-tenancy
  */
 class SuggestionRepository
 {
     /**
      * Search for suggestions for a specific type based on a search string
      *
-     * @param  string $facet        The facet of the publication to search for: title, creationActorName
-     * @param  string $searchString
+     * @param string $facet The facet of the publication to search for: title, creationActorName
+     * @param string $searchString
      * @return array
+     * @throws \Exception
      */
     public function suggest($facet, $searchString)
     {

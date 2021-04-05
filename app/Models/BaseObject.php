@@ -157,6 +157,7 @@ class BaseObject extends Base
      * Force the full text field to be recomputed
      *
      * @return void
+     * @throws \Everyman\Neo4j\Exception
      */
     public function computeFtsField()
     {
@@ -171,6 +172,7 @@ class BaseObject extends Base
      * @param array $properties The properties assigned to an Object node
      *
      * @return void
+     * @throws \Everyman\Neo4j\Exception
      */
     private function updateFtsField($properties)
     {

@@ -9,8 +9,6 @@ use Everyman\Neo4j\Cypher\Query;
 /**
  * Class CollectionRepository
  * @package App\Repositories
- *
- * TODO: add multi-tenancy
  */
 class CollectionRepository extends BaseRepository
 {
@@ -250,8 +248,9 @@ class CollectionRepository extends BaseRepository
     /**
      * Create a new collection
      *
-     * @param  array $properties
+     * @param array $properties
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
     {
@@ -302,8 +301,9 @@ class CollectionRepository extends BaseRepository
     /**
      * Get the users linked to the collection
      *
-     * @param  int   $collectionId
+     * @param int $collectionId
      * @return array
+     * @throws \Everyman\Neo4j\Exception
      */
     public function getLinkedUsers($collectionId)
     {

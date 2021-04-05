@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\NodeConstants;
+use App\Repositories\BaseRepository;
 use App\Services\NodeService;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Relationship;
@@ -83,6 +83,11 @@ class Base
         return $client->makeLabel($label);
     }
 
+    /**
+     * Base constructor.
+     * @param array $properties
+     * @throws Exception
+     */
     public function __construct($properties = [])
     {
         if (empty($properties)) {
@@ -232,7 +237,7 @@ class Base
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
                                     $model = new $model_name();
-                                    $model->setNode($client->getNode($entry['identifier']));
+                                    $model->setNode(app(BaseRepository::class)->getById($entry['identifier']));
                                     $model->update($entry);
                                 }
                             }
@@ -268,7 +273,7 @@ class Base
                                 } else {
                                     $related_identifiers[] = $input['identifier'];
 
-                                    $node = $client->getNode($input['identifier']);
+                                    $node = app(BaseRepository::class)->getById($input['identifier']);
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
 
@@ -719,24 +724,23 @@ class Base
      * to instantiate new nodes, but rather needs to link with existing ones
      *
      * @param integer $nodeId
-     * @param string  $model
+     * @param string $model
      *
      * @return null|Model
+     * @throws Exception
      */
     protected function searchNode($nodeId, $model)
     {
-        $client = self::getClient();
-
-        $node = $client->getNode($nodeId);
+        $node = app(BaseRepository::class)->getById($nodeId);
 
         if (empty($node)) {
-            return [];
+            return;
         }
 
         foreach ($node->getLabels() as $label) {
             // We can use the model name as a label because
             // the models that we fetch are all related models
-            // meaning they have cidoc labels and model name labels
+            // meaning they have CIDOC labels and model name labels
             if (mb_strtolower($label->getName()) == mb_strtolower($model)) {
                  $model_name = 'App\Models\\' . $model;
                  $model = new $model_name();

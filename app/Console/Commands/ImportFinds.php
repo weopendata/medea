@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\FindEvent;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\FindRepository;
+use App\Services\NodeService;
 use App\Traits\ValidateFields;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
@@ -160,8 +161,9 @@ class ImportFinds extends Command
         $client = new Client($neo4j_config['host'], $neo4j_config['port']);
         $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
 
-        // TODO: add multi-tenancy dependecy -> move all queries to repositories
-        $query = 'MATCH (person:person) WHERE person.firstName="Medea" and person.lastName="Admin" return person';
+        $tenantStatement = NodeService::getTenantWhereStatement(['person']);
+
+        $query = 'MATCH (person:person) WHERE person.firstName="Medea" and person.lastName="Admin" AND ' . $tenantStatement . ' return person';
 
         $cypherQuery = new Query($client, $query, []);
 

@@ -10,9 +10,6 @@ use Illuminate\Support\Arr;
 /**
  * Class UserRepository
  * @package App\Repositories
- *
- *
- * TODO: add multi-tenancy
  */
 class UserRepository extends BaseRepository
 {
@@ -27,6 +24,7 @@ class UserRepository extends BaseRepository
      * @param array $properties
      *
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
     {
@@ -42,6 +40,7 @@ class UserRepository extends BaseRepository
      * @param string $email
      *
      * @return Node|void
+     * @throws \Exception
      */
     public function getUser($email)
     {
@@ -63,6 +62,7 @@ class UserRepository extends BaseRepository
      * @param string $token
      *
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function getByPasswordResetToken($token, $email)
     {
