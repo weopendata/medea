@@ -40,12 +40,6 @@
             "tests/TestCase.php"
         ]
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/weopendata/neo4jphp"
-        }
-    ],
     "scripts": {
         "post-root-package-install": [
             "php -r \"copy('.env.example', '.env');\""

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9672d3de6051a9c14a203489224c92a2",
+    "content-hash": "d80bd788d099c44f713f6449eebb7139",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -1196,13 +1196,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/weopendata/neo4jphp.git",
-                "reference": "0533395098bccc9b19cbaaf69205a89aa62a24cd"
+                "url": "https://github.com/jadell/neo4jphp.git",
+                "reference": "6021d88dfa7082cefab5caf5d8834c889fd28138"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/weopendata/neo4jphp/zipball/0533395098bccc9b19cbaaf69205a89aa62a24cd",
-                "reference": "0533395098bccc9b19cbaaf69205a89aa62a24cd",
+                "url": "https://api.github.com/repos/jadell/neo4jphp/zipball/6021d88dfa7082cefab5caf5d8834c889fd28138",
+                "reference": "6021d88dfa7082cefab5caf5d8834c889fd28138",
                 "shasum": ""
             },
             "require": {
@@ -1221,6 +1221,7 @@
                     "Everyman\\Neo4j": "lib/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1239,9 +1240,10 @@
                 "neo4j"
             ],
             "support": {
-                "source": "https://github.com/weopendata/neo4jphp/tree/master"
+                "issues": "https://github.com/jadell/neo4jphp/issues",
+                "source": "https://github.com/jadell/neo4jphp/tree/master"
             },
-            "time": "2021-04-04T16:11:19+00:00"
+            "time": "2016-03-12T15:03:00+00:00"
         },
         {
             "name": "guzzlehttp/psr7",

@@ -15,6 +15,8 @@ npm install
 npm run prod
 ```
 
+* Create a public/uploads folder to store uploads into
+
 ### Full text support
 
 To enable full text search, we'll need to enable the legacy indexes. This means letting neo4j know that we're going to use Lucene for indexing, and which fields should be auto-indexed to "analysed" and not "exact".

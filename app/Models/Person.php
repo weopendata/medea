@@ -419,7 +419,7 @@ class Person extends Base implements Authenticatable, CanResetPassword
 
     /**
      * Get the public profile of a person
-     * 
+     *
      * @return array
      */
     public function getPublicProfile()

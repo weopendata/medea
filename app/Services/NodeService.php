@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\NodeConstants;
 use Everyman\Neo4j\Client;
+use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Label;
 
 /**
@@ -103,9 +104,18 @@ class NodeService
      */
     public static function getNodesForLabel(Label $label, $properties = [])
     {
-        $properties[NodeConstants::TENANT_LABEL] = self::getTenantLabelValue();
+        $whereStatement = self::getTenantWhereStatement(['n']);
 
-        return $label->getNodes($properties);
+        foreach ($properties as $key => $value) {
+            $whereStatement .= " AND n.$key=\"$value\"";
+        }
+
+        $query = "MATCH (n:{$label->getName()}) WHERE $whereStatement return n";
+
+        $cypherQuery = new Query(self::getClient(), $query);
+        $results = $cypherQuery->getResultSet();
+        
+        return $results->current();
     }
 
     /**

@@ -563,12 +563,14 @@ class FindRepository extends BaseRepository
         $tenantStatement = NodeService::getTenantWhereStatement(['person', 'find', 'category', 'material', 'object']);
 
         $query = 'MATCH (find:E10)-[P12]-(object:E22)
-        OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"})
-        OPTIONAL MATCH (find:E10)-[P29]-(person:person)
-        OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"})
-        OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"})
-        OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"})
-        WITH distinct find, category, period, material, person, lat, lng, location
+        WHERE ' . NodeService::getTenantWhereStatement(['find', 'object'])
+        . ' OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"}) '
+        . ' WHERE ' . NodeService::getTenantWhereStatement(['find', 'findSpot', 'location', 'lat', 'lng']) .
+        'OPTIONAL MATCH (find:E10)-[P29]-(person:person) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['find', 'person']) .
+        'OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'period']) .
+        'OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'category']) .
+        'OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'material']) .
+        ' WITH distinct find, category, period, material, person, lat, lng, location
         WHERE id(find) = {findId} AND ' . $tenantStatement .
             ' RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
         person.showNameOnPublicFinds as showName, person.lastName as lastName, person.firstName as firstName, person.detectoristNumber as detectoristNumber, lat.value as latitude,

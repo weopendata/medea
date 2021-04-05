@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
      * Run the database seeds.
      *
      * @return void
+     * @throws \Everyman\Neo4j\Exception
      */
     public function run()
     {
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
             $users = new UserRepository();
 
             $password = env('ADMIN_PASSWORD', str_random(30));
+            $password = trim($password);
 
             $admin = [
                 'firstName' => 'Medea',

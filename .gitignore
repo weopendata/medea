@@ -10,7 +10,7 @@ Homestead.json
 
 /public/css
 /public/js
-/public/uploads
+/public/uploads/*
 .idea
 .phpstorm.meta.php
 _ide_helper.php

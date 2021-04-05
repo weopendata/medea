@@ -89,11 +89,15 @@ class CollectionRepository extends BaseRepository
         $variables = [];
 
         $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+        $personStatement = NodeService::getTenantWhereStatement(['n', 'person']);
+        $institutionStatement = NodeService::getTenantWhereStatement(['n', 'institutionAppellation']);
 
         $queryString = "MATCH (n:collection)
-        OPTIONAL MATCH (n)-[p1:P109]->(person:person)
-        OPTIONAL MATCH (n)-[p2:P109]->(institution:E40)-[P131]->(institutionAppellation:E82)
         WHERE $tenantStatement
+        OPTIONAL MATCH (n)-[p1:P109]->(person:person)
+        WHERE $personStatement
+        OPTIONAL MATCH (n)-[p2:P109]->(institution:E40)-[P131]->(institutionAppellation:E82)
+        WHERE $institutionStatement
         RETURN n as collection, n.title as collectionTitle, collect(distinct person) as person, collect(institutionAppellation) as instNames";
 
         if (! empty($sortBy)) {
