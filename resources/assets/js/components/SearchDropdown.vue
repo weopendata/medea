@@ -31,7 +31,7 @@
     computed: {
       dropdownValue: {
         get () {
-          console.log(this.value);
+          //console.log(this.value);
           return this.value;
         }
       }

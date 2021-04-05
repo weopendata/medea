@@ -8,8 +8,36 @@ use App\NodeConstants;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Label;
 
+/**
+ * Class NodeService
+ * @package App\Services
+ */
 class NodeService
 {
+    /**
+     * @param $id
+     * @return \Everyman\Neo4j\Node|void
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public static function getById($id)
+    {
+        $neo4j_config = \Config::get('database.connections.neo4j');
+
+        // Create a new client with user and password
+        $client = new Client($neo4j_config['host'], $neo4j_config['port']);
+        $client->getTransport()->setAuth($neo4j_config['username'], $neo4j_config['password']);
+
+        $node = $client->getNode($id);
+
+        if (empty($node)) {
+            return;
+        }
+
+        if ($node->getProperty(NodeConstants::TENANT_LABEL) == env('DB_TENANCY_LABEL')) {
+            return $node;
+        }
+    }
+
     /**
      * @param string |array $propertyName
      * @return string | null

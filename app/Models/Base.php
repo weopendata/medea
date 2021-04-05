@@ -9,6 +9,7 @@ use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Exception;
 use Carbon\Carbon;
+use PhpParser\Node;
 
 /**
  * The base class for a node in the graph
@@ -237,7 +238,7 @@ class Base
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
                                     $model = new $model_name();
-                                    $model->setNode(app(BaseRepository::class)->getById($entry['identifier']));
+                                    $model->setNode(NodeService::getById($entry['identifier']));
                                     $model->update($entry);
                                 }
                             }
@@ -273,7 +274,7 @@ class Base
                                 } else {
                                     $related_identifiers[] = $input['identifier'];
 
-                                    $node = app(BaseRepository::class)->getById($input['identifier']);
+                                    $node = NodeService::getById($input['identifier']);
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
 
@@ -731,7 +732,7 @@ class Base
      */
     protected function searchNode($nodeId, $model)
     {
-        $node = app(BaseRepository::class)->getById($nodeId);
+        $node = NodeService::getById($nodeId);
 
         if (empty($node)) {
             return;
