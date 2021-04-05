@@ -8,6 +8,7 @@ use App\NodeConstants;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Label;
+use Everyman\Neo4j\Query\Row;
 
 /**
  * Class NodeService
@@ -114,7 +115,11 @@ class NodeService
 
         $cypherQuery = new Query(self::getClient(), $query);
         $results = $cypherQuery->getResultSet();
-        
+
+        if ($results->count() < 1) {
+            return new Row(self::getClient(), [], []);
+        }
+
         return $results->current();
     }
 
