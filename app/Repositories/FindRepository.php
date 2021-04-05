@@ -71,41 +71,37 @@ class FindRepository extends BaseRepository
     {
         $find = parent::expandValues($findId);
 
+        if (empty($user)) {
+            return $find;
+        }
+
         // Add the vote of the user
-        if (!empty($user)) {
-            // Get the vote of the user for the find
-            $whereStatement = 'WHERE id(person) = {userId} AND id(find) = {findId}';
+        // Get the vote of the user for the find
+        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'classification', 'find']);
+        $whereStatement = 'WHERE id(person) = {userId} AND id(find) = {findId} AND ' . $tenantStatement;;
 
-            // Add the multi-tenancy check
-            $tenantStatement = NodeService::getTenantWhereStatement(['person', 'classification', 'find']);
+        // Make the query
+        $query = 'MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) ' . $whereStatement . '  RETURN r';
 
-            if (!empty($tenantStatement)) {
-                $whereStatement .= ' AND ' . $tenantStatement;
-            }
+        $variables = [];
+        $variables['userId'] = (int)$user->id;
+        $variables['findId'] = (int)$findId;
 
-            // Make the query
-            $query = 'MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) ' . $whereStatement . '  RETURN r';
+        $client = $this->getClient();
 
-            $variables = [];
-            $variables['userId'] = (int)$user->id;
-            $variables['findId'] = (int)$findId;
+        $cypher_query = new Query($client, $query, $variables);
+        $results = $cypher_query->getResultSet();
 
-            $client = $this->getClient();
+        if ($results->count() > 0) {
+            foreach ($results as $result) {
+                $relationship = $result->current();
 
-            $cypher_query = new Query($client, $query, $variables);
-            $results = $cypher_query->getResultSet();
+                $classification_id = $relationship->getEndNode()->getId();
 
-            if ($results->count() > 0) {
-                foreach ($results as $result) {
-                    $relationship = $result->current();
-
-                    $classification_id = $relationship->getEndNode()->getId();
-
-                    if (!empty($find['object']) && !empty($find['object']['productionEvent']['productionClassification'])) {
-                        foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
-                            if ($classification['identifier'] == $classification_id) {
-                                $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
-                            }
+                if (!empty($find['object']) && !empty($find['object']['productionEvent']['productionClassification'])) {
+                    foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
+                        if ($classification['identifier'] == $classification_id) {
+                            $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
                         }
                     }
                 }
@@ -564,7 +560,7 @@ class FindRepository extends BaseRepository
         OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"})
         WITH distinct find, category, period, material, person, lat, lng, location
         WHERE id(find) = {findId} AND ' . $tenantStatement .
-        ' RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
+            ' RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
         person.showNameOnPublicFinds as showName, person.lastName as lastName, person.firstName as firstName, person.detectoristNumber as detectoristNumber, lat.value as latitude,
         lng.value as longitude, location.accuracy as accuracy, find.created_at as created_at';
 

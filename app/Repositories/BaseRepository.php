@@ -2,10 +2,16 @@
 
 namespace App\Repositories;
 
+use App\NodeConstants;
 use Everyman\Neo4j\Client;
 
 class BaseRepository
 {
+    /**
+     * BaseRepository constructor.
+     * @param $label
+     * @param $model
+     */
     public function __construct($label, $model)
     {
         $this->label = $label;
@@ -22,10 +28,8 @@ class BaseRepository
             return [];
         }
 
-        // TODO: add multi-tenancy label check
-
         foreach ($node->getLabels() as $label) {
-            if ($label->getName() == $this->label) {
+            if ($label->getName() == $this->label && $node->getProperty(NodeConstants::TENANT_LABEL) == env('DB_TENANCY_LABEL')) {
                 return $node;
             }
         }
@@ -46,6 +50,9 @@ class BaseRepository
         return $client->makeLabel($this->label);
     }
 
+    /**
+     * @return Client
+     */
     protected function getClient()
     {
         $neo4j_config = \Config::get('database.connections.neo4j');
@@ -57,37 +64,37 @@ class BaseRepository
         return $client;
     }
 
+    /**
+     * @param integer $id
+     * @return bool
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function delete($id)
     {
-        $client = $this->getClient();
+        $node = $this->getById($id);
 
-        $node = $client->getNode($id);
-
-        // TODO: add multi-tenancy label check
-
-        if (! empty($node)) {
-            // Check if the node is valid, namely does it have the correct label!
-            // IDs = universal, labels = types
-            $valid = false;
-
-            foreach ($node->getLabels() as $label) {
-                if ($label->getName() == $this->label) {
-                    $valid = true;
-                    break;
-                }
-            }
-
-            if ($valid) {
-                // Invoke the delete method on the wrapper model
-                $model = new $this->model();
-                $model->setNode($node);
-                $model->delete();
-            }
-
-            return $valid;
+        if (empty($node)) {
+            return false;
         }
 
-        return false;
+        // Check if the node type (=label) is valid
+        $valid = false;
+
+        foreach ($node->getLabels() as $label) {
+            if ($label->getName() == $this->label && $node->getProperty(NodeConstants::TENANT_LABEL) == env('DB_TENANCY_LABEL')) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if ($valid) {
+            // Invoke the delete method on the wrapper model
+            $model = new $this->model();
+            $model->setNode($node);
+            $model->delete();
+        }
+
+        return $valid;
     }
 
     /**
@@ -102,13 +109,13 @@ class BaseRepository
     {
         $node = $this->getById($id);
 
-        if (! empty($node)) {
-            $model = new $this->model();
-            $model->setNode($node);
-
-            return $model->getValues();
+        if (empty($node)) {
+            return [];
         }
 
-        return [];
+        $model = new $this->model();
+        $model->setNode($node);
+
+        return $model->getValues();
     }
 }

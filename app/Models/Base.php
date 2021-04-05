@@ -89,10 +89,7 @@ class Base
             return;
         }
 
-        $client = self::getClient();
-
-        // TODO: do "makeNode" via the NodeService so we can add the multi-tenancy properties straight away
-        $this->node = $client->makeNode();
+        $this->node = NodeService::makeNode();
 
         $generalId = $this->createMedeaId();
 
@@ -542,8 +539,7 @@ class Base
 
         $generalId = $this->getGeneralId();
 
-        $node = $client->makeNode();
-        $node->save();
+        $node = NodeService::makeNode();
 
         $node_labels = [self::makeLabel($generalId)];
 

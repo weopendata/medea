@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\NodeService;
+
 class Collection extends Base
 {
     public static $NODE_TYPE = 'E78';
@@ -33,12 +35,10 @@ class Collection extends Base
      */
     public function createInstitution($institution)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         // Make E40 Institution
-        $institutionNode = $client->makeNode();
+        $institutionNode = NodeService::makeNode();
         $institutionNode->setProperty('name', 'institution');
         $institutionNode->save();
 

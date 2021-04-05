@@ -5,6 +5,7 @@ namespace App\Services;
 
 
 use App\NodeConstants;
+use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Label;
 
 class NodeService
@@ -61,5 +62,35 @@ class NodeService
         $properties[NodeConstants::TENANT_LABEL] = self::getTenantLabelValue();
 
         return $label->getNodes($properties);
+    }
+
+    /**
+     * Get the Neo4j client
+     *
+     * @return Client
+     */
+    protected static function getClient()
+    {
+        $neo4jConfig = \Config::get('database.connections.neo4j');
+
+        // Create an admin
+        $client = new Client($neo4jConfig['host'], $neo4jConfig['port']);
+        $client->getTransport()->setAuth($neo4jConfig['username'], $neo4jConfig['password']);
+
+        return $client;
+    }
+
+    /**
+     * @return \Everyman\Neo4j\Node
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public static function makeNode()
+    {
+        $client = self::getClient();
+
+        $node = $client->makeNode();
+        $node->setProperty(NodeConstants::TENANT_LABEL, self::getTenantLabelValue())->save();
+
+        return $node;
     }
 }

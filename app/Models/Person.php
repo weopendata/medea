@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NodeService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Support\Facades\Hash;
@@ -223,10 +224,7 @@ class Person extends Base implements Authenticatable, CanResetPassword
             ]
         ];
 
-        $client = $this->getClient();
-
-        // TODO: get all similar $client->makeNode() statements and refactor them into a service that adds the multi-tenancy label
-        $addressNode = $client->makeNode();
+        $addressNode = NodeService::makeNode();
         $addressNode->setProperty('name', 'personAddress');
         $addressNode->save();
 

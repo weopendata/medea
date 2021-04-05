@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\NodeService;
+
 class ProductionEvent extends Base
 {
     public static $NODE_TYPE = 'E12';
@@ -31,10 +33,8 @@ class ProductionEvent extends Base
 
     public function createProductionTechnique($technique)
     {
-        $client = $this->getClient();
-
         // Make E29 design or procedure
-        $production_technique = $client->makeNode();
+        $production_technique = NodeService::makeNode();
         $production_technique->setProperty('name', 'productionTechnique');
         $production_technique->save();
         $production_technique->addLabels(

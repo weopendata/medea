@@ -30,7 +30,7 @@ class ViewUserRequest extends Request
         $this->person->setNode($user);
 
         // The profile can be viewed when
-        // * The profile is set to be publically accessible
+        // * The profile is set to be publicly accessible
         // * The logged in user is viewing his own profile
         // * The user of the profile has a role that allows to view the profile (e.g. administrator)
         // and the logged in user has a role that belongs to that set

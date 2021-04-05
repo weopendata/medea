@@ -225,12 +225,10 @@ class BaseObject extends Base
      */
     public function createDimensions($dimension)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         // Make E54 Dimension
-        $dimensionNode = $client->makeNode();
+        $dimensionNode = NodeService::makeNode();
         $dimensionNode->setProperty('name', 'dimensions');
         $dimensionNode->save();
 
@@ -257,12 +255,10 @@ class BaseObject extends Base
      */
     public function createObjectInscription($inscription)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         // Make an E34
-        $inscriptionNode = $client->makeNode();
+        $inscriptionNode = NodeService::makeNode();
         $inscriptionNode->setProperty('name', 'objectInscription');
         $inscriptionNode->save();
 
@@ -301,8 +297,6 @@ class BaseObject extends Base
      */
     public function createTreatmentEvent($treatment)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         if (empty($treatment['modificationTechnique']['modificationTechniqueType'])) {
@@ -310,14 +304,14 @@ class BaseObject extends Base
         }
 
         // Make a treatmentEvent
-        $treatmentNode = $client->makeNode();
+        $treatmentNode = NodeService::makeNode();
         $treatmentNode->setProperty('name', 'treatmentEvent');
         $treatmentNode->save();
 
         $treatmentNode->addLabels([self::makeLabel('E11'), self::makeLabel('treatmentEvent'), self::makeLabel($generalId)]);
 
         // Make an E29 Design or procedure
-        $modificationNode = $client->makeNode();
+        $modificationNode = NodeService::makeNode();
         $modificationNode->setProperty('name', 'modificationTechnique');
         $modificationNode->save();
 

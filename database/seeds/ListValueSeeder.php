@@ -56,8 +56,7 @@ class ListValueSeeder extends Seeder
                 $duplicate->delete();
             }
 
-            $node = $client->makeNode();
-            $node->save();
+            $node = NodeService::makeNode();
 
             $node->addLabels($labels);
             $functionName = 'get' . $listName;

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\NodeService;
+
 class Location extends Base
 {
     public static $NODE_TYPE = 'E53';
@@ -131,9 +133,7 @@ class Location extends Base
             ]
         ];
 
-        $client = $this->getClient();
-
-        $address_node = $client->makeNode();
+        $address_node = NodeService::makeNode();
         $address_node->setProperty('name', 'address');
         $address_node->save();
 
@@ -158,10 +158,8 @@ class Location extends Base
 
     public function createLocationPlaceName($spatial)
     {
-        $client = self::getClient();
-
         // Make E48 Place name
-        $place_name_node = $client->makeNode();
+        $place_name_node = NodeService::makeNode();
         $place_name_node->setProperty('name', 'locationPlaceName');
         $place_name_node->save();
 
