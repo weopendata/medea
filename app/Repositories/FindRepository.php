@@ -4,16 +4,30 @@ namespace App\Repositories;
 
 use App\Models\FindEvent;
 use App\Models\ProductionClassification;
+use App\NodeConstants;
+use App\Services\NodeService;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
 
+/**
+ * Class FindRepository
+ * @package App\Repositories
+ */
 class FindRepository extends BaseRepository
 {
+    /**
+     * FindRepository constructor.
+     */
     public function __construct()
     {
         parent::__construct(FindEvent::$NODE_TYPE, FindEvent::class);
     }
 
+    /**
+     * @param $properties
+     * @return int
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function store($properties)
     {
         $find = new FindEvent($properties);
@@ -26,10 +40,11 @@ class FindRepository extends BaseRepository
     /**
      * Get all of the finds for a person
      *
-     * @param  Person  $person The Person object
-     * @param  integer $limit
-     * @param  integer $offset
+     * @param Person $person The Person object
+     * @param integer $limit
+     * @param integer $offset
      * @return array
+     * @throws \Everyman\Neo4j\Exception
      */
     public function getForPerson($person, $limit = 20, $offset = 0)
     {
@@ -62,31 +77,37 @@ class FindRepository extends BaseRepository
     {
         $find = parent::expandValues($findId);
 
+        if (empty($user)) {
+            return $find;
+        }
+
         // Add the vote of the user
-        if (! empty($user)) {
-            // Get the vote of the user for the find
-            $query = 'MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) WHERE id(person) = {userId} AND id(find) = {findId} RETURN r';
+        // Get the vote of the user for the find
+        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'classification', 'find']);
+        $whereStatement = 'WHERE id(person) = {userId} AND id(find) = {findId} AND ' . $tenantStatement;;
 
-            $variables = [];
-            $variables['userId'] = (int) $user->id;
-            $variables['findId'] = (int) $findId;
+        // Make the query
+        $query = 'MATCH (person:person)-[r]-(classification:productionClassification)-[*2..3]-(find:E10) ' . $whereStatement . '  RETURN r';
 
-            $client = $this->getClient();
+        $variables = [];
+        $variables['userId'] = (int)$user->id;
+        $variables['findId'] = (int)$findId;
 
-            $cypher_query = new Query($client, $query, $variables);
-            $results = $cypher_query->getResultSet();
+        $client = $this->getClient();
 
-            if ($results->count() > 0) {
-                foreach ($results as $result) {
-                    $relationship = $result->current();
+        $cypher_query = new Query($client, $query, $variables);
+        $results = $cypher_query->getResultSet();
 
-                    $classification_id = $relationship->getEndNode()->getId();
+        if ($results->count() > 0) {
+            foreach ($results as $result) {
+                $relationship = $result->current();
 
-                    if (! empty($find['object']) && ! empty($find['object']['productionEvent']['productionClassification'])) {
-                        foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
-                            if ($classification['identifier'] == $classification_id) {
-                                $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
-                            }
+                $classification_id = $relationship->getEndNode()->getId();
+
+                if (!empty($find['object']) && !empty($find['object']['productionEvent']['productionClassification'])) {
+                    foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
+                        if ($classification['identifier'] == $classification_id) {
+                            $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
                         }
                     }
                 }
@@ -104,6 +125,11 @@ class FindRepository extends BaseRepository
      *
      * @param array $filters
      *
+     * @param int $limit
+     * @param int $offset
+     * @param string $orderBy
+     * @param string $orderFlow
+     * @param string $validationStatus
      * @return array
      */
     public function getAllWithFilter(
@@ -128,8 +154,8 @@ class FindRepository extends BaseRepository
     /**
      * Get a heatmap count for a filtered search
      *
-     * @param  array  $filters
-     * @param  string $validationStatus
+     * @param array $filters
+     * @param string $validationStatus
      * @return array
      */
     public function getHeatMap($filters, $validationStatus)
@@ -142,7 +168,7 @@ class FindRepository extends BaseRepository
 
         $fullMatchStatement = $initialStatement;
 
-        if (! empty($fullMatchStatement)) {
+        if (!empty($fullMatchStatement)) {
             $fullMatchStatement .= ', ' . $matchStatement;
             $fullMatchStatement = trim($fullMatchStatement);
         }
@@ -154,7 +180,7 @@ class FindRepository extends BaseRepository
         WHERE $whereStatement
         RETURN count(distinct find) as findCount, location.geoGrid as centre";
 
-        if (! empty($startStatement)) {
+        if (!empty($startStatement)) {
             $query = $startStatement . $query;
         }
 
@@ -176,12 +202,12 @@ class FindRepository extends BaseRepository
      * Prepare the filtered cypher query
      *
      *
-     * @param  array   $filters
-     * @param  integer $limit
-     * @param  integer $offset
-     * @param  string  $orderBy
-     * @param  string  $orderFlow
-     * @param  string  $validationStatus
+     * @param array $filters
+     * @param integer $limit
+     * @param integer $offset
+     * @param string $orderBy
+     * @param string $orderFlow
+     * @param string $validationStatus
      * @return array
      */
     private function prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus)
@@ -212,7 +238,7 @@ class FindRepository extends BaseRepository
 
         $fullMatchStatement = $initialStatement;
 
-        if (! empty($fullMatchStatement)) {
+        if (!empty($fullMatchStatement)) {
             $fullMatchStatement .= ', ' . $matchStatement;
             $fullMatchStatement = trim($fullMatchStatement);
         }
@@ -227,13 +253,21 @@ class FindRepository extends BaseRepository
         SKIP $offset
         LIMIT $limit";
 
-        if (! empty($startStatement)) {
+        if (!empty($startStatement)) {
             $query = $startStatement . $query;
         }
 
         return compact('query', 'variables');
     }
 
+    /**
+     * @param $filters
+     * @param $orderBy
+     * @param $orderFlow
+     * @param $validationStatus
+     * @return array
+     * @throws \Exception
+     */
     private function getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus)
     {
         $matchStatements = [];
@@ -247,7 +281,7 @@ class FindRepository extends BaseRepository
 
         $startStatement = '';
 
-        if (! empty($filters['query'])) {
+        if (!empty($filters['query'])) {
             // Replace the whitespace with the lucene syntax for white spaces text queries
             $query = preg_replace('#\s+#', ' AND ', $filters['query']);
 
@@ -257,7 +291,7 @@ class FindRepository extends BaseRepository
         // Non personal find statement
         $initialStatement = '(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52),(find:E10)-[P29]-(person:person)';
 
-        // Check on validationstatus
+        // Check on validation status
         if ($validationStatus == '*') {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
         } else {
@@ -288,16 +322,16 @@ class FindRepository extends BaseRepository
                 // If we have an integer value, convert the value we received from the request URI
                 // Neo4j makes a strict distinction between integers and strings
                 if (@$config['varType'] == 'int') {
-                    $variables[$config['nodeName']] = (int) $filters[$property];
+                    $variables[$config['nodeName']] = (int)$filters[$property];
                 }
 
-                if (! empty($config['with']) && ! in_array($config['with'], $this->getDefaultWithProperties())) {
+                if (!empty($config['with']) && !in_array($config['with'], $this->getDefaultWithProperties())) {
                     $withStatement[] = $config['with'];
                 }
             }
         }
 
-        if (! empty($email)) {
+        if (!empty($email)) {
             if ($validationStatus == '*') {
                 $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
             } else {
@@ -305,6 +339,9 @@ class FindRepository extends BaseRepository
                 $variables['validationStatus'] = $validationStatus;
             }
         }
+
+        // Add the multi-tenancy statement
+        $whereStatements[] = NodeService::getTenantWhereStatement(['person', 'object', 'find']);
 
         $matchStatement = implode(', ', $matchStatements);
         $whereStatement = implode(' AND ', $whereStatements);
@@ -334,61 +371,62 @@ class FindRepository extends BaseRepository
      * Return the supported filters for findEvent with the accompanying match and where statements
      *
      * The key of the filter properties map is the key that is normally passed down through the filters
-     * array. This means you can look up filternames by index and fetch their configuration easily and quickly.
+     * array. This means you can look up filter names by index and fetch their configuration easily and quickly.
      * The nodeName property is the name of the variable that the where statement contains, this can be used
-     * to pass down the name of the varaible in the bindings of the query builder.
+     * to pass down the name of the variable in the bindings of the query builder.
      *
      * @return array
+     * @throws \Exception
      */
     public function getFilterProperties()
     {
         return [
             'objectMaterial' => [
                 'match' => '(object:E22)-[P45]-(material:E57)',
-                'where' => 'material.value = {material}',
+                'where' => 'material.value = {material} AND ' . NodeService::getTenantWhereStatement(['material']),
                 'nodeName' => 'material',
                 'with' => 'material',
             ],
             'technique' => [
                 'match' => '(object:E22)-[producedBy:P108]-(pEvent:E12)-[P33]-(techniqueNode:E29)-[hasTechniquetype:P2]-(technique:E55)',
-                'where' => 'technique.value = {technique}',
+                'where' => 'technique.value = {technique} AND ' . NodeService::getTenantWhereStatement(['technique']),
                 'nodeName' => 'technique',
                 'with' => 'technique',
             ],
             'category' => [
                 'match' => '(object:E22)-[categoryType:P2]-(category:E55)',
-                'where' => 'category.value = {category}',
+                'where' => 'category.value = {category} AND ' . NodeService::getTenantWhereStatement(['category']),
                 'nodeName' => 'category',
                 'with' => 'category',
             ],
             'period' => [
                 'match' => '(object:E22)-[P42]-(period:E55)',
                 //"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)",
-                'where' => 'period.value = {period}',
+                'where' => 'period.value = {period} AND ' . NodeService::getTenantWhereStatement(['period']),
                 'nodeName' => 'period',
                 'with' => 'period',
             ],
             'findSpot' => [
                 'match' => '(find:E10)-[P7]->(findSpot:E27)-[P2]->(findSpotType:E55)',
-                'where' => 'findSpotType.value = {findSpotType}',
+                'where' => 'findSpotType.value = {findSpotType} AND ' . NodeService::getTenantWhereStatement(['findSpotType']),
                 'nodeName' => 'findSpotType',
                 'with' => 'findSpotType',
             ],
             'modification' => [
                 'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
-                'where' => 'modificationTechniqueType.value = {modificationTechniqueType}',
+                'where' => 'modificationTechniqueType.value = {modificationTechniqueType} AND ' . NodeService::getTenantWhereStatement(['modificationTechniqueType']),
                 'nodeName' => 'modificationTechniqueType',
                 'with' => 'modificationTechniqueType'
             ],
             'embargo' => [
                 'match' => '(object:E22)',
-                'where' => 'object.embargo = {embargo}',
+                'where' => 'object.embargo = {embargo} AND ' . NodeService::getTenantWhereStatement(['object']),
                 'nodeName' => 'embargo',
                 'with' => 'object'
             ],
             'collection' => [
                 'match' => '(object:E22)-[P24]-(collection:E78)',
-                'where' => 'id(collection)= {collection}',
+                'where' => 'id(collection)= {collection} AND ' . NodeService::getTenantWhereStatement(['collection']),
                 'nodeName' => 'collection',
                 'with' => 'collection',
                 'varType' => 'int',
@@ -400,6 +438,7 @@ class FindRepository extends BaseRepository
      * Get some basic numbers from the findEvents and related objects
      *
      * @return array
+     * @throws \Exception
      */
     public function getStatistics()
     {
@@ -409,21 +448,27 @@ class FindRepository extends BaseRepository
             'classifications' => 0,
         ];
 
-        // There could be finds (and thus objects) but no classifications at all
+        // There could be finds & related objects but no classifications at all
         // if the query would take the match statements below as one statement this
         // would make the result return zero rows, even though finds have been registered
         // therefore a UNION is in place (which is way more efficient than adding an optional MATCH statement)
+        $classificationWhereStatement = NodeService::getTenantWhereStatement(['classification']);
+        $objectWhereStatement = NodeService::getTenantWhereStatement(['object']);
+        $allFindsWhereStatement = NodeService::getTenantWhereStatement(['allFinds']);
+
         $countQuery = "
         MATCH (classification:productionClassification)
+        WHERE $classificationWhereStatement
         WITH count(distinct classification) as count
         RETURN count
         UNION ALL
         MATCH (allFinds:findEvent)
+        WHERE $allFindsWhereStatement
         WITH count(distinct allFinds) as count
         RETURN count
         UNION ALL
         MATCH (object:E22)-[objectVal:P2]->(validation)
-        WHERE validation.name = 'objectValidationStatus' AND validation.value='Gepubliceerd'
+        WHERE validation.name = 'objectValidationStatus' AND validation.value='Gepubliceerd' AND $objectWhereStatement
         RETURN count(distinct object) as count";
 
         $cypherQuery = new Query($this->getClient(), $countQuery);
@@ -443,8 +488,8 @@ class FindRepository extends BaseRepository
      * Get the count of a query by replacing the RETURN statement
      * This function assumes that find is declared in the query
      *
-     * @param string $query     A cypher query string
-     * @param array  $variables The variables and their variables for the query
+     * @param string $query A cypher query string
+     * @param array $variables The variables and their variables for the query
      *
      * @return integer
      */
@@ -482,7 +527,7 @@ class FindRepository extends BaseRepository
             ];
 
             foreach ($result as $key => $val) {
-                if (! is_object($val)) {
+                if (!is_object($val)) {
                     $tmp[$key] = $val;
                 } elseif ($key == 'photograph' && $val->count()) {
                     $tmp[$key] = $val->current()->resized;
@@ -509,38 +554,53 @@ class FindRepository extends BaseRepository
     /**
      * Get the exportable data points of a find event
      *
-     * @param  integer $findId
+     * @param integer $findId
      * @return array
+     * @throws \Exception
      */
     public function getExportableData($findId)
     {
+        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'find', 'category', 'material', 'object']);
+
         $query = 'MATCH (find:E10)-[P12]-(object:E22)
-        OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"})
-        OPTIONAL MATCH (find:E10)-[P29]-(person:person)
-        OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"})
-        OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"})
-        OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"})
-        WITH distinct find, category, period, material, person, lat, lng, location
+        WHERE ' . NodeService::getTenantWhereStatement(['find', 'object'])
+        . ' OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"}) '
+        . ' WHERE ' . NodeService::getTenantWhereStatement(['find', 'findSpot', 'location', 'lat', 'lng']) .
+        'OPTIONAL MATCH (find:E10)-[P29]-(person:person) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['find', 'person']) .
+        'OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'period']) .
+        'OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'category']) .
+        'OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'material']) .
+        ' WITH distinct find, category, period, material, person, lat, lng, location
         WHERE id(find) = {findId}
-        RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
+         RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,
         person.showNameOnPublicFinds as showName, person.lastName as lastName, person.firstName as firstName, person.detectoristNumber as detectoristNumber, lat.value as latitude,
         lng.value as longitude, location.accuracy as accuracy, find.created_at as created_at';
 
         $variables = [];
         $variables['findId'] = $findId;
 
-        $cypherQuery = new Query($this->getClient(), $query, $variables);
-        $results = $cypherQuery->getResultSet();
+        try {
+            $cypherQuery = new Query($this->getClient(), $query, $variables);
+            $results = $cypherQuery->getResultSet();
 
-        $result = $results->current();
+            if ($results->count() < 1) {
+                return [];
+            }
 
-        $data = [];
+            $result = $results->current();
 
-        foreach ($result as $key => $value) {
-            $data[$key] = $value;
+            $data = [];
+
+            foreach ($result as $key => $value) {
+                $data[$key] = $value;
+            }
+
+            return $data;
+        } catch (\Exception $ex) {
+            \Log::error("Something went wrong while fetching exportable data: " . $ex->getMessage());
         }
 
-        return $data;
+        return [];
     }
 
     /**
@@ -550,6 +610,8 @@ class FindRepository extends BaseRepository
      * @param integer $offset
      *
      * @return array
+     * @throws \Everyman\Neo4j\Exception
+     * @throws \Exception
      */
     public function getAll()
     {
@@ -557,7 +619,7 @@ class FindRepository extends BaseRepository
 
         $findLabel = $client->makeLabel($this->label);
 
-        $findNodes = $findLabel->getNodes();
+        $findNodes = NodeService::getNodesForLabel($findLabel);
 
         return $findNodes;
     }

@@ -2,6 +2,10 @@
 
 namespace App\Repositories;
 
+/**
+ * Class EloquentRepository
+ * @package App\Repositories
+ */
 class EloquentRepository
 {
     protected $model;

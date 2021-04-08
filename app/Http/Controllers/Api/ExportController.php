@@ -47,6 +47,10 @@ class ExportController extends Controller
             // Get the data for the findEvent
             $find = $this->finds->getExportableData($findNode->getId());
 
+            if (empty($find)) {
+                continue;
+            }
+
             // Pre-process some data points
             $createdAt = new Carbon($find['created_at']);
 

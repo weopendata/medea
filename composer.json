@@ -5,8 +5,8 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "6.0.*",
+        "php": "^7.2",
+        "laravel/framework": "6.18.*",
         "laravelcollective/html": "6.*",
         "everyman/neo4jphp": "dev-master",
         "sendgrid/sendgrid": "7.2",
@@ -51,9 +51,6 @@
             "php artisan clear-compiled",
             "php artisan vendor:publish --provider=\"Intervention\\Image\\ImageServiceProviderLaravel5\""
         ],
-        "pre-update-cmd": [
-            "php artisan clear-compiled"
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
@@ -61,6 +58,7 @@
     },
     "config": {
         "preferred-install": "dist",
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "platform-check": false
     }
 }

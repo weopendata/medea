@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NodeService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Support\Facades\Hash;
@@ -223,9 +224,7 @@ class Person extends Base implements Authenticatable, CanResetPassword
             ]
         ];
 
-        $client = $this->getClient();
-
-        $addressNode = $client->makeNode();
+        $addressNode = NodeService::makeNode();
         $addressNode->setProperty('name', 'personAddress');
         $addressNode->save();
 
@@ -420,7 +419,6 @@ class Person extends Base implements Authenticatable, CanResetPassword
 
     /**
      * Get the public profile of a person
-     * @TODO
      *
      * @return array
      */

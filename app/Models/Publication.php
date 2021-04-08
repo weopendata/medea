@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\NodeService;
+
 class Publication extends Base
 {
     public static $NODE_TYPE = 'E31';
@@ -86,7 +88,7 @@ class Publication extends Base
         $generalId = $this->getGeneralId();
 
         // Create a publicationCreation (E65)
-        $pubCreationNode = $client->makeNode();
+        $pubCreationNode = NodeService::makeNode();
         $pubCreationNode->setProperty('name', 'publicationCreation');
         $pubCreationNode->save();
         $pubCreationNode->addLabels([
@@ -99,7 +101,7 @@ class Publication extends Base
         if (! empty($creationActors = $publicationCreation['publicationCreationActor'])) {
             foreach ($creationActors as $creationActor) {
                 // Create a publicationCreationActor (E39)
-                $pubCreationActorNode = $client->makeNode();
+                $pubCreationActorNode = NodeService::makeNode();
                 $pubCreationActorNode->setProperty('name', 'publicationCreationActor');
                 $pubCreationActorNode->save();
                 $pubCreationActorNode->addLabels([
@@ -130,7 +132,7 @@ class Publication extends Base
 
         // Save optional data (publicationCreationTimeSpan, publicationCreationLocation)
         if (! empty($publicationCreation['publicationCreationTimeSpan'])) {
-            $pubCreationTsNode = $client->makeNode();
+            $pubCreationTsNode = NodeService::makeNode();
             $pubCreationTsNode->setProperty('name', 'publicationCreationTimeSpan');
             $pubCreationTsNode->save();
             $pubCreationTsNode->addLabels([
@@ -151,7 +153,7 @@ class Publication extends Base
         }
 
         if (! empty($publicationCreation['publicationCreationLocation'])) {
-            $pubCreationLocation = $client->makeNode();
+            $pubCreationLocation = NodeService::makeNode();
             $pubCreationLocation->setProperty('name', 'publicationCreationLocation');
             $pubCreationLocation->save();
             $pubCreationLocation->addLabels([

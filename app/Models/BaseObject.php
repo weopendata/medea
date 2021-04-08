@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\NodeConstants;
 use App\Repositories\CollectionRepository;
+use App\Services\NodeService;
 use Illuminate\Support\Arr;
 
 class BaseObject extends Base
@@ -155,6 +157,7 @@ class BaseObject extends Base
      * Force the full text field to be recomputed
      *
      * @return void
+     * @throws \Everyman\Neo4j\Exception
      */
     public function computeFtsField()
     {
@@ -169,6 +172,7 @@ class BaseObject extends Base
      * @param array $properties The properties assigned to an Object node
      *
      * @return void
+     * @throws \Everyman\Neo4j\Exception
      */
     private function updateFtsField($properties)
     {
@@ -223,12 +227,10 @@ class BaseObject extends Base
      */
     public function createDimensions($dimension)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         // Make E54 Dimension
-        $dimensionNode = $client->makeNode();
+        $dimensionNode = NodeService::makeNode();
         $dimensionNode->setProperty('name', 'dimensions');
         $dimensionNode->save();
 
@@ -255,12 +257,10 @@ class BaseObject extends Base
      */
     public function createObjectInscription($inscription)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         // Make an E34
-        $inscriptionNode = $client->makeNode();
+        $inscriptionNode = NodeService::makeNode();
         $inscriptionNode->setProperty('name', 'objectInscription');
         $inscriptionNode->save();
 
@@ -299,8 +299,6 @@ class BaseObject extends Base
      */
     public function createTreatmentEvent($treatment)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         if (empty($treatment['modificationTechnique']['modificationTechniqueType'])) {
@@ -308,14 +306,14 @@ class BaseObject extends Base
         }
 
         // Make a treatmentEvent
-        $treatmentNode = $client->makeNode();
+        $treatmentNode = NodeService::makeNode();
         $treatmentNode->setProperty('name', 'treatmentEvent');
         $treatmentNode->save();
 
         $treatmentNode->addLabels([self::makeLabel('E11'), self::makeLabel('treatmentEvent'), self::makeLabel($generalId)]);
 
         // Make an E29 Design or procedure
-        $modificationNode = $client->makeNode();
+        $modificationNode = NodeService::makeNode();
         $modificationNode->setProperty('name', 'modificationTechnique');
         $modificationNode->save();
 
@@ -344,7 +342,7 @@ class BaseObject extends Base
         $client = $this->getClient();
         $label = $client->makeLabel($this->getGeneralId());
 
-        $related_nodes = $label->getNodes();
+        $related_nodes = NodeService::getNodesForLabel($label);
 
         foreach ($related_nodes as $related_node) {
             // Get and delete all of the relationships

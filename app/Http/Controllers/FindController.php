@@ -169,7 +169,7 @@ class FindController extends Controller
     }
 
     /**
-     * Transform the periods and add the timerange of the period to it
+     * Transform the periods and add the time range of the period to it
      *
      * @param  array $fields
      * @return array
@@ -391,13 +391,12 @@ class FindController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  EditFindRequest           $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(EditFindRequest $request)
     {
         $find = $request->getFind();
 
-        info($find['object']);
         // Get the collection of the find, could be empty as well
         $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
 
@@ -419,7 +418,7 @@ class FindController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int                       $findId
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateFindRequest $request, $findId)
     {

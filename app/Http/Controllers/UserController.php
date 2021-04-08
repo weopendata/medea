@@ -62,7 +62,7 @@ class UserController extends Controller
      * @param int             $userId  The id of the user to show the profile of
      * @param ViewUserRequest $request The form request that handles auth
      *
-     * @return View
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(ViewUserRequest $request)
     {

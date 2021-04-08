@@ -3,9 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\Person;
+use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
 use Illuminate\Support\Arr;
 
+/**
+ * Class UserRepository
+ * @package App\Repositories
+ */
 class UserRepository extends BaseRepository
 {
     public function __construct()
@@ -19,6 +24,7 @@ class UserRepository extends BaseRepository
      * @param array $properties
      *
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
     {
@@ -33,20 +39,21 @@ class UserRepository extends BaseRepository
      *
      * @param string $email
      *
-     * @return Node
+     * @return Node|void
+     * @throws \Exception
      */
     public function getUser($email)
     {
         // Label (= type) is already configured for Person
         $label = $this->getLabel();
 
-        $user_nodes = $label->getNodes('email', $email);
+        $user_nodes = NodeService::getNodesForLabel($label, ['email' => $email]);
 
         if ($user_nodes->count() > 0) {
             return $user_nodes->current();
-        } else {
-            return [];
         }
+
+        return;
     }
 
     /**
@@ -55,10 +62,11 @@ class UserRepository extends BaseRepository
      * @param string $token
      *
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function getByPasswordResetToken($token, $email)
     {
-        $users = $this->getLabel()->getNodes('email', $email);
+        $users = NodeService::getNodesForLabel($this->getLabel(), ['email' => $email]);
 
         if ($users->count() > 0) {
             $user = $users->current();
@@ -81,6 +89,7 @@ class UserRepository extends BaseRepository
      * @param string $email
      *
      * @return boolean
+     * @throws \Exception
      */
     public function userExists($email)
     {
@@ -88,7 +97,7 @@ class UserRepository extends BaseRepository
         $label = $this->getLabel();
 
         // Get all of the Person node with the admin email
-        return $label->getNodes('email', $email)->count() > 0;
+        return NodeService::getNodesForLabel($label, ['email' => $email])->count() > 0;
     }
 
     /**
@@ -103,10 +112,12 @@ class UserRepository extends BaseRepository
         // Label (= type) is already configured for Person
         $label = $this->getLabel();
 
-        if ($label->getNodes('token', $token)->count() > 0) {
-            $user = $label->getNodes('token', $token)->current();
+        $nodesForLabel = NodeService::getNodesForLabel($label, ['token' => $token]);
 
-            if (! empty($user)) {
+        if ($nodesForLabel->count() > 0) {
+            $user = $nodesForLabel->current();
+
+            if (!empty($user)) {
                 $user->setProperty('verified', true);
                 $user->setProperty('token', '');
                 $user->save();
@@ -130,10 +141,12 @@ class UserRepository extends BaseRepository
         // Label (= type) is already configured for Person
         $label = $this->getLabel();
 
-        if ($label->getNodes('token', $token)->count() > 0) {
-            $user = $label->getNodes('token', $token)->current();
+        $nodesForLabel = NodeService::getNodesForLabel($label, ['token' => $token]);
 
-            if (! empty($user)) {
+        if ($nodesForLabel->count() > 0) {
+            $user = $nodesForLabel->current();
+
+            if (!empty($user)) {
                 $person = new Person();
                 $person->setNode($user);
                 $person->delete();
@@ -148,9 +161,9 @@ class UserRepository extends BaseRepository
     /**
      * Make a vote connection between a user and a classification
      *
-     * @param Node    $classification
+     * @param Node $classification
      * @param integer $personId
-     * @param string  $vote_type      agree|disagree
+     * @param string $vote_type agree|disagree
      *
      * @return Relationship
      */
@@ -166,8 +179,8 @@ class UserRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
-     * @param string  $sortBy    The field to sort by (firstName|created_at)
-     * @param string  $sortOrder The sort order (ASC|DESC)
+     * @param string $sortBy The field to sort by (firstName|created_at)
+     * @param string $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
@@ -177,10 +190,13 @@ class UserRepository extends BaseRepository
 
         $variables = [];
 
-        $queryString = 'MATCH (n:person)
-        RETURN n, n.firstName ';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
 
-        if (! empty($sortBy)) {
+        $queryString = "MATCH (n:person)
+        WHERE $tenantStatement
+        RETURN n, n.firstName ";
+
+        if (!empty($sortBy)) {
             // Statements in functions don't seem to work with the jadell library
             if ($sortBy == 'firstName') {
                 $orderBy = 'LOWER(n.firstName)';
@@ -202,8 +218,8 @@ class UserRepository extends BaseRepository
 
         $queryString .= ' SKIP {offset} LIMIT {limit}';
 
-        $variables['offset'] = (int) $offset;
-        $variables['limit'] = (int) $limit;
+        $variables['offset'] = (int)$offset;
+        $variables['limit'] = (int)$limit;
 
         $cypherQuery = new Query($client, $queryString, $variables);
         $results = $cypherQuery->getResultSet();
@@ -220,24 +236,26 @@ class UserRepository extends BaseRepository
     /**
      * Returns a list of person by name
      *
-     * @param  string $name
-     * @param  int    $limit
-     * @param  int    $offset
+     * @param string $name
+     * @param int $limit
+     * @param int $offset
      * @return array
      */
     public function getByName($name, $limit = 10, $offset = 0)
     {
         $client = $this->getClient();
 
-        $queryString = 'MATCH (n:person)
-        WHERE n.firstName =~ {queryString} OR n.lastName =~ {queryString}
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "MATCH (n:person)
+        WHERE n.firstName =~ {queryString} OR n.lastName =~ {queryString} AND $tenantStatement
         RETURN n
-        SKIP {offset} LIMIT {limit}';
+        SKIP {offset} LIMIT {limit}";
 
         $variables = [
             'queryString' => '(?i).*' . $name . '.*',
-            'offset'      => $offset,
-            'limit'       => $limit,
+            'offset' => $offset,
+            'limit' => $limit,
         ];
 
         $cypherQuery = new Query($client, $queryString, $variables);
@@ -249,8 +267,8 @@ class UserRepository extends BaseRepository
 
             $userNodes[] = [
                 'identifier' => $result->getId(),
-                'firstName'  => $result->getProperty('firstName'),
-                'lastName'   => $result->getProperty('lastName'),
+                'firstName' => $result->getProperty('firstName'),
+                'lastName' => $result->getProperty('lastName'),
             ];
 
         }
@@ -261,11 +279,11 @@ class UserRepository extends BaseRepository
     /**
      * Get all users with only a specific set of data points
      *
-     * @param array   $fields
+     * @param array $fields
      * @param integer $limit
      * @param integer $offset
-     * @param string  $sortBy    The field to sort by
-     * @param string  $sortOrder The sort order (ASC|DESC)
+     * @param string $sortBy The field to sort by
+     * @param string $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
@@ -295,8 +313,11 @@ class UserRepository extends BaseRepository
     {
         $client = $this->getClient();
 
-        $queryString = 'MATCH (n:person)
-        RETURN count(distinct n)';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "MATCH (n:person)
+        WHERE $tenantStatement
+        RETURN count(distinct n)";
 
         $cypherQuery = new Query($client, $queryString);
         $results = $cypherQuery->getResultSet();
@@ -309,8 +330,8 @@ class UserRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
-     * @param string  $sortBy    The field to sort by
-     * @param string  $sortOrder The sort order (ASC|DESC)
+     * @param string $sortBy The field to sort by
+     * @param string $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
@@ -341,7 +362,9 @@ class UserRepository extends BaseRepository
      */
     public function getAllWithSavedSearches()
     {
-        $query = 'MATCH (n:person) where has (n.savedSearches) return n';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $query = "MATCH (n:person) where has (n.savedSearches) AND $tenantStatement return n";
 
         $cypherQuery = new Query($this->getClient(), $query);
 
@@ -351,7 +374,7 @@ class UserRepository extends BaseRepository
             $result = $row['n'];
 
             $users[] = [
-                'user_id'  => $result->getId(),
+                'user_id' => $result->getId(),
                 'searches' => json_decode($result->savedSearches, true),
             ];
         }
@@ -364,11 +387,14 @@ class UserRepository extends BaseRepository
      *
      * @param integer $userId
      *
-     * @return array
+     * @return int
+     * @throws \Exception
      */
     public function getFindCountForUser($userId)
     {
-        $query = "MATCH (n:findEvent)-[P29]->(p:person) where id(p)= $userId return count(n)";
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $query = "MATCH (n:findEvent)-[P29]->(p:person) where id(p)= $userId AND $tenantStatement return count(n)";
 
         $cypherQuery = new Query($this->getClient(), $query);
         $resultSet = $cypherQuery->getResultSet();

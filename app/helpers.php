@@ -34,3 +34,21 @@ function makeFindTitle($find)
 
     return $title;
 }
+
+/**
+ * Equivalent of dd(), but returns json
+ *
+ * @param $data
+ */
+function jj($data)
+{
+    header('Content-Type: application/json');
+
+    if (method_exists($data, 'toArray')) {
+        $data = $data->toArray();
+    }
+
+    echo json_encode($data, JSON_PRETTY_PRINT);
+
+    die(1);
+}
