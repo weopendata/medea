@@ -361,6 +361,7 @@ class Base
      * @param array $properties The full list of properties for the model
      *
      * @return void
+     * @throws Exception
      */
     protected function setProperties($properties)
     {

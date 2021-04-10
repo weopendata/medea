@@ -4,10 +4,10 @@
 namespace App\Models;
 
 
-class ExcavationEvent extends Base
+class SearchEvent extends Base
 {
-    public static $NODE_TYPE = 'A9';
-    public static $NODE_NAME = 'excavationEvent';
+    public static $NODE_TYPE = 'E7';
+    public static $NODE_NAME = 'searchEvent';
 
     protected $hasUniqueId = true;
 
@@ -17,22 +17,18 @@ class ExcavationEvent extends Base
             'model_name' => 'Person',
             'cascade_delete' => false,
             'link_only' => true,
-            'reverse_relationship' => 'P14'
         ],
-        'P70' => [
-            'key' => 'publication',
-            'model_name' => 'Publication',
-            'cascade_delete' => false,
-            'required' => false,
-            'plural' => true,
-            'reverse_relationship' => 'P67'
-        ],
-        'AP3' => [
+        'P7' => [
             'key' => 'searchArea',
             'model_name' => 'SearchArea',
             'cascade_delete' => false,
-            'required' => false,
-            'plural' => true,
+            'link_only' => true,
+        ],
+        'P20' => [
+            'key' => 'findEvent',
+            'model_name' => 'FindEvent',
+            'cascade_delete' => false,
+            'link_only' => true,
         ],
     ];
 
