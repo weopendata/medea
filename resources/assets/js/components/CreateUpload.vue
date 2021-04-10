@@ -9,6 +9,13 @@
         </div>
 
         <div class="field cleared">
+          <label>Type data</label>
+          <select class="ui dropdown" v-model="type">
+            <option v-for="(dataType, index) in dataTypes" :value="dataType.value">{{ dataType.label }}</option>
+          </select>
+        </div>
+
+        <div class="field cleared">
           <label>CSV bestand</label>
           <input type="file" accept=".csv" v-on:change="onFileChange"/>
         </div>
@@ -31,6 +38,21 @@
       return {
         file: null,
         name: '',
+        type: 'excavation',
+        dataTypes: [
+          {
+            label: 'Opgraving',
+            value: 'excavation',
+          },
+          {
+            label: 'Context',
+            value: 'context',
+          },
+          {
+            label: 'Vondsten',
+            value: 'find',
+          }
+        ]
       }
     },
     computed: {
@@ -46,6 +68,7 @@
         let formData = new FormData()
         formData.append('file', this.file)
         formData.append('name', this.name)
+        formData.append('type', this.type)
 
         const config = {
           headers: { 'content-type': 'multipart/form-data' }

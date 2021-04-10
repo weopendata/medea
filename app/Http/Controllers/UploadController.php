@@ -56,14 +56,19 @@ class UploadController extends Controller
     {
         $this->validate($request, [
             'file' => 'file|required',
-            'name' => 'min:2|required'
+            'name' => 'min:2|required',
+            'type' => 'required|in:excavation,find,context'
         ]);
 
-        $path = $request->file->storeAs('local', $request->input('name') . '____' . str_random(10) . '.csv');
+        $fileName = $request->input('name');
+        $fileName = trim($fileName);
+
+        $path = $request->file->storeAs('local', $fileName . '____' . str_random(10) . '.csv');
 
         $fileUpload = [
             'path' => $path,
-            'name' => $request->input('name'),
+            'name' => $fileName,
+            'type' => $request->input('type'),
             'user_name' => $request->user()->firstName . ' ' . $request->user()->lastName
         ];
 

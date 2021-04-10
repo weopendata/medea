@@ -25,7 +25,6 @@ class ExcavationEvent extends Base
             'cascade_delete' => false,
             'required' => false,
             'plural' => true,
-            'reverse_relationship' => 'P67'
         ],
         'AP3' => [
             'key' => 'searchArea',
