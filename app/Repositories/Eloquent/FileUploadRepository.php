@@ -53,7 +53,7 @@ class FileUploadRepository
                         return [
                             'id' => $job->id,
                             'status' => $job->status,
-                            'created_at' => $job->created_at->format('Y-m-d H:i:s')
+                            'created_at' => $job->created_at->format('Y-m-d H:i:s'),
                         ];
                     })
                     ->toArray();
@@ -70,6 +70,7 @@ class FileUploadRepository
                     'user_name',
                     'last_imported',
                     'created_at',
+                    'type',
                 ]);
 
                 $result['import_jobs'] = $importJobs;

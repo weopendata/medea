@@ -34,6 +34,11 @@
             <dt>Status:</dt>
             <dd>{{ selectedUpload.status }}</dd>
           </template>
+
+          <template>
+            <dt>Type:</dt>
+            <dd>{{ selectedUpload.type }}</dd>
+          </template>
         </dl>
       </div>
 
