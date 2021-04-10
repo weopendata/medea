@@ -4,8 +4,16 @@ namespace App\Repositories;
 
 use App\Models\Eloquent\Notification;
 
+/**
+ * Class NotificationRepository
+ * @package App\Repositories
+ */
 class NotificationRepository extends EloquentRepository
 {
+    /**
+     * NotificationRepository constructor.
+     * @param Notification $notification
+     */
     public function __construct(Notification $notification)
     {
         parent::__construct($notification);

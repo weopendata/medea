@@ -2,16 +2,28 @@
 
 namespace App\Repositories;
 
+use App\NodeConstants;
 use Everyman\Neo4j\Client;
 
 class BaseRepository
 {
+    /**
+     * BaseRepository constructor.
+     *
+     * @param $label
+     * @param $model
+     */
     public function __construct($label, $model)
     {
         $this->label = $label;
         $this->model = $model;
     }
 
+    /**
+     * @param integer $id
+     * @return array|\Everyman\Neo4j\Node|null
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function getById($id)
     {
         $client = $this->getClient();
@@ -19,11 +31,11 @@ class BaseRepository
         $node = $client->getNode($id);
 
         if (empty($node)) {
-            return [];
+            return;
         }
 
         foreach ($node->getLabels() as $label) {
-            if ($label->getName() == $this->label) {
+            if ($label->getName() == $this->label && $node->getProperty(NodeConstants::TENANT_LABEL) == env('DB_TENANCY_LABEL')) {
                 return $node;
             }
         }
@@ -34,18 +46,19 @@ class BaseRepository
     /**
      * Return the configured
      *
-     * @return Label
+     * @return \Everyman\Neo4j\Label
      */
     protected function getLabel()
     {
         $client = $this->getClient();
 
         // Return a label configured client, equivalent of only returning a certain eloquent model
-        $label = $client->makeLabel($this->label);
-
-        return $label;
+        return $client->makeLabel($this->label);
     }
 
+    /**
+     * @return Client
+     */
     protected function getClient()
     {
         $neo4j_config = \Config::get('database.connections.neo4j');
@@ -57,35 +70,37 @@ class BaseRepository
         return $client;
     }
 
+    /**
+     * @param integer $id
+     * @return bool
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function delete($id)
     {
-        $client = $this->getClient();
+        $node = $this->getById($id);
 
-        $node = $client->getNode($id);
-
-        if (! empty($node)) {
-            // Check if the node is valid, namely does it have the correct label!
-            // IDs = universal, labels = types
-            $valid = false;
-
-            foreach ($node->getLabels() as $label) {
-                if ($label->getName() == $this->label) {
-                    $valid = true;
-                    break;
-                }
-            }
-
-            if ($valid) {
-                // Invoke the delete method on the wrapper model
-                $model = new $this->model();
-                $model->setNode($node);
-                $model->delete();
-            }
-
-            return $valid;
+        if (empty($node)) {
+            return false;
         }
 
-        return false;
+        // Check if the node type (=label) is valid
+        $valid = false;
+
+        foreach ($node->getLabels() as $label) {
+            if ($label->getName() == $this->label && $node->getProperty(NodeConstants::TENANT_LABEL) == env('DB_TENANCY_LABEL')) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if ($valid) {
+            // Invoke the delete method on the wrapper model
+            $model = new $this->model();
+            $model->setNode($node);
+            $model->delete();
+        }
+
+        return $valid;
     }
 
     /**
@@ -95,18 +110,19 @@ class BaseRepository
      * @param integer
      *
      * @return array
+     * @throws \Everyman\Neo4j\Exception
      */
     public function expandValues($id)
     {
         $node = $this->getById($id);
 
-        if (! empty($node)) {
-            $model = new $this->model();
-            $model->setNode($node);
-
-            return $model->getValues();
+        if (empty($node)) {
+            return [];
         }
 
-        return [];
+        $model = new $this->model();
+        $model->setNode($node);
+
+        return $model->getValues();
     }
 }

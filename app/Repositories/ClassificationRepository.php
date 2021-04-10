@@ -3,8 +3,14 @@
 namespace App\Repositories;
 
 use App\Models\ProductionClassification;
+use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
+use PhpParser\Node;
 
+/**
+ * Class ClassificationRepository
+ * @package App\Repositories
+ */
 class ClassificationRepository extends BaseRepository
 {
     public function __construct()
@@ -12,9 +18,17 @@ class ClassificationRepository extends BaseRepository
         parent::__construct(ProductionClassification::$NODE_TYPE, ProductionClassification::class);
     }
 
+    /**
+     * @param $classification_id
+     * @param $user_id
+     * @return |null
+     * @throws \Exception
+     */
     public function getVoteOfUser($classification_id, $user_id)
     {
-        $query = "match (person:person)-[r:agree|disagree]-(n:productionClassification) where id(n) = $classification_id AND id(person) = $user_id return r";
+        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'n']);
+
+        $query = "match (person:person)-[r:agree|disagree]-(n:productionClassification) where id(n) = $classification_id AND id(person) = $user_id AND $tenantStatement return r";
 
         $client = $this->getClient();
 
@@ -23,22 +37,24 @@ class ClassificationRepository extends BaseRepository
 
         if ($result->count() > 0) {
             return $result->current()->current();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
      * Return the user of a classification
      *
-     * @param  integer $classificationId
+     * @param integer $classificationId
      * @return Node
+     * @throws \Exception
      */
     public function getUser($classificationId)
     {
-        $query = "match (person:person)<-[r:addedBy]-(n:productionClassification) where id(n)=$classificationId return person";
+        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'n']);
 
-        // TODO: refactor this into a helper function that parses first results from a response
+        $query = "MATCH (person:person)<-[r:addedBy]-(n:productionClassification) where id(n)=$classificationId AND $tenantStatement return person";
+
         $client = $this->getClient();
 
         $cypher_query = new Query($client, $query);
@@ -46,16 +62,16 @@ class ClassificationRepository extends BaseRepository
 
         if ($result->count() > 0) {
             return $result->current()->current();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
      * Link a classification to a user
      *
-     * @param  Node $classification
-     * @param  Node $person
+     * @param Node $classification
+     * @param Node $person
      * @return void
      */
     public function linkClassificationToUser($classification, $person)
@@ -66,9 +82,10 @@ class ClassificationRepository extends BaseRepository
     /**
      * Link publications to a classification
      *
-     * @param  Node  $classification
-     * @param  array $publications   An array of IDs of publications
+     * @param Node $classification
+     * @param array $publications An array of IDs of publications
      * @return void
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function linkPublications($classification, $publications)
     {
@@ -77,7 +94,7 @@ class ClassificationRepository extends BaseRepository
         foreach ($publications as $publicationId) {
             $publication = $publicationsRepo->getById($publicationId);
 
-            if (! empty($publication)) {
+            if (!empty($publication)) {
                 $classification->relateTo($publication, 'P108')->save();
                 $publication->relateTo($classification, 'P67')->save();
             }

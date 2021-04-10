@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Repositories\BaseRepository;
+use App\Services\NodeService;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Exception;
 use Carbon\Carbon;
+use PhpParser\Node;
 
 /**
  * The base class for a node in the graph
@@ -71,6 +74,7 @@ class Base
     /**
      * Create a label (Everyman\Neo4j\Label)
      *
+     * @param  string $label
      * @return Label
      */
     protected static function makeLabel($label)
@@ -80,15 +84,18 @@ class Base
         return $client->makeLabel($label);
     }
 
+    /**
+     * Base constructor.
+     * @param array $properties
+     * @throws Exception
+     */
     public function __construct($properties = [])
     {
         if (empty($properties)) {
             return;
         }
 
-        $client = self::getClient();
-
-        $this->node = $client->makeNode();
+        $this->node = NodeService::makeNode();
 
         $generalId = $this->createMedeaId();
 
@@ -231,7 +238,7 @@ class Base
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
                                     $model = new $model_name();
-                                    $model->setNode($client->getNode($entry['identifier']));
+                                    $model->setNode(NodeService::getById($entry['identifier']));
                                     $model->update($entry);
                                 }
                             }
@@ -267,7 +274,7 @@ class Base
                                 } else {
                                     $related_identifiers[] = $input['identifier'];
 
-                                    $node = $client->getNode($input['identifier']);
+                                    $node = NodeService::getById($input['identifier']);
 
                                     $model_name = 'App\Models\\' . $config['model_name'];
 
@@ -311,7 +318,7 @@ class Base
             // Remove the tree of implicit nodes
             $uuid_label = $client->makeLabel($this->getGeneralId());
 
-            $implicit_nodes = $uuid_label->getNodes();
+            $implicit_nodes = NodeService::getNodesForLabel($uuid_label);
 
             foreach ($implicit_nodes as $implicit_node) {
                 $relationships = $implicit_node->getRelationships([]);
@@ -539,8 +546,7 @@ class Base
 
         $generalId = $this->getGeneralId();
 
-        $node = $client->makeNode();
-        $node->save();
+        $node = NodeService::makeNode();
 
         $node_labels = [self::makeLabel($generalId)];
 
@@ -720,24 +726,23 @@ class Base
      * to instantiate new nodes, but rather needs to link with existing ones
      *
      * @param integer $nodeId
-     * @param string  $model
+     * @param string $model
      *
      * @return null|Model
+     * @throws Exception
      */
     protected function searchNode($nodeId, $model)
     {
-        $client = self::getClient();
-
-        $node = $client->getNode($nodeId);
+        $node = NodeService::getById($nodeId);
 
         if (empty($node)) {
-            return [];
+            return;
         }
 
         foreach ($node->getLabels() as $label) {
             // We can use the model name as a label because
             // the models that we fetch are all related models
-            // meaning they have cidoc labels and model name labels
+            // meaning they have CIDOC labels and model name labels
             if (mb_strtolower($label->getName()) == mb_strtolower($model)) {
                  $model_name = 'App\Models\\' . $model;
                  $model = new $model_name();
@@ -785,8 +790,10 @@ class Base
     {
         $node_id = $this->node->getId();
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'end']);
+
         $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
-                  WHERE id(n) = $node_id AND end.name = '$node_name'
+                  WHERE id(n) = $node_id AND end.name = '$node_name' AND $tenantStatement
                   RETURN distinct end";
 
         $cypher_query = new Query($this->getClient(), $query);
@@ -806,8 +813,10 @@ class Base
     {
         $node_id = $this->node->getId();
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'end']);
+
         $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[$rel_type]->(end:$endnode_type)
-                  WHERE id(n) = $node_id
+                  WHERE id(n) = $node_id AND $tenantStatement
                   RETURN distinct end";
 
         $cypher_query = new Query($this->getClient(), $query);
@@ -827,8 +836,10 @@ class Base
     {
         $nodeId = $this->node->getId();
 
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'end']);
+
         $query = 'MATCH (n:' . static::$NODE_TYPE . ")-[r]-(end:$nodeType)
-                  WHERE id(n) = $nodeId
+                  WHERE id(n) = $nodeId AND $tenantStatement
                   RETURN r";
 
         $cypher_query = new Query($this->getClient(), $query);

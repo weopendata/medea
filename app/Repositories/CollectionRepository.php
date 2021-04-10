@@ -3,8 +3,13 @@
 namespace App\Repositories;
 
 use App\Models\Collection;
+use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
 
+/**
+ * Class CollectionRepository
+ * @package App\Repositories
+ */
 class CollectionRepository extends BaseRepository
 {
     /**
@@ -17,13 +22,17 @@ class CollectionRepository extends BaseRepository
 
     /**
      * @return mixed
+     * @throws \Exception
      */
     public function countAllCollections()
     {
         $client = $this->getClient();
 
-        $queryString = 'MATCH (n:collection)
-        RETURN count(distinct n)';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "MATCH (n:collection)
+        WHERE $tenantStatement
+        RETURN count(distinct n)";
 
         $cypherQuery = new Query($client, $queryString);
         $results = $cypherQuery->getResultSet();
@@ -36,15 +45,19 @@ class CollectionRepository extends BaseRepository
      * This list is a mapping between id's and the title of the collection
      *
      * @return array
+     * @throws \Exception
      */
     public function getList()
     {
-        $client = $this->getClient();
-
         $variables = [];
 
-        $queryString = 'MATCH (n:collection)
-        RETURN n as collection';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "MATCH (n:collection)
+        WHERE $tenantStatement
+        RETURN n as collection";
+
+        $client = $this->getClient();
 
         $cypherQuery = new Query($client, $queryString, $variables);
         $results = $cypherQuery->getResultSet();
@@ -63,10 +76,11 @@ class CollectionRepository extends BaseRepository
      *
      * @param integer $limit
      * @param integer $offset
-     * @param string  $sortBy    The field to sort by (title|created_at)
-     * @param string  $sortOrder The sort order (ASC|DESC)
+     * @param string $sortBy The field to sort by (title|created_at)
+     * @param string $sortOrder The sort order (ASC|DESC)
      *
      * @return array
+     * @throws \Exception
      */
     public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
@@ -74,13 +88,20 @@ class CollectionRepository extends BaseRepository
 
         $variables = [];
 
-        $queryString = 'MATCH (n:collection)
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+        $personStatement = NodeService::getTenantWhereStatement(['n', 'person']);
+        $institutionStatement = NodeService::getTenantWhereStatement(['n', 'institutionAppellation']);
+
+        $queryString = "MATCH (n:collection)
+        WHERE $tenantStatement
         OPTIONAL MATCH (n)-[p1:P109]->(person:person)
+        WHERE $personStatement
         OPTIONAL MATCH (n)-[p2:P109]->(institution:E40)-[P131]->(institutionAppellation:E82)
-        RETURN n as collection, n.title as collectionTitle, collect(distinct person) as person, collect(institutionAppellation) as instNames';
+        WHERE $institutionStatement
+        RETURN n as collection, n.title as collectionTitle, collect(distinct person) as person, collect(institutionAppellation) as instNames";
 
         if (! empty($sortBy)) {
-            // Statements in functions don't seem to work with the jadell library
+            // Statements in functions don't seem to work with the Jadell Neo4J library
             if ($sortBy == 'title') {
                 $orderBy = 'LOWER(n.title)';
             } else {
@@ -147,9 +168,10 @@ class CollectionRepository extends BaseRepository
     /**
      * Link a user (=maintainer ) to a collection
      *
-     * @param  integer $collectionId
-     * @param  integer $userId
+     * @param integer $collectionId
+     * @param integer $userId
      * @return boolean
+     * @throws \Everyman\Neo4j\Exception
      */
     public function linkUser($collectionId, $userId)
     {
@@ -201,17 +223,20 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
-     * Check if the user and collection are linked with eachother
+     * Check if the user and collection are linked with each other
      *
-     * @param  integer $collectionId
-     * @param  integer $userId
+     * @param integer $collectionId
+     * @param integer $userId
      * @return boolean
+     * @throws \Exception
      */
     private function isCollectionLinkedWithUser($collectionId, $userId)
     {
-        $query = 'MATCH (n:collection)-[P109]->(p:person)
-        WHERE id(p) = {userId} AND id(n) = {collectionId}
-        RETURN n';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'p']);
+
+        $query = "MATCH (n:collection)-[P109]->(p:person)
+        WHERE id(p) = {userId} AND id(n) = {collectionId} AND $tenantStatement
+        RETURN n";
 
         $variables = [
             'userId' => (int) $userId,
@@ -227,8 +252,9 @@ class CollectionRepository extends BaseRepository
     /**
      * Create a new collection
      *
-     * @param  array $properties
+     * @param array $properties
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
     {
@@ -241,8 +267,9 @@ class CollectionRepository extends BaseRepository
     /**
      * Search for a collection by its title or a piece of the title
      *
-     * @param  string $queryString
+     * @param string $queryString
      * @return array
+     * @throws \Exception
      */
     public function search($queryString = '')
     {
@@ -250,9 +277,11 @@ class CollectionRepository extends BaseRepository
             return $this->getAll();
         }
 
-        $query = 'MATCH (n:E78)
-        WHERE n.title =~ {queryString}
-        RETURN n';
+        $tenantStatement = NodeService::getTenantWhereStatement('n');
+
+        $query = "MATCH (n:E78)
+        WHERE n.title =~ {queryString} AND $tenantStatement
+        RETURN n";
 
         $variables = ['queryString' =>  '(?i).*' . $queryString . '.*'];
 
@@ -276,8 +305,9 @@ class CollectionRepository extends BaseRepository
     /**
      * Get the users linked to the collection
      *
-     * @param  int   $collectionId
+     * @param int $collectionId
      * @return array
+     * @throws \Everyman\Neo4j\Exception
      */
     public function getLinkedUsers($collectionId)
     {
@@ -314,14 +344,17 @@ class CollectionRepository extends BaseRepository
     /**
      * Get the collection that is linked to an object
      *
-     * @param  int   $objectId
+     * @param int $objectId
      * @return array
+     * @throws \Exception
      */
     public function getCollectionForObject($objectId)
     {
-        $query = 'MATCH (n:object)-[P24]->(collection:collection)
-        WHERE id(n) = {objectId}
-        RETURN collection';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'collection']);
+
+        $query = "MATCH (n:object)-[P24]->(collection:collection)
+        WHERE id(n) = {objectId} AND $tenantStatement
+        RETURN collection";
 
         $variables = ['objectId' => $objectId];
 
@@ -345,14 +378,17 @@ class CollectionRepository extends BaseRepository
     /**
      * Get the collections for a user
      *
-     * @param  int   $userId
+     * @param int $userId
      * @return array
+     * @throws \Exception
      */
     public function getForUser($userId)
     {
-        $query = 'MATCH (n:collection)-[P109]->(person:person)
-        WHERE id(person) = {userId}
-        RETURN distinct n';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'person']);
+
+        $query = "MATCH (n:collection)-[P109]->(person:person)
+        WHERE id(person) = {userId} AND $tenantStatement
+        RETURN distinct n";
 
         $variables = ['userId' => $userId];
 
@@ -377,9 +413,11 @@ class CollectionRepository extends BaseRepository
     {
         $title = trim($title);
 
-        $queryString = 'MATCH (n:collection)
-        WHERE n.title =~ {title}
-        RETURN n';
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "MATCH (n:collection)
+        WHERE n.title =~ {title} AND $tenantStatement
+        RETURN n";
 
         $query = new Query($this->getClient(), $queryString, ['title' => $title]);
 

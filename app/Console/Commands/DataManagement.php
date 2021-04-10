@@ -44,7 +44,7 @@ class DataManagement extends Command
      */
     public function handle()
     {
-        $this->info('Warning! Any changes you commit through this command immediatly effect the data that is withing the Neo4j of the MEDEA project.');
+        $this->info('Warning! Any changes you commit through this command immediately affects the data that in your Neo4j data store.');
 
         $this->info('Choose from the following commands: (enter the number)');
         $this->info('1. Remove all finds.');

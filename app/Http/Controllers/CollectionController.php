@@ -43,7 +43,7 @@ class CollectionController extends Controller
 
         $collections = $this->collections->getAll($limit, $offset, $sortBy, $sortOrder);
 
-        // Linkify all info fields of the collections
+        // "Linkify" all info fields of the collections
         foreach ($collections as &$collection) {
             $info = $collection['description'];
             $collection['description'] = $this->makeClickable($info);

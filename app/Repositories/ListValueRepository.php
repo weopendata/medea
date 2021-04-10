@@ -2,8 +2,14 @@
 
 namespace App\Repositories;
 
+use App\NodeConstants;
+use App\Services\NodeService;
 use Everyman\Neo4j\Client;
 
+/**
+ * Class ListValueRepository
+ * @package App\Repositories
+ */
 class ListValueRepository
 {
     protected function getClient()
@@ -47,8 +53,6 @@ class ListValueRepository
 
         $list = [];
 
-        $client = $this->getClient();
-
         $properties = [
             'object' => [
                 'technique' => 'ProductionTechniqueTypeAuthorityList',
@@ -79,11 +83,14 @@ class ListValueRepository
             ],
         ];
 
+        $client = $this->getClient();
+
         foreach ($properties as $property => $property_list) {
             foreach ($property_list as $key => $list_label) {
                 $label = $client->makeLabel($list_label);
                 // This shouldn't fail, otherwise we're haven't seeded properly, so an exception in place.
-                $authority_list = $label->getNodes()->current();
+                $nodesForLabel = NodeService::getNodesForLabel($label);
+                $authority_list = $nodesForLabel->current();
 
                 if (empty($list[$property])) {
                     $list[$property] = [];
@@ -99,15 +106,18 @@ class ListValueRepository
     /**
      * Return the configured values for the authority list
      *
-     * @param  string $listLabel The name of the authority list (label name)
+     * @param string $listLabel The name of the authority list (label name)
      * @return array
+     * @throws \Everyman\Neo4j\Exception
+     * @throws \Exception
      */
     public function makeAuthorityListForLabel($listLabel)
     {
         $label = $this->getClient()->makeLabel($listLabel);
 
         // This shouldn't fail, otherwise the application hasn't been seeded properly, so an exception in place.
-        $authorityList = $label->getNodes()->current();
+        $nodesForLabel = NodeService::getNodesForLabel($label);
+        $authorityList = $nodesForLabel->current();
 
         return $authorityList->getProperty('values');
     }

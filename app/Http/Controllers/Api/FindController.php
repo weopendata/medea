@@ -148,7 +148,6 @@ class FindController extends Controller
 
         $find = $request->getFind();
         $find = $this->transformFind($find, $user);
-        //$find = $this->finds->expandValues($id, $request->user());
 
         return response()->json($find);
     }

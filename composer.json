@@ -5,7 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=7.0",
+        "php": "^7.2",
         "laravel/framework": "6.18.*",
         "laravelcollective/html": "6.*",
         "everyman/neo4jphp": "dev-master",
@@ -51,8 +51,6 @@
         "post-install-cmd": [
             "php artisan clear-compiled",
             "php artisan vendor:publish --provider=\"Intervention\\Image\\ImageServiceProviderLaravel5\""
-        ],
-        "pre-update-cmd": [
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
