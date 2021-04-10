@@ -95,8 +95,7 @@ class SearchArea extends Base
             self::makeLabel('searchAreaInterpretation'),
             self::makeLabel($generalId)
         ]);
-
-
+        
         // Create an E55
         $type = $this->createValueNode(
             'searchAreaInterpretationType',

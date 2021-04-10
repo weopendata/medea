@@ -4,6 +4,8 @@
 namespace App\Models;
 
 
+use App\Services\NodeService;
+
 class ExcavationEvent extends Base
 {
     public static $NODE_TYPE = 'A9';
@@ -41,9 +43,33 @@ class ExcavationEvent extends Base
             'config' => [
                 'key' => 'company',
                 'name' => 'company',
-                'value_node' => true,
-                'cidoc_type' => 'E47'
+                'cidoc_type' => 'E74'
             ]
         ],
     ];
+
+    public function createCompany($company)
+    {
+        $generalId = $this->getGeneralId();
+
+        $companyNode = NodeService::makeNode();
+        $companyNode->setProperty('name', 'company');
+        $companyNode->save();
+        $companyNode->addLabels([
+            self::makeLabel('E74'),
+            self::makeLabel('company'),
+            self::makeLabel($generalId)
+        ]);
+
+        $appellation = $this->createValueNode(
+            'companyName',
+            ['E41', $generalId, 'companyName'],
+            $company['companyName']
+        );
+
+        // Create the relationship
+        $companyNode->relateTo($appellation, 'P1')->save();
+
+        return $companyNode;
+    }
 }
