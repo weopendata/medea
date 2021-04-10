@@ -16,34 +16,34 @@ class ExcavationEvent extends Base
             'key' => 'person',
             'model_name' => 'Person',
             'cascade_delete' => false,
-            'link_only' => true,
+            'link_only' => false, // These person objects are not persistent as they are not uniquely identified, i.e. only a name is provided
             'reverse_relationship' => 'P14'
         ],
         'P70' => [
             'key' => 'publication',
             'model_name' => 'Publication',
-            'cascade_delete' => false,
+            'cascade_delete' => true,
             'required' => false,
             'plural' => true,
         ],
         'AP3' => [
             'key' => 'searchArea',
             'model_name' => 'SearchArea',
-            'cascade_delete' => false,
+            'cascade_delete' => true,
             'required' => false,
-            'plural' => true,
+            'plural' => false,
         ],
     ];
 
     protected $implicitModels = [
-        /*[
-            'relationship' => 'P4',
+        [
+            'relationship' => 'P14',
             'config' => [
-                'key' => 'findDate',
-                'name' => 'findDate',
+                'key' => 'company',
+                'name' => 'company',
                 'value_node' => true,
-                'cidoc_type' => 'E52'
+                'cidoc_type' => 'E47'
             ]
-        ],*/
+        ],
     ];
 }

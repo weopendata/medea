@@ -4,16 +4,20 @@
 namespace App\Repositories\Eloquent;
 
 
-use App\Models\Eloquent\ImportJob;
 use App\Models\Eloquent\ImportLog;
 
 class ImportLogRepository
 {
     private $model;
 
-    public function __construct(ImportJob $model)
+    public function __construct(ImportLog $model)
     {
         $this->model = $model;
+    }
+
+    public function store($log)
+    {
+        return $this->model->create($log);
     }
 
     public function getLogsForJob($jobId)

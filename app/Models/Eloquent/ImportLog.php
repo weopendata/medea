@@ -13,6 +13,10 @@ class ImportLog extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'context' => 'json'
+    ];
+
     /**
      * @return BelongsTo
      */

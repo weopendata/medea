@@ -11,6 +11,13 @@ class Publication extends Base
 
     protected $hasUniqueId = true;
 
+    protected $properties = [
+        [
+            'name' => 'uri',
+            'default_value' => null
+        ]
+    ];
+
     protected $relatedModels = [
         'P106' => [
             'key' => 'publication',
@@ -78,13 +85,8 @@ class Publication extends Base
         ],
     ];
 
-    protected $properties = [
-    ];
-
     public function createPublicationCreation($publicationCreation)
     {
-        $client = self::getClient();
-
         $generalId = $this->getGeneralId();
 
         // Create a publicationCreation (E65)
