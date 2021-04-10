@@ -25,18 +25,13 @@ class ImportData implements ShouldQueue
     protected $importJob;
 
     /**
-     * @var
-     */
-    protected $importJobId;
-
-    /**
      * Create a new job instance.
      *
-     * @param $importJobId
+     * @param $importJob
      */
-    public function __construct($importJobId)
+    public function __construct($importJob)
     {
-        $this->importJobId = $importJobId;
+        $this->importJob = $importJob;
     }
 
     /**
@@ -47,8 +42,6 @@ class ImportData implements ShouldQueue
      */
     public function handle()
     {
-        $this->importJob = ImportJob::findOrFail($this->importJobId);
-
         $fileUpload = $this->importJob->fileUpload;
 
         $filePath =  storage_path('app/' . $fileUpload->path);
@@ -62,8 +55,7 @@ class ImportData implements ShouldQueue
         }
 
         // Update the import job status
-        $this->importJob->status = 'running';
-        $this->importJob->save();
+        $this->updateStatus('running');
 
         // Fetch the processor based on the file upload content
         $processor = $this->getProcessor($fileUpload->type);
@@ -77,9 +69,18 @@ class ImportData implements ShouldQueue
             $processor->processData($data, $csvReader->getIndex());
 
             $data = $csvReader->getNext();
-
-            return $data;
         }
+
+        $this->updateStatus('finished');
+    }
+
+    /**
+     * @param string $status
+     */
+    private function updateStatus($status)
+    {
+        $this->importJob->status = $status;
+        $this->importJob->save();
     }
 
     private function getProcessor(string $fileUploadType)

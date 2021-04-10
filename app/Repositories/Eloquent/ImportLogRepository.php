@@ -20,16 +20,12 @@ class ImportLogRepository
         return $this->model->create($log);
     }
 
+    /**
+     * @param int $jobId
+     * @return array
+     */
     public function getLogsForJob($jobId)
     {
-        $job = $this
-            ->model
-            ->find($jobId);
-
-        if (empty($job)) {
-            return [];
-        }
-
         $logs = ImportLog::where('import_jobs_id', $jobId)
             ->get()
             ->map(function ($log) {

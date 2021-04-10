@@ -41,15 +41,26 @@ class FileUploadRepository
             ->orderByDesc('id')
             ->get()
             ->map(function ($result) {
+                $fileStatus = 'not imported';
+
                 $importJobs = $result
                     ->importJobs
-                    ->map(function ($job) {
+                    ->map(function ($job) use (&$fileStatus) {
+                        if (in_array($job->status, ['running', 'queued'])) {
+                            $fileStatus = $job->status;
+                        }
+
                         return [
                             'id' => $job->id,
-                            'status' => $job->status
+                            'status' => $job->status,
+                            'created_at' => $job->created_at->format('Y-m-d H:i:s')
                         ];
                     })
                     ->toArray();
+
+                if ($fileStatus == 'not imported' && !empty($importJobs)) {
+                    $fileStatus = 'finished';
+                }
 
                 $result = $result->toArray();
 
@@ -58,13 +69,29 @@ class FileUploadRepository
                     'name',
                     'user_name',
                     'last_imported',
-                    'created_at'
+                    'created_at',
                 ]);
 
                 $result['import_jobs'] = $importJobs;
 
+                $result['status'] = $fileStatus;
+
                 return $result;
             })
             ->toArray();
+    }
+
+    /**
+     * @param integer $uploadId
+     */
+    public function delete($uploadId)
+    {
+        $fileUpload = $this->model->find($uploadId);
+
+        if (empty($fileUpload)) {
+            return;
+        }
+
+        $fileUpload->delete();
     }
 }

@@ -147,7 +147,9 @@ class Person extends Base implements Authenticatable, CanResetPassword
         if (! empty($properties)) {
             parent::__construct($properties);
 
-            $hashedPassword = Hash::make($properties['password']);
+            $password = @$properties['password'] ?? '';
+
+            $hashedPassword = Hash::make($password);
 
             $this->node->setProperty('token', str_random(40));
             $this->node->setProperty('password', $hashedPassword);

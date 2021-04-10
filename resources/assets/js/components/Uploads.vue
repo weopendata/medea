@@ -6,7 +6,8 @@
       </div>
 
       <div>
-        <uploads-overview :uploads="uploads" @displayCreateUpload="displayCreateUpload = true"></uploads-overview>
+        <uploads-overview :uploads="uploads" @deleteUpload="deleteUpload"
+                          @displayCreateUpload="displayCreateUpload = true"></uploads-overview>
       </div>
     </div>
   </div>
@@ -18,14 +19,14 @@
 
   export default {
     name: "Uploads.vue",
-    data () {
+    data() {
       return {
         uploads: [],
         displayCreateUpload: false
       }
     },
     methods: {
-      fetchUploads () {
+      fetchUploads() {
         axios.get('/api/uploads')
           .then(response => {
             var uploads = response.data
@@ -35,7 +36,16 @@
           .catch(error => {
             console.log(error)
           })
-      }
+      },
+      deleteUpload(uploadInfo) {
+        axios.delete('/uploads/' + uploadInfo.id)
+          .then(response => {
+            this.fetchUploads()
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      },
     },
     mounted() {
       this.fetchUploads()

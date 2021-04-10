@@ -3,12 +3,13 @@
     <h2>Upload overzicht</h2>
 
     <div>
-      <select class="ui search dropdown category" v-model="selectedUpload" style="max-width: 16em">
+      <select class="ui search dropdown category" v-model="selectedUpload" style="max-width: 45em;"
+              v-if="uploads.length > 0">
         <option v-for="upload in uploads" :value="upload" v-text="uploadDisplayName(upload)" track-by="$index"></option>
       </select>
 
       <div class="ui labeled button" tabindex="0" @click.prevent="displayAddUpload">
-        <div class="ui button">
+        <div class="ui green button">
           <i class="plus icon"></i> Voeg bestand toe
         </div>
       </div>
@@ -33,25 +34,38 @@
             <dt>Status:</dt>
             <dd>{{ selectedUpload.status }}</dd>
           </template>
-
-          <template v-if="selectedUpload.last_imported">
-            <dt>Laatst geimporteerd op:</dt>
-            <dd>{{ selectedUpload.last_imported }}</dd>
-          </template>
         </dl>
       </div>
 
-      <div style="margin-top: 1rem;">
-        <h4>Import logs</h4>
-        <table>
-          <thead>
+      <div>
+        <button class="ui green button" @click="startUpload()" :disabled="startingUpload" v-if="canInteractWithUpload">
+          Start upload
+        </button>
+        <button class="ui red button" @click="deleteUpload()" :disabled="startingUpload" v-if="canInteractWithUpload"><i
+                class="trash icon"></i>Delete upload
+        </button>
+      </div>
+
+      <template v-if="this.selectedUpload && this.selectedUpload.id">
+        <div style="margin-top: 1rem;">
+          <h4>Import logs</h4>
+
+          <select class="ui search dropdown category" v-model="selectedImport" style="max-width: 30em;"
+                  v-if="this.selectedUpload.import_jobs.length > 0">
+            <option v-for="importJob in this.selectedUpload.import_jobs" :value="importJob"
+                    v-text="importJobDisplayName(importJob)"></option>
+          </select>
+
+          <table v-if="logs.length">
+            <thead>
             <tr>
               <th>Lijn</th>
               <th>Actie</th>
               <th>Status</th>
+              <th>Beschrijving</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             <tr v-for="(log, index) in logs" :key="'upload_log_' + index">
               <td>
                 {{ log.line_number }}
@@ -62,11 +76,14 @@
               <td>
                 {{ log.status }}
               </td>
+              <td>
+                {{ log.message }}
+              </td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-
+            </tbody>
+          </table>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -75,27 +92,60 @@
   export default {
     name: "UploadsOverview",
     props: ['uploads'],
-    data () {
+    data() {
       return {
         selectedUpload: {},
-        logs: []
+        selectedImport: {},
+        logs: [],
+        startingUpload: false
+      }
+    },
+    computed: {
+      canInteractWithUpload() {
+        return this.selectedUpload.status === 'finished' || this.selectedUpload.status === 'not imported'
       }
     },
     methods: {
-      uploadDisplayName (upload) {
+      importJobDisplayName(importJob) {
+        return 'Upload of ' +  importJob.created_at + ' - Status: ' + importJob.status
+      },
+      uploadDisplayName(upload) {
         return upload.name + ' - ' + upload.user_name + ' (' + upload.created_at + ')'
       },
-      displayAddUpload () {
+      displayAddUpload() {
         this.$emit('displayCreateUpload')
       },
-      fetchLogs () {
-        if (!this.selectedUpload.id || !this.selectedUpload.import_jobs || this.selectedUpload.import_jobs.length === 0) {
+      startUpload() {
+        this.startingUpload = true
+
+        axios.post('/api/uploads/' + this.selectedUpload.id + '/upload')
+          .then(response => {
+            this.selectedUpload.status = 'queued';
+            this.startingUpload = false
+          })
+          .catch(error => {
+            console.log(error)
+
+            this.startingUpload = false
+          })
+      },
+      deleteUpload() {
+        if (!confirm('Ben je zeker dat deze upload verwijderd mag worden?')) {
           return
         }
 
-        let jobId = this.selectedUpload.import_jobs[0].id
+        this.$emit('deleteUpload', {id: this.selectedUpload.id})
 
-        axios.get('/api/uploads/' + jobId + '/logs')
+        this.selectedUpload = {}
+      },
+      fetchLogs() {
+       if (!this.selectedImport) {
+         this.logs = []
+
+         return
+       }
+
+        axios.get('/api/uploads/' + this.selectedImport.id + '/logs')
           .then(response => {
             this.logs = response.data
           })
@@ -105,7 +155,16 @@
       }
     },
     watch: {
-      selectedUpload (v) {
+      selectedUpload(v) {
+        this.selectedImport = {}
+      },
+      selectedImport(v) {
+        if (!v) {
+          this.logs = []
+
+          return
+        }
+
         this.fetchLogs()
       }
     }

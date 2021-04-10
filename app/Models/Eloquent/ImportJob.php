@@ -25,6 +25,6 @@ class ImportJob extends Model
 
     public function sendToQueue()
     {
-        dispatch((new ImportData($this->id))->onQueue(Queues::IMPORT));
+        dispatch((new ImportData($this))->onQueue(Queues::IMPORT));
     }
 }

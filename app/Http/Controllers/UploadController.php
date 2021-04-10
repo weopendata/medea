@@ -4,6 +4,8 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Eloquent\FileUpload;
+use App\Models\Eloquent\ImportJob;
 use App\Repositories\Eloquent\FileUploadRepository;
 use App\Repositories\Eloquent\ImportLogRepository;
 use Illuminate\Http\Request;
@@ -42,9 +44,34 @@ class UploadController extends Controller
         return response()->json($logs);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function startUpload(Request $request, $fileUploadId)
+    {
+        $fileUpload = FileUpload::find($fileUploadId);
+
+        if (empty($fileUpload)) {
+            abort(404);
+        }
+
+        $importJob = ImportJob::create([
+            'import_files_id' => $fileUploadId,
+            'status' => 'queued',
+        ]);
+
+        $importJob->sendToQueue();
+
+        return response()->json(['message' => 'Success']);
+    }
+
+    /**
+     * @param Request $request
+     */
     public function show(Request $request)
     {
-
+        //
     }
 
     /**
@@ -77,8 +104,13 @@ class UploadController extends Controller
         return response()->json(['message' => 'success']);
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function destroy(Request $request)
     {
+        app(FileUploadRepository::class)->delete($request->upload);
 
+        return response()->json(['message' => 'success']);
     }
 }

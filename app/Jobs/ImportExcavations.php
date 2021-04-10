@@ -41,7 +41,7 @@ class ImportExcavations
             $this->addLog($index, 'Added an excavation ', $action, ['identifier' => $excavationId, 'data' => $data], true);
         } catch (\Exception $ex) {
             $this->addLog($index,
-                'Some required information is missing, make sure searchAreaLocationAddress or searchAreaName or searchAreaLatitude and searchAreaLongitude is filled in.', $action,
+                'Something went wrong: ' . $ex->getMessage(), $action,
                 ['data' => $data], false);
         }
     }
@@ -219,7 +219,7 @@ class ImportExcavations
      */
     private function containsSearchAreaInformation(array $data)
     {
-        return !empty($data['searchAreaLocationAddress'])
+        return (!empty($data['searchAreaPostalCode']) && !empty($data['searchAreaLocality']))
             || !empty($data['searchAreaName'])
             || (!empty($data['searchAreaLatitude']) && !empty($data['searchAreaLongitude']));
     }
