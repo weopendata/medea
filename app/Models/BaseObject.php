@@ -141,6 +141,7 @@ class BaseObject extends Base
      * @param array $properties
      *
      * @return Base
+     * @throws \Everyman\Neo4j\Exception
      */
     public function __construct($properties = [])
     {
