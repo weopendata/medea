@@ -21,7 +21,7 @@ class ImportContexts extends AbstractImporter
         }
 
         // The contextId is unique, check if the context already exists or not
-        $existingContext = app(ContextRepository::class)->getByContextId($data['id']);
+        $existingContext = app(ContextRepository::class)->getByInternalId($data['id']);
 
         $action = !empty($existingContext) ? 'update' : 'create';
 
@@ -53,13 +53,14 @@ class ImportContexts extends AbstractImporter
     private function createContextModel(array $data)
     {
         $model = [];
+        $model['internalId'] = $data['id'];
         $model['contextId'] = ['contextIdValue' => $data['id']];
         $model['contextLegacyId'] = ['contextLegacyIdValue' => array_get($data, 'legacyId')];
         $model['contextType'] = array_get($data, 'contextType');
         $model['contextInterpretation'] = array_get($data, 'contextInterpretation');
 
         if (!empty($data['relatedContext'])) {
-            $existingContext = app(ContextRepository::class)->getByContextId($data['relatedContext']);
+            $existingContext = app(ContextRepository::class)->getByInternalId($data['relatedContext']);
 
             if (!empty($existingContext)) {
                 $model['context'] = ['id' => $existingContext->getId()];

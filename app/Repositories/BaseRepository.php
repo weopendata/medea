@@ -2,8 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Models\Context;
 use App\NodeConstants;
+use App\Services\NodeService;
 use Everyman\Neo4j\Client;
+use Everyman\Neo4j\Cypher\Query;
 
 class BaseRepository
 {
@@ -17,6 +20,43 @@ class BaseRepository
     {
         $this->label = $label;
         $this->model = $model;
+    }
+
+    /**
+     * @param array $properties
+     * @return int
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function store(array $properties)
+    {
+        $instance = new $this->model($properties);
+        $instance->save();
+
+        return $instance->getId();
+    }
+
+    /**
+     * @param integer $nodeId
+     * @param array $nodeData
+     * @return bool
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function update($nodeId, $nodeData)
+    {
+        $node = $this->getById($nodeId);
+
+        if (empty($node)) {
+            \Log::warning("No node found with contextId $nodeId");
+
+            return false;
+        }
+
+        $instance = new $this->model();
+        $instance->setNode($node);
+
+        $instance->update($nodeData);
+
+        return true;
     }
 
     /**
@@ -41,6 +81,53 @@ class BaseRepository
         }
 
         return null;
+    }
+
+    /**
+     * @param $internalId
+     * @return array|\Everyman\Neo4j\Node
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function getByInternalId($internalId)
+    {
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "
+        MATCH (n:$this->label)
+        WHERE n.internalId = {internalId} AND $tenantStatement
+        RETURN n
+        LIMIT 1";
+
+        $variables = [
+            'internalId' => $internalId
+        ];
+
+        $cypherQuery = new Query($this->getClient(), $queryString, $variables);
+
+        foreach ($cypherQuery->getResultSet() as $row) {
+            $neo4jId = $row['n']->getId();
+
+            return $this->getById($neo4jId);
+        }
+    }
+
+    /**
+     * Get all the bare nodes
+     *
+     * @param integer $limit
+     * @param integer $offset
+     *
+     * @return \Everyman\Neo4j\Query\Row
+     * @throws \Everyman\Neo4j\Exception
+     * @throws \Exception
+     */
+    public function getAll()
+    {
+        $client = $this->getClient();
+
+        $label = $client->makeLabel($this->label);
+
+        return NodeService::getNodesForLabel($label);
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Jobs;
+namespace App\Jobs\Importers;
 
 
 use App\Repositories\ClassificationRepository;
@@ -10,43 +10,16 @@ use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
 use Illuminate\Support\Arr;
 
-class ImportFinds
+class FindsImporter extends AbstractImporter
 {
-    public function processLine()
+    /**
+     * @param array $data
+     * @param int $index
+     */
+    public function processData(array $data, int $index)
     {
         try {
-            // Build the find with the properties of the row
-            foreach ($row as $property => $value) {
-                // Some properties are "update only", such as publication and publicationPage
-                if (! empty($value) && ! in_array($property, ['publication'])) {
-                    $method = 'set' . studly_case($property);
-
-                    // Validate the value for the property
-                    $validatedValue = $this->validate($property, $value);
-
-                    if (! $validatedValue) {
-                        throw new \Exception("The value $value for property $property is not correct. Make sure it's a correct value (check the authority lists)");
-                    }
-
-                    $value = $validatedValue;
-
-                    $find = $this->$method($find, $value);
-                }
-            }
-
-            $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
-
-            if (empty($find['findDate'])) {
-                $find['findDate'] = 'onbekend';
-            }
-
-            $adminId = $this->getAdminId();
-
-            if (empty($adminId)) {
-                $this->error('There was no admin user found, please make sure the Medea Admin user has been added so it can be used to be attached to this find.');
-            }
-
-            $find['person']['id'] = $adminId;
+           $find = $this->buildFindModel($data);
 
             // Store the find and return the result (success or not)
             $findId = app(FindRepository::class)->store($find);
@@ -62,34 +35,33 @@ class ImportFinds
     }
 
     /**
-     * Update the find, currently only adding a publication is supported
-     *
-     * @param  int   $findId
-     * @param  array $row
-     * @return void
+     * @param array $data
+     * @return array
      */
-    private function update($findId, $row)
+    private function buildFindModel(array $data)
     {
-        $find = app(FindRepository::class)->expandValues($findId);
+        $find = [];
 
-        $publicationId = Arr::get($row, 'publication');
+        foreach ($data as $property => $value) {
+            // Some properties are "update only", such as publication and publicationPage
+            if (! empty($value) && ! in_array($property, ['publication'])) {
+                $method = 'set' . studly_case($property);
 
-        if (empty($publicationId)) {
-            return;
+                $find = $this->$method($find, $value);
+            }
         }
 
-        // If the publication is added, a classification must exist!
-        $classification = Arr::get($find, 'object.productionEvent.productionClassification.0');
+        $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
 
-        if (empty($classification)) {
-            $this->error('No classification was found, we could not add the publication properties');
+        if (empty($find['findDate'])) {
+            $find['findDate'] = 'onbekend';
         }
 
-        $classificationNode = app(ClassificationRepository::class)->getById($classification['identifier']);
+        $adminId = $this->getAdminId();
 
-        if (! empty($row['publication'])) {
-            app(ClassificationRepository::class)->linkPublications($classificationNode, [(int) $row['publication']]);
-        }
+        $find['person']['id'] = $adminId;
+
+        return $find;
     }
 
     /**

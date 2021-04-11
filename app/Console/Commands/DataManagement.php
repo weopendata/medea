@@ -2,6 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Context;
+use App\Models\ExcavationEvent;
+use App\Repositories\ContextRepository;
+use App\Repositories\ExcavationRepository;
 use Illuminate\Console\Command;
 use App\Repositories\FindRepository;
 use App\Repositories\UserRepository;
@@ -50,6 +54,8 @@ class DataManagement extends Command
         $this->info('1. Remove all finds.');
         $this->info('2. Remove all users.');
         $this->info('3. Remove single find.');
+        $this->info('4. Remove all excavations.');
+        $this->info('5. Remove all contexts.');
 
         $choice = $this->ask('Enter your choice of action: ');
         $this->executeCommand($choice);
@@ -66,6 +72,19 @@ class DataManagement extends Command
                 break;
             case 3:
                 $this->removeSingleFind();
+                break;
+            case 4:
+                $repository = app(ExcavationRepository::class);
+                $class = ExcavationEvent::class;
+
+                $this->removeAll($repository, $class);
+                break;
+            case 5:
+                $repository = app(ContextRepository::class);
+                $class = Context::class;
+
+                $this->removeAll($repository, $class);
+                break;
                 break;
             default:
                 break;
@@ -123,5 +142,27 @@ class DataManagement extends Command
 
         $this->info('');
         $this->info("Removed $count FindEvent nodes.");
+    }
+
+    private function removeAll($repository, $class)
+    {
+        $count = 0;
+
+        $nodes = $repository->getAll();
+
+        $bar = $this->output->createProgressBar(count($nodes));
+
+        foreach ($nodes as $node) {
+            $model = new $class();
+            $model->setNode($node);
+
+            $model->delete();
+
+            $bar->advance();
+            $count++;
+        }
+
+        $this->info('');
+        $this->info("Removed $count nodes.");
     }
 }

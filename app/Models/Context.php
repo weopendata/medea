@@ -13,6 +13,12 @@ class Context extends Base
 
     protected $hasUniqueId = true;
 
+    protected $properties = [
+        [
+            'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
+        ]
+    ];
+
     protected $relatedModels = [
         'O22' => [
             'key' => 'context',

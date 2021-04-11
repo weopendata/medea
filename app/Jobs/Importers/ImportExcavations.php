@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Importers;
 
+use App\Repositories\ContextRepository;
 use App\Repositories\ExcavationRepository;
 
 class ImportExcavations extends AbstractImporter
@@ -19,14 +20,24 @@ class ImportExcavations extends AbstractImporter
             return;
         }
 
-        $action = !empty($data['MEDEA_ID']) ? 'update' : 'create';
+        $existingExcavation = app(ExcavationRepository::class)->getByInternalId($data['excavationUUID']);
+
+        $action = !empty($existingExcavation) ? 'update' : 'create';
 
         try {
             $excavationModel = $this->createExcavationModel($data);
 
-            $excavationId = app(ExcavationRepository::class)->store($excavationModel);
+            if ($action == 'update') {
+                $excavationId = $existingExcavation->getId();
 
-            $this->addLog($index, 'Added an excavation ', $action, ['identifier' => $excavationId, 'data' => $data], true);
+                app(ExcavationRepository::class)->update($excavationId, $excavationModel);
+
+                $this->addLog($index, 'Updated an excavation ', $action, ['identifier' => $excavationId, 'data' => $data], true);
+            } else {
+                $excavationId = app(ExcavationRepository::class)->store($excavationModel);
+
+                $this->addLog($index, 'Added an excavation ', $action, ['identifier' => $excavationId, 'data' => $data], true);
+            }
         } catch (\Exception $ex) {
             $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data], false);
         }
@@ -58,6 +69,7 @@ class ImportExcavations extends AbstractImporter
             $excavation[$field] = array_get($data, $key);
         }
 
+        $excavation['internalId'] = $excavation['excavationUUID'];
         $excavation['company'] = ['companyName' => $data['company']];
         /*$excavation['excavationProcedure'] = ['excavationProcedureType' => [
             'metalDetection'
