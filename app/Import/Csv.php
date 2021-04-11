@@ -94,7 +94,14 @@ class Csv
         // Apply the headers to the company array to make it an associative array
         foreach ($this->headers as $index => $header) {
             $header = trim($header);
-            $data[$header] = @$rawData[$index];
+
+            $value = @$rawData[$index];
+
+            if (!empty($value)) {
+                $value = trim($value);
+            }
+            
+            $data[$header] = $value;
         }
 
         return $data;

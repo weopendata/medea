@@ -18,7 +18,6 @@ class Context extends Base
             'key' => 'context',
             'model_name' => 'Context',
             'cascade_delete' => false,
-            'reverse_relationship' => 'O22',
             'required' => false,
             'link_only' => true
         ],
@@ -30,7 +29,8 @@ class Context extends Base
             'config' => [
                 'key' => 'contextId',
                 'name' => 'contextId',
-                'cidoc_type' => 'E15'
+                'cidoc_type' => 'E15',
+                'required' => true
             ]
         ],
         [

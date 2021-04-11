@@ -160,6 +160,13 @@
       }
     },
     watch: {
+      uploads (v) {
+        if (!v || !v.length > 0) {
+          return
+        }
+
+        this.selectedUpload = v[0]
+      },
       selectedUpload(v) {
         this.selectedImport = {}
       },

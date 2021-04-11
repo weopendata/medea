@@ -20,14 +20,25 @@ class ImportContexts extends AbstractImporter
             return;
         }
 
-        $action = !empty($data['MEDEA_ID']) ? 'update' : 'create';
+        // The contextId is unique, check if the context already exists or not
+        $existingContext = app(ContextRepository::class)->getByContextId($data['id']);
+
+        $action = !empty($existingContext) ? 'update' : 'create';
 
         try {
             $contextModel = $this->createContextModel($data);
 
-            $contextModelId = app(ContextRepository::class)->store($contextModel);
+            if ($action == 'update') {
+                $contextModelId = $existingContext->getId();
 
-            $this->addLog($index, 'Added a context ', $action, ['identifier' => $contextModelId, 'data' => $data], true);
+                app(ContextRepository::class)->update($contextModelId, $contextModel);
+
+                $this->addLog($index, 'Updated a context ', $action, ['identifier' => $contextModelId, 'data' => $data], true);
+            } else {
+                $contextModelId = app(ContextRepository::class)->store($contextModel);
+
+                $this->addLog($index, 'Added a context ', $action, ['identifier' => $contextModelId, 'data' => $data], true);
+            }
         } catch (\Exception $ex) {
             $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data], false);
 
@@ -46,6 +57,14 @@ class ImportContexts extends AbstractImporter
         $model['contextLegacyId'] = ['contextLegacyIdValue' => array_get($data, 'legacyId')];
         $model['contextType'] = array_get($data, 'contextType');
         $model['contextInterpretation'] = array_get($data, 'contextInterpretation');
+
+        if (!empty($data['relatedContext'])) {
+            $existingContext = app(ContextRepository::class)->getByContextId($data['relatedContext']);
+
+            if (!empty($existingContext)) {
+                $model['context'] = ['id' => $existingContext->getId()];
+            }
+        }
 
         if (!empty($data['contextCharacter'])) {
             $model['contextCharacter'] = [
@@ -89,11 +108,9 @@ class ImportContexts extends AbstractImporter
     private function validate(array $data, int $index)
     {
         try {
-            $action = !empty($data['MEDEA_ID']) ? 'update' : 'create';
-
             $this->containsAllRequiredInformation($data);
         } catch (\Exception $ex) {
-            $this->addLog($index, 'Some required information is missing: ' . $ex->getMessage(), $action, ['data' => $data], false);
+            $this->addLog($index, 'Some required information is missing: ' . $ex->getMessage(), '', ['data' => $data], false);
 
             return false;
         }
