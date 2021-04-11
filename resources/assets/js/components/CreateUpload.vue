@@ -41,11 +41,11 @@
         type: 'excavation',
         dataTypes: [
           {
-            label: 'Opgraving',
+            label: 'Opgravingen',
             value: 'excavation',
           },
           {
-            label: 'Context',
+            label: 'Contexten',
             value: 'context',
           },
           {

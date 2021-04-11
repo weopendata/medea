@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Import\Csv;
 use App\Jobs\Importers\ImportContexts;
 use App\Jobs\Importers\ImportExcavations;
+use App\Jobs\Importers\ImportFinds;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -90,6 +91,8 @@ class ImportData implements ShouldQueue
             return new ImportExcavations($this->importJob->id);
         } else if ($fileUploadType == 'context') {
             return new ImportContexts($this->importJob->id);
+        } else if ($fileUploadType == 'find') {
+            return new ImportFinds($this->importJob->id);
         }
 
         throw new \Exception("No processor found for $fileUploadType");

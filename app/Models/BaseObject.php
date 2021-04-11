@@ -14,6 +14,22 @@ class BaseObject extends Base
 
     protected $hasUniqueId = true;
 
+    protected $properties = [
+        [
+            'name' => 'feedback',
+        ],
+        [
+            'name' => 'embargo',
+            'default_value' => 'false'
+        ],
+        [
+            'name' => 'validated_at',
+        ],
+        [
+            'name' => 'validated_by'
+        ]
+    ];
+
     protected $relatedModels = [
         'P108' => [
             'key' => 'productionEvent',
@@ -36,7 +52,14 @@ class BaseObject extends Base
             'cascade_delete' => false,
             'link_only' => true,
             'reverse_relationship' => 'P46'
-        ]
+        ],
+        'P157' => [
+            'key' => 'context',
+            'model_name' => 'Context',
+            'cascade_delete' => false,
+            'link_only' => true,
+            'reverse_relationship' => 'P53',
+        ],
     ];
 
     protected $implicitModels = [
@@ -117,22 +140,6 @@ class BaseObject extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E42'
             ]
-        ]
-    ];
-
-    protected $properties = [
-        [
-            'name' => 'feedback',
-        ],
-        [
-            'name' => 'embargo',
-            'default_value' => 'false'
-        ],
-        [
-            'name' => 'validated_at',
-        ],
-        [
-            'name' => 'validated_by'
         ]
     ];
 

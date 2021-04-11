@@ -159,6 +159,34 @@ class ObjectRepository extends BaseRepository
     }
 
     /**
+     * @param int $objectId
+     * @param int $contextId
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function linkWithContext($objectId, $contextId)
+    {
+        $objectNode = $this->getById($objectId);
+        $contextNode = app(ContextRepository::class)->getById($contextId);
+
+        if (empty($objectNode) || empty($contextNode)) {
+            return;
+        }
+
+        $contextRelationships = $objectNode->getRelationships(['P157', 'P53'], Relationship::DirectionOut);
+
+        foreach ($contextRelationships as $relationship) {
+            $endNode = $relationship->getEndNode();
+
+            if ($endNode->getProperty('name') == 'context') {
+                $relationship->delete();
+            }
+        }
+
+        $objectNode->relateTo($contextNode, 'P157')->save();
+        $contextNode->relateTo($objectNode, 'P53')->save();
+    }
+
+    /**
      * Set the validation status of an object
      *
      * @param integer $objectId The id of the object

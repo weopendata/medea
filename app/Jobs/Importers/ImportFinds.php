@@ -4,13 +4,14 @@
 namespace App\Jobs\Importers;
 
 
-use App\Repositories\ClassificationRepository;
+use App\Models\FindEvent;
+use App\Repositories\ContextRepository;
 use App\Repositories\FindRepository;
+use App\Repositories\ObjectRepository;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
-use Illuminate\Support\Arr;
 
-class FindsImporter extends AbstractImporter
+class ImportFinds extends AbstractImporter
 {
     /**
      * @param array $data
@@ -19,18 +20,45 @@ class FindsImporter extends AbstractImporter
     public function processData(array $data, int $index)
     {
         try {
-           $find = $this->buildFindModel($data);
+            $action = '';
 
-            // Store the find and return the result (success or not)
-            $findId = app(FindRepository::class)->store($find);
+            $find = $this->buildFindModel($data);
 
-            $this->info("A find was created from row $index, the ID of the FindEvent is: $findId");
+            $existingFind = app(FindRepository::class)->getByInternalId($find['internalId']);
 
-            // Check if we need to update the find with publication for example
-            $this->update($findId, $row);
+            if (! empty($existingFind)) {
+                $findId = $existingFind->getId();
+                $existingFind = app(FindRepository::class)->expandValues($findId);
+
+                $find = $this->buildFindModel($data, $existingFind);
+            }
+
+            $action = !empty($existingFind) ? 'update' : 'create';
+
+            $context = @$find['object']['context'];
+
+            unset($find['object']['context']);
+
+            if ($action == 'update') {
+                app(FindRepository::class)->update($findId, $find);
+
+                $this->addLog($index, 'Updated a find ', $action, ['identifier' => $findId, 'data' => $data], true);
+            } else {
+                $findId = app(FindRepository::class)->store($find);
+
+                $this->addLog($index, 'Added a find ', $action, ['identifier' => $findId, 'data' => $data], true);
+            }
+
+            if (!empty($context)) {
+                $find = app(FindRepository::class)->expandValues($findId);
+
+                app(ObjectRepository::class)->linkWithContext($find['object']['identifier'], $context['id']);
+            }
         } catch (\Exception $ex) {
-            $this->error("Something went wrong when trying to make a find from the CSV file, row $index: " . $ex->getMessage());
+            \Log::error($ex->getMessage());
             \Log::error($ex->getTraceAsString());
+
+            $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data], false);
         }
     }
 
@@ -38,20 +66,33 @@ class FindsImporter extends AbstractImporter
      * @param array $data
      * @return array
      */
-    private function buildFindModel(array $data)
+    private function buildFindModel(array $data, $find = [])
     {
-        $find = [];
+        $data = $this->transformHeaders($data);
+
+        // If the find is not empty, remove a couple of things we know will be overwritten
+        unset($find['object']['dimensions']);
+        unset($find['object']['objectInscription']);
 
         foreach ($data as $property => $value) {
             // Some properties are "update only", such as publication and publicationPage
-            if (! empty($value) && ! in_array($property, ['publication'])) {
+            if (!empty($value)) {
                 $method = 'set' . studly_case($property);
+
+                if (! method_exists($this, $method)) {
+                    continue;
+                }
 
                 $find = $this->$method($find, $value);
             }
         }
 
-        $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
+        // Add the internal ID
+        $find['internalId'] = $data['findUUID'];
+
+        if (empty($find['object']['objectValidationStatus'])) {
+            $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
+        }
 
         if (empty($find['findDate'])) {
             $find['findDate'] = 'onbekend';
@@ -90,14 +131,14 @@ class FindsImporter extends AbstractImporter
     /**
      * Set publication page
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setPublicationPage($find, $value)
     {
         $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationSource'] = (int) $value;
+        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationSource'] = (int)$value;
 
         return $find;
     }
@@ -105,8 +146,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the findSpotTypeDescription
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setFindSpotTypeDescription($find, $value)
@@ -123,8 +164,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the findSpotType
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setFindSpotType($find, $value)
@@ -141,8 +182,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the findSpotTitle
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setfindSpotTitle($find, $value)
@@ -159,14 +200,48 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the objectNr on the object
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setObjectNr($find, $value)
     {
         $find = $this->initObject($find);
         $find['object']['objectNr'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the objectMaterial on the object
+     *
+     * @param array $find
+     * @param string $value
+     * @return array
+     */
+    private function setObjectMaterial($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['objectMaterial'] = $value;
+
+        return $find;
+    }
+
+    /**
+     * Set the photograph
+     *
+     * @param $find
+     * @param $value
+     * @return array
+     */
+    private function setPhotograph($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['photograph'] = [
+            [
+                'src' => $value
+            ]
+        ];
 
         return $find;
     }
@@ -182,7 +257,7 @@ class FindsImporter extends AbstractImporter
         $find['object']['dimensions'][] = [
             'dimensionType' => 'gewicht',
             'dimensionUnit' => 'g',
-            'measurementValue' => (double) $value
+            'measurementValue' => (double)$value
         ];
 
         return $find;
@@ -199,7 +274,7 @@ class FindsImporter extends AbstractImporter
         $find['object']['dimensions'][] = [
             'dimensionType' => 'breedte',
             'dimensionUnit' => 'mm',
-            'measurementValue' => (double) $value
+            'measurementValue' => (double)$value
         ];
 
         return $find;
@@ -216,7 +291,7 @@ class FindsImporter extends AbstractImporter
         $find['object']['dimensions'][] = [
             'dimensionType' => 'lengte',
             'dimensionUnit' => 'mm',
-            'measurementValue' => (double) $value
+            'measurementValue' => (double)$value
         ];
 
         return $find;
@@ -233,7 +308,7 @@ class FindsImporter extends AbstractImporter
         $find['object']['dimensions'][] = [
             'dimensionType' => 'diepte',
             'dimensionUnit' => 'mm',
-            'measurementValue' => (double) $value
+            'measurementValue' => (double)$value
         ];
 
         return $find;
@@ -250,7 +325,7 @@ class FindsImporter extends AbstractImporter
         $find['object']['dimensions'][] = [
             'dimensionType' => 'diameter',
             'dimensionUnit' => 'mm',
-            'measurementValue' => (double) $value
+            'measurementValue' => (double)$value
         ];
 
         return $find;
@@ -264,7 +339,7 @@ class FindsImporter extends AbstractImporter
             $find['findSpot']['location'] = [];
         }
 
-        $find['findSpot']['location']['lat'] = (double) $value;
+        $find['findSpot']['location']['lat'] = (double)$value;
 
         return $find;
     }
@@ -277,7 +352,7 @@ class FindsImporter extends AbstractImporter
             $find['findSpot']['location'] = [];
         }
 
-        $find['findSpot']['location']['lng'] = (double) $value;
+        $find['findSpot']['location']['lng'] = (double)$value;
 
         return $find;
     }
@@ -290,7 +365,7 @@ class FindsImporter extends AbstractImporter
             $find['findSpot']['location'] = [];
         }
 
-        $find['findSpot']['location']['accuracy'] = (int) $value;
+        $find['findSpot']['location']['accuracy'] = (int)$value;
 
         return $find;
     }
@@ -306,6 +381,20 @@ class FindsImporter extends AbstractImporter
 
             $find['findSpot']['location']['address'] = ['locationAddressLocality' => $value];
         }
+
+        return $find;
+    }
+
+    private function setContext($find, $value)
+    {
+        $context = app(ContextRepository::class)->getByInternalId($value);
+
+        if (empty($context)) {
+            return $find;
+        }
+
+        $find = $this->initObject($find);
+        $find['object']['context'] = ['id' => $context->getId()];
 
         return $find;
     }
@@ -352,8 +441,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the inscription on the object
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setInscription($find, $value)
@@ -367,8 +456,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the end date on classification
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setEndPeriodClassification($find, $value)
@@ -382,8 +471,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the type of classification
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setClassificationType($find, $value)
@@ -397,8 +486,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the value of classification
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setClassificationValue($find, $value)
@@ -412,8 +501,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the productionevent technique
      *
-     * @param  array $find
-     * @param  value $value
+     * @param array $find
+     * @param value $value
      * @return array
      */
     private function setTechnique($find, $value)
@@ -427,8 +516,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the surface treatment
      *
-     * @param  array $find
-     * @param  value $value
+     * @param array $find
+     * @param value $value
      * @return array
      */
     private function setSurfaceTreatment($find, $value)
@@ -442,8 +531,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the start date on classification
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setStartPeriodClassification($find, $value)
@@ -457,8 +546,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the production classification ruler nation
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setNation($find, $value)
@@ -472,8 +561,8 @@ class FindsImporter extends AbstractImporter
     /**
      * Set the production classification type
      *
-     * @param  array  $find
-     * @param  string $value
+     * @param array $find
+     * @param string $value
      * @return array
      */
     private function setClassificationTypeValue($find, $value)
@@ -488,7 +577,7 @@ class FindsImporter extends AbstractImporter
     /**
      * Make sure that the productionClassification exists
      *
-     * @param  array $find
+     * @param array $find
      * @return $find
      */
     private function initClassification($find)
@@ -496,7 +585,7 @@ class FindsImporter extends AbstractImporter
         if (empty($find['object']['productionEvent']['productionClassification'])) {
             $find = $this->initObject($find);
             $find['object']['productionEvent'] = [];
-            $find['object']['productionEvent']['productionClassification'] =  [];
+            $find['object']['productionEvent']['productionClassification'] = [];
         }
 
         return $find;
@@ -505,7 +594,7 @@ class FindsImporter extends AbstractImporter
     /**
      * Make sure a find spot entry is present in the find array
      *
-     * @param  array $find
+     * @param array $find
      * @return array
      */
     private function initFindSpot($find)
@@ -520,7 +609,7 @@ class FindsImporter extends AbstractImporter
     /**
      * Make sure an object entry is present in the find array
      *
-     * @param  array $find
+     * @param array $find
      * @return array
      */
     private function initObject($find)
@@ -530,5 +619,35 @@ class FindsImporter extends AbstractImporter
         }
 
         return $find;
+    }
+
+    private function transformHeaders(array $data)
+    {
+        $result = [];
+
+        $mapping = [
+            'id' => 'findUUID',
+            'inventarisnummer' => 'objectNr',
+            'context' => 'context',
+            'foto' => 'photograph',
+            'opmerkingen foto' => 'photographRemarks',
+            'trefwoord' => 'objectCategory',
+            'fysieke beschrijving' => 'objectDescription',
+            'materiaal' => 'objectMaterial',
+            'techniek' => 'technique',
+            'oppervlaktebehandeling' => 'surfaceTreatment',
+            'opschrift' => 'inscription',
+            'lengte (mm)' => 'length',
+            'breedte (mm)' => 'width',
+            'dikte (mm)' => 'height',
+            'diameter (mm)' => 'diameter',
+            'gewicht (g)' => 'weight'
+        ];
+
+        foreach ($mapping as $key => $newKey) {
+            $result[$newKey] = @$data[$key];
+        }
+
+        return $result;
     }
 }

@@ -24,7 +24,8 @@ class Context extends Base
             'key' => 'context',
             'model_name' => 'Context',
             'cascade_delete' => false,
-            'reverse_relationship' => 'O22',
+            'reverse_relationship' => '',
+            // DO NOT ENTER A REVERSE RELATIONSHIP, the recursion does not take this kind of relationship into account, where models refer to themselves again
             'required' => false,
             'link_only' => true
         ],
