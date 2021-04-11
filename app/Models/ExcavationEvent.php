@@ -23,7 +23,7 @@ class ExcavationEvent extends Base
         'P14' => [
             'key' => 'person',
             'model_name' => 'Person',
-            'cascade_delete' => false,
+            'cascade_delete' => true,
             'link_only' => false, // These person objects are not persistent as they are not uniquely identified, i.e. only a name is provided
             'reverse_relationship' => 'P14'
         ],
