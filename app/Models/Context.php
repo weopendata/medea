@@ -18,6 +18,7 @@ class Context extends Base
             'key' => 'context',
             'model_name' => 'Context',
             'cascade_delete' => false,
+            'reverse_relationship' => 'O22',
             'required' => false,
             'link_only' => true
         ],
