@@ -1,24 +1,12 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Importers;
 
-use App\Repositories\Eloquent\ImportLogRepository;
 use App\Repositories\ExcavationRepository;
 
-class ImportExcavations
+class ImportExcavations extends AbstractImporter
 {
     /**
-     * Create a new job instance.
-     * @param $importJobId
-     */
-    public function __construct($importJobId)
-    {
-        $this->importJobId = $importJobId;
-    }
-
-    /**
-     * Execute the job.
-     *
      * @param array $data
      * @param int $index
      * @return void
@@ -40,9 +28,7 @@ class ImportExcavations
 
             $this->addLog($index, 'Added an excavation ', $action, ['identifier' => $excavationId, 'data' => $data], true);
         } catch (\Exception $ex) {
-            $this->addLog($index,
-                'Something went wrong: ' . $ex->getMessage(), $action,
-                ['data' => $data], false);
+            $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data], false);
         }
     }
 
@@ -191,26 +177,6 @@ class ImportExcavations
         }
 
         return true;
-    }
-
-    /**
-     * @param $index
-     * @param $message
-     * @param $action
-     * @param $context
-     * @param $success
-     */
-    private function addLog($index, $message, $action, $context, $success)
-    {
-        app(ImportLogRepository::class)->store([
-            'line_number' => $index,
-            'action' => $action,
-            'import_jobs_id' => $this->importJobId,
-            'level' => 'INFO',
-            'message' => $message,
-            'context' => $context,
-            'status' => $success ? 'success' : 'failed',
-        ]);
     }
 
     /**

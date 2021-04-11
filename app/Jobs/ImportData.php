@@ -3,7 +3,8 @@
 namespace App\Jobs;
 
 use App\Import\Csv;
-use App\Models\Eloquent\ImportJob;
+use App\Jobs\Importers\ImportContexts;
+use App\Jobs\Importers\ImportExcavations;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -87,6 +88,8 @@ class ImportData implements ShouldQueue
     {
         if ($fileUploadType == 'excavation') {
             return new ImportExcavations($this->importJob->id);
+        } else if ($fileUploadType == 'context') {
+            return new ImportContexts($this->importJob->id);
         }
 
         throw new \Exception("No processor found for $fileUploadType");
