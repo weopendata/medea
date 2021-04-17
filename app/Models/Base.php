@@ -260,7 +260,9 @@ class Base
                                 if (! empty($model)) {
                                     $this->makeRelationship($model, $relationshipName);
 
-                                    $model->getNode()->relateTo($this->getNode(), $config['reverse_relationship'])->save();
+                                    if (!empty($config['reverse_relationship'])) {
+                                        $model->getNode()->relateTo($this->getNode(), $config['reverse_relationship'])->save();
+                                    }
                                 }
                             } else {
                                 // Check if an identifier is provided, if not, perform a create
@@ -535,10 +537,12 @@ class Base
      * Create a node instance with a value property,
      * the general id of the invoking class is automatically added as a label
      *
+     * @param $name
      * @param $labels array      Array of strings that need to be added to the node as labels
      * @param $value  int|string Int or string that contains the value of the node
      *
-     * @return Node
+     * @return \Everyman\Neo4j\Node
+     * @throws Exception
      */
     public function createValueNode($name, $labels, $value)
     {

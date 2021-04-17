@@ -42,7 +42,9 @@ class ImportExcavations extends AbstractImporter
                 $this->addLog($index, 'Added an excavation ', $action, ['identifier' => $excavationId, 'data' => $data], true);
             }
         } catch (\Exception $ex) {
-            $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data], false);
+            $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data, 'trace' => $ex->getTraceAsString()], false);
+
+            \Log::error($ex->getTraceAsString());
         }
     }
 
@@ -72,11 +74,18 @@ class ImportExcavations extends AbstractImporter
             $excavation[$field] = array_get($data, $key);
         }
 
+        // Map the metal and sifting methods
+        $metalDetectionValue = $this->parseMetalDetectionValue($data['metalDetectionUsed']);
+        $siftingTypeValue = $this->parseSiftingTypeValue($data['siftingUsed']);
+        $inventoryCompletenessValue = $this->parseInventoryCompleteness($data['inventoryCompleteness']);
+
         $excavation['internalId'] = $excavation['excavationUUID'];
         $excavation['company'] = ['companyName' => $data['company']];
-        /*$excavation['excavationProcedure'] = ['excavationProcedureType' => [
-            'metalDetection'
-        ]];*/
+        $excavation['excavationProcedure'] = [
+            'excavationProcedureSiftingType' => $siftingTypeValue,
+            'excavationProcedureMetalDetectionType' => $metalDetectionValue,
+            'excavationProcedureInventoryCompleteness' => $inventoryCompletenessValue
+        ];
 
         // Add the Person link
         $excavation['person'] = [
@@ -194,6 +203,52 @@ class ImportExcavations extends AbstractImporter
         app(SearchAreaRepository::class)->update($searchAreaNodeId, $searchAreaData);
 
         return $searchAreaNodeId;
+    }
+
+    private function parseMetalDetectionValue($value)
+    {
+        $value = strtolower($value);
+
+        switch ($value) {
+            case 'ja':
+                return 'metaaldetectie';
+            case 'nee':
+                return 'selectief of geen metaaldetectie';
+            default:
+                return $value;
+        }
+    }
+
+    private function parseSiftingTypeValue($value)
+    {
+        $value = strtolower($value);
+
+        switch ($value) {
+            case 'ja':
+                return 'systematisch gezeefd';
+            case 'nee':
+                return 'selectief of niet gezeefd';
+            default:
+                return $value;
+        }
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function parseInventoryCompleteness($value)
+    {
+        $value = strtolower($value);
+
+        switch ($value) {
+            case 'ja':
+                return 'volledig geïnventariseerd';
+            case 'nee':
+                return 'selectief geïnventariseerd';
+            default:
+                return $value;
+        }
     }
 
     /**

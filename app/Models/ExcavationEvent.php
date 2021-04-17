@@ -5,6 +5,7 @@ namespace App\Models;
 
 
 use App\Services\NodeService;
+use Everyman\Neo4j\Exception;
 
 class ExcavationEvent extends Base
 {
@@ -52,6 +53,14 @@ class ExcavationEvent extends Base
                 'cidoc_type' => 'E74'
             ]
         ],
+        [
+            'relationship' => 'P33',
+            'config' => [
+                'key' => 'excavationProcedure',
+                'name' => 'excavationProcedure',
+                'cidoc_type' => 'E29'
+            ]
+        ],
     ];
 
     public function createCompany($company)
@@ -77,5 +86,55 @@ class ExcavationEvent extends Base
         $companyNode->relateTo($appellation, 'P1')->save();
 
         return $companyNode;
+    }
+
+    public function createExcavationProcedure($excavationProcedure)
+    {
+        $generalId = $this->getGeneralId();
+
+        $procedureNode = NodeService::makeNode();
+        $procedureNode->setProperty('name', 'excavationProcedure');
+        $procedureNode->save();
+        $procedureNode->addLabels([
+            self::makeLabel('E29'),
+            self::makeLabel('excavationProcedure'),
+            self::makeLabel($generalId)
+        ]);
+
+        $types = [
+            'excavationProcedureMetalDetectionType',
+            'excavationProcedureSiftingType',
+            'excavationProcedureInventoryCompleteness'
+        ];
+
+        foreach ($types as $type) {
+            $node = $this->createDetectionTypeNode($type, $excavationProcedure[$type], $generalId);
+
+            if (!empty($node)) {
+                $procedureNode->relateTo($node, 'P2')->save();
+            }
+        }
+
+        return $procedureNode;
+    }
+
+    /**
+     * @param $nodeName
+     * @param $value
+     * @param $generalId
+     * @return \Everyman\Neo4j\Node
+     */
+    private function createDetectionTypeNode($nodeName, $value, $generalId)
+    {
+        try {
+            return $this->createValueNode(
+                $nodeName,
+                ['E55', $generalId, $nodeName],
+                $value
+            );
+        } catch (Exception $ex) {
+            \Log::error($ex->getMessage());
+            \Log::error($ex->getTraceAsString());
+        }
     }
 }

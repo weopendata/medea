@@ -50,8 +50,7 @@ class Context extends Base
             'config' => [
                 'key' => 'contextId',
                 'name' => 'contextId',
-                'cidoc_type' => 'E15',
-                'required' => true
+                'cidoc_type' => 'E15'
             ]
         ],
         [
