@@ -62,22 +62,6 @@ class SearchArea extends Base
                 'cidoc_type' => 'E62'
             ]
         ],
-        [
-            'relationship' => 'P41',
-            'config' => [
-                'key' => 'searchAreaInterpretation',
-                'name' => 'searchAreaInterpretation',
-                'cidoc_type' => 'E17'
-            ]
-        ],
-        [
-            'relationship' => 'P140',
-            'config' => [
-                'key' => 'searchAreaPeriod',
-                'name' => 'searchAreaPeriod',
-                'cidoc_type' => 'E13'
-            ]
-        ],
     ];
 
     /**
@@ -87,71 +71,5 @@ class SearchArea extends Base
     public static function createInternalId(string $uniqueContextId)
     {
         return $uniqueContextId . '__SearchArea'; // There's only 1 search area per context
-    }
-
-    /**
-     * @param $interpretation
-     * @return \Everyman\Neo4j\Node|void
-     * @throws \Everyman\Neo4j\Exception
-     */
-    public function createSearchAreaInterpretation($interpretation)
-    {
-        if (empty($interpretation['searchAreaInterpretation'])) {
-            return;
-        }
-
-        $generalId = $this->getGeneralId();
-
-        $typeAssignment = NodeService::makeNode();
-        $typeAssignment->setProperty('name', 'searchAreaInterpretation');
-        $typeAssignment->save();
-        $typeAssignment->addLabels([
-            self::makeLabel('E17'),
-            self::makeLabel('searchAreaInterpretation'),
-            self::makeLabel($generalId)
-        ]);
-
-        // Create an E55
-        $type = $this->createValueNode(
-            'searchAreaInterpretationType',
-            ['E55', $generalId, 'searchAreaInterpretationType'],
-            $interpretation['searchAreaInterpretation']
-        );
-
-        // Create the relationship
-        $typeAssignment->relateTo($type, 'P42')->save();
-
-        // Return the type
-        return $typeAssignment;
-    }
-
-    public function createSearchAreaPeriod($period)
-    {
-        if (empty($period['searchAreaPeriod'])) {
-            return;
-        }
-
-        $generalId = $this->getGeneralId();
-
-        $periodAssignment = NodeService::makeNode();
-        $periodAssignment->setProperty('name', 'searchAreaPeriod');
-        $periodAssignment->save();
-        $periodAssignment->addLabels([
-            self::makeLabel('E13'),
-            self::makeLabel('searchAreaPeriod'),
-            self::makeLabel($generalId)
-        ]);
-
-        $periodNode = $this->createValueNode(
-            'searchAreaPeriodValue',
-            ['E4', $generalId, 'searchAreaPeriodValue'],
-            $period['searchAreaPeriod']
-        );
-
-        // Create the relationship
-        $periodAssignment->relateTo($periodNode, 'P140')->save();
-
-        // Return the type
-        return $periodAssignment;
     }
 }

@@ -37,9 +37,9 @@ class ExcavationEvent extends Base
         'AP3' => [
             'key' => 'searchArea',
             'model_name' => 'SearchArea',
-            'cascade_delete' => true,
+            'cascade_delete' => false,
+            'link_only' => true,
             'required' => false,
-            'plural' => false,
         ],
     ];
 

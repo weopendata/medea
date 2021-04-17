@@ -89,6 +89,7 @@ class ImportContexts extends AbstractImporter
             }
         }
 
+        // Process the related context if there is any
         if (!empty($data['relatedContext'])) {
             $relatedContextId = Context::createInternalId($data['relatedContext'], $data['excavationId']);
 

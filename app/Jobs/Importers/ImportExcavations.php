@@ -2,8 +2,11 @@
 
 namespace App\Jobs\Importers;
 
+use App\Models\Context;
+use App\Models\SearchArea;
 use App\Repositories\ContextRepository;
 use App\Repositories\ExcavationRepository;
+use App\Repositories\SearchAreaRepository;
 
 class ImportExcavations extends AbstractImporter
 {
@@ -115,8 +118,6 @@ class ImportExcavations extends AbstractImporter
 
         // Add the search area link
         $searchAreaFields = [
-            'searchAreaInterpretation',
-            'searchAreaPeriod',
             'searchAreaDescription',
             'searchAreaTitle',
         ];
@@ -156,10 +157,43 @@ class ImportExcavations extends AbstractImporter
             $searchArea['location']['lat'] = $data['searchAreaLatitude'];
         }
 
-        $excavation['searchArea'] = $searchArea;
+        $searchAreaId = $this->updateLinkSearchArea($excavation['internalId'], $searchArea);
+
+        if (!empty($searchAreaId)) {
+            $excavation['searchArea'] = ['id' => $searchAreaId];
+        }
 
         // Return the excavation tree
         return $excavation;
+    }
+
+    /**
+     * @param string $excavationId
+     * @param array $searchAreaData
+     * @return int|void
+     */
+    private function updateLinkSearchArea($excavationId, array $searchAreaData)
+    {
+        // The linked search area can be found by fetching the linked "based context" C0 of the excavation
+        // This Context object is identified by concatenating the excavation ID + C0
+        // The linked SearchArea's internal id is based on this unique context ID and will always be the one linked to this excavation
+        $contextInternalId = Context::createInternalId('C0', $excavationId);
+        $searchAreaInternalId = SearchArea::createInternalId($contextInternalId);
+
+        $searchArea = app(SearchAreaRepository::class)->getByInternalId($searchAreaInternalId);
+
+        if (empty($searchArea)) {
+            return;
+        }
+
+        $searchAreaNodeId = $searchArea->getId();
+
+        $searchAreaData['internalId'] = $searchAreaInternalId;
+
+        // Update the search Area
+        app(SearchAreaRepository::class)->update($searchAreaNodeId, $searchAreaData);
+
+        return $searchAreaNodeId;
     }
 
     /**
