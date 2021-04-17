@@ -3,7 +3,10 @@
 
 namespace App\Jobs\Importers;
 
+use App\Models\Context;
+use App\Models\SearchArea;
 use App\Repositories\ContextRepository;
+use App\Repositories\SearchAreaRepository;
 
 class ImportContexts extends AbstractImporter
 {
@@ -19,6 +22,9 @@ class ImportContexts extends AbstractImporter
         if (!$isValid) {
             return;
         }
+
+        // Do some small transformations on the data to make it robust
+        $data = $this->transformData($data);
 
         // The contextId is unique, check if the context already exists or not
         $existingContext = app(ContextRepository::class)->getByInternalId($data['id']);
@@ -40,30 +46,58 @@ class ImportContexts extends AbstractImporter
                 $this->addLog($index, 'Added a context ', $action, ['identifier' => $contextModelId, 'data' => $data], true);
             }
         } catch (\Exception $ex) {
-            $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data], false);
+            $this->addLog($index, 'Something went wrong: ' . $ex->getMessage(), $action, ['data' => $data, 'trace' => $ex->getTraceAsString()], false);
 
-            \Log::info($ex->getTraceAsString());
+            \Log::error($ex->getTraceAsString());
         }
     }
 
     /**
      * @param array $data
      * @return array
+     * @throws \Exception
      */
     private function createContextModel(array $data)
     {
+        $contextId = $data['id'];
+
         $model = [];
-        $model['internalId'] = $data['id'];
-        $model['contextId'] = ['contextIdValue' => $data['id']];
+        $model['internalId'] = $contextId;
+        $model['contextId'] = ['contextIdValue' => $contextId];
         $model['contextLegacyId'] = ['contextLegacyIdValue' => array_get($data, 'legacyId')];
         $model['contextType'] = array_get($data, 'contextType');
         $model['contextInterpretation'] = array_get($data, 'contextInterpretation');
 
+        // Only for a C0 context we make a SearchArea
+        if ($data['local_context_id'] == 'C0') {
+            // Find the search area or create one
+            $searchAreaInternalId = SearchArea::createInternalId($contextId);
+            $existingSearchArea = app(SearchAreaRepository::class)->getByInternalId($searchAreaInternalId);
+
+            if (empty($existingSearchArea)) {
+                $searchAreaId = app(SearchAreaRepository::class)->store(['internalId' => $searchAreaInternalId]);
+
+                if (!empty($searchAreaId)) {
+                    $model['searchArea'] = ['id' => $searchAreaId];
+                }
+            } else {
+                $model['searchArea'] = ['id' => $existingSearchArea->getId()];
+            }
+
+            if (empty($model['searchArea'])) {
+                throw new \Exception('Could not find or create the searchArea');
+            }
+        }
+
         if (!empty($data['relatedContext'])) {
-            $existingContext = app(ContextRepository::class)->getByInternalId($data['relatedContext']);
+            $relatedContextId = Context::createInternalId($data['relatedContext'], $data['excavationId']);
+
+            $existingContext = app(ContextRepository::class)->getByInternalId($relatedContextId);
 
             if (!empty($existingContext)) {
                 $model['context'] = ['id' => $existingContext->getId()];
+            } else {
+                throw new \Exception("We could not find the related context.");
             }
         }
 
@@ -116,6 +150,13 @@ class ImportContexts extends AbstractImporter
             return false;
         }
 
+        // If the ID is not a C0, it's needs to reference a different context as well
+        if (strtoupper($data['id']) !== 'C0' && empty($data['relatedContext'])) {
+            $this->addLog($index, 'There needs to be a related context for non C0 contexts.', '', ['data' => $data], false);
+
+            return false;
+        }
+
         return true;
     }
 
@@ -139,12 +180,26 @@ class ImportContexts extends AbstractImporter
     }
 
     /**
+     * @param array $data
+     * @return array
+     */
+    private function transformData($data)
+    {
+        $data['id'] = strtoupper($data['id']);
+        $data['local_context_id'] = $data['id'];
+        $data['id'] = Context::createInternalId($data['id'], $data['excavationId']); // Set the ID to the global unique context ID
+
+        return $data;
+    }
+
+    /**
      * @return array
      */
     private function getRequiredFields()
     {
         return [
             'id',
+            'excavationId',
         ];
     }
 }

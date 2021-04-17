@@ -16,6 +16,12 @@ class Context extends Base
     protected $properties = [
         [
             'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
+        ],
+        [
+            'name' => 'excavationId', // The global unique ID of the linked excavation
+        ],
+        [
+            'name' => 'local_context_id' // C0, C1, ...
         ]
     ];
 
@@ -25,10 +31,17 @@ class Context extends Base
             'model_name' => 'Context',
             'cascade_delete' => false,
             'reverse_relationship' => '',
-            // DO NOT ENTER A REVERSE RELATIONSHIP, the recursion does not take this kind of relationship into account, where models refer to themselves again
+            // DO NOT ENTER A REVERSE RELATIONSHIP, the recursion does not take this kind of relationship into account, the kind where models refer to themselves again
             'required' => false,
             'link_only' => true
         ],
+        'P53' => [
+            'key' => 'searchArea',
+            'model_name' => 'SearchArea',
+            'cascade_delete' => true,
+            'link_only' => true,
+            'required' => false,
+        ]
     ];
 
     protected $implicitModels = [
@@ -85,6 +98,21 @@ class Context extends Base
         ]
     ];
 
+    /**
+     * @param string $localContextId i.e. C0, C1, ...
+     * @param string $excavationId
+     * @return string
+     */
+    public static function createInternalId($localContextId, $excavationId)
+    {
+        return $excavationId . '__' . $localContextId;
+    }
+
+    /**
+     * @param $contextId
+     * @return \Everyman\Neo4j\Node
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function createContextId($contextId)
     {
         $generalId = $this->getGeneralId();

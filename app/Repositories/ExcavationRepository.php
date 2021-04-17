@@ -10,7 +10,7 @@ class ExcavationRepository extends BaseRepository
 {
     public function __construct()
     {
-        parent::__construct('A9', ExcavationEvent::class);
+        parent::__construct(ExcavationEvent::$NODE_TYPE, ExcavationEvent::class);
     }
 
     /**

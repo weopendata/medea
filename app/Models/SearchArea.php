@@ -28,6 +28,12 @@ class SearchArea extends Base
         ]
     ];
 
+    protected $properties = [
+        [
+            'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
+        ]
+    ];
+
     protected $implicitModels = [
         [
             'relationship' => 'P1',
@@ -75,6 +81,15 @@ class SearchArea extends Base
     ];
 
     /**
+     * @param string $uniqueContextId The global unique context id, i.e. excavation ID + local context Id
+     * @return string
+     */
+    public static function createInternalId(string $uniqueContextId)
+    {
+        return $uniqueContextId . '__SearchArea'; // There's only 1 search area per context
+    }
+
+    /**
      * @param $interpretation
      * @return \Everyman\Neo4j\Node|void
      * @throws \Everyman\Neo4j\Exception
@@ -95,7 +110,7 @@ class SearchArea extends Base
             self::makeLabel('searchAreaInterpretation'),
             self::makeLabel($generalId)
         ]);
-        
+
         // Create an E55
         $type = $this->createValueNode(
             'searchAreaInterpretationType',

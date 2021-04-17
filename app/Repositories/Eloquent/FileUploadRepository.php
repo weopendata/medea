@@ -93,6 +93,12 @@ class FileUploadRepository
             return;
         }
 
+        $path = $fileUpload->path;
+
         $fileUpload->delete();
+
+        $filePath = storage_path('app/') . $path;
+
+        unlink($filePath);
     }
 }
