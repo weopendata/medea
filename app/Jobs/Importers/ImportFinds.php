@@ -4,10 +4,10 @@
 namespace App\Jobs\Importers;
 
 
+use App\Models\Context;
 use App\Models\FindEvent;
 use App\Repositories\ContextRepository;
 use App\Repositories\FindRepository;
-use App\Repositories\ObjectRepository;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
 
@@ -35,10 +35,11 @@ class ImportFinds extends AbstractImporter
 
             $action = !empty($existingFind) ? 'update' : 'create';
 
-            $context = @$find['object']['context'];
+            // Capture data that we need to link afterwards
+            $panId = @$find['PANid'];
+            unset($find['PANid']);
 
-            unset($find['object']['context']);
-
+            // Perform the create/update
             if ($action == 'update') {
                 app(FindRepository::class)->update($findId, $find);
 
@@ -49,10 +50,13 @@ class ImportFinds extends AbstractImporter
                 $this->addLog($index, 'Added a find ', $action, ['identifier' => $findId, 'data' => $data], true);
             }
 
-            if (!empty($context)) {
-                $find = app(FindRepository::class)->expandValues($findId);
+            if (!empty($panId)) {
+                if (empty($find)) {
+                    $find = app(FindRepository::class)->expandValues($findId);
+                }
 
-                app(ObjectRepository::class)->linkWithContext($find['object']['identifier'], $context['id']);
+                // TODO: add the PANID productionClassification, however this can only occur once, whereas the normal flow of classifying objects has a "append only" flow currently
+                // So make a specific linkPanIdClassification as to not infinitely add the same PANID classification
             }
         } catch (\Exception $ex) {
             \Log::error($ex->getMessage());
@@ -83,15 +87,22 @@ class ImportFinds extends AbstractImporter
                     continue;
                 }
 
-                $find = $this->$method($find, $value);
+                $find = $this->$method($find, $value, $data);
             }
         }
 
         // Add the internal ID
         $find['internalId'] = $data['findUUID'];
+        $find['contextId'] = $data['contextId'];
+        $find['excavationId'] = $data['excavationId'];
+
+        // Check if there's a context & excavationId, if so, rebuild the internal ID
+        if (!empty($data['contextId']) && !empty($data['excavationId'])) {
+            $find['internalId'] = FindEvent::createInternalId($data['excavationId'], $data['contextId'], $data['findUUID']);
+        }
 
         if (empty($find['object']['objectValidationStatus'])) {
-            $find['object']['objectValidationStatus'] = 'Klaar voor validatie';
+            $find['object']['objectValidationStatus'] = 'Gepubliceerd';
         }
 
         if (empty($find['findDate'])) {
@@ -232,14 +243,16 @@ class ImportFinds extends AbstractImporter
      *
      * @param $find
      * @param $value
+     * @param array $data
      * @return array
      */
-    private function setPhotograph($find, $value)
+    private function setPhotograph($find, $value, $data = [])
     {
         $find = $this->initObject($find);
         $find['object']['photograph'] = [
             [
-                'src' => $value
+                'src' => $value,
+                'remarks' => @$data['photographRemarks']
             ]
         ];
 
@@ -385,7 +398,7 @@ class ImportFinds extends AbstractImporter
         return $find;
     }
 
-    private function setContext($find, $value)
+    private function setContextInternalId($find, $value)
     {
         $context = app(ContextRepository::class)->getByInternalId($value);
 
@@ -395,6 +408,30 @@ class ImportFinds extends AbstractImporter
 
         $find = $this->initObject($find);
         $find['object']['context'] = ['id' => $context->getId()];
+
+        return $find;
+    }
+
+    private function setAmount($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['amount'] = $value;
+
+        return $find;
+    }
+
+    private function setMarkings($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['markings'] = $value;
+
+        return $find;
+    }
+
+    private function setComplete($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['complete'] = $value;
 
         return $find;
     }
@@ -628,7 +665,7 @@ class ImportFinds extends AbstractImporter
         $mapping = [
             'id' => 'findUUID',
             'inventarisnummer' => 'objectNr',
-            'context' => 'context',
+            'context' => 'contextId',
             'foto' => 'photograph',
             'opmerkingen foto' => 'photographRemarks',
             'trefwoord' => 'objectCategory',
@@ -641,11 +678,21 @@ class ImportFinds extends AbstractImporter
             'breedte (mm)' => 'width',
             'dikte (mm)' => 'height',
             'diameter (mm)' => 'diameter',
-            'gewicht (g)' => 'weight'
+            'gewicht (g)' => 'weight',
+            'PANid' => 'PANid',
+            'excavationId' => 'excavationId',
+            'aantal' => 'amount',
+            'merkteken' => 'markings',
+            'volledig?' => 'complete'
         ];
 
         foreach ($mapping as $key => $newKey) {
             $result[$newKey] = @$data[$key];
+        }
+
+        // Set the contextInternalId
+        if (!empty($result['excavationId']) && !empty($result['contextId'])) {
+            $result['contextInternalId'] = Context::createInternalId($result['contextId'], $result['excavationId']);
         }
 
         return $result;

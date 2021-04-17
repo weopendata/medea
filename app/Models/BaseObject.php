@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\NodeConstants;
 use App\Repositories\CollectionRepository;
 use App\Services\NodeService;
 use Illuminate\Support\Arr;
@@ -27,6 +26,15 @@ class BaseObject extends Base
         ],
         [
             'name' => 'validated_by'
+        ],
+        [
+            'name' => 'amount'
+        ],
+        [
+            'name' => 'markings'
+        ],
+        [
+            'name' => 'complete'
         ]
     ];
 
