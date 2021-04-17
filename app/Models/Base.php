@@ -27,6 +27,9 @@ class Base
      * List of related models (that are 1 level deep) with their respective relationshipName,
      * this way we can cascade CRUD more eloquently
      *
+     * NOTE: pass 'id' in the data to link a "link only" model via its Neo4j ID, pass 'identifier' to allow to link and update if there's data
+     * NOTE: during 'create' passing identifier will not update any information, but only make the link, even if the related model is not a link only relationship
+     *
      * @var $relatedModels
      */
     protected $relatedModels = [
@@ -130,11 +133,21 @@ class Base
 
                     if (is_array($input) && ! $this->isAssoc($input)) {
                         foreach ($input as $entry) {
-                            $model_name = 'App\Models\\' . $config['model_name'];
-                            $model = new $model_name($entry);
-                            $model->save();
+                            if (empty($entry['identifier'])) {
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name($entry);
+                                $model->save();
 
-                            if (! empty($model)) {
+                                if (! empty($model)) {
+                                    $this->makeRelationship($model, $relationshipName);
+
+                                    if (! empty($config['reverse_relationship'])) {
+                                        $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                    }
+                                }
+                            } else {
+                                $model = $this->searchNode($entry['identifier'], $config['model_name']);
+
                                 $this->makeRelationship($model, $relationshipName);
 
                                 if (! empty($config['reverse_relationship'])) {
@@ -200,7 +213,8 @@ class Base
      *
      * @param array $properties
      *
-     * @return Node
+     * @return \Everyman\Neo4j\Node
+     * @throws Exception
      */
     public function update($properties)
     {
@@ -239,7 +253,14 @@ class Base
                                     $model_name = 'App\Models\\' . $config['model_name'];
                                     $model = new $model_name();
                                     $model->setNode(NodeService::getById($entry['identifier']));
-                                    $model->update($entry);
+
+                                    // Only update if there's data aside from the identifier property
+                                    $entryData = $entry;
+                                    unset($entryData['identifier']);
+
+                                    if (!empty($entryData)) {
+                                        $model->update($entry);
+                                    }
                                 }
                             }
                         } else {

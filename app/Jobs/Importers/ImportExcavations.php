@@ -6,6 +6,7 @@ use App\Models\Context;
 use App\Models\SearchArea;
 use App\Repositories\ContextRepository;
 use App\Repositories\ExcavationRepository;
+use App\Repositories\PublicationRepository;
 use App\Repositories\SearchAreaRepository;
 
 class ImportExcavations extends AbstractImporter
@@ -114,15 +115,31 @@ class ImportExcavations extends AbstractImporter
         ];
 
         if (!empty($data['reportResearchURI'])) {
-            $excavation['publication'][] = [
-                'uri' => $data['reportResearchURI']
-            ];
+            $existingPublication = app(PublicationRepository::class)->getByUri($data['reportResearchURI']);
+
+            if (empty($existingPublication)) {
+                $excavation['publication'][] = [
+                    'uri' => $data['reportResearchURI']
+                ];
+            } else {
+                $excavation['publication'][] = [
+                    'identifier' => $existingPublication->getId()
+                ];
+            }
         }
 
         if (!empty($data['reportArchiveURI'])) {
-            $excavation['publication'][] = [
-                'uri' => $data['reportArchiveURI']
-            ];
+            $existingPublication = app(PublicationRepository::class)->getByUri($data['reportArchiveURI']);
+
+            if (empty($existingPublication)) {
+                $excavation['publication'][] = [
+                    'uri' => $data['reportArchiveURI']
+                ];
+            } else {
+                $excavation['publication'][] = [
+                    'identifier' => $existingPublication->getId()
+                ];
+            }
         }
 
         // Add the search area link

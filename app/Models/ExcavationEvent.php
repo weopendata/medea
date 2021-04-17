@@ -31,7 +31,7 @@ class ExcavationEvent extends Base
         'P70' => [
             'key' => 'publication',
             'model_name' => 'Publication',
-            'cascade_delete' => true,
+            'cascade_delete' => false,
             'required' => false,
             'plural' => true,
         ],

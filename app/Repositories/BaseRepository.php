@@ -112,6 +112,35 @@ class BaseRepository
     }
 
     /**
+     * @param string $property
+     * @param string $value
+     * @return array|\Everyman\Neo4j\Node
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function getByProperty(string $property, $value)
+    {
+        $tenantStatement = NodeService::getTenantWhereStatement(['n']);
+
+        $queryString = "
+        MATCH (n:$this->label)
+        WHERE n." . $property . " = {propertyValue} AND $tenantStatement
+        RETURN n
+        LIMIT 1";
+
+        $variables = [
+            'propertyValue' => $value
+        ];
+
+        $cypherQuery = new Query($this->getClient(), $queryString, $variables);
+
+        foreach ($cypherQuery->getResultSet() as $row) {
+            $neo4jId = $row['n']->getId();
+
+            return $this->getById($neo4jId);
+        }
+    }
+
+    /**
      * Get all the bare nodes
      *
      * @param integer $limit

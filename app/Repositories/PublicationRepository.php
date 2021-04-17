@@ -52,4 +52,13 @@ class PublicationRepository extends BaseRepository
 
         return $results;
     }
+
+    public function getByUri($uri)
+    {
+        if (empty($uri)) {
+            return;
+        }
+
+        return $this->getByProperty('uri', $uri);
+    }
 }
