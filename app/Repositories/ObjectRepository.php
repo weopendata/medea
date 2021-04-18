@@ -104,7 +104,7 @@ class ObjectRepository extends BaseRepository
      * Set the PAN ID classification, this can only occur once via uploads
      *
      * @param $objectId
-     * @param array $classification
+     * @param array $panIdClassification
      * @return void |null |null
      * @throws \Everyman\Neo4j\Exception
      */
@@ -120,7 +120,7 @@ class ObjectRepository extends BaseRepository
         $query = "match (n)-[*2..2]-(classification:E17)-[P42]-(productionClassificationValue:E55 {value: {panId} }) where id(n) = $objectId AND $tenantStatement return classification";
 
         $variables = [
-            'panId' => $panId
+            'panId' => $panIdClassification['productionClassificationValue']
         ];
 
         $client = $this->getClient();
