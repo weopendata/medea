@@ -44,10 +44,10 @@
 
       <div>
         <button class="ui green button" @click="startUpload()" :disabled="startingUpload" v-if="canInteractWithUpload">
-          Start upload
+          Start import
         </button>
         <button class="ui red button" @click="deleteUpload()" :disabled="startingUpload" v-if="canInteractWithUpload"><i
-                class="trash icon"></i>Delete upload
+                class="trash icon"></i>Delete upload bestand
         </button>
       </div>
 
@@ -135,7 +135,7 @@
           })
       },
       deleteUpload() {
-        if (!confirm('Ben je zeker dat deze upload verwijderd mag worden?')) {
+        if (!confirm('Ben je zeker dat dit upload bestand verwijderd mag worden? Het bestand en alle logs die door de imports van dit bestand werden gegenereerd zullen ook verwijderd worden. Geïmporteerde data blijft in het platform.')) {
           return
         }
 

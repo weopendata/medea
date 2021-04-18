@@ -2,7 +2,7 @@
   <div>
     <div class="ui container">
       <div v-if="displayCreateUpload">
-        <create-upload @uploadCreated="fetchUploads" @hide="displayCreateUpload = false"></create-upload>
+        <create-upload @uploadCreated="fetchUploads(true)" @hide="displayCreateUpload = false"></create-upload>
       </div>
 
       <div>
@@ -26,7 +26,9 @@
       }
     },
     methods: {
-      fetchUploads() {
+      fetchUploads(hideCreatePanel = false) {
+        this.displayCreateUpload = false
+
         axios.get('/api/uploads')
           .then(response => {
             var uploads = response.data
