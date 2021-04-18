@@ -25,6 +25,11 @@
           </dt>
           <dd>{{ selectedUpload.name }}</dd>
 
+          <template>
+            <dt>Type:</dt>
+            <dd>{{ uploadType }}</dd>
+          </template>
+
           <dt>
             Geupload door:
           </dt>
@@ -33,11 +38,6 @@
           <template v-if="selectedUpload.status">
             <dt>Status:</dt>
             <dd>{{ uploadStatus }}</dd>
-          </template>
-
-          <template>
-            <dt>Type:</dt>
-            <dd>{{ uploadType }}</dd>
           </template>
         </dl>
       </div>

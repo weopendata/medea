@@ -53,9 +53,7 @@ class ImportFinds extends AbstractImporter
             }
 
             if (!empty($panId)) {
-                if (empty($find)) {
-                    $find = app(FindRepository::class)->expandValues($findId);
-                }
+                $find = app(FindRepository::class)->expandValues($findId);
 
                 $productionClassification = [
                     'productionClassificationValue' => $panId,

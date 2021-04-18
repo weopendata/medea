@@ -163,7 +163,7 @@ class ObjectRepository extends BaseRepository
 
         $production_event = new ProductionEvent(['productionClassification' => $panIdClassification]);
 
-        $object->relateTo($production_event, 'P108')->save();
+        $object->relateTo($production_event->getNode(), 'P108')->save();
     }
 
     /**
