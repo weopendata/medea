@@ -104,12 +104,11 @@ class ObjectRepository extends BaseRepository
      * Set the PAN ID classification, this can only occur once via uploads
      *
      * @param $objectId
-     * @param $panId
-     * @param $classificationDescription
+     * @param array $classification
      * @return void |null |null
      * @throws \Everyman\Neo4j\Exception
      */
-    public function addPanIdClassification($objectId, $panId, $classificationDescription = '')
+    public function addPanIdClassification($objectId, array $panIdClassification)
     {
         $object = $this->getById($objectId);
 
@@ -150,24 +149,19 @@ class ObjectRepository extends BaseRepository
         $cypherQuery = new Query($client, $query);
         $results = $cypherQuery->getResultSet();
 
-        $classification = [
-            'productionClassificationValue' => $panId,
-            'productionClassificationDescription' => $classificationDescription
-        ];
-
-        $prodClassification = new ProductionClassification($classification);
-        $prodClassification->save();
-
         if ($results->count() > 0) {
             $row = $results->current();
             $production_event = $row['productionEvent'];
+
+            $prodClassification = new ProductionClassification($panIdClassification);
+            $prodClassification->save();
 
             $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
 
             return;
         }
 
-        $production_event = new ProductionEvent(['productionClassification' => $classification]);
+        $production_event = new ProductionEvent(['productionClassification' => $panIdClassification]);
 
         $object->relateTo($production_event, 'P108')->save();
     }

@@ -27,7 +27,7 @@ class ImportFinds extends AbstractImporter
 
             $existingFind = app(FindRepository::class)->getByInternalId($find['internalId']);
 
-            if (! empty($existingFind)) {
+            if (!empty($existingFind)) {
                 $findId = $existingFind->getId();
                 $existingFind = app(FindRepository::class)->expandValues($findId);
 
@@ -57,7 +57,13 @@ class ImportFinds extends AbstractImporter
                     $find = app(FindRepository::class)->expandValues($findId);
                 }
 
-                app(ObjectRepository::class)->addPanIdClassification($find['object']['identifier'], $panId, $classificationDescription);
+                $productionClassification = [
+                    'productionClassificationValue' => $panId,
+                    'productionClassificationType' => 'Typologie',
+                    'productionClassificationDescription' => $classificationDescription
+                ];
+
+                app(ObjectRepository::class)->addPanIdClassification($find['object']['identifier'], $productionClassification);
             }
         } catch (\Exception $ex) {
             \Log::error($ex->getMessage());
@@ -69,6 +75,7 @@ class ImportFinds extends AbstractImporter
 
     /**
      * @param array $data
+     * @param array $find
      * @return array
      */
     private function buildFindModel(array $data, $find = [])
@@ -84,7 +91,7 @@ class ImportFinds extends AbstractImporter
             if (!empty($value)) {
                 $method = 'set' . studly_case($property);
 
-                if (! method_exists($this, $method)) {
+                if (!method_exists($this, $method)) {
                     continue;
                 }
 
@@ -140,21 +147,6 @@ class ImportFinds extends AbstractImporter
 
         // We assume that the platform was seeded already, which includes adding an admin user
         return $results[0]['person']->getId();
-    }
-
-    /**
-     * Set publication page
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setPublicationPage($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationSource'] = (int)$value;
-
-        return $find;
     }
 
     /**
@@ -494,66 +486,6 @@ class ImportFinds extends AbstractImporter
     }
 
     /**
-     * Set the end date on classification
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setEndPeriodClassification($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['endDate'] = $value;
-
-        return $find;
-    }
-
-    /**
-     * Set the type of classification
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setClassificationType($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationType'] = $value;
-
-        return $find;
-    }
-
-    /**
-     * Set the value of classification
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setClassificationValue($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationValue'] = $value;
-
-        return $find;
-    }
-
-    /**
-     * Set the productionevent technique
-     *
-     * @param array $find
-     * @param value $value
-     * @return array
-     */
-    private function setTechnique($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionTechnique'] = ['productionTechniqueType' => $value];
-
-        return $find;
-    }
-
-    /**
      * Set the surface treatment
      *
      * @param array $find
@@ -564,69 +496,6 @@ class ImportFinds extends AbstractImporter
     {
         $find = $this->initObject($find);
         $find['object']['treatmentEvent'] = ['modificationTechnique' => ['modificationTechniqueType' => $value]];
-
-        return $find;
-    }
-
-    /**
-     * Set the start date on classification
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setStartPeriodClassification($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['startDate'] = $value;
-
-        return $find;
-    }
-
-    /**
-     * Set the production classification ruler nation
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setNation($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationRulerNation'] = $value;
-
-        return $find;
-    }
-
-    /**
-     * Set the production classification type
-     *
-     * @param array $find
-     * @param string $value
-     * @return array
-     */
-    private function setClassificationTypeValue($find, $value)
-    {
-        $find = $this->initClassification($find);
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationType'] = 'Typologie';
-        $find['object']['productionEvent']['productionClassification'][0]['productionClassificationValue'] = $value;
-
-        return $find;
-    }
-
-    /**
-     * Make sure that the productionClassification exists
-     *
-     * @param array $find
-     * @return $find
-     */
-    private function initClassification($find)
-    {
-        if (empty($find['object']['productionEvent']['productionClassification'])) {
-            $find = $this->initObject($find);
-            $find['object']['productionEvent'] = [];
-            $find['object']['productionEvent']['productionClassification'] = [];
-        }
 
         return $find;
     }
