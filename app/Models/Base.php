@@ -485,6 +485,9 @@ class Base
         }
     }
 
+    /**
+     * @return \Everyman\Neo4j\Node
+     */
     public function getNode()
     {
         return $this->node;

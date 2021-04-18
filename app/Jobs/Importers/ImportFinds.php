@@ -8,6 +8,7 @@ use App\Models\Context;
 use App\Models\FindEvent;
 use App\Repositories\ContextRepository;
 use App\Repositories\FindRepository;
+use App\Repositories\ObjectRepository;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
 
@@ -35,8 +36,9 @@ class ImportFinds extends AbstractImporter
 
             $action = !empty($existingFind) ? 'update' : 'create';
 
-            // Capture data that we need to link afterwards
+            // Get the classification information
             $panId = @$find['PANid'];
+            $classificationDescription = @$find['classificationDescription'];
             unset($find['PANid']);
 
             // Perform the create/update
@@ -55,8 +57,7 @@ class ImportFinds extends AbstractImporter
                     $find = app(FindRepository::class)->expandValues($findId);
                 }
 
-                // TODO: add the PANID productionClassification, however this can only occur once, whereas the normal flow of classifying objects has a "append only" flow currently
-                // So make a specific linkPanIdClassification as to not infinitely add the same PANID classification
+                app(ObjectRepository::class)->addPanIdClassification($find['object']['identifier'], $panId, $classificationDescription);
             }
         } catch (\Exception $ex) {
             \Log::error($ex->getMessage());
@@ -95,6 +96,8 @@ class ImportFinds extends AbstractImporter
         $find['internalId'] = $data['findUUID'];
         $find['contextId'] = $data['contextId'];
         $find['excavationId'] = $data['excavationId'];
+        $find['PANid'] = $data['PANid'];
+        $find['classificationDescription'] = $data['classificationDescription'];
 
         // Check if there's a context & excavationId, if so, rebuild the internal ID
         if (!empty($data['contextId']) && !empty($data['excavationId'])) {
@@ -683,7 +686,8 @@ class ImportFinds extends AbstractImporter
             'excavationId' => 'excavationId',
             'aantal' => 'amount',
             'merkteken' => 'markings',
-            'volledig?' => 'complete'
+            'volledig?' => 'complete',
+            'type beschrijving' => 'classificationDescription',
         ];
 
         foreach ($mapping as $key => $newKey) {

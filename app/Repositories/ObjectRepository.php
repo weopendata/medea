@@ -36,18 +36,18 @@ class ObjectRepository extends BaseRepository
      *
      * @param integer $objectId The id of the object
      * @param array $classification The configuration of the classification
-     * @return Node|void
+     * @return \Everyman\Neo4j\Node
      * @throws \Everyman\Neo4j\Exception
      */
     public function addClassification($objectId, $classification)
     {
         $object = $this->getById($objectId);
 
-        $tenantStatement = NodeService::getTenantWhereStatement(['object', 'productionEvent']);
-
         if (empty($object)) {
             return;
         }
+
+        $tenantStatement = NodeService::getTenantWhereStatement(['object', 'productionEvent']);
 
         $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
             WHERE id(object) = $objectId AND $tenantStatement 
@@ -98,6 +98,78 @@ class ObjectRepository extends BaseRepository
         }
 
         return null;
+    }
+
+    /**
+     * Set the PAN ID classification, this can only occur once via uploads
+     *
+     * @param $objectId
+     * @param $panId
+     * @param $classificationDescription
+     * @return void |null |null
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function addPanIdClassification($objectId, $panId, $classificationDescription = '')
+    {
+        $object = $this->getById($objectId);
+
+        if (empty($object)) {
+            return;
+        }
+
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'classification', 'productionClassificationValue']);
+        $query = "match (n)-[*2..2]-(classification:E17)-[P42]-(productionClassificationValue:E55 {value: {panId} }) where id(n) = $objectId AND $tenantStatement return classification";
+
+        $variables = [
+            'panId' => $panId
+        ];
+
+        $client = $this->getClient();
+
+        $cypherQuery = new Query($client, $query, $variables);
+        $result = $cypherQuery->getResultSet();
+
+        // Remove the PanID classification
+        if ($result->count() > 0) {
+            $classification = $result->current()->current();
+
+            $classification = app(ClassificationRepository::class)->getById($classification->getId());
+            $classificationObject = new ProductionClassification();
+            $classificationObject->setNode($classification);
+
+            $classificationObject->delete();
+        }
+
+        // See if there's a production event already, if so append the classification to it, if not, create one and link the classification
+        $tenantStatement = NodeService::getTenantWhereStatement(['object', 'productionEvent']);
+
+        $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
+            WHERE id(object) = $objectId AND $tenantStatement 
+            return productionEvent, object";
+
+        $cypherQuery = new Query($client, $query);
+        $results = $cypherQuery->getResultSet();
+
+        $classification = [
+            'productionClassificationValue' => $panId,
+            'productionClassificationDescription' => $classificationDescription
+        ];
+
+        $prodClassification = new ProductionClassification($classification);
+        $prodClassification->save();
+
+        if ($results->count() > 0) {
+            $row = $results->current();
+            $production_event = $row['productionEvent'];
+
+            $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
+
+            return;
+        }
+
+        $production_event = new ProductionEvent(['productionClassification' => $classification]);
+
+        $object->relateTo($production_event, 'P108')->save();
     }
 
     /**
@@ -166,7 +238,7 @@ class ObjectRepository extends BaseRepository
      * @param array $feedback The given feedback on different properties
      * @param boolean $embargo
      *
-     * @return Node
+     * @return \Everyman\Neo4j\PropertyContainer
      * @throws \Everyman\Neo4j\Exception
      */
     public function setValidationStatus($objectId, $status, $feedback, $embargo)

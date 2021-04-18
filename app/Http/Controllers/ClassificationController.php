@@ -25,10 +25,11 @@ class ClassificationController extends Controller
     /**
      * Add a classification to an object
      *
-     * @param integer $objectId       The id of the object
-     * @param array   $classification The classification of the object
-     *
+     * @param integer $objectId The id of the object
+     * @param Request $request
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function store($objectId, Request $request)
     {
