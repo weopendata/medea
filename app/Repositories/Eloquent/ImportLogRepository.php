@@ -29,13 +29,16 @@ class ImportLogRepository
         $logs = ImportLog::where('import_jobs_id', $jobId)
             ->get()
             ->map(function ($log) {
+               $context = $log->context ?? [];
+
                 return [
                     'id' => $log->id,
                     'level' => $log->level,
                     'message' => $log->message,
                     'line_number' => $log->line_number,
                     'action' => $log->action,
-                    'status' => $log->status
+                    'status' => $log->status,
+                    'object_identifier' => array_get($context, 'identifier')
                 ];
             })
             ->toArray();

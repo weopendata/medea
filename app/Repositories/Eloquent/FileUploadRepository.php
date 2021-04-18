@@ -56,6 +56,8 @@ class FileUploadRepository
                             'created_at' => $job->created_at->format('Y-m-d H:i:s'),
                         ];
                     })
+                    ->sortByDesc('created_at')
+                    ->values()
                     ->toArray();
 
                 if ($fileStatus == 'not imported' && !empty($importJobs)) {

@@ -32,17 +32,17 @@
 
           <template v-if="selectedUpload.status">
             <dt>Status:</dt>
-            <dd>{{ selectedUpload.status }}</dd>
+            <dd>{{ uploadStatus }}</dd>
           </template>
 
           <template>
             <dt>Type:</dt>
-            <dd>{{ selectedUpload.type }}</dd>
+            <dd>{{ uploadType }}</dd>
           </template>
         </dl>
       </div>
 
-      <div>
+      <div class="uploads-overview__upload-actions">
         <button class="ui green button" @click="startUpload()" :disabled="startingUpload" v-if="canInteractWithUpload">
           Start import
         </button>
@@ -52,7 +52,7 @@
       </div>
 
       <template v-if="this.selectedUpload && this.selectedUpload.id">
-        <div style="margin-top: 1rem;">
+        <div class="uploads-overview__upload_logs">
           <h4>Import logs</h4>
 
           <select class="ui search dropdown category" v-model="selectedImport" style="max-width: 30em;"
@@ -61,28 +61,34 @@
                     v-text="importJobDisplayName(importJob)"></option>
           </select>
 
-          <table v-if="logs.length">
+          <table v-if="logs.length" class="uploads-overview__log-table">
             <thead>
             <tr>
-              <th>Lijn</th>
-              <th>Actie</th>
-              <th>Status</th>
-              <th>Beschrijving</th>
+              <th class="uploads-overview__log-column-line-number">Lijn</th>
+              <th class="uploads-overview__log-column-action">Actie</th>
+              <th class="uploads-overview__log-column-action">Status</th>
+              <th class="uploads-overview__log-column-description">Beschrijving</th>
+              <th class="uploads-overview__log-column-action"></th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(log, index) in logs" :key="'upload_log_' + index">
-              <td>
+              <td class="uploads-overview__log-column-line-number" style="padding-left: 15px;">
                 {{ log.line_number }}
               </td>
-              <td>
+              <td class="uploads-overview__log-column-action">
                 {{ log.action }}
               </td>
-              <td>
+              <td class="uploads-overview__log-column-action">
                 {{ log.status }}
               </td>
-              <td>
+              <td class="uploads-overview__log-column-description">
                 {{ log.message }}
+              </td>
+              <td class="uploads-overview__log-column-action" v-if="log.object_identifier">
+                <button class="mini ui button" @click="goToFind(log.object_identifier)"><i class="eye icon"></i>Bekijk </button>
+              </td>
+              <td class="uploads-overview__log-column-action" v-else>
               </td>
             </tr>
             </tbody>
@@ -108,11 +114,37 @@
     computed: {
       canInteractWithUpload() {
         return this.selectedUpload.status === 'finished' || this.selectedUpload.status === 'not imported'
+      },
+      uploadStatus() {
+        if (!this.selectedUpload || !this.selectedUpload.status) {
+          return
+        }
+
+        switch (this.selectedUpload.status) {
+          case 'queued':
+            return 'In wachtrij'
+          case 'finished':
+            return 'Klaar'
+        }
+      },
+      uploadType() {
+        if (!this.selectedUpload || !this.selectedUpload.status) {
+          return
+        }
+
+        switch (this.selectedUpload.type) {
+          case 'excavation':
+            return 'Opgravingen'
+          case 'context':
+            return 'Contexten'
+          case 'find':
+            return 'Vondsten'
+        }
       }
     },
     methods: {
       importJobDisplayName(importJob) {
-        return 'Upload of ' +  importJob.created_at + ' - Status: ' + importJob.status
+        return 'Upload of ' + importJob.created_at + ' - Status: ' + importJob.status
       },
       uploadDisplayName(upload) {
         return upload.name + ' - ' + upload.user_name + ' (' + upload.created_at + ')'
@@ -144,11 +176,15 @@
         this.selectedUpload = {}
       },
       fetchLogs() {
-       if (!this.selectedImport) {
-         this.logs = []
+        if (!this.selectedImport) {
+          this.logs = []
 
-         return
-       }
+          return
+        }
+
+        if (!this.selectedImport || !this.selectedImport.id) {
+          return
+        }
 
         axios.get('/api/uploads/' + this.selectedImport.id + '/logs')
           .then(response => {
@@ -157,10 +193,13 @@
           .catch(error => {
             console.log(error)
           })
+      },
+      goToFind (identifier) {
+        window.open('/finds/' + identifier, '_blank')
       }
     },
     watch: {
-      uploads (v) {
+      uploads(v) {
         if (!v || !v.length > 0) {
           return
         }
@@ -183,6 +222,43 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  .uploads-overview__upload-actions {
+    margin-top: 1.5rem;
+  }
 
+  .uploads-overview__log-table {
+    margin-top: 1.5rem;
+    border: 1px solid #CECECE;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 800px;
+
+    tr {
+      border-bottom: 1px solid #CECECE;
+    }
+  }
+
+  .uploads-overview__upload_logs {
+    margin-top: 1.5rem;
+  }
+
+  .uploads-overview__log-column-line-number {
+    width: 35px;
+  }
+
+  .uploads-overview__log-column-action {
+    text-align: center;
+    width: 100px;
+  }
+
+  .uploads-overview__log-column-description {
+    width: 500px;
+    text-align: left;
+  }
+
+  .uploads-overview__log-column-action {
+    width: 100px;
+    text-align: center;
+  }
 </style>
