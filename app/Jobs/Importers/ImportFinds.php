@@ -41,7 +41,7 @@ class ImportFinds extends AbstractImporter
             $classificationDescription = @$find['classificationDescription'];
             unset($find['PANid']);
 
-            // Perform the create/update
+            // Perform the create/update of the find
             if ($action == 'update') {
                 app(FindRepository::class)->update($findId, $find);
 
@@ -52,6 +52,7 @@ class ImportFinds extends AbstractImporter
                 $this->addLog($index, 'Added a find ', $action, ['identifier' => $findId, 'data' => $data], true);
             }
 
+            // Add the PAN classification
             if (!empty($panId)) {
                 $find = app(FindRepository::class)->expandValues($findId);
 
@@ -103,6 +104,9 @@ class ImportFinds extends AbstractImporter
         $find['excavationId'] = $data['excavationId'];
         $find['PANid'] = $data['PANid'];
         $find['classificationDescription'] = $data['classificationDescription'];
+
+        // Add the flag that it's not classifiable
+        $find['object']['classifiable'] = 'false';
 
         // Check if there's a context & excavationId, if so, rebuild the internal ID
         if (!empty($data['contextId']) && !empty($data['excavationId'])) {

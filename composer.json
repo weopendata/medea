@@ -15,7 +15,9 @@
         "league/csv": "^8.1",
         "barryvdh/laravel-ide-helper": "^2.4",
         "laravel/helpers": "^1.1",
-        "pda/pheanstalk": "^4.0"
+        "pda/pheanstalk": "^4.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "ext-json": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -35,6 +35,9 @@ class BaseObject extends Base
         ],
         [
             'name' => 'complete'
+        ],
+        [
+            'name' => 'classifiable'
         ]
     ];
 

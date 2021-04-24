@@ -203,7 +203,7 @@ class FindController extends Controller
      *
      * @param CreateFindRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateFindRequest $request, UserRepository $users)
     {
@@ -263,8 +263,9 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  ShowFindRequest           $request
-     * @return \Illuminate\Http\Response
+     * @param ShowFindRequest $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Everyman\Neo4j\Exception
      */
     public function show(ShowFindRequest $request)
     {
@@ -416,9 +417,10 @@ class FindController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $findId
+     * @param \Illuminate\Http\Request $request
+     * @param int $findId
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Everyman\Neo4j\Exception
      */
     public function update(UpdateFindRequest $request, $findId)
     {
