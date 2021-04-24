@@ -234,7 +234,7 @@ class CollectionRepository extends BaseRepository
     {
         $tenantStatement = NodeService::getTenantWhereStatement(['n', 'p']);
 
-        $query = "MATCH (n:collection)-[P109]->(p:person)
+        $query = "MATCH (n:collection)-[r:P109]->(p:person)
         WHERE id(p) = {userId} AND id(n) = {collectionId} AND $tenantStatement
         RETURN n";
 

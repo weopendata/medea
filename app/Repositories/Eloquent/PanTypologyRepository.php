@@ -73,12 +73,37 @@ class PanTypologyRepository
         $parentTypology = $this->findByCode($parentCode);
 
         if (empty($parentTypology)) {
-            throw new \Exception("We have updated / insert the typology, but the parent with code $parentTypology could not be found.");
+            throw new \Exception("We have updated / insert the typology, but the parent with code $parentCode could not be found.");
         }
 
         $typology->parent_id = $parentTypology->id;
         $typology->save();
 
         return $typology;
+    }
+
+    /**
+     * @param string $code
+     * @return array
+     */
+    public function getMetaForPanId(string $code)
+    {
+        // TODO: DELETE THIS HARD CODED LINE, ONLY FOR TESTING PURPOSES
+        $code = '01-01';
+
+        $panTypology = $this->findByCode($code);
+
+        if (empty($panTypology)) {
+            return [];
+        }
+
+        return [
+          'uri' => $panTypology['uri'],
+          'label' => $panTypology['label'],
+          'initialPeriod' => array_get($panTypology, 'meta.initialperiod'),
+          'finalPeriod' => array_get($panTypology, 'meta.finalperiod'),
+          'code' => $panTypology['code'],
+          'imageUrl' => array_get($panTypology, 'meta.imageUrl'),
+        ];
     }
 }

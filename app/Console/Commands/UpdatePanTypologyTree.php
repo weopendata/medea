@@ -29,9 +29,18 @@ class UpdatePanTypologyTree extends Command
     const PAN_TOP_LEVEL_URI = 'https://portable-antiquities.nl/pan/services/Rest/poolparty/topconcepts?language=nl';
 
     /**
+     * This URI will return small collections consisting of a minimum data, so no specific properties, but mainly links towards children
+     *
      * @const string
      */
     const PAN_DATA_BASE_URI = 'https://portable-antiquities.nl/pan/services/Rest/poolparty/childconceptswithimage/';
+
+    /**
+     * This URI will return all properties available for a specific type
+     *
+     * @const string
+     */
+    const PAN_DETAIL_BASE_URI = 'https://portable-antiquities.nl/pan/services/Rest/poolparty/properties/';
 
     /**
      * Create a new command instance.
@@ -108,6 +117,24 @@ class UpdatePanTypologyTree extends Command
      */
     private function upsertTypology(array $typology)
     {
+        // Fetch the details of the typology
+        $detailUri = self::PAN_DETAIL_BASE_URI . $typology['code'];
+
+        try {
+            $typology = $this->makePanRequest($detailUri);
+        } catch (GuzzleException $ex) {
+            $this->error("ERROR: for $detailUri we didn't get any data back. Error: " . $ex->getMessage());
+
+            return;
+        }
+
+        // Make sure we got a proper set of data back
+        if (empty($typology)) {
+            $this->error("ERROR: for $detailUri we didn't get any data back.");
+
+            return;
+        }
+
         // Transform the raw typology data into a something that our Typology model can handle
         $typology = [
           'code' => trim($typology['code']),
@@ -116,7 +143,12 @@ class UpdatePanTypologyTree extends Command
           'meta' => $typology
         ];
 
-        app(PanTypologyRepository::class)->updateOrCreate($typology);
+        try {
+            app(PanTypologyRepository::class)->updateOrCreate($typology);
+        } catch (\Exception $ex) {
+            $this->error("Something went wrong while upserting a typology: " . $ex->getMessage());
+            $this->error($ex->getTraceAsString());
+        }
     }
 
     /**
@@ -149,6 +181,9 @@ class UpdatePanTypologyTree extends Command
         } catch (\Exception $ex) {
             $this->error("Something went wrong while fetching PAN data: " . $ex->getMessage());
             $this->error($ex->getTraceAsString());
+
+            // It might be because we're doing too many requests
+            sleep(10);
         }
     }
 }

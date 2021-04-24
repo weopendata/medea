@@ -49,7 +49,7 @@ class ObjectRepository extends BaseRepository
 
         $tenantStatement = NodeService::getTenantWhereStatement(['object', 'productionEvent']);
 
-        $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
+        $query = "MATCH (object:E22)-[r:P108]->(productionEvent:productionEvent)
             WHERE id(object) = $objectId AND $tenantStatement 
             return productionEvent, object";
 
@@ -68,6 +68,7 @@ class ObjectRepository extends BaseRepository
             $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
         } else {
             $production_event = new ProductionEvent(['productionClassification' => $classification]);
+            $production_event->save();
 
             $object->relateTo($production_event, 'P108')->save();
         }
@@ -142,7 +143,7 @@ class ObjectRepository extends BaseRepository
         // See if there's a production event already, if so append the classification to it, if not, create one and link the classification
         $tenantStatement = NodeService::getTenantWhereStatement(['object', 'productionEvent']);
 
-        $query = "MATCH (object:E22)-[P108]->(productionEvent:productionEvent)
+        $query = "MATCH (object:E22)-[r:P108]->(productionEvent:productionEvent)
             WHERE id(object) = $objectId AND $tenantStatement 
             return productionEvent, object";
 
@@ -162,6 +163,7 @@ class ObjectRepository extends BaseRepository
         }
 
         $production_event = new ProductionEvent(['productionClassification' => $panIdClassification]);
+        $production_event->save();
 
         $object->relateTo($production_event->getNode(), 'P108')->save();
     }
