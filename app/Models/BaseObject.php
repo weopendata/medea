@@ -66,7 +66,7 @@ class BaseObject extends Base
             'model_name' => 'Context',
             'cascade_delete' => false,
             'link_only' => true,
-            'reverse_relationship' => 'P53',
+            'reverse_relationship' => 'P157',
         ],
     ];
 
