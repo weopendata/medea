@@ -52,3 +52,12 @@ function jj($data)
 
     die(1);
 }
+
+/**
+ * @param Exception $ex
+ */
+function medea_log_error (\Exception $ex)
+{
+    \Log::error($ex->getMessage());
+    \Log::error($ex->getTraceAsString());
+}

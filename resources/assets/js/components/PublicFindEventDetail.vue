@@ -4,6 +4,10 @@
       <div class="card-textual">
         <h1 class="card-title">{{findTitle}}</h1>
         <div class="ui two columns doubling grid">
+          <div class="column" :class="{'fe-validating':validating}">
+            <object-features-extended :find="find" :typology="typologyInformation" :excavation="excavation"
+                                      :context="context" v-if="find.object"/>
+          </div>
           <div class="column scrolling">
             <div class="fe-imglist">
               <div class="fe-img" v-for="(image, index) in find.object.photograph">
@@ -11,17 +15,9 @@
                 <i class="magnify icon"></i>
               </div>
             </div>
-            <!--<gmap-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
-              <gmap-marker
-                      v-if="markerNeeded"
-                      :position.sync="markerPosition"
-              ></gmap-marker>
-              <gmap-rectangle
-                      v-else
-                      :bounds.sync="rectangleBounds"
-                      :options="rectangleOptions"
-              ></gmap-rectangle>
-            </gmap-map>-->
+            <gmap-map v-if="map.center" :center.sync="map.center" :zoom.sync="map.zoom" class="fe-map">
+              <gmap-marker :position="markerPosition"></gmap-marker>
+            </gmap-map>
           </div>
         </div>
       </div>
@@ -63,23 +59,28 @@
   import PhotoswipeThumb from './PhotoswipeThumb'
   import ValidationForm from './ValidationForm'
 
-  import { toPublicBounds } from '../const.js'
+  import {toPublicBounds} from '../const.js'
+  import ObjectFeaturesExtended from "./ObjectFeaturesExtended";
 
   function sameValues(array) {
-    return !!array.reduce((a, b) => a === b ? a : NaN )
+    return !!array.reduce((a, b) => a === b ? a : NaN)
   }
 
   export default {
-    mounted () {
-      this.user = medeaUser || {};
-      this.typologyInformation = window.typologyInformation
+    mounted() {
+      this.user = medeaUser || {}
+      this.typologyInformation = window.typologyInformation || {}
+      this.excavation = window.excavation || {}
+      this.context = window.context || {}
     },
-    data () {
+    data() {
       return {
         find: null,
         meta: {},
         user: {},
         typologyInformation: {},
+        excavation: {},
+        context: {},
         loaded: false,
         show: {
           validation: false
@@ -87,16 +88,16 @@
       }
     },
     methods: {
-      goToFinds () {
+      goToFinds() {
         window.location = '/finds'
       },
-      fetch () {
+      fetch() {
         axios.get('/api/finds/' + window.initialFind.identifier)
           .then(response => {
             this.find = response.data
           });
       },
-      initPhotoswipe (options) {
+      initPhotoswipe(options) {
         if (!window.PhotoSwipe) {
           return console.warn('PhotoSwipe missing')
         }
@@ -115,24 +116,22 @@
       }
     },
     computed: {
-      map () {
-        if (! this.location || ! this.location.lat) {
+      map() {
+        if (!this.location || !this.location.lat) {
           return {};
         }
 
         return {
-          center: this.location.lat && { lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng) },
+          center: this.location.lat && {lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng)},
           zoom: 10,
           identifier: this.find.identifier,
-          position: { lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng) }
+          position: {lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng)}
         }
       },
-      findTitle () {
-        if (! this.find) {
+      findTitle() {
+        if (!this.find) {
           return 'De vondst bestaat niet'
         }
-
-        console.log(this.typologyInformation)
 
         // Add a fallback for when we lack the PAN typology meta-data
         if (!this.typologyInformation) {
@@ -149,6 +148,7 @@
           return title + ' (ID-' + this.find.identifier + ')'
         }
 
+        // Build a title based on the typology
         var material = (this.find.object && this.find.object.objectMaterial) ? this.find.object.objectMaterial : this.find.material
         var initialPeriod = 'onbekend';
         var finalPeriod = 'onbekend'
@@ -163,47 +163,53 @@
 
         var timeFrame = initialPeriod + ' - ' + finalPeriod
 
-        return this.typologyInformation.code + ' ( ' + this.typologyInformation.label + ' ), ' + timeFrame + ', ' + material
+        return this.typologyInformation.code + ' (' + this.typologyInformation.label + '), ' + timeFrame + ', ' + material
       },
-      periodOverruled () {
+      periodOverruled() {
         const periods = (this.find.object.productionEvent.productionClassification || [])
           .map(c => c.productionClassificationCulturePeople)
           .filter(Boolean)
+
         if (periods.length > 1 && !sameValues(periods)) {
           return 'onzeker'
         }
+
         return periods[0]
       },
-      findDetailLink () {
+      findDetailLink() {
         return window.location.href
       },
-      firstImage () {
+      firstImage() {
         if (this.find.object && this.find.object.photograph && this.find.object.photograph.length) {
           return this.find.object.photograph[0].resized
         }
       },
-      contact () {
+      contact() {
         return window.contact
       },
-      location () {
-        return this.find.findSpot.location || {}
+      location() {
+        if (this.excavation && this.excavation.searchArea) {
+          return this.excavation.searchArea.location || {}
+        }
+
+        return (this.find.findSpot && this.find.findSpot.location) || {}
       },
-      markerNeeded () {
+      markerNeeded() {
         return this.map.zoom < 21 - Math.log2(this.location.accuracy)
       },
-      markerPosition () {
+      markerPosition() {
         return {
           lat: parseFloat(this.location.lat),
           lng: parseFloat(this.location.lng)
         }
       },
-      rectangleBounds () {
+      rectangleBounds() {
         return toPublicBounds(this.location)
       },
-      finder () {
+      finder() {
         return window.publicUserInfo || {}
       },
-      cite () {
+      cite() {
         const d = new Date()
         d.setHours(12)
         return (this.finder.name || '')
@@ -212,13 +218,13 @@
           '. Geraadpleegd op ' + d.toJSON().slice(0, 10) +
           ' via ' + window.location.href
       },
-      showRemarks () {
+      showRemarks() {
         return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.find.person && this.user.email === this.find.person.email
       },
-      validating () {
+      validating() {
         return this.user.validator && this.find.object.objectValidationStatus == 'Klaar voor validatie'
       },
-      editable () {
+      editable() {
         // Finder    if 'Aan te passen' or 'Voorlopige versie'
         // Validator if 'Klaar voor validatie'
         // Admin     always
@@ -230,7 +236,7 @@
         )
       }
     },
-    created () {
+    created() {
       if (window.initialFind && window.initialFind.identifier) {
         this.find = window.initialFind;
       } else {
@@ -238,6 +244,7 @@
       }
     },
     components: {
+      ObjectFeaturesExtended,
       AddClassification,
       Classification,
       DtCheck,

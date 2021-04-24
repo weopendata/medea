@@ -9,10 +9,13 @@ use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Http\Requests\UpdateFindRequest;
 use App\Mailers\AppMailer;
+use App\Models\Context;
 use App\Models\FindEvent;
 use App\Models\Person;
 use App\Repositories\CollectionRepository;
+use App\Repositories\ContextRepository;
 use App\Repositories\Eloquent\PanTypologyRepository;
+use App\Repositories\ExcavationRepository;
 use App\Repositories\FindRepository;
 use App\Repositories\ListValueRepository;
 use App\Repositories\ObjectRepository;
@@ -315,13 +318,18 @@ class FindController extends Controller
         // Based on the which type of find it is, i.e. non-classifiable, classifiable, we return the corresponding
         $view = 'pages.finds-detail';
         $typologyInformation = [];
+        $excavationInformation = [];
 
         if (array_get($find, 'object.classifiable') == 'false') {
             $view = 'pages.public-finds-detail';
 
             // If the object cannot be classified, we assume a PAN classification has been added, add this meta-data to the view parameters
             $typologyInformation = $this->fetchPanTypologyInformation($find);
+            $excavationInformation = $this->fetchExcavationInformation($find);
+            $context = $this->fetchFindContext($find);
         }
+
+        //jj($find['object']);
 
         return view($view, [
             'fields' => $this->list_values->getFindTemplate(),
@@ -329,8 +337,41 @@ class FindController extends Controller
             'publicUserInfo' => $publicUserInfo,
             'contact' => env('CONTACT_EMAIL'),
             'meta' => $meta,
-            'typologyInformation' => $typologyInformation
+            'typologyInformation' => $typologyInformation,
+            'excavationInformation' => $excavationInformation,
+            'context' => $context
         ]);
+    }
+
+    /**
+     * @param array $find
+     * @return array
+     */
+    private function fetchFindContext(array $find)
+    {
+        if (empty($find['contextId']) || empty($find['excavationId'])) {
+            return [];
+        }
+
+        $contextId = Context::createInternalId($find['contextId'], $find['excavationId']);
+
+        return app(ContextRepository::class)->getDataViaInternalId($contextId);
+    }
+
+    /**
+     * @param array $find
+     * @return array
+     */
+    private function fetchExcavationInformation(array $find)
+    {
+        // Fetch the excavation UUID from the find and fetch the excavation information based on that
+        $excavationUUID = array_get($find, 'excavationId');
+
+        if (empty($excavationUUID)) {
+            return [];
+        }
+
+        return app(ExcavationRepository::class)->getDataViaInternalId($excavationUUID);
     }
 
     /**
@@ -386,7 +427,7 @@ class FindController extends Controller
 
         // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
-        if (empty($user) || (!$user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
+        if (empty($user) || !($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
             unset($find['object']['objectDescription']);

@@ -503,6 +503,21 @@ class ImportFinds extends AbstractImporter
     }
 
     /**
+     * Set the technique
+     *
+     * @param array $find
+     * @param value $value
+     * @return array
+     */
+    private function setTechnique($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['productionEvent'] = ['productionTechnique' => ['productionTechniqueType' => $value]];
+
+        return $find;
+    }
+
+    /**
      * Make sure a find spot entry is present in the find array
      *
      * @param array $find

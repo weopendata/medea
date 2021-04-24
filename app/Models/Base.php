@@ -601,6 +601,7 @@ class Base
      * @param Node
      *
      * @return array
+     * @throws \Exception
      */
     public function getValues()
     {
@@ -674,6 +675,7 @@ class Base
             // according to the configuration (e.g. is it plural/nested)
             foreach ($related_nodes as $related_node) {
                 $related_node = $related_node->current();
+
                 $node_name = $model_config['config']['name'];
 
                 // Parse value nodes
@@ -812,7 +814,8 @@ class Base
      * @param string $rel_type
      * @param string $endnode_type
      *
-     * @return array
+     * @return \Everyman\Neo4j\Query\ResultSet
+     * @throws \Exception
      */
     protected function getImplicitRelatedNodes($rel_type, $endnode_type, $node_name)
     {
@@ -836,6 +839,7 @@ class Base
      * @param string $endnode_type
      *
      * @return ResultSet
+     * @throws \Exception
      */
     protected function getRelatedNodes($rel_type, $endnode_type)
     {
@@ -856,9 +860,10 @@ class Base
      * Retrieve the relationships between a specified node
      * and the current node
      *
-     * @param  string $nodeType     The type of the node
-     * @param  string $relationship The type of the relationship
+     * @param string $nodeType The type of the node
+     * @param string $relationship The type of the relationship
      * @return array
+     * @throws \Exception
      */
     protected function getRelationships($nodeType)
     {

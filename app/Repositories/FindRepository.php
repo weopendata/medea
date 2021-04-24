@@ -38,6 +38,25 @@ class FindRepository extends BaseRepository
     }
 
     /**
+     * Return meta data for a find
+     *
+     * - excavation
+     * - typology
+     *
+     * @param integer $findId
+     * @return array
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function getMeta($findId)
+    {
+        $node = $this->getById($findId);
+
+        $excavationUUID = $node->getProperty('excavationId');
+
+        return app(ExcavationRepository::class)->getBaseInformationForExcavation($excavationUUID);
+    }
+
+    /**
      * Get all of the finds for a person
      *
      * @param Person $person The Person object
@@ -209,6 +228,7 @@ class FindRepository extends BaseRepository
      * @param string $orderFlow
      * @param string $validationStatus
      * @return array
+     * @throws \Exception
      */
     private function prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus)
     {

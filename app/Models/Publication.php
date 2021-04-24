@@ -13,9 +13,13 @@ class Publication extends Base
 
     protected $properties = [
         [
-            'name' => 'uri',
+            'name' => 'researchURI',
             'default_value' => null
-        ]
+        ],
+        [
+            'name' => 'archiveURI',
+            'default_value' => null
+        ],
     ];
 
     protected $relatedModels = [

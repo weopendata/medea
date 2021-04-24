@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\ExcavationEvent;
+use Everyman\Neo4j\Exception;
 
 class ExcavationRepository extends BaseRepository
 {

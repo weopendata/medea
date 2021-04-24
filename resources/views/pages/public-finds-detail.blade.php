@@ -68,6 +68,8 @@
       window.contact = {!! json_encode($contact) !!};
       window.fields = {!! json_encode($fields) !!};
       window.typologyInformation = {!! json_encode($typologyInformation) !!};
+      window.excavation = {!! json_encode($excavationInformation) !!};
+      window.context = {!! json_encode($context) !!};
 
       @if (!empty($publicUserInfo))
         window.publicUserInfo = {!! json_encode($publicUserInfo) !!};

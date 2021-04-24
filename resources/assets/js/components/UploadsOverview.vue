@@ -85,7 +85,7 @@
               <td class="uploads-overview__log-column-description">
                 {{ log.message }}
               </td>
-              <td class="uploads-overview__log-column-action" v-if="log.object_identifier">
+              <td class="uploads-overview__log-column-action" v-if="log.object_identifier && (selectedUpload && selectedUpload.type) == 'find'">
                 <button class="mini ui button" @click="goToFind(log.object_identifier)"><i class="eye icon"></i>Bekijk </button>
               </td>
               <td class="uploads-overview__log-column-action" v-else>

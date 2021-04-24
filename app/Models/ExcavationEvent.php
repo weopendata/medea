@@ -21,13 +21,6 @@ class ExcavationEvent extends Base
     ];
 
     protected $relatedModels = [
-        'P14' => [
-            'key' => 'person',
-            'model_name' => 'Person',
-            'cascade_delete' => true,
-            'link_only' => false, // These person objects are not persistent as they are not uniquely identified, i.e. only a name is provided
-            'reverse_relationship' => 'P14'
-        ],
         'P70' => [
             'key' => 'publication',
             'model_name' => 'Publication',
@@ -54,6 +47,15 @@ class ExcavationEvent extends Base
             ]
         ],
         [
+            'relationship' => 'P4',
+            'config' => [
+                'key' => 'excavationPeriod',
+                'name' => 'excavationPeriod',
+                'cidoc_type' => 'E52',
+                'value_node' => true
+            ]
+        ],
+        [
             'relationship' => 'P33',
             'config' => [
                 'key' => 'excavationProcedure',
@@ -61,7 +63,41 @@ class ExcavationEvent extends Base
                 'cidoc_type' => 'E29'
             ]
         ],
+        [
+            // This person is a non persistent one, don't add it as a related model
+            'relationship' => 'P14',
+            'config' => [
+                'key' => 'person',
+                'name' => 'person',
+                'cidoc_type' => 'E74'
+            ]
+        ],
     ];
+
+    public function createPerson($person)
+    {
+        $generalId = $this->getGeneralId();
+
+        $personNode = NodeService::makeNode();
+        $personNode->setProperty('name', 'person');
+        $personNode->save();
+        $personNode->addLabels([
+            self::makeLabel('E74'),
+            self::makeLabel('person'),
+            self::makeLabel($generalId)
+        ]);
+
+        $fullName = $this->createValueNode(
+            'firstName',
+            ['E82', $generalId, 'firstName'],
+            $person['firstName']
+        );
+
+        // Create the relationship
+        $personNode->relateTo($fullName, 'P131')->save();
+
+        return $personNode;
+    }
 
     public function createCompany($company)
     {

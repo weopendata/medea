@@ -7,6 +7,7 @@ use App\NodeConstants;
 use App\Services\NodeService;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
+use Everyman\Neo4j\Exception;
 
 class BaseRepository
 {
@@ -104,6 +105,7 @@ class BaseRepository
 
         $cypherQuery = new Query($this->getClient(), $queryString, $variables);
 
+        // Return the first hit
         foreach ($cypherQuery->getResultSet() as $row) {
             $neo4jId = $row['n']->getId();
 
@@ -240,5 +242,26 @@ class BaseRepository
         $model->setNode($node);
 
         return $model->getValues();
+    }
+
+    /**
+     * @param string $internalId
+     * @return array
+     */
+    public function getDataViaInternalId($internalId)
+    {
+        try {
+            $node = $this->getByInternalId($internalId);
+
+            if (empty($node)) {
+                return [];
+            }
+
+            return $this->expandValues($node->getId());
+        } catch (Exception $ex) {
+            medea_log_error($ex);
+        }
+
+        return [];
     }
 }

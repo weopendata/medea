@@ -4,8 +4,6 @@
 namespace App\Models;
 
 
-use App\Services\NodeService;
-
 class SearchArea extends Base
 {
     public static $NODE_TYPE = 'E27';

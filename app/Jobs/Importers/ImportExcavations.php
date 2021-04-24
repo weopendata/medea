@@ -4,7 +4,6 @@ namespace App\Jobs\Importers;
 
 use App\Models\Context;
 use App\Models\SearchArea;
-use App\Repositories\ContextRepository;
 use App\Repositories\ExcavationRepository;
 use App\Repositories\PublicationRepository;
 use App\Repositories\SearchAreaRepository;
@@ -96,6 +95,8 @@ class ImportExcavations extends AbstractImporter
         // Add the Publication link
         $excavation['publication'] = [
             [
+                'researchURI' => array_get($data, 'reportResearchURI'),
+                'archiveURI' => array_get($data, 'reportArchiveURI'),
                 'publicationTitle' => array_get($data, 'reportTitle'),
                 'publicationCreation' => [
                     'publicationCreationActor' => [
@@ -113,34 +114,6 @@ class ImportExcavations extends AbstractImporter
                 ]
             ]
         ];
-
-        if (!empty($data['reportResearchURI'])) {
-            $existingPublication = app(PublicationRepository::class)->getByUri($data['reportResearchURI']);
-
-            if (empty($existingPublication)) {
-                $excavation['publication'][] = [
-                    'uri' => $data['reportResearchURI']
-                ];
-            } else {
-                $excavation['publication'][] = [
-                    'identifier' => $existingPublication->getId()
-                ];
-            }
-        }
-
-        if (!empty($data['reportArchiveURI'])) {
-            $existingPublication = app(PublicationRepository::class)->getByUri($data['reportArchiveURI']);
-
-            if (empty($existingPublication)) {
-                $excavation['publication'][] = [
-                    'uri' => $data['reportArchiveURI']
-                ];
-            } else {
-                $excavation['publication'][] = [
-                    'identifier' => $existingPublication->getId()
-                ];
-            }
-        }
 
         // Add the search area link
         $searchAreaFields = [

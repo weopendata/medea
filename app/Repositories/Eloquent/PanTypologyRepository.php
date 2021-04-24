@@ -25,6 +25,15 @@ class PanTypologyRepository
     }
 
     /**
+     * @param $id
+     * @return mixed
+     */
+    public function getById($id)
+    {
+        return $this->typology->find($id);
+    }
+
+    /**
      * @param string $code
      * @return PanTypology|null
      */
@@ -88,22 +97,28 @@ class PanTypologyRepository
      */
     public function getMetaForPanId(string $code)
     {
-        // TODO: DELETE THIS HARD CODED LINE, ONLY FOR TESTING PURPOSES
-        $code = '01-01';
-
         $panTypology = $this->findByCode($code);
 
         if (empty($panTypology)) {
             return [];
         }
 
+        $mainCategory = $panTypology['label'];
+
+        if (!empty($panTypology['parent_id'])) {
+            $parent = $this->getById($panTypology['parent_id']);
+
+            $mainCategory = $parent['label'];
+        }
+
         return [
-          'uri' => $panTypology['uri'],
-          'label' => $panTypology['label'],
-          'initialPeriod' => array_get($panTypology, 'meta.initialperiod'),
-          'finalPeriod' => array_get($panTypology, 'meta.finalperiod'),
-          'code' => $panTypology['code'],
-          'imageUrl' => array_get($panTypology, 'meta.imageUrl'),
+            'uri' => $panTypology['uri'],
+            'label' => $panTypology['label'],
+            'initialPeriod' => array_get($panTypology, 'meta.initialperiod'),
+            'finalPeriod' => array_get($panTypology, 'meta.finalperiod'),
+            'code' => $panTypology['code'],
+            'imageUrl' => array_get($panTypology, 'meta.imageUrl'),
+            'mainCategory' => $mainCategory
         ];
     }
 }

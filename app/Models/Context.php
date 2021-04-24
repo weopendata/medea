@@ -92,7 +92,7 @@ class Context extends Base
             'config' => [
                 'key' => 'contextDating',
                 'name' => 'contextDating',
-                'cidoc_type' => 'E13'
+                'cidoc_type' => 'E13',
             ]
         ]
     ];

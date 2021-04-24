@@ -10,9 +10,6 @@ use Everyman\Neo4j\Relationship;
 use App\Repositories\UserRepository;
 use App\Repositories\CollectionRepository;
 
-/**
- * @SuppressWarnings(PHPMD.TooManyMethods)
- */
 class Person extends Base implements Authenticatable, CanResetPassword
 {
     public static $NODE_TYPE = 'E21';

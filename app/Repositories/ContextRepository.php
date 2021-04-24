@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\Context;
+use Everyman\Neo4j\Exception;
 
 class ContextRepository extends BaseRepository
 {
