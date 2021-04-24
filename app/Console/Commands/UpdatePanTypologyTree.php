@@ -81,6 +81,12 @@ class UpdatePanTypologyTree extends Command
 
         $typologies = $this->makePanRequest($uri);
 
+        if (empty($typologies)) {
+            $this->info("WARNING: skipping branch for $uri, an empty set was returned by PAN or it was a leaf node.");
+
+            return;
+        }
+
         foreach ($typologies as $typology) {
             $this->upsertTypology($typology);
         }
@@ -131,7 +137,7 @@ class UpdatePanTypologyTree extends Command
     {
         $client = new Client([
             'base_uri' => $uri,
-            'timeout' => 30
+            'timeout' => 60
         ]);
 
         try {
