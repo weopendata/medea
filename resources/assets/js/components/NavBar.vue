@@ -10,7 +10,7 @@
           <a href="/finds/create" class="item" :class="path == '/finds/create' ? 'active' : ''" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
         </template>
         <template v-if="isAdmin">
-          <a href="/uploads" class="item" :class="path == '/uploads' ? 'active' : ''" data-step="3" data-intro="Klik hier om vondsten te importeren." id="uploads">Importeren</a>
+          <a href="/file-uploads" class="item" :class="path == '/file-uploads' ? 'active' : ''" data-step="3" data-intro="Klik hier om vondsten te importeren." id="uploads">Importeren</a>
         </template>
         <a class="item" :href="cmsLink">Over MEDEA</a>
 

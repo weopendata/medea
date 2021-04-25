@@ -1,5 +1,5 @@
 <template>
-  <form class="ui form" @submit.prevent="submit" :action="'/uploads'" enctype="multipart/form-data"
+  <form class="ui form" @submit.prevent="submit" :action="'/file-uploads'" enctype="multipart/form-data"
         style="margin: 5em 0 5em;">
     <h2>Nieuw upload bstand</h2>
     <div class="card card-center cls-card upload-card" style="margin-left: 0em;">
@@ -77,7 +77,7 @@
         }
 
         axios
-          .post('/uploads', formData, config)
+          .post('/file-uploads', formData, config)
           .then(response => {
             this.file = null
             this.name = ''
