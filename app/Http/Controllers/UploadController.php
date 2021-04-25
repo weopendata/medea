@@ -109,7 +109,7 @@ class UploadController extends Controller
      */
     public function destroy(Request $request)
     {
-        app(FileUploadRepository::class)->delete($request->upload);
+        app(FileUploadRepository::class)->delete($request->file_upload);
 
         return response()->json(['message' => 'success']);
     }
