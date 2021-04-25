@@ -59,7 +59,7 @@ class ImportFinds extends AbstractImporter
                 $productionClassification = [
                     'productionClassificationValue' => $panId,
                     'productionClassificationType' => 'Typologie',
-                    'productionClassificationDescription' => $classificationDescription
+                    'productionClassificationDescription' => $classificationDescription,
                 ];
 
                 app(ObjectRepository::class)->addPanIdClassification($find['object']['identifier'], $productionClassification);
