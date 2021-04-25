@@ -40,7 +40,7 @@
           })
       },
       deleteUpload(uploadInfo) {
-        axios.delete('/uploads/' + uploadInfo.id)
+        axios.delete('/file-uploads/' + uploadInfo.id)
           .then(response => {
             this.fetchUploads()
           })
