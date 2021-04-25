@@ -113,3 +113,12 @@ When booting the Neo4j, you might get a warning telling you that the amount of o
 Following the documentation of Neo4j might not work, but adding the number of open files to the system config files for the sudo or neo4j user.
 
 If this is the case, add "ulimit -n 40000" to in the do_start() function of the neo4j-service, this should boot the application with the preferred amount of open files.
+
+In local or production environments it might be that this solves the issue with open files for Neo4j itself, but in some cases it might be that your webserver set-up, 
+either the webserver itself or the underlying PHP process hits its open files limits as well. In the case of production, you can configure user level open files configurations, 
+do this for php-fpm. In local set-ups, the easiest way is to increase system wide open files settings and then running the PHP server from the cli, skipping tools like Laravel Valet.
+
+```
+# Note, this might cause the "uploads" route to be inaccessible.
+cd public && php -S localhost:8080
+``` 
