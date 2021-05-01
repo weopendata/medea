@@ -121,4 +121,128 @@ class PanTypologyRepository
             'mainCategory' => $mainCategory
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function getTree()
+    {
+        $tree = [];
+
+        $allTypologies = $this
+            ->typology
+            ->orderBy('depth', 'ASC')
+            ->get()
+            ->mapWithKeys(function ($typology) {
+                $typology = $typology->toArray();
+
+                // Build up the parent code if there is one
+                $typology['parent_code'] = null;
+
+                if (!empty($typology['parent_id'])) {
+                    // We assume there's only 1 parent URI
+                    $parentUri = array_get($typology, 'meta.broaders.0');
+                    $pieces = explode('/', $parentUri);
+                    $parentCode = end($pieces);
+
+                    $pieces = explode('-', $parentCode);
+
+                    $typology['parent_code'] = implode('-', $pieces);
+                }
+
+                $children = array_get($typology, 'meta.narrowers') ?? [];
+
+                // Save the keys as strings, but since they are numerical, we need to force them to be strings
+                // This can be done by casting a class to an array, i.e. ['1' => ...] will not work as it will interpret it as a number, == [1 => ...]
+                $childrenCodes = collect($children)
+                    ->mapWithKeys(function ($child) {
+                        $pieces = explode('/', $child);
+                        return [end($pieces) => []];
+                    })
+                    ->toArray();
+
+                $meta = $typology['meta'];
+                $meta = array_only(
+                    $meta,
+                    [
+                        'initialPeriod',
+                        'finalPeriod',
+                        'imageUrl',
+                        'scopeNotes',
+                    ]
+                );
+
+                $meta['childrenCodes'] = $childrenCodes;
+
+                $typology = array_only(
+                    $typology,
+                    [
+                        'label',
+                        'parent_code',
+                        'uri',
+                        'depth',
+                        'code',
+                        'parent_code'
+                    ]
+                );
+
+                $typology = array_merge($typology, $meta);
+
+                return [$typology['code'] => $typology];
+            });
+
+        foreach ($allTypologies as $typology) {
+            $code = $typology['code'];
+            $parentCode = $typology['parent_code'];
+
+            if (empty($parentCode)) {
+                $tree[$code] = $typology;
+            } else {
+                try {
+                    $childValue = &$this->getItem($tree, $parentCode);
+                    $childValue[$code] = $typology;
+                } catch (\Exception $ex) {
+                    // This could happen as sometimes the import command for the typology misses out on some parts of the typology because of timeouts on the API server's side
+                    \Log::error("No entry found for parent $parentCode, this was required for typology with code $code");
+                }
+            }
+        }
+
+        return array_values($tree);
+    }
+
+    /**
+     * @param array $array
+     * @param string $path
+     * @return mixed
+     * @throws \Exception
+     */
+    private function &getItem(&$array, $path)
+    {
+        $target = &$array;
+        $path = explode('-', $path);
+
+        $pathParts = [];
+        $pathString = '';
+        foreach ($path as $pathPiece) {
+            $pathString .= '-' . $pathPiece;
+            $pathString = ltrim($pathString, '-');
+            $pathParts[] = $pathString;
+        }
+
+        foreach ($pathParts as $key) {
+            if (!is_null(@$target[$key]) && array_key_exists('childrenCodes', $target[$key])) {
+                $target = &$target[$key];
+                $target = &$target['childrenCodes'];
+            } else if (!is_null(@$target[$key])) {
+                $target = &$target[$key];
+            } else {
+                /*var_dump(implode('-', $path));
+                dd($array['05']);*/
+                throw new \Exception('Undefined path: ["' . implode('","', $path) . '"]');
+            }
+        }
+
+        return $target;
+    }
 }

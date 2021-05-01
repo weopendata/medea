@@ -12,7 +12,10 @@
         <template v-if="isAdmin">
           <a href="/file-uploads" class="item" :class="path == '/file-uploads' ? 'active' : ''" data-step="3" data-intro="Klik hier om vondsten te importeren." id="uploads">Importeren</a>
         </template>
-        <a class="item" :href="cmsLink">Over MEDEA</a>
+        <template>
+          <a href="/typology-browser" class="item" :class="path == '/typology-browser' ? 'active' : ''" data-step="4" data-intro="Klik hier om via de typologie vondsten te ontdekken" id="typology-browser">Typologie Browser</a>
+        </template>
+        <!--<a class="item" :href="cmsLink">Over MEDEA</a>-->
 
         <div class="right menu">
           <template v-if="isGuest">
