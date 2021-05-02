@@ -74,7 +74,8 @@ class PanTypologyRepository
             return $typology;
         }
 
-        // Remove the last piece of the code, which is the code for the child/leaf itself and keep the other parts, which is the unique code for the parent
+        // TODO: this snippet below can be removed, or updated. The assumption that the path of the node contains the parent path is wrong, i.e. 05-01-91-03
+        /*// Remove the last piece of the code, which is the code for the child/leaf itself and keep the other parts, which is the unique code for the parent
         array_pop($pieces);
 
         $parentCode = implode('-', $pieces);
@@ -86,7 +87,7 @@ class PanTypologyRepository
         }
 
         $typology->parent_id = $parentTypology->id;
-        $typology->save();
+        $typology->save();*/
 
         return $typology;
     }
@@ -165,10 +166,12 @@ class PanTypologyRepository
                 $meta = array_only(
                     $meta,
                     [
-                        'initialPeriod',
-                        'finalPeriod',
+                        'initialperiod',
+                        'finalperiod',
                         'imageUrl',
                         'scopeNotes',
+                        'definitions',
+                        'properties'
                     ]
                 );
 

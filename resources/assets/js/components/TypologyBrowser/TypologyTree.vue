@@ -1,7 +1,7 @@
 <template>
   <div class="tree-root" v-if="displayItem">
       <div class="item-line">
-        <div @click="handleToggleCollapsed">{{root.label}}</div>
+        <div @click="handleToggleCollapsed">{{root.label}}&nbsp;[{{root.code}}]</div>
         <!--<icon :name="shouldCollapse ? 'chevron-right' : 'chevron-down'" @click="handleToggleCollapsed" class="icon" :class="(children !== undefined && children.length > 0) && !atMaximumDepth ? '' : 'hidden'"/>-->
       </div>
 
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import { _unique } from '../../helpers'
+  import $bus from "../../helpers/bus";
 
   export default {
     name: "TypologyTree",
@@ -76,6 +76,8 @@
     methods: {
       handleToggleCollapsed () {
         this.collapsed = !this.collapsed
+
+        $bus.$emit('typologySelected', { typology: this.root })
       },
       updateChildMatchesQuery (matchesQuery) {
         this.childMatchesSearchQuery = matchesQuery.match
@@ -112,7 +114,8 @@
   }
   .item-line {
     display: flex;
-    height: 24px;
+    height: 100%;
+    overflow: auto;
     line-height: 24px;
   }
   .item-line {
