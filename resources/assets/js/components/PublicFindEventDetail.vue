@@ -61,6 +61,7 @@
 
   import {toPublicBounds} from '../const.js'
   import ObjectFeaturesExtended from "./ObjectFeaturesExtended";
+  import FindHelper from "../mixins/FindHelper";
 
   function sameValues(array) {
     return !!array.reduce((a, b) => a === b ? a : NaN)
@@ -127,54 +128,6 @@
           identifier: this.find.identifier,
           position: {lat: parseFloat(this.location.lat), lng: parseFloat(this.location.lng)}
         }
-      },
-      findTitle() {
-        if (!this.find) {
-          return 'De vondst bestaat niet'
-        }
-
-        // Add a fallback for when we lack the PAN typology meta-data
-        if (!this.typologyInformation) {
-          const title = (this.find.object ? [
-            this.find.object.objectCategory || 'ongeïdentificeerd',
-            this.periodOverruled,
-            this.find.object.objectMaterial
-          ] : [
-            this.find.category || 'ongeïdentificeerd',
-            this.periodOverruled,
-            this.find.material
-          ]).filter(f => f && f !== 'onbekend').join(', ')
-
-          return title + ' (ID-' + this.find.identifier + ')'
-        }
-
-        // Build a title based on the typology
-        var material = (this.find.object && this.find.object.objectMaterial) ? this.find.object.objectMaterial : this.find.material
-        var initialPeriod = 'onbekend';
-        var finalPeriod = 'onbekend'
-
-        if (this.typologyInformation.initialPeriod && this.typologyInformation.initialPeriod.label) {
-          initialPeriod = this.typologyInformation.initialPeriod.label
-        }
-
-        if (this.typologyInformation.finalPeriod && this.typologyInformation.finalPeriod.label) {
-          finalPeriod = this.typologyInformation.finalPeriod.label
-        }
-
-        var timeFrame = initialPeriod + ' - ' + finalPeriod
-
-        return this.typologyInformation.code + ' (' + this.typologyInformation.label + '), ' + timeFrame + ', ' + material
-      },
-      periodOverruled() {
-        const periods = (this.find.object.productionEvent.productionClassification || [])
-          .map(c => c.productionClassificationCulturePeople)
-          .filter(Boolean)
-
-        if (periods.length > 1 && !sameValues(periods)) {
-          return 'onzeker'
-        }
-
-        return periods[0]
       },
       findDetailLink() {
         return window.location.href
@@ -243,6 +196,7 @@
         this.fetch()
       }
     },
+    mixins: [FindHelper],
     components: {
       ObjectFeaturesExtended,
       AddClassification,

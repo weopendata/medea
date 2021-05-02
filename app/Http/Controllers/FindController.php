@@ -39,6 +39,7 @@ class FindController extends Controller
      * Display a listing of the resource
      *
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function index(Request $request)
     {
@@ -328,8 +329,6 @@ class FindController extends Controller
             $excavationInformation = $this->fetchExcavationInformation($find);
             $context = $this->fetchFindContext($find);
         }
-
-        //jj($find['object']);
 
         return view($view, [
             'fields' => $this->list_values->getFindTemplate(),

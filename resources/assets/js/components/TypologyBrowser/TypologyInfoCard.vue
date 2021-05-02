@@ -169,6 +169,7 @@
     justify-content: center;
     margin-top: 1rem;
     margin-bottom: 2.5rem;
+    padding: 1rem;
   }
 
   .typology-info-card__info-list {

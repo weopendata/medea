@@ -2,7 +2,9 @@
   <div class="tree-root" v-if="displayItem">
       <div class="item-line">
         <div @click="handleToggleCollapsed">{{root.label}}&nbsp;[{{root.code}}]</div>
-        <!--<icon :name="shouldCollapse ? 'chevron-right' : 'chevron-down'" @click="handleToggleCollapsed" class="icon" :class="(children !== undefined && children.length > 0) && !atMaximumDepth ? '' : 'hidden'"/>-->
+        <div class="ui mini icon pull-right" @click.prevent="selectTypology">
+          <i class="eye icon"></i>
+        </div>
       </div>
 
     <template v-if="!this.shouldCollapse && children && children.length > 0">
@@ -76,11 +78,12 @@
     methods: {
       handleToggleCollapsed () {
         this.collapsed = !this.collapsed
-
-        $bus.$emit('typologySelected', { typology: this.root })
       },
       updateChildMatchesQuery (matchesQuery) {
         this.childMatchesSearchQuery = matchesQuery.match
+      },
+      selectTypology () {
+        $bus.$emit('typologySelected', { typology: this.root })
       }
     }
   }
@@ -117,6 +120,7 @@
     height: 100%;
     overflow: auto;
     line-height: 24px;
+    justify-content: space-between;
   }
   .item-line {
     .buttons {

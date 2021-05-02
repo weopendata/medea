@@ -18,7 +18,7 @@
         </div>
 
         <div slot="Vondsten" class="typology-details__find-results">
-          <typology-finds/>
+          <typology-finds :typology="selectedTypology" />
         </div>
       </tabs>
     </div>
