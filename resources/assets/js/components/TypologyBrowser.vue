@@ -54,7 +54,6 @@
       ),
       updateSelectedTypology (selection) {
         this.selectedTypology = selection.typology
-        console.log(this.selectedTypology)
       }
     },
     mounted() {

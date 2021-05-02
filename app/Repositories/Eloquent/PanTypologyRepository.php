@@ -5,7 +5,6 @@ namespace App\Repositories\Eloquent;
 
 
 use App\Models\Eloquent\PanTypology;
-use Illuminate\Support\Str;
 
 class PanTypologyRepository
 {

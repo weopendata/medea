@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-root" v-if="displayItem">
+  <div class="tree-root" :style="treeStyle">
       <div class="item-line">
         <div @click="handleToggleCollapsed">{{root.label}}&nbsp;[{{root.code}}]</div>
         <div class="ui mini icon pull-right" @click.prevent="selectTypology">
@@ -37,10 +37,18 @@
     data () {
       return {
         collapsed: true,
-        childMatchesSearchQuery: false
+        childMatchesSearchQuery: false,
+        searchQueryCache: ''
       }
     },
     computed: {
+      treeStyle () {
+        if (this.displayItem) {
+          return {}
+        }
+
+        return {visibility: 'hidden', height: '0px', border: '0px', padding: '0px'}
+      },
       children () {
         if (! this.root.childrenCodes) {
           return []
@@ -62,7 +70,14 @@
           return true
         }
 
+        //console.log(`.*${this.searchQuery}.*`, this.root.label)
+
         var regex = new RegExp(`.*${this.searchQuery}.*`, 'ig')
+
+
+        if (this.root.depth == 0) {
+          console.log(this.childMatchesSearchQuery, this.root.label)
+        }
 
         if (regex.test(this.root.label) || regex.test(this.root.code)) {
           this.$emit('childMatchesQuery', { match: true })
@@ -70,9 +85,9 @@
           return true
         }
 
-        this.$emit('childMatchesQuery', { match: false })
+        this.$emit('childMatchesQuery', { match: this.childMatchesSearchQuery })
 
-        return this.childMatchesSearchQuery
+        return this.childMatchesSearchQuery //|| this.matchesSearchQuery
       },
     },
     methods: {
@@ -80,16 +95,47 @@
         this.collapsed = !this.collapsed
       },
       updateChildMatchesQuery (matchesQuery) {
-        this.childMatchesSearchQuery = matchesQuery.match
+        if (matchesQuery.match) {
+          this.childMatchesSearchQuery = matchesQuery.match
+        }
       },
       selectTypology () {
         $bus.$emit('typologySelected', { typology: this.root })
       }
+    },
+    watch: {
+      searchQuery (v) {
+        this.childMatchesSearchQuery = false
+      }
+    },
+    mounted() {
+      /*$bus.$on('searchQueryUpdated', (val) => {
+        var regex = new RegExp(`.*${val}.*`, 'ig')
+
+        //console.log(`.*${val}.*`, this.root.label)
+
+        if (regex.test(this.root.label) || regex.test(this.root.code)) {
+          this.$emit('childMatchesQuery', { match: true })
+          this.matchesSearchQuery = true
+
+          return
+        }
+
+        this.$emit('childMatchesQuery', { match: false })
+        this.matchesSearchQuery = false
+      })*/
+    },
+    beforeDestroy() {
+      $bus.$off('searchQueryUpdated')
     }
   }
 </script>
 
 <style lang="scss" scoped>
+  .hiddenItem {
+    visibility: hidden;
+  }
+
   .children {
     padding-left: 1rem;
     border-left: 2px solid black;
