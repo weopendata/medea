@@ -1,14 +1,24 @@
 <template>
   <div class="typology-browser__container">
     <div class="typology-tree-view">
-      <input type="text" @input="updateSearchQuery($event.target.value)" :value="searchQuery"/>
+      <div class="typology-browser__query-input ui icon input">
+        <i class="search icon"/>
+        <input type="text" @input="updateSearchQuery($event.target.value)" :value="searchQuery"/>
+      </div>
 
-      <typology-tree
-              v-for="(typology, index) in typologyTree"
-              :root="typology"
-              :key="'typology__' + typology.code"
-              :searchQuery="searchQuery"
-      />
+      <div class="typology-tree__container">
+        <typology-tree
+                v-for="(typology, index) in typologyTree"
+                :root="typology"
+                :key="'typology__' + typology.code"
+                :searchQuery="searchQuery"
+                @childMatchesQuery="updateVisibility"
+        />
+      </div>
+
+      <div v-if="hasVisibleTypologies">
+        Geen typologie gevonden die voldoet aan je zoekopdracht
+      </div>
     </div>
 
     <div class="typology-details__container" v-if="selectedTypology && selectedTypology.code">
@@ -41,10 +51,26 @@
         typologyMap: {},
         searchQuery: '',
         selectedTypology: {},
+        visibleTypologies: {},
         tabs: [
           'Typologie Info',
           'Vondsten'
         ]
+      }
+    },
+    computed: {
+      hasVisibleTypologies () {
+        if (!this.searchQuery || this.searchQuery.length < 2) {
+          return true
+        }
+
+        if (!Object.values(this.visibleTypologies)) {
+          return true
+        }
+
+        var values = Object.values(this.visibleTypologies)
+
+        return values.filter(r => r).length > 0
       }
     },
     methods: {
@@ -55,19 +81,24 @@
       ),
       updateSelectedTypology (selection) {
         this.selectedTypology = selection.typology
+      },
+      updateVisibility (mainLevelTypology) {
+        this.visibleTypologies[mainLevelTypology.code] = mainLevelTypology.match
       }
     },
     mounted() {
       this.typologyTree = window.typologyTree
       this.typologyMap = window.typologyMap
 
+      this.typologyTree.forEach(tree => {
+        this.visibleTypologies[tree.code] = true
+      })
+
       $bus.$on('typologySelected', this.updateSelectedTypology)
 
       if (location.hash) {
         var typology = location.hash
         typology = typology.replace('#', '')
-
-        console.log(this.typologyMap)
 
         if (/^\d{2}(-\d{2})*$/.test(typology) && this.typologyMap[typology]) {
           this.selectedTypology = this.typologyMap[typology]
@@ -106,11 +137,12 @@
     max-width: 67%;
   }
 
-  .typology-details__info {
-
+  .typology-browser__query-input {
+    width: 50%;
+    max-width: 300px;
   }
 
-  .typology-details__find-results {
-
+  .typology-tree__container {
+    margin-top: 1rem;
   }
 </style>
