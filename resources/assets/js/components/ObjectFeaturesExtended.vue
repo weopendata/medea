@@ -43,7 +43,7 @@
     </dl>
     <dl>
       <dt>Referentietype</dt>
-      <dd><a :href="typology.uri" target="_blank">{{ typology.label + ' (' + typology.code + ')' }}</a></dd>
+      <dd><a :href="typologyUri(typology.code)" target="_blank">{{ typology.label + ' (' + typology.code + ')' }}</a></dd>
     </dl>
     <dl>
       <dt>Datering type</dt>
@@ -179,6 +179,11 @@
       },
       user() {
         return window.medeaUser
+      }
+    },
+    methods: {
+      typologyUri (code) {
+        return window.location.protocol + "//" + window.location.host + '/typology-browser#' + code
       }
     },
     filters: {

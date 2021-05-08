@@ -16,10 +16,10 @@ class TypologyController extends Controller
      */
     public function show(Request $request)
     {
-        $typologyInfo = Cache::get('typologyinfo');
+        $typologyInfo = Cache::get('typologyinfo') ?? [];
 
-        $typologyTree = [];
-        $typologyMap = [];
+        $typologyTree = @$typologyInfo['tree'];
+        $typologyMap = @$typologyInfo['map'];
 
         if (empty($typologyInfo)) {
             $typologyInfo = app(PanTypologyRepository::class)->getTree();
