@@ -3,20 +3,20 @@
     <div class="typology-tree-view">
       <div class="typology-browser__query-input ui icon input">
         <i class="search icon"/>
-        <input type="text" @input="updateSearchQuery($event.target.value)" :value="searchQuery"/>
+        <input placeholder="Zoeken..." type="text" @input="updateSearchQuery($event.target.value)" :value="searchQuery"/>
       </div>
 
-      <div class="typology-tree__container">
+      <div class="typology-tree__container" :style="treeStyle">
         <typology-tree
                 v-for="(typology, index) in typologyTree"
                 :root="typology"
-                :key="'typology__' + typology.code"
+                :key="'typology__' + typology.code + '__index' + index"
                 :searchQuery="searchQuery"
                 @childMatchesQuery="updateVisibility"
         />
       </div>
 
-      <div v-if="hasVisibleTypologies">
+      <div v-if="!hasVisibleTypologies && hasValidSearchQuery">
         Geen typologie gevonden die voldoet aan je zoekopdracht
       </div>
     </div>
@@ -59,16 +59,26 @@
       }
     },
     computed: {
+      hasValidSearchQuery () {
+        return this.searchQuery && this.searchQuery.length >= 2
+      },
+      treeStyle () {
+        if (!this.hasValidSearchQuery) {
+          return
+        }
+
+        if (this.hasVisibleTypologies ) {
+          return
+        }
+
+        return {visibility: 'hidden', height: '0px', border: '0px', padding: '0px'}
+      },
       hasVisibleTypologies () {
-        if (!this.searchQuery || this.searchQuery.length < 2) {
-          return true
-        }
-
-        if (!Object.values(this.visibleTypologies)) {
-          return true
-        }
-
         var values = Object.values(this.visibleTypologies)
+
+        if (!values || values.length == 0) {
+          return true
+        }
 
         return values.filter(r => r).length > 0
       }
@@ -83,15 +93,15 @@
         this.selectedTypology = selection.typology
       },
       updateVisibility (mainLevelTypology) {
-        this.visibleTypologies[mainLevelTypology.code] = mainLevelTypology.match
+        this.visibleTypologies['code_' + mainLevelTypology.code] = mainLevelTypology.match
       }
     },
-    mounted() {
+    async mounted() {
       this.typologyTree = window.typologyTree
       this.typologyMap = window.typologyMap
 
       this.typologyTree.forEach(tree => {
-        this.visibleTypologies[tree.code] = true
+        this.$set(this.visibleTypologies, 'code_' + tree.code, true)
       })
 
       $bus.$on('typologySelected', this.updateSelectedTypology)
