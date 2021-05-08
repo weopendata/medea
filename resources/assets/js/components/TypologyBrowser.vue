@@ -91,6 +91,10 @@
       ),
       updateSelectedTypology (selection) {
         this.selectedTypology = selection.typology
+
+        if (this.selectedTypology.code) {
+          window.location.hash = '#' + this.selectedTypology.code
+        }
       },
       updateVisibility (mainLevelTypology) {
         this.visibleTypologies['code_' + mainLevelTypology.code] = mainLevelTypology.match
