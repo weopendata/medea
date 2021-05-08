@@ -154,8 +154,8 @@
 
 <style lang="scss" scoped>
   .typology-info-card__container {
-    max-width: 600px;
-    width: 600px;
+    max-width: 700px;
+    width: 700px;
     margin-left: auto;
     margin-right: auto;
 
@@ -174,6 +174,7 @@
 
   .typology-info-card__info-list {
     margin-left: 2rem;
+    margin-right: 1rem;
   }
 
   .typology-info-card__image {
