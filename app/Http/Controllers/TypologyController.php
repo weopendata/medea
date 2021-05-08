@@ -10,17 +10,31 @@ use Illuminate\Support\Facades\Cache;
 
 class TypologyController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show(Request $request)
     {
-        $typologyTree = Cache::get('typologytree');
+        $typologyInfo = Cache::get('typologyinfo');
 
-        if (empty($typologyTree)) {
-            $typologyTree = app(PanTypologyRepository::class)->getTree();
+        $typologyTree = [];
+        $typologyMap = [];
 
-            Cache::put('typologytree', $typologyTree, now()->addHours(24));
+        if (empty($typologyInfo)) {
+            $typologyInfo = app(PanTypologyRepository::class)->getTree();
+            $typologyTree = @$typologyInfo['tree'];
+            $typologyMap = @$typologyInfo['map'];
+
+            Cache::put('typologyinfo', $typologyInfo, now()->addHours(24));
         }
 
-
-        return view('pages.typology-browser', ['typologyTree' => $typologyTree]);
+        return view(
+            'pages.typology-browser',
+            [
+                'typologyTree' => $typologyTree,
+                'typologyMap' => $typologyMap
+            ]
+        );
     }
 }

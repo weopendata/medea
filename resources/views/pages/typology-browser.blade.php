@@ -12,5 +12,6 @@
 @section('script')
     <script type="text/javascript">
         window.typologyTree = {!! json_encode($typologyTree) !!};
+        window.typologyMap = {!! json_encode($typologyMap) !!};
     </script>
 @endsection

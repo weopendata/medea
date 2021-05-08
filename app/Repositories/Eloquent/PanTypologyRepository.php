@@ -210,7 +210,10 @@ class PanTypologyRepository
             }
         }
 
-        return array_values($tree);
+        return [
+            'tree' => array_values($tree),
+            'map' => $allTypologies->toArray()
+        ];
     }
 
     /**
@@ -236,12 +239,12 @@ class PanTypologyRepository
             if (!is_null(@$target[$key]) && array_key_exists('childrenCodes', $target[$key])) {
                 $target = &$target[$key];
                 $target = &$target['childrenCodes'];
-            } else if (!is_null(@$target[$key])) {
-                $target = &$target[$key];
             } else {
-                /*var_dump(implode('-', $path));
-                dd($array['05']);*/
-                throw new \Exception('Undefined path: ["' . implode('","', $path) . '"]');
+                if (!is_null(@$target[$key])) {
+                    $target = &$target[$key];
+                } else {
+                    throw new \Exception('Undefined path: ["' . implode('","', $path) . '"]');
+                }
             }
         }
 

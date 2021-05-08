@@ -38,6 +38,7 @@
     data() {
       return {
         typologyTree: [],
+        typologyMap: {},
         searchQuery: '',
         selectedTypology: {},
         tabs: [
@@ -58,8 +59,20 @@
     },
     mounted() {
       this.typologyTree = window.typologyTree
+      this.typologyMap = window.typologyMap
 
       $bus.$on('typologySelected', this.updateSelectedTypology)
+
+      if (location.hash) {
+        var typology = location.hash
+        typology = typology.replace('#', '')
+
+        console.log(this.typologyMap)
+
+        if (/^\d{2}(-\d{2})*$/.test(typology) && this.typologyMap[typology]) {
+          this.selectedTypology = this.typologyMap[typology]
+        }
+      }
     },
     beforeDestroy() {
       $bus.$off('typologySelected')
