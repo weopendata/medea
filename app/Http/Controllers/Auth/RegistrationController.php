@@ -17,8 +17,9 @@ class RegistrationController extends Controller
     /**
      * Confirm a user's registration
      *
-     * @param  string $token
+     * @param string $token
      * @return mixed
+     * @throws \Everyman\Neo4j\Exception
      */
     public function confirmRegistration($token, AppMailer $mailer)
     {
@@ -38,8 +39,9 @@ class RegistrationController extends Controller
     /**
      * Deny a user's registration
      *
-     * @param  string $token
+     * @param string $token
      * @return mixed
+     * @throws \Everyman\Neo4j\Exception
      */
     public function denyRegistration($token, AppMailer $mailer)
     {

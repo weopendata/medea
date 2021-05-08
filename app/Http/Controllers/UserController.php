@@ -12,12 +12,59 @@ use App\Mailers\AppMailer;
 use App\Models\Person;
 use App\Http\Requests\ViewUserRequest;
 use App\Helpers\Pager;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function __construct(UserRepository $users)
     {
         $this->users = $users;
+    }
+
+    /**
+     * @param Request $request
+     * @param AppMailer $mailer
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function storeUser(Request $request, AppMailer $mailer)
+    {
+        $input = $request->json()->all();
+
+        $validator = Validator::make($input, [
+            'firstName' => 'required|max:255',
+            'lastName' => 'required|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Check if the user already exists
+        if (!$this->users->userExists($input['email'])) {
+            // Rework the input slightly to match the expected graph format
+            $input['personContacts'] = [
+                $input['email']
+            ];
+            $input['verified'] = true;
+            $input['expertise'] = '';
+            $input['research'] = '';
+            $input['bio'] = '';
+            $input['passContactInfoToAgency'] = false;
+            $input['showNameOnPublicFinds'] = false;
+            $input['profileAccessLevel'] = 0;
+
+            $user = $this->users->store($input);
+
+            // Send an email to the user that his email has been confirmed
+            $mailer->sendRegistrationConfirmation($user);
+
+            return response()->json(['message' => 'De gebruiker werd toegevoegd.']);
+        } else {
+            return response()->json(['email' => ['Een gebruiker met dit email adres bestaat al.']], 400);
+        }
     }
 
     public function index(Request $request)
@@ -59,7 +106,7 @@ class UserController extends Controller
     /**
      * Show a users profile
      *
-     * @param int             $userId  The id of the user to show the profile of
+     * @param int $userId The id of the user to show the profile of
      * @param ViewUserRequest $request The form request that handles auth
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -83,7 +130,7 @@ class UserController extends Controller
         // Get the user
         $userNode = $this->users->getById($userId);
 
-        if (! empty($userNode)) {
+        if (!empty($userNode)) {
             $person = new Person();
             $person->setNode($userNode);
             $person->update($request->input());
@@ -121,7 +168,7 @@ class UserController extends Controller
     /**
      * Remove a user
      *
-     * @param int               $userId
+     * @param int $userId
      * @param DeleteUserRequest $request
      *
      * @return Response
@@ -186,7 +233,7 @@ class UserController extends Controller
      */
     public function userSettings($userId, Request $request)
     {
-        if (empty($request->user()) || ! $request->user()->hasRole('administrator')) {
+        if (empty($request->user()) || !$request->user()->hasRole('administrator')) {
             return redirect('/');
         }
 

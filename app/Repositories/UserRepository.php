@@ -23,7 +23,7 @@ class UserRepository extends BaseRepository
      *
      * @param array $properties
      *
-     * @return Node
+     * @return Person
      * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
