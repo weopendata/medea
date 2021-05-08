@@ -1,10 +1,13 @@
 <template>
   <div class="ui very relaxed items typology-finds__container">
-    <find-event-small  v-for="find in finds" :find="find"/>
+    <find-event-small v-for="find in finds" :find="find"/>
     <div v-if="!finds.length" class="finds-empty">
-      <h1 v-if="typology && typology.code">
+      <h1 v-if="typology && typology.code && !fetching">
         Geen resultaten
         <br><small>Er zijn geen vondsten die onder typologie {{typology.code}} vallen.</small>
+      </h1>
+      <h1 v-else-if="fetching">
+        Laden...
       </h1>
     </div>
   </div>
@@ -14,14 +17,14 @@
   export default {
     name: "TypologyFinds",
     props: ['typology'],
-    data () {
+    data() {
       return {
         fetching: false,
         finds: []
       }
     },
     methods: {
-      fetchFinds () {
+      fetchFinds() {
         this.fetching = true
         this.finds = []
 
@@ -41,14 +44,12 @@
           })
       }
     },
-    mounted () {
+    mounted() {
       this.fetchFinds()
     },
     watch: {
-      typology (v) {
-        if (v && v.code !== this.typology.code) {
-          this.fetchFinds()
-        }
+      typology() {
+        this.fetchFinds()
       }
     }
   }

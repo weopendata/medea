@@ -6,7 +6,7 @@
         <input placeholder="Zoeken..." type="text" @input="updateSearchQuery($event.target.value)" :value="searchQuery"/>
       </div>
 
-      <div class="typology-tree__container" :style="treeStyle">
+      <div class="typology-tree__container ui card" :style="treeStyle">
         <typology-tree
                 v-for="(typology, index) in typologyTree"
                 :root="typology"
@@ -154,5 +154,7 @@
 
   .typology-tree__container {
     margin-top: 1rem;
+    padding: 0.5rem;
+    max-height: calc(100vh - 150px);
   }
 </style>

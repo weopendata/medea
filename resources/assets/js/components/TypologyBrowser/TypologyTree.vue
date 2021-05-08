@@ -71,7 +71,7 @@
         }
 
         var regex = new RegExp(`.*${this.searchQuery}.*`, 'ig')
-        
+
         if (regex.test(this.root.label) || regex.test(this.root.code)) {
           this.$emit('childMatchesQuery', { match: true, code: this.root.code })
 
@@ -111,7 +111,10 @@
 
   .children {
     padding-left: 1rem;
-    border-left: 2px solid black;
+    border-left: 1px solid rgba(0, 0, 0, .5);
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    margin-left: 0.15rem;
   }
   .tree-root {
     border: 1px solid transparent;
