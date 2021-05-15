@@ -1,11 +1,9 @@
 <template>
   <div class="card find-event-small__container">
     <div class="find-event-small__img">
-      <div :style="{ 'background-image': 'url(\'' + find.photograph + '\')'}" class="find-event-small__img"
-           v-if="cardCover"></div>
+      <div :style="{ 'background-image': 'url(\'' + find.photograph + '\')'}" class="card-img-abs"
+          style="max-height: 200px;" v-if="cardCover"></div>
       <div style="background:#fff" v-else></div>
-      <!--<a :href="uri" class="card-img-abs" v-if="cardCover" ></a>
-      <a :href="uri" class="card-img-abs" v-else style="background:#fff"></a>-->
     </div>
     <div class="content">
       <div class="find-event-small__title textual">
@@ -58,13 +56,14 @@
     display: flex;
     flex-direction: column;
     width: 200px;
-    height: 100px;
+    min-width: 200px;
   }
 
   .find-event-small__img {
     width: 200px;
     background-size: cover;
-    height: 100%;
+    height: 200px;
+    max-height: 200px;
   }
 
   .find-event-small__title {

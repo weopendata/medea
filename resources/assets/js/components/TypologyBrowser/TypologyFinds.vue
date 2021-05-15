@@ -1,7 +1,12 @@
 <template>
-  <div class="ui very relaxed items typology-finds__container">
-    <find-event-small v-for="find in finds" :find="find"/>
-    <div v-if="!finds.length" class="finds-empty">
+  <div>
+    <div v-if="finds.length">
+      <h1>Vondsten uit Middeleeuws Metaal ({{ findsCount }})</h1>
+      <div class="typology-finds__container">
+        <find-event-small v-for="find in finds" :find="find"/>
+      </div>
+    </div>
+    <div v-else class="finds-empty">
       <h1 v-if="typology && typology.code && !fetching">
         Geen resultaten
         <br><small>Er zijn geen vondsten die onder typologie {{typology.code}} vallen.</small>
@@ -20,7 +25,8 @@
     data() {
       return {
         fetching: false,
-        finds: []
+        finds: [],
+        findsCount: 0,
       }
     },
     methods: {
@@ -32,10 +38,11 @@
           return
         }
 
-        axios.get('/api/finds?order=-identifier&status=Gepubliceerd&panid=' + this.typology.code)
+        axios.get('/api/finds?limit=6&order=-identifier&status=Gepubliceerd&panid=' + this.typology.code)
           .then(result => {
             this.finds = result.data
             this.fetching = false
+            this.findsCount = result.headers['x-total']
           })
           .catch(error => {
             console.log(error)
@@ -58,5 +65,6 @@
 <style scoped>
   .typology-finds__container {
     display: flex;
+    flex-wrap: wrap;
   }
 </style>

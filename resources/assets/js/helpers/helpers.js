@@ -9,8 +9,7 @@ export function getPaging (header) {
     return parseLinkHeader(header) || {}
   }
 
+  const linkHeader = (header && header.map && header.map.Link) || (header && header.map && header.map.link) || ([header.link])
 
-
-  const linkHeader = (header && header.map && header.map.Link) || (header && header.map && header.map.link) || (header.link)
   return linkHeader && parseLinkHeader(linkHeader[0]) || {}
 }

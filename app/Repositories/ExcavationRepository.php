@@ -5,6 +5,9 @@ namespace App\Repositories;
 
 
 use App\Models\ExcavationEvent;
+use App\Models\SearchArea;
+use App\Services\NodeService;
+use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Exception;
 
 class ExcavationRepository extends BaseRepository
@@ -26,5 +29,42 @@ class ExcavationRepository extends BaseRepository
         $excavation->save();
 
         return $excavation->getId();
+    }
+
+    /**
+     * @param string $excavationUUID
+     * @return array
+     * @throws \Exception
+     */
+    public function getMetaDataForExcavation($excavationUUID)
+    {
+        $tentantStatement = NodeService::getTenantWhereStatement(['excavationEvent', 'searchArea']);
+
+        $queryString = "MATCH (excavationEvent:A9)-[r:AP3]->(searchArea:E27) WHERE  $tentantStatement AND excavationEvent.internalId = {excavationUUID}  RETURN excavationEvent, searchArea";
+
+        $variables = [
+            'excavationUUID' => $excavationUUID
+        ];
+
+        $cypherQuery = new Query($this->getClient(), $queryString, $variables);
+
+        $metaData = [];
+
+        // Return the first hit
+        foreach ($cypherQuery->getResultSet() as $row) {
+            $excavation = $row['excavationEvent'];
+            $searchAreaNode = $row['searchArea'];
+
+            $searchArea = new SearchArea();
+            $searchArea->setNode($searchAreaNode);
+            $searchArea = $searchArea->getValues();
+
+            $metaData['searchArea'] = $searchArea;
+            $metaData['internalId'] = $excavation->getProperty('internalId');
+
+            break;
+        }
+
+        return $metaData;
     }
 }

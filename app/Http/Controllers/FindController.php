@@ -271,6 +271,7 @@ class FindController extends Controller
      * @param ShowFindRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws \Everyman\Neo4j\Exception
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function show(ShowFindRequest $request)
     {

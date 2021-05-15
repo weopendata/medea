@@ -652,7 +652,7 @@ class FindRepository extends BaseRepository
             return [];
         }
 
-        return app(ExcavationRepository::class)->getDataViaInternalId($excavationUUID);
+        return app(ExcavationRepository::class)->getMetaDataForExcavation($excavationUUID);
     }
 
     /**

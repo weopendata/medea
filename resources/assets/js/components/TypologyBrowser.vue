@@ -23,7 +23,7 @@
 
     <div class="typology-details__container" v-if="selectedTypology && selectedTypology.code">
       <tabs :tabs="tabs">
-        <div slot="Typologie Info" class="typology-details__info">
+        <div slot="Typologie Info" class="typology-details-info">
           <typology-info-card :typology="selectedTypology"/>
         </div>
 
@@ -149,6 +149,7 @@
   .typology-details__container {
     min-width: 67%;
     max-width: 67%;
+    padding: 1rem;
   }
 
   .typology-browser__query-input {
