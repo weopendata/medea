@@ -133,27 +133,28 @@ class FindController extends Controller
             ];
         })->values();
 
-        return response()->view('pages.finds-list', [
-            'finds' => $finds,
-            'filterState' => [
-                'limit' => $request->input('limit', null),
-                'offset' => $request->input('offset', null),
-                'query' => $request->input('query', ''),
-                'order' => $order,
-                'myfinds' => @$filters['myfinds'],
-                'category' => $request->input('category', '*'),
-                'collection' => (integer)$request->input('collection'),
-                'period' => $request->input('period', '*'),
-                'technique' => $request->input('technique', '*'),
-                'objectMaterial' => $request->input('objectMaterial', '*'),
-                'modification' => $request->input('modification', '*'),
-                'status' => $validated_status,
-                'embargo' => (boolean)$request->input('embargo', false),
-                'showmap' => $request->input('showmap', null)
-            ],
-            'fields' => $fields,
-            'link' => $linkHeader,
-        ])->header('Link', $linkHeader);
+        return response()
+            ->view('pages.finds-list', [
+                'finds' => $finds,
+                'filterState' => [
+                    'limit' => $request->input('limit', null),
+                    'offset' => $request->input('offset', null),
+                    'query' => $request->input('query', ''),
+                    'order' => $order,
+                    'myfinds' => @$filters['myfinds'],
+                    'category' => $request->input('category', '*'),
+                    'collection' => (integer)$request->input('collection'),
+                    'period' => $request->input('period', '*'),
+                    'technique' => $request->input('technique', '*'),
+                    'objectMaterial' => $request->input('objectMaterial', '*'),
+                    'modification' => $request->input('modification', '*'),
+                    'status' => $validated_status,
+                    'embargo' => (boolean)$request->input('embargo', false),
+                    'showmap' => $request->input('showmap', null)
+                ],
+                'fields' => $fields,
+                'link' => $linkHeader,
+            ])->header('Link', $linkHeader);
     }
 
     /**

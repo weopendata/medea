@@ -1,7 +1,7 @@
 <template>
   <div class="tree-root" :style="treeStyle">
-      <div class="item-line">
-        <div @click="handleToggleCollapsed">{{root.label}}&nbsp;[{{root.code}}]</div>
+      <div @click="handleToggleCollapsed" class="item-line">
+        <div>{{root.label}}&nbsp;[{{root.code}}]</div>
         <div class="ui mini icon pull-right" @click.prevent="selectTypology">
           <i class="eye icon"></i>
         </div>

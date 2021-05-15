@@ -222,6 +222,75 @@ class FindRepository extends BaseRepository
     }
 
     /**
+     * Return the first 1000 location pairs matching the filters
+     *
+     * @param array $filters
+     * @return array
+     * @throws \Exception
+     */
+    public function getFindLocations(array $filters)
+    {
+        extract($this->getQueryStatements($filters, '', '', 'Gepubliceerd'));
+
+        $withStatement = collect($withStatement)
+            ->filter(function ($key) {
+                return $key !== 'person';
+            })
+            ->values()
+            ->toArray();
+        $withStatement[] = 'find';
+        $withStatement = array_unique($withStatement);
+        $withStatement = implode(', ', $withStatement);
+
+        $fullMatchStatement = $initialStatement;
+
+        if (!empty($fullMatchStatement)) {
+            $fullMatchStatement .= ', ' . $matchStatement;
+            $fullMatchStatement = trim($fullMatchStatement);
+        }
+
+        $fullMatchStatement = rtrim($fullMatchStatement, ',');
+
+        $query = "MATCH $fullMatchStatement,  (find:E10)-[rFO:P12]->(object:E22)-[P157]->(context:S22)-[rCS:P53]->(searchArea:E27)-[]-(location:E53)
+        WHERE $whereStatement";
+
+        foreach ($optionalStatements as $optionalStatement) {
+            $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
+        }
+
+        $query .= " WITH $withStatement, location
+        WHERE $whereStatement       
+        RETURN DISTINCT location.geoGrid as coords, id(find) as findId
+        LIMIT 1000";
+
+        if (!empty($startStatement)) {
+            $query = $startStatement . $query;
+        }
+
+        $cypherQuery = new Query($this->getClient(), $query, $variables);
+
+        $markers = [];
+
+        foreach ($cypherQuery->getResultSet() as $result) {
+            $pieces = explode(',', $result['coords']);
+
+            if (count($pieces) != 2) {
+                continue;
+            }
+
+            $markers[] = [
+                'identifier' => $result['findId'],
+                'location' => [
+                    'lat' => (double)$pieces[0],
+                    'lng' => (double)$pieces[1]
+                ]
+            ];
+        }
+
+        return $markers;
+    }
+
+    /**
      * Prepare the filtered cypher query
      *
      *

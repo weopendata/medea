@@ -69,24 +69,26 @@ class ImportContexts extends AbstractImporter
         $model['contextInterpretation'] = array_get($data, 'contextInterpretation');
 
         // Only for a C0 context we make a SearchArea
-        if ($data['local_context_id'] == 'C0') {
-            // Find the search area or create one
-            $searchAreaInternalId = SearchArea::createInternalId($contextId);
-            $existingSearchArea = app(SearchAreaRepository::class)->getByInternalId($searchAreaInternalId);
+        // Find the search area or create one
+        $searchAreaInternalId = SearchArea::createInternalId($data['C0_id']);
+        $existingSearchArea = app(SearchAreaRepository::class)->getByInternalId($searchAreaInternalId);
 
-            if (empty($existingSearchArea)) {
-                $searchAreaId = app(SearchAreaRepository::class)->store(['internalId' => $searchAreaInternalId]);
+        /*if (empty($existingSearchArea)) {
+            $searchAreaId = app(SearchAreaRepository::class)->store(['internalId' => $searchAreaInternalId]);
 
-                if (!empty($searchAreaId)) {
-                    $model['searchArea'] = ['id' => $searchAreaId];
-                }
-            } else {
-                $model['searchArea'] = ['id' => $existingSearchArea->getId()];
+            if (!empty($searchAreaId)) {
+                $model['searchArea'] = ['id' => $searchAreaId];
             }
+        } else {
+            $model['searchArea'] = ['id' => $existingSearchArea->getId()];
+        }*/
 
-            if (empty($model['searchArea'])) {
-                throw new \Exception('Could not find or create the searchArea');
-            }
+        if (!empty($existingSearchArea)) {
+            $model['searchArea'] = ['id' => $existingSearchArea->getId()];
+        }
+
+        if (empty($model['searchArea'])) {
+            throw new \Exception('Could not find the searchArea to link the context to');
         }
 
         // Process the related context if there is any
@@ -189,6 +191,7 @@ class ImportContexts extends AbstractImporter
         $data['id'] = strtoupper($data['id']);
         $data['local_context_id'] = $data['id'];
         $data['id'] = Context::createInternalId($data['id'], $data['excavationId']); // Set the ID to the global unique context ID
+        $data['C0_id'] = Context::createInternalId('C0', $data['excavationId']); // Set the ID to the global unique context ID
 
         return $data;
     }

@@ -30,11 +30,31 @@ class FindController extends Controller
 
         if ($type == 'heatmap') {
             return $this->makeHeatMapResponse($request);
+        } else if ($type == 'markers') {
+            return $this->makeMarkerResponse($request);
         } else {
             return $this->makeApiFindsResponse($request);
         }
     }
 
+    /**
+     * @param $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function makeMarkerResponse($request)
+    {
+        extract($this->processQueryParts($request));
+
+        $markers = $this->finds->getFindLocations($filters);
+
+        return response()->json($markers);
+    }
+
+    /**
+     * @param $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     private function makeHeatMapResponse($request)
     {
         extract($this->processQueryParts($request));

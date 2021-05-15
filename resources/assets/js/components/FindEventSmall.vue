@@ -57,6 +57,8 @@
     flex-direction: column;
     width: 200px;
     min-width: 200px;
+    margin-left: 1rem;
+    margin-right: 1rem;
   }
 
   .find-event-small__img {
