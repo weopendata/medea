@@ -23,7 +23,7 @@ class UserRepository extends BaseRepository
      *
      * @param array $properties
      *
-     * @return Node
+     * @return Person
      * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
@@ -106,6 +106,7 @@ class UserRepository extends BaseRepository
      * @param string $token
      *
      * @return Node
+     * @throws \Exception
      */
     public function confirmUser($token)
     {
@@ -135,6 +136,7 @@ class UserRepository extends BaseRepository
      * @param string $token
      *
      * @return Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function denyUser($token)
     {
@@ -165,7 +167,8 @@ class UserRepository extends BaseRepository
      * @param integer $personId
      * @param string $vote_type agree|disagree
      *
-     * @return Relationship
+     * @return \Everyman\Neo4j\PropertyContainer
+     * @throws \Everyman\Neo4j\Exception
      */
     public function addVote($classification, $personId, $vote_type)
     {
@@ -183,6 +186,7 @@ class UserRepository extends BaseRepository
      * @param string $sortOrder The sort order (ASC|DESC)
      *
      * @return array
+     * @throws \Exception
      */
     public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
     {
@@ -193,7 +197,7 @@ class UserRepository extends BaseRepository
         $tenantStatement = NodeService::getTenantWhereStatement(['n']);
 
         $queryString = "MATCH (n:person)
-        WHERE $tenantStatement
+        WHERE $tenantStatement and n.email=~ '.+@.+'
         RETURN n, n.firstName ";
 
         if (!empty($sortBy)) {

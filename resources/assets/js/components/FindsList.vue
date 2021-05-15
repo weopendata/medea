@@ -62,7 +62,6 @@ export default {
   },
   methods: {
     to (q) {
-      //this.$root.filterState.offset = q.offset
       this.$emit('filtersChanged', {offset: q.offset})
     },
     toggleFav () {

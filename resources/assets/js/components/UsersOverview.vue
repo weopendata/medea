@@ -7,8 +7,13 @@
         <li>Aantal classificaties: {{ stats.classifications }}</li>
       </ul>
 
-      <h3>Download vondsten</h3>
-      <a class="ui button" href="/api/export">Download</a>
+      <a class="ui tiny button" href="/api/export">Download vondsten</a>
+
+      <h3>Gebruikers</h3>
+      <invite-user @close="addingUser = false" v-if="addingUser"/>
+
+      <button class="ui tiny button" @click="addingUser = true">Voeg nieuwe gebruiker toe</button>
+
       <table class="ui unstackable table" style="text-align:center;min-width:600px;width:100%">
         <thead>
           <tr>
@@ -67,6 +72,7 @@
   import TrUser from '@/components/TrUser';
 
   import Notifications from '@/mixins/Notifications';
+  import InviteUser from "./InviteUser";
 
   export default {
     data () {
@@ -76,10 +82,11 @@
         paging: {},
         stats: {},
         sortBy: '',
-        sortOrder: ''
+        sortOrder: '',
+        addingUser: false,
       }
     },
-    created() {
+    created () {
       this.users = window.users;
       this.user = window.medeaUser;
       this.paging = window.paging;
@@ -96,6 +103,7 @@
       }
     },
     components: {
+      InviteUser,
       TrUser
     },
     mixins: [Notifications]

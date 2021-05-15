@@ -17,7 +17,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         DataManagement::class,
-        ImportFinds::class,
         SendNotificationsForSavedSearches::class,
 
     ];

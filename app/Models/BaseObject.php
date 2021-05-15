@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\NodeConstants;
 use App\Repositories\CollectionRepository;
 use App\Services\NodeService;
 use Illuminate\Support\Arr;
@@ -13,6 +12,34 @@ class BaseObject extends Base
     public static $NODE_NAME = 'object';
 
     protected $hasUniqueId = true;
+
+    protected $properties = [
+        [
+            'name' => 'feedback',
+        ],
+        [
+            'name' => 'embargo',
+            'default_value' => 'false'
+        ],
+        [
+            'name' => 'validated_at',
+        ],
+        [
+            'name' => 'validated_by'
+        ],
+        [
+            'name' => 'amount'
+        ],
+        [
+            'name' => 'markings'
+        ],
+        [
+            'name' => 'complete'
+        ],
+        [
+            'name' => 'classifiable'
+        ]
+    ];
 
     protected $relatedModels = [
         'P108' => [
@@ -36,7 +63,14 @@ class BaseObject extends Base
             'cascade_delete' => false,
             'link_only' => true,
             'reverse_relationship' => 'P46'
-        ]
+        ],
+        'P157' => [
+            'key' => 'context',
+            'model_name' => 'Context',
+            'cascade_delete' => false,
+            'link_only' => true,
+            'reverse_relationship' => 'P157',
+        ],
     ];
 
     protected $implicitModels = [
@@ -120,22 +154,6 @@ class BaseObject extends Base
         ]
     ];
 
-    protected $properties = [
-        [
-            'name' => 'feedback',
-        ],
-        [
-            'name' => 'embargo',
-            'default_value' => 'false'
-        ],
-        [
-            'name' => 'validated_at',
-        ],
-        [
-            'name' => 'validated_by'
-        ]
-    ];
-
     /**
      * Overwrite the constructor and construct a full text field
      * after construction of the subtree
@@ -143,6 +161,7 @@ class BaseObject extends Base
      * @param array $properties
      *
      * @return Base
+     * @throws \Everyman\Neo4j\Exception
      */
     public function __construct($properties = [])
     {

@@ -25,6 +25,9 @@ class Photograph extends Base
         ],
         [
             'name' => 'src'
+        ],
+        [
+            'name' => 'remarks'
         ]
     ];
 }

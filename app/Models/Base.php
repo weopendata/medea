@@ -27,6 +27,9 @@ class Base
      * List of related models (that are 1 level deep) with their respective relationshipName,
      * this way we can cascade CRUD more eloquently
      *
+     * NOTE: pass 'id' in the data to link a "link only" model via its Neo4j ID, pass 'identifier' to allow to link and update if there's data
+     * NOTE: during 'create' passing identifier will not update any information, but only make the link, even if the related model is not a link only relationship
+     *
      * @var $relatedModels
      */
     protected $relatedModels = [
@@ -130,11 +133,21 @@ class Base
 
                     if (is_array($input) && ! $this->isAssoc($input)) {
                         foreach ($input as $entry) {
-                            $model_name = 'App\Models\\' . $config['model_name'];
-                            $model = new $model_name($entry);
-                            $model->save();
+                            if (empty($entry['identifier'])) {
+                                $model_name = 'App\Models\\' . $config['model_name'];
+                                $model = new $model_name($entry);
+                                $model->save();
 
-                            if (! empty($model)) {
+                                if (! empty($model)) {
+                                    $this->makeRelationship($model, $relationshipName);
+
+                                    if (! empty($config['reverse_relationship'])) {
+                                        $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
+                                    }
+                                }
+                            } else {
+                                $model = $this->searchNode($entry['identifier'], $config['model_name']);
+
                                 $this->makeRelationship($model, $relationshipName);
 
                                 if (! empty($config['reverse_relationship'])) {
@@ -200,7 +213,8 @@ class Base
      *
      * @param array $properties
      *
-     * @return Node
+     * @return \Everyman\Neo4j\Node
+     * @throws Exception
      */
     public function update($properties)
     {
@@ -239,7 +253,14 @@ class Base
                                     $model_name = 'App\Models\\' . $config['model_name'];
                                     $model = new $model_name();
                                     $model->setNode(NodeService::getById($entry['identifier']));
-                                    $model->update($entry);
+
+                                    // Only update if there's data aside from the identifier property
+                                    $entryData = $entry;
+                                    unset($entryData['identifier']);
+
+                                    if (!empty($entryData)) {
+                                        $model->update($entry);
+                                    }
                                 }
                             }
                         } else {
@@ -260,7 +281,9 @@ class Base
                                 if (! empty($model)) {
                                     $this->makeRelationship($model, $relationshipName);
 
-                                    $model->getNode()->relateTo($this->getNode(), $config['reverse_relationship'])->save();
+                                    if (!empty($config['reverse_relationship'])) {
+                                        $model->getNode()->relateTo($this->getNode(), $config['reverse_relationship'])->save();
+                                    }
                                 }
                             } else {
                                 // Check if an identifier is provided, if not, perform a create
@@ -368,6 +391,7 @@ class Base
      * @param array $properties The full list of properties for the model
      *
      * @return void
+     * @throws Exception
      */
     protected function setProperties($properties)
     {
@@ -461,6 +485,9 @@ class Base
         }
     }
 
+    /**
+     * @return \Everyman\Neo4j\Node
+     */
     public function getNode()
     {
         return $this->node;
@@ -534,10 +561,12 @@ class Base
      * Create a node instance with a value property,
      * the general id of the invoking class is automatically added as a label
      *
+     * @param $name
      * @param $labels array      Array of strings that need to be added to the node as labels
      * @param $value  int|string Int or string that contains the value of the node
      *
-     * @return Node
+     * @return \Everyman\Neo4j\Node
+     * @throws Exception
      */
     public function createValueNode($name, $labels, $value)
     {
@@ -572,6 +601,7 @@ class Base
      * @param Node
      *
      * @return array
+     * @throws \Exception
      */
     public function getValues()
     {
@@ -645,6 +675,7 @@ class Base
             // according to the configuration (e.g. is it plural/nested)
             foreach ($related_nodes as $related_node) {
                 $related_node = $related_node->current();
+
                 $node_name = $model_config['config']['name'];
 
                 // Parse value nodes
@@ -783,7 +814,8 @@ class Base
      * @param string $rel_type
      * @param string $endnode_type
      *
-     * @return array
+     * @return \Everyman\Neo4j\Query\ResultSet
+     * @throws \Exception
      */
     protected function getImplicitRelatedNodes($rel_type, $endnode_type, $node_name)
     {
@@ -807,6 +839,7 @@ class Base
      * @param string $endnode_type
      *
      * @return ResultSet
+     * @throws \Exception
      */
     protected function getRelatedNodes($rel_type, $endnode_type)
     {
@@ -827,9 +860,10 @@ class Base
      * Retrieve the relationships between a specified node
      * and the current node
      *
-     * @param  string $nodeType     The type of the node
-     * @param  string $relationship The type of the relationship
+     * @param string $nodeType The type of the node
+     * @param string $relationship The type of the relationship
      * @return array
+     * @throws \Exception
      */
     protected function getRelationships($nodeType)
     {

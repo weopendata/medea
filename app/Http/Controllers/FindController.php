@@ -9,9 +9,13 @@ use App\Http\Requests\EditFindRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Http\Requests\UpdateFindRequest;
 use App\Mailers\AppMailer;
+use App\Models\Context;
 use App\Models\FindEvent;
 use App\Models\Person;
 use App\Repositories\CollectionRepository;
+use App\Repositories\ContextRepository;
+use App\Repositories\Eloquent\PanTypologyRepository;
+use App\Repositories\ExcavationRepository;
 use App\Repositories\FindRepository;
 use App\Repositories\ListValueRepository;
 use App\Repositories\ObjectRepository;
@@ -35,6 +39,7 @@ class FindController extends Controller
      * Display a listing of the resource
      *
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function index(Request $request)
     {
@@ -49,7 +54,7 @@ class FindController extends Controller
         $order_flow = 'ASC';
         $order_by = 'findDate';
 
-        if (! empty($order)) {
+        if (!empty($order)) {
             $first_char = substr($order, 0, 1);
 
             if ($first_char == '-') {
@@ -65,11 +70,11 @@ class FindController extends Controller
         }
 
         // Check if personal finds are set
-        if ($request->has('myfinds') && ! empty($request->user())) {
+        if ($request->has('myfinds') && !empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
         }
 
-        if (! isset($filters['embargo'])) {
+        if (!isset($filters['embargo'])) {
             $filters['embargo'] = 'false';
         }
 
@@ -99,9 +104,9 @@ class FindController extends Controller
 
             // Make sure only authorized users have access to specific location information
             foreach ($finds as $find) {
-                if (empty($user) || (! empty($find['finderId']) && $find['finderId'] != $user->id)
-                    && ! in_array('onderzoeker', $user->getRoles())) {
-                    if (! empty($find['grid']) || ! empty($find['lat'])) {
+                if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
+                    && !in_array('onderzoeker', $user->getRoles())) {
+                    if (!empty($find['grid']) || !empty($find['lat'])) {
                         list($lat, $lon) = explode(',', $find['grid']);
 
                         $find['lat'] = $lat;
@@ -121,11 +126,11 @@ class FindController extends Controller
         // Add the collections as a full list, it's currently still feasible
         // that all collections can be added to the facet filter
         $fields = $this->list_values->getFindTemplate();
-        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function($title, $identifier) {
-           return [
-               'value' => $identifier,
-               'label' => $title
-           ];
+        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function ($title, $identifier) {
+            return [
+                'value' => $identifier,
+                'label' => $title
+            ];
         })->values();
 
         return response()->view('pages.finds-list', [
@@ -137,13 +142,13 @@ class FindController extends Controller
                 'order' => $order,
                 'myfinds' => @$filters['myfinds'],
                 'category' => $request->input('category', '*'),
-                'collection' => (integer) $request->input('collection'),
+                'collection' => (integer)$request->input('collection'),
                 'period' => $request->input('period', '*'),
                 'technique' => $request->input('technique', '*'),
                 'objectMaterial' => $request->input('objectMaterial', '*'),
                 'modification' => $request->input('modification', '*'),
                 'status' => $validated_status,
-                'embargo' => (boolean) $request->input('embargo', false),
+                'embargo' => (boolean)$request->input('embargo', false),
                 'showmap' => $request->input('showmap', null)
             ],
             'fields' => $fields,
@@ -171,12 +176,12 @@ class FindController extends Controller
     /**
      * Transform the periods and add the time range of the period to it
      *
-     * @param  array $fields
+     * @param array $fields
      * @return array
      */
     private function transformPeriods($fields)
     {
-       $periodFields = [
+        $periodFields = [
             'Bronstijd' => '-2000 / -801',
             'IJzertijd' => '-800 / -58',
             'Romeins' => '-57 / 400',
@@ -203,7 +208,7 @@ class FindController extends Controller
      *
      * @param CreateFindRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateFindRequest $request, UserRepository $users)
     {
@@ -218,7 +223,7 @@ class FindController extends Controller
         $images = [];
 
         // Check for images, they need special processing before the Neo4j writing is initiated
-        if (! empty($input['object']['photograph'])) {
+        if (!empty($input['object']['photograph'])) {
             foreach ($input['object']['photograph'] as $image) {
                 list($name, $name_small, $width, $height) = $this->processImage($image);
 
@@ -234,7 +239,7 @@ class FindController extends Controller
         $input['object']['photograph'] = $images;
         $input['person'] = ['id' => $user->id];
 
-        if (! in_array($input['object']['objectValidationStatus'], ['Voorlopige versie', 'Klaar voor validatie', 'Aan te passen'])) {
+        if (!in_array($input['object']['objectValidationStatus'], ['Voorlopige versie', 'Klaar voor validatie', 'Aan te passen'])) {
             $input['object']['objectValidationStatus'] = 'Klaar voor validatie';
         }
 
@@ -253,7 +258,7 @@ class FindController extends Controller
         } catch (\Exception $ex) {
             return response()->json(
                 [
-                'error' => $ex->getMessage()
+                    'error' => $ex->getMessage()
                 ],
                 400
             );
@@ -263,8 +268,10 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  ShowFindRequest           $request
-     * @return \Illuminate\Http\Response
+     * @param ShowFindRequest $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Everyman\Neo4j\Exception
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function show(ShowFindRequest $request)
     {
@@ -277,13 +284,13 @@ class FindController extends Controller
 
         // Check if the user of the find allows their name to be displayed on the find details
         // With imported finds, person can also be empty, so we need to take that into account
-        if (! empty($find['person']['identifier'])) {
+        if (!empty($find['person']['identifier'])) {
             $findUser = $users->getById($find['person']['identifier']);
         }
 
         $publicUserInfo = [];
 
-        if (! empty($findUser)) {
+        if (!empty($findUser)) {
             $person = new Person();
             $person->setNode($findUser);
 
@@ -293,7 +300,7 @@ class FindController extends Controller
 
             // Should there be a link to the profile page
             if ($person->profileAccessLevel == 4 ||
-                ! empty($request->user()) && (
+                !empty($request->user()) && (
                     $request->user()->id == $person->id ||
                     $request->user()->hasRole($person->getProfileAllowedRoles())
                 )
@@ -310,29 +317,103 @@ class FindController extends Controller
         $meta['og:url'] = \Request::url();
         $meta['og:meta'] = 'website';
 
-        return view('pages.finds-detail', [
+        // Based on the which type of find it is, i.e. non-classifiable, classifiable, we return the corresponding
+        $view = 'pages.finds-detail';
+        $typologyInformation = [];
+        $excavationInformation = [];
+
+        if (array_get($find, 'object.classifiable') == 'false') {
+            $view = 'pages.public-finds-detail';
+
+            // If the object cannot be classified, we assume a PAN classification has been added, add this meta-data to the view parameters
+            $typologyInformation = $this->fetchPanTypologyInformation($find);
+            $excavationInformation = $this->fetchExcavationInformation($find);
+            $context = $this->fetchFindContext($find);
+        }
+
+        return view($view, [
             'fields' => $this->list_values->getFindTemplate(),
             'find' => $find,
             'publicUserInfo' => $publicUserInfo,
-            'contact' => 'info@vondsten.be',
-            'meta' => $meta
+            'contact' => env('CONTACT_EMAIL'),
+            'meta' => $meta,
+            'typologyInformation' => $typologyInformation,
+            'excavationInformation' => $excavationInformation,
+            'context' => $context
         ]);
+    }
+
+    /**
+     * @param array $find
+     * @return array
+     */
+    private function fetchFindContext(array $find)
+    {
+        if (empty($find['contextId']) || empty($find['excavationId'])) {
+            return [];
+        }
+
+        $contextId = Context::createInternalId($find['contextId'], $find['excavationId']);
+
+        return app(ContextRepository::class)->getDataViaInternalId($contextId);
+    }
+
+    /**
+     * @param array $find
+     * @return array
+     */
+    private function fetchExcavationInformation(array $find)
+    {
+        // Fetch the excavation UUID from the find and fetch the excavation information based on that
+        $excavationUUID = array_get($find, 'excavationId');
+
+        if (empty($excavationUUID)) {
+            return [];
+        }
+
+        return app(ExcavationRepository::class)->getDataViaInternalId($excavationUUID);
+    }
+
+    /**
+     * @param array $find
+     * @return array
+     */
+    private function fetchPanTypologyInformation(array $find)
+    {
+        // We assume that the only classification value is the PAN ID
+        $classifications = array_get($find, 'object.productionEvent.productionClassification') ?? [];
+
+        $panClassification = collect($classifications)
+            ->filter(function ($classification) {
+                return $classification['productionClassificationType'] == 'Typologie';
+            })
+            ->values()
+            ->toArray();
+
+        $panClassification = @$panClassification[0];
+
+        if (empty($panClassification) || empty($panClassification['productionClassificationValue'])) {
+            return [];
+        }
+
+        return app(PanTypologyRepository::class)->getMetaForPanId($panClassification['productionClassificationValue']);
     }
 
     /**
      * Transform the find based on the role of the user
      * and its relationship to the find
      *
-     * @param  array $find
-     * @param  User  $user
+     * @param array $find
+     * @param User $user
      * @return array
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function transformFind($find, $user)
     {
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
-        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-            && ! in_array('onderzoeker', $user->getRoles())) {
-            if (! empty($find['findSpot']['location']['lat'])) {
+        if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && !in_array('onderzoeker', $user->getRoles())) {
+            if (!empty($find['findSpot']['location']['lat'])) {
                 $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
                 $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
                 $find['findSpot']['location']['accuracy'] = 7000;
@@ -340,13 +421,13 @@ class FindController extends Controller
         }
 
         // Only administrators can see who published the find
-        if (empty($user) || ! in_array('administrator', $user->getRoles())) {
+        if (empty($user) || !in_array('administrator', $user->getRoles())) {
             unset($find['object']['validated_by']);
         }
 
         // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
-        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
+        if (empty($user) || !($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
             unset($find['object']['objectDescription']);
@@ -354,8 +435,8 @@ class FindController extends Controller
 
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
         // unless the user is the owner of the find (or is a registrator or adminstrator)
-        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
-            && ! empty($find['object']['objectNr']) && empty($find['object']['collection'])
+        if (!(!empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
+            && !empty($find['object']['objectNr']) && empty($find['object']['collection'])
         ) {
             unset($find['object']['objectNr']);
         }
@@ -369,10 +450,10 @@ class FindController extends Controller
         foreach ($objectClassifications as $objectClassification) {
             $creator = $classifications->getUser($objectClassification['identifier']);
 
-            if (! empty($creator)) {
+            if (!empty($creator)) {
                 $objectClassification['addedBy'] = $creator->getProperty('firstName') . ' ' . $creator->getProperty('lastName');
 
-                if (! empty($user) && $user->id == $creator->getId()) {
+                if (!empty($user) && $user->id == $creator->getId()) {
                     $objectClassification['addedByUser'] = true;
                 }
             }
@@ -380,7 +461,7 @@ class FindController extends Controller
             $enrichedClassifications[] = $objectClassification;
         }
 
-        if (! empty($objectClassifications)) {
+        if (!empty($objectClassifications)) {
             $find['object']['productionEvent']['productionClassification'] = $enrichedClassifications;
         }
 
@@ -390,7 +471,7 @@ class FindController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  EditFindRequest           $request
+     * @param EditFindRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(EditFindRequest $request)
@@ -400,7 +481,7 @@ class FindController extends Controller
         // Get the collection of the find, could be empty as well
         $collection = app(CollectionRepository::class)->getCollectionForObject($find['object']['identifier']);
 
-        if (! empty($collection)) {
+        if (!empty($collection)) {
             $find['object']['collection'] = $collection;
         }
 
@@ -416,21 +497,22 @@ class FindController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $findId
+     * @param \Illuminate\Http\Request $request
+     * @param int $findId
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Everyman\Neo4j\Exception
      */
     public function update(UpdateFindRequest $request, $findId)
     {
         $find_node = $this->finds->getById($findId);
 
-        if (! empty($find_node)) {
+        if (!empty($find_node)) {
             $input = $request->input();
 
             $images = [];
 
             // Check for images, they need special processing before the Neo4j processing is initiated
-            if (! empty($input['object']['photograph'])) {
+            if (!empty($input['object']['photograph'])) {
                 foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {
                         list($name, $name_small, $width, $height) = $this->processImage($image);
@@ -478,7 +560,7 @@ class FindController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int                       $findId
+     * @param int $findId
      * @return \Illuminate\Http\Response
      */
     public function destroy($findId, DeleteFindRequest $request)
@@ -491,7 +573,7 @@ class FindController extends Controller
     /**
      * Process an image
      *
-     * @param  array $image The configuration of an image, contains a base64 encoded image
+     * @param array $image The configuration of an image, contains a base64 encoded image
      * @return array
      */
     private function processImage($image_config)
@@ -520,7 +602,7 @@ class FindController extends Controller
      * Register a create/update event
      *
      * @param integer $userId
-     * @param string  $action
+     * @param string $action
      * @return
      */
     private function registerPiwikEvent($userId, $action, $status)
@@ -537,7 +619,7 @@ class FindController extends Controller
             $eventName .= 'ButUnexpectedStatus';
         }
 
-        if (! empty(env('PIWIK_SITE_ID')) && ! empty(env('PIWIK_URI'))) {
+        if (!empty(env('PIWIK_SITE_ID')) && !empty(env('PIWIK_URI'))) {
             PiwikTracker::$URL = env('PIWIK_URI');
             $piwikTracker = new PiwikTracker(env('PIWIK_SITE_ID'));
 

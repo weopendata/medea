@@ -31,6 +31,7 @@ class ObjectController extends Controller
      * @param string
      *
      * @return Response
+     * @throws \Everyman\Neo4j\Exception
      */
     public function validation($objectId, Request $request)
     {
@@ -60,9 +61,11 @@ class ObjectController extends Controller
      * Add a notification about the new validation status
      *
      * @param integer $objectId The id of the object
-     * @param array   $input    The input of the request
+     * @param array $input The input of the request
      *
      * @return void
+     * @throws \Everyman\Neo4j\Exception
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function addNotification($objectId, $input)
     {
@@ -115,8 +118,9 @@ class ObjectController extends Controller
      * Register a validation status update event
      *
      * @param integer $userId
-     * @param string  $action
+     * @param string $action
      * @return
+     * @throws \Exception
      */
     private function registerPiwikEvent($userId, $action)
     {

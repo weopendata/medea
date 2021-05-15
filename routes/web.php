@@ -21,6 +21,7 @@ Route::get('voorwaarden', 'HomeController@voorwaarden');
 Route::resource('finds', 'FindController');
 //Route::resource('persons', 'UserController');
 Route::resource('collections', 'CollectionController');
+Route::get('typology-browser', 'TypologyController@show');
 
 Route::group(['middleware' => 'roles:validator|detectorist'], function () {
     Route::post('objects/{id}/validation', 'ObjectController@validation');
@@ -29,6 +30,11 @@ Route::group(['middleware' => 'roles:validator|detectorist'], function () {
 Route::group(['middleware' => 'roles:administrator'], function () {
     Route::get('register/confirm/{token}', 'Auth\RegistrationController@confirmRegistration');
     Route::get('register/deny/{token}', 'Auth\RegistrationController@denyRegistration');
+    Route::resource('/file-uploads', 'UploadController');
+    Route::get('/api/uploads', 'UploadController@get');
+    Route::post('/api/uploads/{uploadId}/upload', 'UploadController@startUpload');
+    Route::get('/api/uploads/{import_job_id}/logs', 'UploadController@getLogs');
+    Route::post('/api/administrators', 'UserController@storeUser');
 });
 
 Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {

@@ -44,6 +44,11 @@ class FindController extends Controller
         return response()->json($heatMap);
     }
 
+    /**
+     * @param $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     private function makeApiFindsResponse($request)
     {
         extract($this->processQueryParts($request));
@@ -92,9 +97,16 @@ class FindController extends Controller
 
         $linkHeader = implode(', ', $linkHeader);
 
-        return response()->json($finds)->header('Link', $linkHeader);
+        return response()
+            ->json($finds)
+            ->header('Link', $linkHeader)
+            ->header('X-Total', $count);
     }
 
+    /**
+     * @param $request
+     * @return array
+     */
     private function processQueryParts($request)
     {
         $filters = $request->all();

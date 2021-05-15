@@ -9,7 +9,13 @@
           <a href="/persons" class="item" :class="path == '/persons' ? 'active' : ''">Leden</a>
           <a href="/finds/create" class="item" :class="path == '/finds/create' ? 'active' : ''" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
         </template>
-        <a class="item" :href="cmsLink">Over MEDEA</a>
+        <template v-if="isAdmin">
+          <a href="/file-uploads" class="item" :class="path == '/file-uploads' ? 'active' : ''" data-step="3" data-intro="Klik hier om vondsten te importeren." id="uploads">Importeren</a>
+        </template>
+        <template>
+          <a href="/typology-browser" class="item" :class="path == '/typology-browser' ? 'active' : ''" data-step="4" data-intro="Klik hier om via de typologie vondsten te ontdekken" id="typology-browser">Typologie Browser</a>
+        </template>
+        <!--<a class="item" :href="cmsLink">Over MEDEA</a>-->
 
         <div class="right menu">
           <template v-if="isGuest">
@@ -71,19 +77,22 @@
         return navClass;
       },
       isGuest () {
-        return ! this.user || ! this.user.email;
+        return ! this.user || ! this.user.email
+      },
+      isAdmin () {
+        return this.user && this.user.administrator
       },
       path () {
-        return window.location.pathname;
+        return window.location.pathname
       }
     },
     mounted() {
-      this.user = window.medeaUser;
-      this.cmsLink = window.cmsLink;
+      this.user = window.medeaUser
+      this.cmsLink = window.cmsLink
     },
     created () {
       $(document).ready(function() {
-        $('nav .ui.dropdown').dropdown();
+        $('nav .ui.dropdown').dropdown()
       });
     },
     mixins: [Notifications]

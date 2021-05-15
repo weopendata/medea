@@ -30,7 +30,7 @@ class PublicationRepository extends BaseRepository
         $tenantStatement = NodeService::getTenantWhereStatement(['publication', 'title']);
 
         $queryString = "
-        MATCH (publication:E31)-[P102]->(title:E35)
+        MATCH (publication:E31)-[r:P102]->(title:E35)
         WHERE title.value =~ {searchString} AND $tenantStatement
         RETURN publication, title.value as title
         LIMIT 20";
@@ -51,5 +51,14 @@ class PublicationRepository extends BaseRepository
         }
 
         return $results;
+    }
+
+    public function getByUri($uri)
+    {
+        if (empty($uri)) {
+            return;
+        }
+
+        return $this->getByProperty('uri', $uri);
     }
 }

@@ -9,6 +9,18 @@ class FindEvent extends Base
 
     protected $hasUniqueId = true;
 
+    protected $properties = [
+        [
+            'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
+        ],
+        [
+            'name' => 'contextId'
+        ],
+        [
+            'name' => 'excavationId'
+        ],
+    ];
+
     protected $relatedModels = [
         'P12' => [
             'key' => 'object',
@@ -42,4 +54,15 @@ class FindEvent extends Base
             ]
         ],
     ];
+
+    /**
+     * @param string $excavationId
+     * @param string $contextId
+     * @param string $findId
+     * @return string
+     */
+    public static function createInternalId($excavationId, $contextId, $findId)
+    {
+        return $excavationId . '__' . $contextId . '__' . $findId;
+    }
 }

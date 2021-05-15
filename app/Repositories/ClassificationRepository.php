@@ -9,6 +9,7 @@ use PhpParser\Node;
 
 /**
  * Class ClassificationRepository
+ * 
  * @package App\Repositories
  */
 class ClassificationRepository extends BaseRepository

@@ -95,6 +95,7 @@ Vue.component('create-find', require('./components/CreateFind.vue').default);
 Vue.component('find-event-detail', require('./components/FindEventDetail.vue').default);
 Vue.component('user-detail', require('./components/UserDetail.vue').default);
 Vue.component('user-settings', require('./components/UserSettings.vue').default);
+Vue.component('uploads', require('./components/Uploads.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
