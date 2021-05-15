@@ -119,6 +119,7 @@
   .typology-finds__container {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-evenly;
     margin-top: 0.5rem;
   }
 

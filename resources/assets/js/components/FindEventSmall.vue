@@ -5,7 +5,7 @@
           style="max-height: 200px;" v-if="cardCover"></div>
       <div style="background:#fff" v-else></div>
     </div>
-    <div class="content">
+    <div class="find-event-small__content">
       <div class="find-event-small__title textual">
         {{ title }} ({{ label }})
       </div>
@@ -71,5 +71,9 @@
   .find-event-small__title {
     font-size: 14px;
     font-weight: 600;
+  }
+
+  .find-event-small__content {
+    padding: 0.5rem;
   }
 </style>
