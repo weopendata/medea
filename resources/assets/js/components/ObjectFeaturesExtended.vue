@@ -77,8 +77,6 @@
       <dt>Onderzoeksreferentie</dt>
       <dd>{{ researchUri }}</dd>
     </dl>
-
-
   </div>
 </template>
 
@@ -127,6 +125,7 @@
       },
       excavationContext() {
         var context = ''
+
 
         if (!this.excavation.searchArea) {
           return context

@@ -1,5 +1,5 @@
 <template>
-  <div class="card find-event-small__container">
+  <div class="card find-event-small__container" @click="goToDetail">
     <div class="find-event-small__img">
       <div :style="{ 'background-image': 'url(\'' + find.photograph + '\')'}" class="card-img-abs"
           style="max-height: 200px;" v-if="cardCover"></div>
@@ -44,6 +44,11 @@
           && this.find._excavationInfo.searchArea.location.address.locationAddressLocality
       }
     },
+    methods: {
+      goToDetail () {
+        window.location.href = this.uri
+      }
+    },
     filters: {
       fromDate
     },
@@ -59,6 +64,7 @@
     min-width: 200px;
     margin-left: 1rem;
     margin-right: 1rem;
+    cursor: pointer;
   }
 
   .find-event-small__img {

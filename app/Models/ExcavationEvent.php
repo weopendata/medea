@@ -58,8 +58,16 @@ class ExcavationEvent extends Base
         [
             'relationship' => 'P33',
             'config' => [
-                'key' => 'excavationProcedure',
-                'name' => 'excavationProcedure',
+                'key' => 'excavationProcedureMetalDetection',
+                'name' => 'excavationProcedureMetalDetection',
+                'cidoc_type' => 'E29'
+            ]
+        ],
+        [
+            'relationship' => 'P33',
+            'config' => [
+                'key' => 'excavationProcedureSifting',
+                'name' => 'excavationProcedureSifting',
                 'cidoc_type' => 'E29'
             ]
         ],
@@ -124,7 +132,57 @@ class ExcavationEvent extends Base
         return $companyNode;
     }
 
-    public function createExcavationProcedure($excavationProcedure)
+    /**
+     * @param array $data
+     * @return \Everyman\Neo4j\Node|void
+     * @throws Exception
+     */
+    public function createExcavationProcedureMetalDetection($value)
+    {
+        $generalId = $this->getGeneralId();
+
+        $procedureNode = NodeService::makeNode();
+        $procedureNode->setProperty('name', 'excavationProcedureMetalDetection');
+        $procedureNode->save();
+        $procedureNode->addLabels([
+            self::makeLabel('E29'),
+            self::makeLabel('excavationProcedureMetalDetection'),
+            self::makeLabel($generalId)
+        ]);
+
+        $procedureType = $this->createValueNode('excavationProcedureMetalDetectionType', ['E55', 'excavationProcedureType'], $value);
+
+        $procedureNode->relateTo($procedureType, 'P2')->save();
+
+        return $procedureNode;
+    }
+
+    /**
+     * @param array $data
+     * @return \Everyman\Neo4j\Node|void
+     * @throws Exception
+     */
+    public function createExcavationProcedureSifting($value)
+    {
+        $generalId = $this->getGeneralId();
+        
+        $procedureNode = NodeService::makeNode();
+        $procedureNode->setProperty('name', 'excavationProcedureSifting');
+        $procedureNode->save();
+        $procedureNode->addLabels([
+            self::makeLabel('E29'),
+            self::makeLabel('excavationProcedureSifting'),
+            self::makeLabel($generalId)
+        ]);
+
+        $procedureType = $this->createValueNode('excavationProcedureSiftingType', ['E55', 'excavationProcedureType'], $value);
+
+        $procedureNode->relateTo($procedureType, 'P2')->save();
+
+        return $procedureNode;
+    }
+
+    /*public function createExcavationProcedure($excavationProcedure)
     {
         $generalId = $this->getGeneralId();
 
@@ -152,7 +210,7 @@ class ExcavationEvent extends Base
         }
 
         return $procedureNode;
-    }
+    }*/
 
     /**
      * @param $nodeName
@@ -160,7 +218,7 @@ class ExcavationEvent extends Base
      * @param $generalId
      * @return \Everyman\Neo4j\Node
      */
-    private function createDetectionTypeNode($nodeName, $value, $generalId)
+    /*private function createDetectionTypeNode($nodeName, $value, $generalId)
     {
         try {
             return $this->createValueNode(
@@ -172,5 +230,5 @@ class ExcavationEvent extends Base
             \Log::error($ex->getMessage());
             \Log::error($ex->getTraceAsString());
         }
-    }
+    }*/
 }

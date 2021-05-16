@@ -5,7 +5,6 @@ namespace App\Jobs\Importers;
 use App\Models\Context;
 use App\Models\SearchArea;
 use App\Repositories\ExcavationRepository;
-use App\Repositories\PublicationRepository;
 use App\Repositories\SearchAreaRepository;
 
 class ImportExcavations extends AbstractImporter
@@ -81,11 +80,13 @@ class ImportExcavations extends AbstractImporter
 
         $excavation['internalId'] = $excavation['excavationUUID'];
         $excavation['company'] = ['companyName' => $data['company']];
-        $excavation['excavationProcedure'] = [
+        $excavation['excavationProcedureSifting'] = $siftingTypeValue;
+        $excavation['excavationProcedureMetalDetection'] = $metalDetectionValue;
+        /*$excavation['excavationProcedure'] = [
             'excavationProcedureSiftingType' => $siftingTypeValue,
             'excavationProcedureMetalDetectionType' => $metalDetectionValue,
             'excavationProcedureInventoryCompleteness' => $inventoryCompletenessValue
-        ];
+        ];*/
 
         // Add the Person link
         $excavation['person'] = [
@@ -181,11 +182,11 @@ class ImportExcavations extends AbstractImporter
 
         $searchArea = app(SearchAreaRepository::class)->getByInternalId($searchAreaInternalId);
 
-        if (empty($searchArea)) {
-            return;
+        if (!empty($searchArea)) {
+            $searchAreaNodeId = $searchArea->getId();
+        } else {
+            $searchAreaNodeId = app(SearchAreaRepository::class)->store($searchAreaData);
         }
-
-        $searchAreaNodeId = $searchArea->getId();
 
         $searchAreaData['internalId'] = $searchAreaInternalId;
 
