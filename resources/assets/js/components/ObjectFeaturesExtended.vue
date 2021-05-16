@@ -73,10 +73,6 @@
       <dt>Metaaldetectie</dt>
       <dd>{{ excavationMetalDetection }}</dd>
     </dl>
-    <dl v-if="contextInterpretation">
-      <dt>Interpretatie context</dt>
-      <dd>{{ contextInterpretation }}</dd>
-    </dl>
 
     <h4>Toegankelijkheid</h4>
     <dl>
@@ -152,7 +148,7 @@
 
         parts.push({
           title: 'Context karakter',
-          value: this.context.contextCharacter.contextCharacterType && this.context.contextCharacter.contextCharacterType
+          value: this.context.contextCharacter && this.context.contextCharacter.contextCharacterType
         })
 
         parts.push({
