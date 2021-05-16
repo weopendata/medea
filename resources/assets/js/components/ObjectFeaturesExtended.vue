@@ -59,6 +59,14 @@
       <dt>Datering context</dt>
       <dd>{{ contextDating }}</dd>
     </dl>
+    <dl v-if="excavationSifting">
+      <dt>Zeven</dt>
+      <dd>{{ excavationSifting }}</dd>
+    </dl>
+    <dl v-if="excavationMetalDetection">
+      <dt>Metaaldetectie</dt>
+      <dd>{{ excavationMetalDetection }}</dd>
+    </dl>
     <dl v-if="contextInterpretation">
       <dt>Interpretatie context</dt>
       <dd>{{ contextInterpretation }}</dd>
@@ -87,14 +95,30 @@
     props: ['find', 'typology', 'excavation', 'context'],
     computed: {
       archiveUri () {
-        if (this.excavation.publication && this.excavation.publication.length === 0) {
+        if (!this.excavation.publication) {
+          return
+        }
+
+        if (this.excavation.publication.length === 0) {
+          return
+        }
+
+        if (! this.excavation.publication[0].archiveURI) {
           return
         }
 
         return this.excavation.publication[0].archiveURI
       },
       researchUri () {
-        if (this.excavation.publication && this.excavation.publication.length === 0) {
+        if (!this.excavation.publication) {
+          return
+        }
+
+        if (this.excavation.publication.length === 0) {
+          return
+        }
+
+        if (! this.excavation.publication[0].researchURI) {
           return
         }
 
@@ -105,6 +129,12 @@
       },
       contextInterpretation () {
         return this.context.contextInterpretation
+      },
+      excavationSifting () {
+        return this.excavation && this.excavation.excavationProcedureSifting && this.excavation.excavationProcedureSifting.excavationProcedureSiftingType
+      },
+      excavationMetalDetection () {
+        return this.excavation && this.excavation.excavationProcedureMetalDetection && this.excavation.excavationProcedureMetalDetection.excavationProcedureMetalDetectionType
       },
       contextDating() {
         if (!this.context) {
