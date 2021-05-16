@@ -59,6 +59,12 @@
       <dt>Datering context</dt>
       <dd>{{ contextDating }}</dd>
     </dl>
+
+    <dl v-for="(contextPart, index) in contextParts">
+      <dt>{{ contextPart.title }}</dt>
+      <dd>{{ contextPart.value }}</dd>
+    </dl>
+
     <dl v-if="excavationSifting">
       <dt>Zeven</dt>
       <dd>{{ excavationSifting }}</dd>
@@ -127,8 +133,34 @@
       currentLink () {
         return window.location.href
       },
-      contextInterpretation () {
-        return this.context.contextInterpretation
+      contextParts () {
+        var parts = []
+
+        if (! this.context) {
+          return parts
+        }
+
+        parts.push({
+          title: 'Legacy ID',
+          value: this.context.contextLegacyId && this.context.contextLegacyId.contextLegacyIdValue
+        })
+
+        parts.push({
+          title: 'Context type',
+          value: this.context.contextType
+        })
+
+        parts.push({
+          title: 'Context karakter',
+          value: this.context.contextCharacter.contextCharacterType && this.context.contextCharacter.contextCharacterType
+        })
+
+        parts.push({
+          title: 'Interpretatie context\n',
+          value: this.context.contextInterpretation
+        })
+
+        return parts.filter(part => part.value)
       },
       excavationSifting () {
         return this.excavation && this.excavation.excavationProcedureSifting && this.excavation.excavationProcedureSifting.excavationProcedureSiftingType

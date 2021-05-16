@@ -61,9 +61,6 @@ class ImportExcavations extends AbstractImporter
             'excavationUUIDType' => 'excavationUUIDType',
             'excavationCustomNumber' => 'excavationCustomNumber',
             'period' => 'excavationPeriod',
-            /*'metalDetectionUsed' => 'metalDetectionUsed',
-            'siftingUsed' => 'siftingUsed',*/
-            //'inventoryCompleteness' => 'inventoryCompleteness', // Not yet clear how these are mapped
             //'remarks' => 'remarks', // Not yet clear how these are mapped
             /*'depotName' => 'depotName',
             'depotAddress' => 'depotAddress',*/ // Not yet clear how these are mapped
@@ -76,17 +73,12 @@ class ImportExcavations extends AbstractImporter
         // Map the metal and sifting methods
         $metalDetectionValue = $this->parseMetalDetectionValue($data['metalDetectionUsed']);
         $siftingTypeValue = $this->parseSiftingTypeValue($data['siftingUsed']);
-        $inventoryCompletenessValue = $this->parseInventoryCompleteness($data['inventoryCompleteness']);
+        //$inventoryCompletenessValue = $this->parseInventoryCompleteness($data['inventoryCompleteness']);
 
         $excavation['internalId'] = $excavation['excavationUUID'];
         $excavation['company'] = ['companyName' => $data['company']];
         $excavation['excavationProcedureSifting'] = $siftingTypeValue;
         $excavation['excavationProcedureMetalDetection'] = $metalDetectionValue;
-        /*$excavation['excavationProcedure'] = [
-            'excavationProcedureSiftingType' => $siftingTypeValue,
-            'excavationProcedureMetalDetectionType' => $metalDetectionValue,
-            'excavationProcedureInventoryCompleteness' => $inventoryCompletenessValue
-        ];*/
 
         // Add the Person link
         $excavation['person'] = [
