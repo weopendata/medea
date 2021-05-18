@@ -19,7 +19,8 @@
             </button>
           </label>
         </div>
-        <div v-if="filterState.type" id="mapview" class="card mapview" v-cloak>
+
+        <div v-if="filterState.type" id="mapview" class="card mapview">
           <div v-if="!HelpText.map" class="card-help">
             <h1>Kaart</h1>
             <p>
@@ -36,24 +37,27 @@
               <button class="ui green button" @click="hideHelp('map')">OK</button>
             </p>
           </div>
-          <google-map :center.sync="map.center" :zoom.sync="map.zoom">
-            <rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></rectangle>
-            <google-marker v-for="f in finds | markable" @g-click="mapClick(f)" @g-mouseover="mapClick(f)"
-                           :position.sync="f.position"></google-marker>
-            <rectangle v-for="f in finds | rectangable" @g-click="mapClick(f)" :bounds="f.bounds"
-                       :options="markerOptions"></rectangle>
-            <div class="gm-panel"
-                 style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;right: 10px;"
-                 v-if="map.info" v-html="map.info"></div>
-            <div class="gm-panel"
-                 style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 50px;"
-                 @click="showHelp(filterState.type=='heatmap'?'heatmap':'map')">Help
+
+          <gmap-map :center.sync="map.center" :zoom.sync="map.zoom" class="fe-overview-map">
+            <gmap-rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></gmap-rectangle>
+            <gmap-marker v-for="f in markable" @g-click="mapClick(f)" @g-mouseover="mapClick(f)"
+                         :position.sync="f.position"></gmap-marker>
+            <gmap-rectangle v-for="f in rectangable" @g-click="mapClick(f)" :bounds="f.bounds"
+                            :options="markerOptions"></gmap-rectangle>
+            <div slot="visible"> <!-- deprecated from Vue 2.6 onwards -->
+              <div class="gm-panel"
+                   style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;right: 10px;"
+                   v-if="map.info" v-html="map.info"></div>
+              <div class="gm-panel"
+                   style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 50px;"
+                   @click="showHelp(filterState.type=='heatmap'?'heatmap':'map')">Help
+              </div>
+              <div class="gm-panel"
+                   style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;">
+                Alle regio's van de vondsten die aan de zoekcriteria voldoen worden op de kaart getoond.
+              </div>
             </div>
-            <div class="gm-panel"
-                 style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;">
-              Alle regio's van de vondsten die aan de zoekcriteria voldoen worden op de kaart getoond.
-            </div>
-          </google-map>
+          </gmap-map>
         </div>
         <finds-list
                 :finds="finds"
@@ -78,8 +82,6 @@
   import FindsList from '@/components/FindsList'
   import FindsFilter from '@/components/FindsFilter'
   import MapControls from '@/components/MapControls'
-  //import {load, Map as GoogleMap, Marker as GoogleMarker, Rectangle, InfoWindow} from 'vue-google-maps'
-  import {GmapMap, GmapMarker, GmapCircle, GmapRectangle, GmapInfoWindow} from 'vue2-google-maps';
   import DevBar from '@/components/DevBar'
 
   import Notifications from '@/mixins/Notifications'
@@ -87,7 +89,7 @@
   import {inert, toPublicBounds, findTitle} from '@/const.js'
   import ls from 'local-storage'
 
-  import {getPaging} from "../helpers/helpers";
+  import parseLinkHeader from 'parse-link-header';
 
   const HEATMAP_RADIUS = 0.05;
 
@@ -109,7 +111,6 @@
   let listQuery, heatmapQuery
 
   export default {
-
     data() {
       return {
         paging: getPaging(window.link),
@@ -133,6 +134,27 @@
       }
     },
     computed: {
+      markable() {
+        return this.finds
+          .filter(f => f.lat && f.accuracy == 1)
+          .map(f => {
+            return {
+              identifier: f.identifier,
+              title: findTitle(f),
+              position: {lat: parseFloat(f.lat), lng: parseFloat(f.lng)}
+            }
+          })
+      },
+      rectangable() {
+        return this.finds
+          .filter(f => f.lat)
+          .map(f => {
+            return {
+              title: findTitle(f),
+              bounds: toPublicBounds(f)
+            }
+          })
+      },
       heatmapMax() {
         return this.rawmap ? Math.max.apply(Math, this.rawmap.map(x => x.count)) : 0
       },
@@ -254,9 +276,9 @@
       },
       mapToggle(v) {
         if (this.filterState.type === v) {
-          this.$set('filterState.type', false)
+          this.$set(this.filterState, 'type', false)
         } else {
-          this.$set('filterState.type', v)
+          this.$set(this.filterState, 'type', v)
           this.fetch('heatmap')
         }
       },
@@ -322,37 +344,14 @@
       this.fetch()
 
       if (this.filterState.type && !this.loaded) {
-        load({key: 'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
+        //load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
         this.loaded = true
-      }
-    },
-    filters: {
-      markable(finds) {
-        return finds
-          .filter(f => f.lat && f.accuracy == 1)
-          .map(f => {
-            return {
-              identifier: f.identifier,
-              title: findTitle(f),
-              position: {lat: parseFloat(f.lat), lng: parseFloat(f.lng)}
-            }
-          })
-      },
-      rectangable(finds) {
-        return finds
-          .filter(f => f.lat)
-          .map(f => {
-            return {
-              title: findTitle(f),
-              bounds: toPublicBounds(f)
-            }
-          })
       }
     },
     watch: {
       'filterState.type'(type) {
         if (type && !this.loaded) {
-          load({key: 'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
+          //load({key:'AIzaSyDCuDwJ-WdLK9ov4BM_9K_xFBJEUOwxE_k'})
           this.loaded = true
         }
         if (type === 'heatmap') {
@@ -371,11 +370,7 @@
       DevBar,
       FindsFilter,
       FindsList,
-      MapControls,
-      GmapMap,
-      GmapMarker,
-      GmapInfoWindow,
-      GmapRectangle
+      MapControls
     }
   }
 </script>
