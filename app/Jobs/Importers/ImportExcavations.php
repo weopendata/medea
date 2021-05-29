@@ -75,8 +75,6 @@ class ImportExcavations extends AbstractImporter
         $collectionTitle = array_get($data, 'depotName');
         $collectionTitle = trim($collectionTitle);
 
-        var_dump($collectionTitle);
-
         $collection = app(CollectionRepository::class)->findOrCreate($collectionTitle);
 
         $excavation['collection'] = [
@@ -167,8 +165,6 @@ class ImportExcavations extends AbstractImporter
         if (!empty($searchAreaId)) {
             $excavation['searchArea'] = ['id' => $searchAreaId];
         }
-
-        info($excavation);
 
         // Return the excavation tree
         return $excavation;
