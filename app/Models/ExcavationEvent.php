@@ -35,6 +35,12 @@ class ExcavationEvent extends Base
             'link_only' => true,
             'required' => false,
         ],
+        'P12' => [
+            'key' => 'collection',
+            'model_name' => 'Collection',
+            'link_only' => true, // TODO: this might need to change
+            'required' => true
+        ]
     ];
 
     protected $implicitModels = [
@@ -165,7 +171,7 @@ class ExcavationEvent extends Base
     public function createExcavationProcedureSifting($value)
     {
         $generalId = $this->getGeneralId();
-        
+
         $procedureNode = NodeService::makeNode();
         $procedureNode->setProperty('name', 'excavationProcedureSifting');
         $procedureNode->save();

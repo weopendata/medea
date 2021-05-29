@@ -303,6 +303,22 @@ class CollectionRepository extends BaseRepository
     }
 
     /**
+     * @param string $title
+     * @return Node
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function findOrCreate(string $title)
+    {
+        $existingResult = $this->getByTitle($title);
+
+        if (!empty($existingResult)) {
+            return $existingResult;
+        }
+
+        return $this->store(['title' => $title]);
+    }
+
+    /**
      * Get the users linked to the collection
      *
      * @param int $collectionId
@@ -409,7 +425,12 @@ class CollectionRepository extends BaseRepository
         return $collections;
     }
 
-    public function getByTitle($title)
+    /**
+     * @param string $title
+     * @return Node
+     * @throws \Exception
+     */
+    public function getByTitle(string $title)
     {
         $title = trim($title);
 
@@ -419,12 +440,12 @@ class CollectionRepository extends BaseRepository
         WHERE n.title =~ {title} AND $tenantStatement
         RETURN n";
 
-        $query = new Query($this->getClient(), $queryString, ['title' => $title]);
+        $query = new Query($this->getClient(), $queryString, ['title' => '(?i)' . $title]);
 
         $results = $query->getResultSet();
 
         if ($results->count() < 1) {
-            return [];
+            return;
         }
 
         return $results[0]->current();

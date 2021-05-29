@@ -4,6 +4,7 @@ namespace App\Jobs\Importers;
 
 use App\Models\Context;
 use App\Models\SearchArea;
+use App\Repositories\CollectionRepository;
 use App\Repositories\ExcavationRepository;
 use App\Repositories\SearchAreaRepository;
 
@@ -62,13 +63,25 @@ class ImportExcavations extends AbstractImporter
             'excavationCustomNumber' => 'excavationCustomNumber',
             'period' => 'excavationPeriod',
             //'remarks' => 'remarks', // Not yet clear how these are mapped
-            /*'depotName' => 'depotName',
-            'depotAddress' => 'depotAddress',*/ // Not yet clear how these are mapped
+            //'depotName' => 'depotName',
+            //'depotAddress' => 'depotAddress',*/ // Not yet clear how these are mapped
         ];
 
         foreach ($mapping as $key => $field) {
             $excavation[$field] = array_get($data, $key);
         }
+
+        // Get the collection title
+        $collectionTitle = array_get($data, 'depotName');
+        $collectionTitle = trim($collectionTitle);
+
+        var_dump($collectionTitle);
+
+        $collection = app(CollectionRepository::class)->findOrCreate($collectionTitle);
+
+        $excavation['collection'] = [
+            'id' => $collection->getId()
+        ];
 
         // Map the metal and sifting methods
         $metalDetectionValue = $this->parseMetalDetectionValue($data['metalDetectionUsed']);
@@ -154,6 +167,8 @@ class ImportExcavations extends AbstractImporter
         if (!empty($searchAreaId)) {
             $excavation['searchArea'] = ['id' => $searchAreaId];
         }
+
+        info($excavation);
 
         // Return the excavation tree
         return $excavation;
