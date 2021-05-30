@@ -37,7 +37,7 @@
 _paq = [];
 var medeaUser = {isGuest: true};
 var cmsLink = {!! json_encode(env('CMS', 'http://medea-cms.weopendata.com')) !!};
-var isApplicationTypePublic = {!! json_encode(env('APP_PUBLIC_ONLY', false) == true) !!}
+var isApplicationPublic = {!! json_encode(env('APP_PUBLIC_ONLY', false) == true) !!};
 
 @if (!Auth::guest())
 try {

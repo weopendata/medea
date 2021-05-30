@@ -22,7 +22,7 @@
             <a href="/login" class="right floated item" :class=" path == '/login' ? 'active' : ''">Log in</a>
           </template>
           <template v-else-if="!isGuest">
-            <a href="#" class="item" :class="path == '/help' ? 'active' : ''" onclick="startIntro();return false">Handleiding</a>
+            <a href="#" class="item" :class="path == '/help' ? 'active' : ''" onclick="startIntro();return false" v-if="!isApplicationPublic">Handleiding</a>
             <div class="ui top right pointing dropdown link item item-notif">
               <span class="text"><span class="ui red circular label" v-if="notifUnread" v-text="notifUnread" v-cloak></span> Meldingen</span>
               <i class="dropdown icon"></i>

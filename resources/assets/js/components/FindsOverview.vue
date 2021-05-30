@@ -90,6 +90,7 @@
   import ls from 'local-storage'
 
   import parseLinkHeader from 'parse-link-header';
+  import {getPaging} from "../helpers/helpers";
 
   const HEATMAP_RADIUS = 0.05;
 

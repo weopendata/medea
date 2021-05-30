@@ -20,14 +20,14 @@
 
     <br/>
     <div class="facets">
-      <div v-if="user.email" class="facet">
+      <div v-if="user.email && !isApplicationPublic" class="facet">
         <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
         <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="user.validator">Te valideren vondsten</a>
         <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
         <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
       </div>
 
-      <facet label="Validatie status" prop="status" :options="statusOptions"></facet>
+      <facet label="Validatie status" prop="status" :options="statusOptions" v-if="!isApplicationPublic"></facet>
       <facet label="Embargo" prop="embargo" :options="embargoOptions"></facet>
       <facet label="Periode" prop="period" :options="fields.classification.period"></facet>
       <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
@@ -45,6 +45,7 @@ import ls from 'local-storage'
 import FindEvent from './FindEvent.vue';
 import Facet from './Facet.vue';
 import {inert} from '../const.js';
+import GlobalSettings from "../mixins/GlobalSettings";
 
 var modificationFields = [
   'meerdere',
@@ -186,6 +187,7 @@ export default {
       }
     }
   },
+  mixins: [GlobalSettings],
   components: {
     Facet,
     FindEvent

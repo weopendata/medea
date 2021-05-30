@@ -77,6 +77,10 @@ class RegisterController extends Controller
 
     public function register(Request $request, AppMailer $mailer)
     {
+        if (isApplicationPublic()) {
+            abort(400);
+        }
+
         $input = $request->json()->all();
 
         $validator = $this->validator($input);

@@ -1,7 +1,7 @@
 export default {
-  computed: {
-    isApplicationPublic () {
-      return window.isApplicationTypePublic
-    }
-  }
+ computed: {
+   isApplicationPublic () {
+     return window.isApplicationPublic
+   }
+ }
 }

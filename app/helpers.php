@@ -37,12 +37,12 @@ function makeFindTitle($find)
 
 /**
  * Return the behaviour the app needs to run in:
- * - public: no registration, stripped from a number of elements in order to make it a slim application to use
+ * - public: no registration, stripped from a number of elements in order to make it a slim application to use, it's a "public" platform
  * - private: the full blown app, including registration, validation of finds, etc.
  *
  * @return boolean
  */
-function getMedeaApplicationType()
+function isApplicationPublic()
 {
     return env('APP_PUBLIC_ONLY', false) == true;
 }
