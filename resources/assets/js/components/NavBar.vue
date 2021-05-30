@@ -4,7 +4,7 @@
       <div class="ui secondary green pointing menu">
         <a href="/" class="item" :class="path == '/' ? 'active' : ''">Home</a>
         <a href="/finds" class="item" :class="path == 'finds' ? 'active' : ''">Vondsten</a>
-        <a class="item" :class="path == '/collections' ? 'active' : ''" href="/collections">Collecties</a>
+        <a class="item" :class="path == '/collections' ? 'active' : ''" href="/collections" v-if="!isApplicationPublic">Collecties</a>
         <template v-if="! this.isGuest">
           <a href="/persons" class="item" :class="path == '/persons' ? 'active' : ''">Leden</a>
           <a href="/finds/create" class="item" :class="path == '/finds/create' ? 'active' : ''" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>
@@ -18,10 +18,10 @@
         <!--<a class="item" :href="cmsLink">Over MEDEA</a>-->
 
         <div class="right menu">
-          <template v-if="isGuest">
+          <template v-if="isGuest && !isApplicationPublic">
             <a href="/login" class="right floated item" :class=" path == '/login' ? 'active' : ''">Log in</a>
           </template>
-          <template v-else>
+          <template v-else-if="!isGuest">
             <a href="#" class="item" :class="path == '/help' ? 'active' : ''" onclick="startIntro();return false">Handleiding</a>
             <div class="ui top right pointing dropdown link item item-notif">
               <span class="text"><span class="ui red circular label" v-if="notifUnread" v-text="notifUnread" v-cloak></span> Meldingen</span>
@@ -58,6 +58,7 @@
 
   import dropdown from 'semantic-ui-css/components/dropdown.min.js'
   import transition from 'semantic-ui-transition/transition.min.js'
+  import GlobalSettings from "../mixins/GlobalSettings";
 
   export default {
     data () {
@@ -95,6 +96,6 @@
         $('nav .ui.dropdown').dropdown()
       });
     },
-    mixins: [Notifications]
+    mixins: [Notifications, GlobalSettings]
   }
 </script>

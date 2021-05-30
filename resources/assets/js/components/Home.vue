@@ -15,7 +15,7 @@
           </span>
         </p>
         <p>
-          <template v-if="! user">
+          <template v-if="! user && !isApplicationPublic">
             <a href="/login" class="ui green button"><i class="sign in icon"></i> Log in </a>
             <a href="#register" class="ui green button"><i class="edit icon"></i> Word lid </a>
           </template>
@@ -25,7 +25,7 @@
         </p>
       </form>
     </div>
-    <form @submit.prevent="submit" class="ui register-container form">
+    <form @submit.prevent="submit" class="ui register-container form" v-if="!isApplicationPublic">
       <template v-if="! user">
         <div data-step="2" data-intro="Ben je al geregistreerd? Klik dan op 'Login'.<br><br>Als je nog niet geregistreerd bent op MEDEA, vul dan dit formulier in en klik op 'Registreer'.">
           <a href="/login?startIntro" style="float:right" class="ui basic small button">Login</a>
@@ -186,6 +186,8 @@
 </template>
 
 <script>
+
+  import GlobalSettings from "../mixins/GlobalSettings";
 
   var zxcvbnAsync = function(pw) {
     if (window.zxcvbn) {
@@ -361,7 +363,7 @@
     mounted () {
       $('.ui.checkbox').checkbox();
     },
-    mixins: [Ajax, Notifications],
+    mixins: [Ajax, Notifications, GlobalSettings],
     components: {
       VueTextareaAutosize
     }
