@@ -23,7 +23,7 @@ class ImportExcavations extends AbstractImporter
             return;
         }
 
-        $existingExcavation = app(ExcavationRepository::class)->getByInternalId($data['excavationUUID']);
+        $existingExcavation = app(ExcavationRepository::class)->getByInternalId($data['excavationID']);
 
         $action = !empty($existingExcavation) ? 'update' : 'create';
 
@@ -57,11 +57,11 @@ class ImportExcavations extends AbstractImporter
         $excavation = [];
 
         $mapping = [
-            'title' => 'excavationTitle',
-            'excavationUUID' => 'excavationUUID',
-            'excavationUUIDType' => 'excavationUUIDType',
+            'excavationTitle' => 'excavationTitle',
+            'excavationID' => 'excavationID',
+            'excavationIDType' => 'excavationIDType',
             'excavationCustomNumber' => 'excavationCustomNumber',
-            'period' => 'excavationPeriod',
+            'excavationPeriod' => 'excavationPeriod',
             //'remarks' => 'remarks', // Not yet clear how these are mapped
             //'depotName' => 'depotName',
             //'depotAddress' => 'depotAddress',*/ // Not yet clear how these are mapped
@@ -86,8 +86,8 @@ class ImportExcavations extends AbstractImporter
         $siftingTypeValue = $this->parseSiftingTypeValue($data['siftingUsed']);
         //$inventoryCompletenessValue = $this->parseInventoryCompleteness($data['inventoryCompleteness']);
 
-        $excavation['internalId'] = $excavation['excavationUUID'];
-        $excavation['company'] = ['companyName' => $data['company']];
+        $excavation['internalId'] = $excavation['excavationID'];
+        $excavation['company'] = ['companyName' => $data['excavationCompany']];
         $excavation['excavationProcedureSifting'] = $siftingTypeValue;
         $excavation['excavationProcedureMetalDetection'] = $metalDetectionValue;
 
@@ -307,15 +307,15 @@ class ImportExcavations extends AbstractImporter
     private function getRequiredFields()
     {
         return [
-            "excavationUUID",
-            "excavationUUIDType",
-            "title",
-            "company",
-            "period",
-            "searchAreaPeriod",
-            "metalDetectionUsed",
-            "siftingUsed",
-            "depotName",
+            'excavationID',
+            'excavationIDType',
+            'excavationTitle',
+            'excavationCompany',
+            'excavationPeriod',
+            'searchAreaPeriod',
+            'metalDetectionUsed',
+            'siftingUsed',
+            'depotName',
         ];
     }
 

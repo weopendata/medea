@@ -123,6 +123,8 @@
         switch (this.selectedUpload.status) {
           case 'queued':
             return 'In wachtrij'
+          case 'running':
+            return 'Aan het verwerken'
           case 'finished':
             return 'Klaar'
         }

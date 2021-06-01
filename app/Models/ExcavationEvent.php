@@ -39,7 +39,8 @@ class ExcavationEvent extends Base
             'key' => 'collection',
             'model_name' => 'Collection',
             'link_only' => true, // TODO: this might need to change
-            'required' => true
+            'required' => true,
+            'cascade_delete' => false,
         ]
     ];
 
