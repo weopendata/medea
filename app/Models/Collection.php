@@ -53,6 +53,18 @@ class Collection extends Base
         return $institutionNode;
     }
 
+    /**
+     * @param string $excavationId
+     * @return string
+     */
+    public static function createInternalId(string $excavationId)
+    {
+        return $excavationId . '__Collection';
+    }
+
+    /**
+     * @var array 
+     */
     protected $properties = [
         [
             'name' => 'title'
@@ -62,6 +74,9 @@ class Collection extends Base
         ],
         [
             'name' => 'collectionType'
+        ],
+        [
+            'name' => 'internalId',
         ]
     ];
 }

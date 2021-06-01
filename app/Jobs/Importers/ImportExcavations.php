@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Importers;
 
+use App\Models\Collection;
 use App\Models\Context;
 use App\Models\SearchArea;
 use App\Repositories\CollectionRepository;
@@ -72,10 +73,18 @@ class ImportExcavations extends AbstractImporter
         }
 
         // Get the collection title
-        $collectionTitle = array_get($data, 'depotName');
-        $collectionTitle = trim($collectionTitle);
+        $collectionInternalId = Collection::createInternalId($excavation['excavationID']);
 
-        $collection = app(CollectionRepository::class)->findOrCreate($collectionTitle);
+        $collection = app(CollectionRepository::class)->getByInternalId($collectionInternalId);
+
+        if (empty($collection)) {
+            $collection = [
+                'internalId' => $collectionInternalId,
+                'collectionType' => 'opgravingsarchief'
+            ];
+
+            $collection = app(CollectionRepository::class)->store($collection);
+        }
 
         $excavation['collection'] = [
             'id' => $collection->getId()
