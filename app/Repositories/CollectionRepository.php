@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Collection;
 use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
+use Everyman\Neo4j\Node;
 
 /**
  * Class CollectionRepository
@@ -100,7 +101,7 @@ class CollectionRepository extends BaseRepository
         WHERE $institutionStatement
         RETURN n as collection, n.title as collectionTitle, collect(distinct person) as person, collect(institutionAppellation) as instNames";
 
-        if (! empty($sortBy)) {
+        if (!empty($sortBy)) {
             // Statements in functions don't seem to work with the Jadell Neo4J library
             if ($sortBy == 'title') {
                 $orderBy = 'LOWER(n.title)';
@@ -122,8 +123,8 @@ class CollectionRepository extends BaseRepository
 
         $queryString .= ' SKIP {offset} LIMIT {limit}';
 
-        $variables['offset'] = (int) $offset;
-        $variables['limit'] = (int) $limit;
+        $variables['offset'] = (int)$offset;
+        $variables['limit'] = (int)$limit;
 
         $cypherQuery = new Query($client, $queryString, $variables);
         $results = $cypherQuery->getResultSet();
@@ -199,8 +200,8 @@ class CollectionRepository extends BaseRepository
     /**
      * Unlink a user (=maintainer ) of a collection
      *
-     * @param  int     $collectionId
-     * @param  int     $userId
+     * @param int $collectionId
+     * @param int $userId
      * @return boolean
      */
     public function unlinkUser($collectionId, $userId)
@@ -239,8 +240,8 @@ class CollectionRepository extends BaseRepository
         RETURN n";
 
         $variables = [
-            'userId' => (int) $userId,
-            'collectionId' => (int) $collectionId
+            'userId' => (int)$userId,
+            'collectionId' => (int)$collectionId
         ];
 
         $query = new Query($this->getClient(), $query, $variables);
@@ -253,7 +254,7 @@ class CollectionRepository extends BaseRepository
      * Create a new collection
      *
      * @param array $properties
-     * @return Node
+     * @return Collection
      * @throws \Everyman\Neo4j\Exception
      */
     public function store($properties)
@@ -283,7 +284,7 @@ class CollectionRepository extends BaseRepository
         WHERE n.title =~ {queryString} AND $tenantStatement
         RETURN n";
 
-        $variables = ['queryString' =>  '(?i).*' . $queryString . '.*'];
+        $variables = ['queryString' => '(?i).*' . $queryString . '.*'];
 
         $query = new Query($this->getClient(), $query, $variables);
         $results = $query->getResultSet();

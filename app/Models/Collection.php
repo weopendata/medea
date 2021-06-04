@@ -12,6 +12,9 @@ class Collection extends Base
     protected $hasUniqueId = true;
 
     protected $relatedModels = [
+        /*'P109' => [
+
+        ]*/
     ];
 
     protected $implicitModels = [
@@ -27,8 +30,6 @@ class Collection extends Base
     ];
 
     /**
-     * Dimension is not a main entity, so we create it in this object only
-     *
      * @param array $institutions
      *
      * @return Node
@@ -38,12 +39,11 @@ class Collection extends Base
     {
         $generalId = $this->getGeneralId();
 
-        // Make E40 Institution
+        // Make E40 Group
         $institutionNode = NodeService::makeNode();
         $institutionNode->setProperty('name', 'institution');
         $institutionNode->save();
 
-        // Set the proper labels to the objectDimensionType
         $institutionNode->addLabels([self::makeLabel('E40'), self::makeLabel('LegalBody'), self::makeLabel($generalId)]);
 
         // Make E82
@@ -63,7 +63,7 @@ class Collection extends Base
     }
 
     /**
-     * @var array 
+     * @var array
      */
     protected $properties = [
         [

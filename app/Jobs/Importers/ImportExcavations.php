@@ -84,6 +84,8 @@ class ImportExcavations extends AbstractImporter
             ];
 
             $collection = app(CollectionRepository::class)->store($collection);
+
+            // TODO: determine in what form the institution needs to be attached/stored in relationship to the collection (cfr. GroupRepository)
         }
 
         $excavation['collection'] = [

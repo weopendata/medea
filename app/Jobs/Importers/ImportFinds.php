@@ -11,6 +11,7 @@ use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 use Everyman\Neo4j\Client;
 use Everyman\Neo4j\Cypher\Query;
+use Illuminate\Support\Facades\Storage;
 
 class ImportFinds extends AbstractImporter
 {
@@ -242,16 +243,35 @@ class ImportFinds extends AbstractImporter
      * @param $value
      * @param array $data
      * @return array
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     private function setPhotograph($find, $value, $data = [])
     {
         $find = $this->initObject($find);
-        $find['object']['photograph'] = [
-            [
-                'src' => $value,
+
+        $values = explode(',', $value);
+
+        $photographs = [];
+
+        foreach ($values as $value) {
+            // TODO: change this by FTP
+            $pieces = explode('/', $value);
+            $photographName = end($pieces);
+
+            $imageData = Storage::disk('local')->get($value);
+
+            list($name, $name_small, $width, $height) = processImage(['src' => $imageData, 'name' => $photographName]);
+
+            $photographs[] = [
+                'src' => '/uploads/' . $name,
+                'resized' => '/uploads/' . $name_small,
+                'width' => $width,
+                'height' => $height,
                 'remarks' => @$data['photographRemarks']
-            ]
-        ];
+            ];
+        }
+
+        $find['object']['photograph'] = $photographs;
 
         return $find;
     }

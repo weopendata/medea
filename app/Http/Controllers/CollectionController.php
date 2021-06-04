@@ -104,8 +104,9 @@ class CollectionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  CreateCollectionRequest|Request $request
-     * @return \Illuminate\Http\Response
+     * @param CreateCollectionRequest|Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Everyman\Neo4j\Exception
      */
     public function store(CreateCollectionRequest $request)
     {
@@ -127,9 +128,10 @@ class CollectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Request                         $request
-     * @param  int                             $collectionId
+     * @param Request $request
+     * @param int $collectionId
      * @return array|\Illuminate\Http\Response
+     * @throws \Everyman\Neo4j\Exception
      */
     public function show(Request $request, $collectionId)
     {

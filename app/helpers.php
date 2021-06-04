@@ -48,6 +48,34 @@ function isApplicationPublic()
 }
 
 /**
+ * TODO: processImage in the FindsController can use this function as well, it's a copy/paste
+ *
+ * @param array $image_config
+ * @return array
+ */
+function processImage(array $image_config)
+{
+    $image = \Image::make($image_config['src']);
+
+    $public_path = public_path('uploads/');
+
+    $image_name = str_random(6) . '_' . $image_config['name'];
+    $image_name_small = 'small_' . $image_name;
+
+    $image->save($public_path . $image_name);
+    $width = $image->width();
+    $height = $image->height();
+
+    // Resize the image and save it under a different name
+    $image->resize(640, 480, function ($constraint) {
+        $constraint->aspectRatio();
+        $constraint->upsize();
+    })->save($public_path . $image_name_small);
+
+    return [$image_name, $image_name_small, $width, $height];
+}
+
+/**
  * Equivalent of dd(), but returns json
  *
  * @param $data
