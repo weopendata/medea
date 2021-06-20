@@ -254,11 +254,10 @@ class ImportFinds extends AbstractImporter
         $photographs = [];
 
         foreach ($values as $value) {
-            // TODO: change this by FTP
             $pieces = explode('/', $value);
             $photographName = end($pieces);
 
-            $imageData = Storage::disk('local')->get($value);
+            $imageData = Storage::disk('ftp')->get($value);
 
             list($name, $name_small, $width, $height) = processImage(['src' => $imageData, 'name' => $photographName]);
 
