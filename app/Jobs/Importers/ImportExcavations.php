@@ -4,9 +4,11 @@ namespace App\Jobs\Importers;
 
 use App\Models\Collection;
 use App\Models\Context;
+use App\Models\Group;
 use App\Models\SearchArea;
 use App\Repositories\CollectionRepository;
 use App\Repositories\ExcavationRepository;
+use App\Repositories\GroupRepository;
 use App\Repositories\SearchAreaRepository;
 
 class ImportExcavations extends AbstractImporter
@@ -63,16 +65,16 @@ class ImportExcavations extends AbstractImporter
             'excavationIDType' => 'excavationIDType',
             'excavationCustomNumber' => 'excavationCustomNumber',
             'excavationPeriod' => 'excavationPeriod',
-            //'remarks' => 'remarks', // Not yet clear how these are mapped
-            //'depotName' => 'depotName',
-            //'depotAddress' => 'depotAddress',*/ // Not yet clear how these are mapped
+            //'remarks' => 'remarks', // Not yet clear how this is mapped
+            'depotName' => 'depotName',
+            'depotAddress' => 'depotAddress',
         ];
 
         foreach ($mapping as $key => $field) {
             $excavation[$field] = array_get($data, $key);
         }
 
-        // Get the collection title
+        // Get or create the persistent excavation collection
         $collectionInternalId = Collection::createInternalId($excavation['excavationID']);
 
         $collection = app(CollectionRepository::class)->getByInternalId($collectionInternalId);
@@ -84,9 +86,26 @@ class ImportExcavations extends AbstractImporter
             ];
 
             $collection = app(CollectionRepository::class)->store($collection);
-
-            // TODO: determine in what form the institution needs to be attached/stored in relationship to the collection (cfr. GroupRepository)
         }
+
+        // Get or create the group based on depotName and attach it to the collection
+        $depotName = $excavation['depotName'];
+        $depotAddress = $excavation['depotAddress'];
+
+        unset($excavation['depotName']);
+        unset($excavation['depotAddress']);
+
+        $internalGroupId = Group::createInternalId($depotName);
+
+        $group = [
+            'internalId' => $internalGroupId,
+            'institutionName' => $depotName,
+            'institutionAddress' => $depotAddress
+        ];
+
+        $groupId = app(GroupRepository::class)->findOrCreate($group);
+
+        app(CollectionRepository::class)->linkWithGroup($collection->getId(), $groupId);
 
         $excavation['collection'] = [
             'id' => $collection->getId()

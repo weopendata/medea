@@ -19,7 +19,7 @@ class GroupRepository extends BaseRepository
     {
         parent::__construct(Group::$NODE_TYPE, Group::class);
     }
-
+    
     /**
      * @param array $group
      * @return int

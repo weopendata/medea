@@ -12,9 +12,14 @@ class Collection extends Base
     protected $hasUniqueId = true;
 
     protected $relatedModels = [
-        /*'P109' => [
-
-        ]*/
+        'P109' => [
+            'key' => 'group',
+            'model_name' => 'Group',
+            'cascade_delete' => false,
+            'required' => false,
+            'plural' => false,
+            'link_only' => true
+        ],
     ];
 
     protected $implicitModels = [

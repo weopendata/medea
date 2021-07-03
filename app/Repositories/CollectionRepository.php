@@ -203,6 +203,7 @@ class CollectionRepository extends BaseRepository
      * @param int $collectionId
      * @param int $userId
      * @return boolean
+     * @throws \Everyman\Neo4j\Exception
      */
     public function unlinkUser($collectionId, $userId)
     {
@@ -248,6 +249,35 @@ class CollectionRepository extends BaseRepository
         $results = $query->getResultSet();
 
         return $results->count() > 0;
+    }
+
+    /**
+     * Unlink the relationship between group and collection and add the link between collection and passed group
+     *
+     * @param int $collectionId
+     * @param int $groupId
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function linkWithGroup(int $collectionId, int $groupId)
+    {
+        $collection = $this->getById($collectionId);
+        $group = app(GroupRepository::class)->getById($groupId);
+
+        if (empty($group) || empty($collection)) {
+            return;
+        }
+
+        $relationships = $collection->getRelationships(['P109']);
+
+        foreach ($relationships as $relationship) {
+            if ($relationship->getEndNode()->getId()) {
+                $relationship->delete();
+            }
+        }
+
+        // Link the group and the collection
+        $collection->relateTo($group, 'P109')->save();
     }
 
     /**
