@@ -302,7 +302,7 @@ class FindRepository extends BaseRepository
         $withStatement = ['validation', 'person'];
 
         // In our query find.id is aliased as identifier
-        $orderStatement = 'identifier ' . $orderFlow;
+        $orderStatement = 'find.created_at ' . $orderFlow;
 
         if ($orderBy == 'period') {
             $matchStatements[] = '(object:E22)-[P42]-(period:E55)';

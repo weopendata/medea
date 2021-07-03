@@ -11,8 +11,8 @@
             Sorteren op:
             <a @click.prevent="sortBy('findDate')"
                :class="{active:filterState.order=='findDate', reverse:filterState.order=='-findDate'}">vondstdatum</a>
-            <a @click.prevent="sortBy('identifier')"
-               :class="{active:filterState.order=='identifier', reverse:filterState.order=='-identifier'}">vondstnummer (ID)</a>
+            <a @click.prevent="sortBy('created_at')"
+               :class="{active:filterState.order=='created_at', reverse:filterState.order=='-created_at'}">datum toegevoegd</a>
           </span>
           <label class="pull-right">
             <button class="ui basic button" :class="{green:filterState.type=='map'}" @click="mapToggle('map')">Kaart
