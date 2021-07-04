@@ -36,22 +36,12 @@ class Group extends Base
         ]
     ];
 
-    /**
-     * @param string $name
-     * @return string
-     */
-    public static function createInternalId(string $name)
-    {
-        $name = strtolower($name);
-        $name = trim($name);
-
-        return $name . '__Group';
-    }
-
-
     protected $properties = [
         [
             'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
+        ],
+        [
+            'name' => 'depotId' 
         ]
     ];
 }

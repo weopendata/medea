@@ -68,6 +68,7 @@ class ImportExcavations extends AbstractImporter
             //'remarks' => 'remarks', // Not yet clear how this is mapped
             'depotName' => 'depotName',
             'depotAddress' => 'depotAddress',
+            'depotId' => 'depotId'
         ];
 
         foreach ($mapping as $key => $field) {
@@ -89,16 +90,17 @@ class ImportExcavations extends AbstractImporter
         }
 
         // Get or create the group based on depotName and attach it to the collection
+        $depotId = $excavation['depotId'];
         $depotName = $excavation['depotName'];
         $depotAddress = $excavation['depotAddress'];
 
         unset($excavation['depotName']);
         unset($excavation['depotAddress']);
-
-        $internalGroupId = Group::createInternalId($depotName);
+        unset($excavation['depotId']);
 
         $group = [
-            'internalId' => $internalGroupId,
+            'internalId' => $depotId,
+            'depotId' => $depotId,
             'institutionName' => $depotName,
             'institutionAddress' => $depotAddress
         ];
@@ -346,6 +348,7 @@ class ImportExcavations extends AbstractImporter
             'metalDetectionUsed',
             'siftingUsed',
             'depotName',
+            'depotId',
         ];
     }
 
