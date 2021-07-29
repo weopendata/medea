@@ -266,7 +266,11 @@ class ImportFinds extends AbstractImporter
                 'resized' => '/uploads/' . $name_small,
                 'width' => $width,
                 'height' => $height,
-                'remarks' => @$data['photographRemarks']
+                'photographCaption' => @$data['photographCaption'],
+                'photographRights' => [
+                    'photographRightsAttribution' => @$data['photographRightsAttribution'],
+                    'photographRightsLicense' => @$data['photographRightsLicense']
+                ]
             ];
         }
 
@@ -593,6 +597,9 @@ class ImportFinds extends AbstractImporter
             'merkteken' => 'markings',
             'volledig?' => 'complete',
             'type beschrijving' => 'classificationDescription',
+            'photographCaption' => 'photographCaption',
+            'photographRightsAttribution' => 'photographRightsAttribution',
+            'photographRightsLicense' => 'photographRightsLicense',
         ];
 
         foreach ($mapping as $key => $newKey) {

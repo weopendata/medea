@@ -41,7 +41,7 @@ class Group extends Base
             'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
         ],
         [
-            'name' => 'depotId' 
+            'name' => 'depotId'
         ]
     ];
 }
