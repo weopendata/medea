@@ -266,7 +266,7 @@ class ImportFinds extends AbstractImporter
                 'resized' => '/uploads/' . $name_small,
                 'width' => $width,
                 'height' => $height,
-                'photographCaption' => @$data['photographCaption'],
+                'photographNote' => @$data['photographNote'],
                 'photographRights' => [
                     'photographRightsAttribution' => @$data['photographRightsAttribution'],
                     'photographRightsLicense' => @$data['photographRightsLicense']
@@ -511,21 +511,6 @@ class ImportFinds extends AbstractImporter
     }
 
     /**
-     * Set the surface treatment
-     *
-     * @param array $find
-     * @param value $value
-     * @return array
-     */
-    private function setSurfaceTreatment($find, $value)
-    {
-        $find = $this->initObject($find);
-        $find['object']['treatmentEvent'] = ['modificationTechnique' => ['modificationTechniqueType' => $value]];
-
-        return $find;
-    }
-
-    /**
      * Set the technique
      *
      * @param array $find
@@ -535,7 +520,45 @@ class ImportFinds extends AbstractImporter
     private function setTechnique($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['productionEvent'] = ['productionTechnique' => ['productionTechniqueType' => $value]];
+
+        if (empty($find['object']['productionEvent']['productionTechnique'])) {
+            $find['object']['productionEvent'] = ['productionTechnique' => ['productionTechniqueType' => $value]];
+        } else {
+            $find['object']['productionEvent']['productionTechnique']['productionTechniqueType'] = $value;
+        }
+
+        return $find;
+    }
+
+    /**
+     * Set the surface treatment
+     *
+     * @param array $find
+     * @param string $value
+     * @return array
+     */
+    private function setSurfaceTreatment($find, $value)
+    {
+        $find = $this->initObject($find);
+
+        if (empty($find['object']['productionEvent']['productionTechnique'])) {
+            $find['object']['productionEvent'] = ['productionTechnique' => ['productionTechniqueSurfaceTreatmentType' => $value]];
+        } else {
+            $find['object']['productionEvent']['productionTechnique']['productionTechniqueSurfaceTreatmentType'] = $value;
+        }
+
+        return $find;
+    }
+
+    /**
+     * @param array $find
+     * @param string $value
+     * @return array
+     */
+    private function setConservation($find, $value)
+    {
+        $find = $this->initObject($find);
+        $find['object']['treatmentEvent'] = ['modificationTechnique' => ['modificationTechniqueType' => $value]];
 
         return $find;
     }
@@ -600,6 +623,7 @@ class ImportFinds extends AbstractImporter
             'photographCaption' => 'photographCaption',
             'photographRightsAttribution' => 'photographRightsAttribution',
             'photographRightsLicense' => 'photographRightsLicense',
+            'conservatie' => 'conservation',
         ];
 
         foreach ($mapping as $key => $newKey) {
