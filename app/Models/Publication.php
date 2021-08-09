@@ -100,6 +100,10 @@ class Publication extends Base
         // Create the type and name of the actor
         if (! empty($creationActors = $publicationCreation['publicationCreationActor'])) {
             foreach ($creationActors as $creationActor) {
+                if (empty($creationActor['publicationCreationActorName'])) {
+                    continue;
+                }
+
                 // Create a publicationCreationActor (E39)
                 $pubCreationActorNode = NodeService::makeNode();
                 $pubCreationActorNode->setProperty('name', 'publicationCreationActor');
