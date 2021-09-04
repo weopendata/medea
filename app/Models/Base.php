@@ -77,7 +77,7 @@ class Base
     /**
      * Create a label (Everyman\Neo4j\Label)
      *
-     * @param  string $label
+     * @param string $label
      * @return Label
      */
     protected static function makeLabel($label)
@@ -125,23 +125,23 @@ class Base
                 abort(400, "The property '" . $config['key'] .
                     "'' is required in order to create the model '" . static::$NODE_NAME . "'");
 
-            } elseif (! empty($properties[$config['key']])) {
+            } elseif (!empty($properties[$config['key']])) {
                 $input = $properties[$config['key']];
 
-                if (! empty($input)) {
+                if (!empty($input)) {
                     $model = null;
 
-                    if (is_array($input) && ! $this->isAssoc($input)) {
+                    if (is_array($input) && !$this->isAssoc($input)) {
                         foreach ($input as $entry) {
                             if (empty($entry['identifier'])) {
                                 $model_name = 'App\Models\\' . $config['model_name'];
                                 $model = new $model_name($entry);
                                 $model->save();
 
-                                if (! empty($model)) {
+                                if (!empty($model)) {
                                     $this->makeRelationship($model, $relationshipName);
 
-                                    if (! empty($config['reverse_relationship'])) {
+                                    if (!empty($config['reverse_relationship'])) {
                                         $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
                                     }
                                 }
@@ -150,13 +150,13 @@ class Base
 
                                 $this->makeRelationship($model, $relationshipName);
 
-                                if (! empty($config['reverse_relationship'])) {
+                                if (!empty($config['reverse_relationship'])) {
                                     $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
                                 }
                             }
                         }
                     } else {
-                        if (! empty($config['link_only']) && $config['link_only']) {
+                        if (!empty($config['link_only']) && $config['link_only']) {
                             // Fetch the node and create the relationship
                             $model = $this->searchNode($input['id'], $config['model_name']);
                         } else {
@@ -165,10 +165,10 @@ class Base
                             $model->save();
                         }
 
-                        if (! empty($model)) {
+                        if (!empty($model)) {
                             $this->makeRelationship($model, $relationshipName);
 
-                            if (! empty($config['reverse_relationship'])) {
+                            if (!empty($config['reverse_relationship'])) {
                                 $model->getNode()->relateTo($this->node, $config['reverse_relationship'])->save();
                             }
                         }
@@ -183,14 +183,14 @@ class Base
 
             $input = @$properties[$model_config['key']];
 
-            if (! empty($input)) {
+            if (!empty($input)) {
                 // We can have multiple instances of an implicit node (e.g. multiple dimensions)
                 // Check which of the cases it is by checking whether the array is associative or not
-                if (is_array($input) && ! $this->isAssoc($input)) {
+                if (is_array($input) && !$this->isAssoc($input)) {
                     foreach ($input as $entry) {
                         $related_node = $this->createImplicitNode($entry, $model_config);
 
-                        if (! empty($related_node)) {
+                        if (!empty($related_node)) {
                             // Make the relationship
                             $this->node->relateTo($related_node, $relationship)->save();
                         }
@@ -198,7 +198,7 @@ class Base
                 } else {
                     $related_node = $this->createImplicitNode($input, $model_config);
 
-                    if (! empty($related_node)) {
+                    if (!empty($related_node)) {
                         // Make the relationship
                         $this->node->relateTo($related_node, $relationship)->save();
                     }
@@ -218,7 +218,7 @@ class Base
      */
     public function update($properties)
     {
-        if (! empty($properties)) {
+        if (!empty($properties)) {
             $client = self::getClient();
 
             $this->setProperties($properties);
@@ -229,15 +229,15 @@ class Base
                 if (empty($properties[$config['key']]) && @$config['required']) {
                     abort(400, "The property '" . $config['key'] . "'' is required in order to create the model '" . static::$NODE_NAME . "'");
 
-                } elseif (! empty($properties[$config['key']])) {
+                } elseif (!empty($properties[$config['key']])) {
                     $input = $properties[$config['key']];
 
                     // Keep track of the related models by the returned identifiers
                     // The identifiers that we get and are not in this list, we need to delete
                     $related_identifiers = [];
 
-                    if (! empty($input)) {
-                        if (is_array($input) && ! $this->isAssoc($input)) {
+                    if (!empty($input)) {
+                        if (is_array($input) && !$this->isAssoc($input)) {
                             foreach ($input as $entry) {
                                 // Check if an identifier is provided, if not, perform a create
                                 if (empty($entry['identifier'])) {
@@ -264,7 +264,7 @@ class Base
                                 }
                             }
                         } else {
-                            if (! empty($config['link_only']) && $config['link_only']) {
+                            if (!empty($config['link_only']) && $config['link_only']) {
                                 // Destroy the relationships, those are temporary
                                 // Remove the link between the end node and this node
                                 $model_name = 'App\Models\\' . $config['model_name'];
@@ -278,7 +278,7 @@ class Base
                                 // Fetch the node of the related model and create the relationship
                                 $model = $this->searchNode($input['id'], $config['model_name']);
 
-                                if (! empty($model)) {
+                                if (!empty($model)) {
                                     $this->makeRelationship($model, $relationshipName);
 
                                     if (!empty($config['reverse_relationship'])) {
@@ -311,14 +311,14 @@ class Base
 
                     $this->node->save();
 
-                    if (empty($config['link_only']) || ! $config['link_only']) {
+                    if (empty($config['link_only']) || !$config['link_only']) {
                         // Delete all of the remaining related models that had no identifiers passed (== deleted)
                         $related_nodes = $this->getRelatedNodes($relationshipName, lcfirst($config['model_name']));
 
                         foreach ($related_nodes as $related_node) {
                             $related_node = $related_node->current();
 
-                            if (! in_array($related_node->getId(), $related_identifiers)) {
+                            if (!in_array($related_node->getId(), $related_identifiers)) {
                                 $model_name = 'App\Models\\' . $config['model_name'];
                                 $model = new $model_name();
                                 $model->setNode($related_node);
@@ -326,7 +326,7 @@ class Base
                             }
                         }
                     }
-                } elseif (! empty($config['link_only']) && $config['link_only']) {
+                } elseif (!empty($config['link_only']) && $config['link_only']) {
                     // Remove the link between the end node and this node
                     $model_name = 'App\Models\\' . $config['model_name'];
 
@@ -360,10 +360,10 @@ class Base
 
                 $input = @$properties[$model_config['key']];
 
-                if (! empty($input)) {
+                if (!empty($input)) {
                     // We can have multiple instances of an implicit node (e.g. multiple dimensions)
                     // Check which of the cases it is by checking whether the array is associative or not
-                    if (is_array($input) && ! $this->isAssoc($input)) {
+                    if (is_array($input) && !$this->isAssoc($input)) {
                         foreach ($input as $entry) {
                             $related_node = $this->createImplicitNode($entry, $model_config);
 
@@ -399,7 +399,7 @@ class Base
         foreach ($this->properties as $propertyConfig) {
             $propertyName = $propertyConfig['name'];
 
-            if (! empty($properties[$propertyName])) {
+            if (!empty($properties[$propertyName])) {
                 $this->node->setProperty($propertyName, $properties[$propertyName]);
             } elseif (array_key_exists('default_value', $propertyConfig)) {
                 $this->node->setProperty($propertyName, $propertyConfig['default_value']);
@@ -449,7 +449,7 @@ class Base
         // viable and can be automated. If not the specific create function will be called
         // to create the further internal model. Basically this means we only need to do
         // a one to one translation from a value and a node -> make the node and set the value property.
-        if (! empty($config['value_node']) && $config['value_node']) {
+        if (!empty($config['value_node']) && $config['value_node']) {
             $related_node = $this->createValueNode($config['key'], [$config['cidoc_type']], $input);
         } else {
             $create_function = 'create' . ucfirst($config['name']);
@@ -625,9 +625,9 @@ class Base
 
                 $relationship_key = $config['key'];
 
-                if (! empty($related_model_values)) {
-                    if (! empty($config['plural']) && $config['plural']) {
-                        if (! empty($config['nested']) && $config['nested']) {
+                if (!empty($related_model_values)) {
+                    if (!empty($config['plural']) && $config['plural']) {
+                        if (!empty($config['nested']) && $config['nested']) {
                             $key = key($related_model_values);
                             $values = $related_model_values[$key];
 
@@ -679,8 +679,8 @@ class Base
                 $node_name = $model_config['config']['name'];
 
                 // Parse value nodes
-                if (! empty($related_node->getProperty('value'))) {
-                    if (! empty($model_config['config']['plural']) && $model_config['config']['plural']) {
+                if (!empty($related_node->getProperty('value'))) {
+                    if (!empty($model_config['config']['plural']) && $model_config['config']['plural']) {
                         if (empty($data[$node_name])) {
                             $data[$node_name] = [];
                         }
@@ -694,9 +694,9 @@ class Base
 
                     // Parse non-value nodes
                     // Check for duplicate relationships (= build an array of values)
-                    if (! empty($values)) {
-                        if (! empty($model_config['config']['plural']) && $model_config['config']['plural']) {
-                            if (! empty($model_config['config']['nested']) && $model_config['config']['nested']) {
+                    if (!empty($values)) {
+                        if (!empty($model_config['config']['plural']) && $model_config['config']['plural']) {
+                            if (!empty($model_config['config']['nested']) && $model_config['config']['nested']) {
                                 $key = key($values);
                                 $values = $values[$key];
 
@@ -713,11 +713,14 @@ class Base
                                 $data[$node_name][] = $values;
                             }
                         } else {
-                            if (! empty($model_config['config']['nested']) && $model_config['config']['nested']) {
-                                $key = key($values);
+                            if (!empty($model_config['config']['nested']) && $model_config['config']['nested']) {
+                                /*$key = key($values);
                                 $values = $values[$key];
 
-                                $data[$node_name][$key] = $values;
+                                $data[$node_name][$key] = $values;*/
+                                foreach ($values as $key => $value) {
+                                    $data[$node_name][$key] = $value;
+                                }
                             } else {
                                 $data[$node_name] = $values;
                             }
@@ -739,7 +742,7 @@ class Base
         foreach ($nodeProperties as $property) {
             $val = $this->node->getProperty($property['name']);
 
-            if (! is_null($val)) {
+            if (!is_null($val)) {
                 $data[$property['name']] = $val;
             }
         }
@@ -774,11 +777,11 @@ class Base
             // the models that we fetch are all related models
             // meaning they have CIDOC labels and model name labels
             if (mb_strtolower($label->getName()) == mb_strtolower($model)) {
-                 $model_name = 'App\Models\\' . $model;
-                 $model = new $model_name();
-                 $model->setNode($node);
+                $model_name = 'App\Models\\' . $model;
+                $model = new $model_name();
+                $model->setNode($node);
 
-                 return $model;
+                return $model;
             }
         }
 
@@ -792,14 +795,14 @@ class Base
         foreach ($implicit_node->getRelationships([], Relationship::DirectionOut) as $relationship) {
             $end_node = $relationship->getEndNode();
 
-            if (! empty($end_node->getProperty('value'))) {
+            if (!empty($end_node->getProperty('value'))) {
                 $data[$end_node->getProperty('name')] = $end_node->getProperty('value');
             } else {
-                if (! empty($data[$end_node->getProperty('name')])) {
+                if (!empty($data[$end_node->getProperty('name')])) {
                     $tmp = $data[$end_node->getProperty('name')];
                     $data[$end_node->getProperty('name')] = [$tmp];
                     $data[$end_node->getProperty('name')][] = $this->getImplicitValues($end_node);
-                } elseif (! empty($end_node->getProperty('name'))) {
+                } elseif (!empty($end_node->getProperty('name'))) {
                     $data[$end_node->getProperty('name')] = $this->getImplicitValues($end_node);
                 }
             }

@@ -51,14 +51,11 @@ class ProductionEvent extends Base
             $production_technique->relateTo($production_type, 'P2')->save();
         }
 
-
         if (!empty($technique['productionTechniqueSurfaceTreatmentType'])) {
             // Make E55 productionType
             $surface_treatment = $this->createValueNode('productionTechniqueSurfaceTreatmentType', ['E55', $this->getGeneralId()], $technique['productionTechniqueSurfaceTreatmentType']);
             $production_technique->relateTo($surface_treatment, 'P2')->save();
         }
-
-
 
         return $production_technique;
     }

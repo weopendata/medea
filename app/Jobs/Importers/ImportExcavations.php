@@ -347,7 +347,6 @@ class ImportExcavations extends AbstractImporter
             'searchAreaPeriod',
             'metalDetectionUsed',
             'siftingUsed',
-            'depotName',
             'depotId',
         ];
     }

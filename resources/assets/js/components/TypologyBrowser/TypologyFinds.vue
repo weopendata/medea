@@ -18,7 +18,7 @@
     <div v-else class="finds-empty">
       <h1 v-if="typology && typology.code && !fetching">
         Geen resultaten
-        <br><small>Er zijn geen vondsten die onder typologie {{typology.code}} vallen.</small>
+        <br><small>De databank bevat geen vondsten die aan je selectie '{{typology.label}} - {{typology.code}}' voldoen.</small>
       </h1>
       <h1 v-else-if="fetching">
         Laden...

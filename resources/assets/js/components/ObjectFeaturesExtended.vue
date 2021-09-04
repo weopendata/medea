@@ -1,37 +1,42 @@
 <template>
   <div>
     <h4>Object</h4>
-    <dl v-if="find.object.dimensions && find.object.dimensions.length">
-      <dt>Dimensies</dt>
-      <dd v-for="dim in find.object.dimensions">{{dim.dimensionType == 'diepte' ? 'dikte/hoogte' : dim.dimensionType}}:
-        {{dim.measurementValue|comma}}{{dim.dimensionUnit}}
-      </dd>
+    <dl class="object-features_object-dl" v-if="find.object.dimensions && find.object.dimensions.length">
+      <template v-for="(dim, index) in find.object.dimensions">
+        <dt>{{index == 0 ? 'Dimensies' : ''}}</dt>
+        <dd>{{dim.dimensionType == 'diepte' ? 'dikte/hoogte' : dim.dimensionType}}:
+          {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
+      </template>
     </dl>
-    <dl v-if="find.object.objectMaterial">
+    <dl class="object-features_object-dl" v-if="find.object.objectMaterial">
       <dt>Materiaal</dt>
       <dd>{{find.object.objectMaterial}}</dd>
     </dl>
-    <dl v-if="find.object.amount">
+    <dl class="object-features_object-dl" v-if="find.object.amount">
       <dt>Aantal</dt>
       <dd>{{find.object.amount}}</dd>
     </dl>
-    <dl v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
+    <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
       <dt>Techniek</dt>
       <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueType}}</dd>
     </dl>
-    <dl v-if="find.object.treatmentEvent&&find.object.treatmentEvent.modificationTechnique&&find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
-      <dt>Behandeling</dt>
+    <dl class="object-features_object-dl" v-if="find.object.treatmentEvent&&find.object.treatmentEvent.modificationTechnique&&find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
+      <dt>Conservatiebehandeling</dt>
       <dd>{{find.object.treatmentEvent.modificationTechnique.modificationTechniqueType}}</dd>
     </dl>
-    <dl v-if="find.object.objectInscription&&find.object.objectInscription.objectInscriptionNote">
+    <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType.length">
+      <dt>Oppervlaktebehandeling</dt>
+      <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType}}</dd>
+    </dl>
+    <dl class="object-features_object-dl" v-if="find.object.objectInscription&&find.object.objectInscription.objectInscriptionNote">
       <dt>Opschrift</dt>
       <dd>{{find.object.objectInscription.objectInscriptionNote}}</dd>
     </dl>
-    <dl v-if="find.object.objectDescription">
+    <dl class="object-features_object-dl" v-if="find.object.objectDescription">
       <dt v-if="canUserSeeDetails">Beschrijving</dt>
       <dd v-if="canUserSeeDetails">{{find.object.objectDescription}}</dd>
     </dl>
-    <dl v-if="typeDescription">
+    <dl class="object-features_object-dl" v-if="typeDescription">
       <dt v-if="canUserSeeDetails">Type-beschrijving</dt>
       <dd v-if="canUserSeeDetails">{{typeDescription}}</dd>
     </dl>
@@ -51,39 +56,39 @@
     </dl>
 
     <h4>Vindplaats</h4>
-    <dl>
+    <dl class="object-features_location-dl">
       <dt>Locatie & tijdstip opgraving</dt>
       <dd>{{ excavationContext }}</dd>
     </dl>
-    <dl v-if="contextDating">
+    <dl class="object-features_location-dl" v-if="contextDating">
       <dt>Datering context</dt>
       <dd>{{ contextDating }}</dd>
     </dl>
 
-    <dl v-for="(contextPart, index) in contextParts">
+    <dl class="object-features_location-dl" v-for="(contextPart, index) in contextParts">
       <dt>{{ contextPart.title }}</dt>
       <dd>{{ contextPart.value }}</dd>
     </dl>
 
-    <dl v-if="excavationSifting">
+    <dl class="object-features_location-dl" v-if="excavationSifting">
       <dt>Zeven</dt>
       <dd>{{ excavationSifting }}</dd>
     </dl>
-    <dl v-if="excavationMetalDetection">
+    <dl class="object-features_location-dl" v-if="excavationMetalDetection">
       <dt>Metaaldetectie</dt>
       <dd>{{ excavationMetalDetection }}</dd>
     </dl>
 
     <h4>Toegankelijkheid</h4>
-    <dl>
+    <dl class="object-features_location-dl">
       <dt>Referentie</dt>
       <dd>{{ currentLink }}</dd>
     </dl>
-    <dl v-if="archiveUri">
+    <dl class="object-features_location-dl" v-if="archiveUri">
       <dt>Archiefreferentie</dt>
       <dd>{{ archiveUri }}</dd>
     </dl>
-    <dl v-if="researchUri">
+    <dl class="object-features_location-dl" v-if="researchUri">
       <dt>Onderzoeksreferentie</dt>
       <dd>{{ researchUri }}</dd>
     </dl>
@@ -252,6 +257,16 @@
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.object-features_object-dl {
+  dd {
+    margin-left: calc(150px + 1rem);
+  }
+}
 
+  .object-features_location-dl {
+    dd {
+      margin-left: calc(170px + 1rem);
+    }
+  }
 </style>
