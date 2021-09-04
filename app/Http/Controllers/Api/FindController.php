@@ -170,14 +170,20 @@ class FindController extends Controller
             $filters['embargo'] = 'false';
         }
 
+        // For the PAN ID filter, if set, make it a wildcard query so that we search for the given pan ID, but also any of its children
+        if (!empty($filters['panid'])) {
+            $filters['panid'] .= '.*';
+        }
+
         return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int                       $id
+     * @param int $id
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function show($id, ShowFindRequest $request)
     {
@@ -193,9 +199,10 @@ class FindController extends Controller
      * Transform the find based on the role of the user
      * and its relationship to the find
      *
-     * @param  array $find
-     * @param  User  $user
+     * @param array $find
+     * @param User $user
      * @return array
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function transformFind($find, $user)
     {

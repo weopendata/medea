@@ -547,7 +547,7 @@ class FindRepository extends BaseRepository
             ],
             'panid' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',
-                'where' => 'productionClassificationValue.value = {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement([
+                'where' => 'productionClassificationValue.value =~ {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement([
                         'productionEvent',
                         'productionClassification',
                         'productionClassificationValue'

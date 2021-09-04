@@ -249,7 +249,7 @@ class ImportFinds extends AbstractImporter
     {
         $find = $this->initObject($find);
 
-        $values = explode(',', $value);
+        $values = explode(';', $value);
 
         $photographs = [];
 

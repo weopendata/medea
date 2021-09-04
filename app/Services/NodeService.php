@@ -57,7 +57,7 @@ class NodeService
     }
 
     /**
-     * @param string |array $propertyName
+     * @param string | array $propertyNames
      * @return string | null
      * @throws \Exception
      */
@@ -122,7 +122,7 @@ class NodeService
 
         // Push everything into 1 row, as that is what the Jadell getNodesForLabel does
         $nodes = [];
-        
+
         foreach ($results as $result) {
             $nodes[] = $result[0];
         }
