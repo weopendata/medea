@@ -139,6 +139,7 @@ class ListValueSeeder extends Seeder
             'kledinghaak',
             'knoop',
             'lakenloodje',
+            'zegelloodje',
             'lepel',
             'mantelspeld',
             'mes',
