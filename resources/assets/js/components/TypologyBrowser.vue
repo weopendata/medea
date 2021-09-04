@@ -3,7 +3,11 @@
     <div class="typology-tree-view">
       <div class="typology-browser__query-input ui icon input">
         <i class="search icon"/>
-        <input placeholder="Zoeken..." type="text" @input="updateSearchQuery($event.target.value)" :value="searchQuery"/>
+        <input placeholder="Zoeken..." type="text" @keyup.enter="filterTree($event.target.value)"/>
+      </div>
+
+      <div>
+        <div v-if="updatingTreeVisibility" style="margin-top: 0.5rem;">Bezig met filteren</div>
       </div>
 
       <div class="typology-tree__container ui card" :style="treeStyle">
@@ -13,11 +17,12 @@
                 :key="'typology__' + typology.code + '__index' + index"
                 :searchQuery="searchQuery"
                 @childMatchesQuery="updateVisibility"
+                :updatingTreeVisibility="updatingTreeVisibility"
         />
       </div>
 
       <div v-if="!hasVisibleTypologies && hasValidSearchQuery">
-        Geen typologie gevonden die voldoet aan je zoekopdracht
+        Geen type gevonden dat voldoet aan je zoekopdracht
       </div>
     </div>
 
@@ -28,7 +33,7 @@
         </div>
 
         <div slot="Vondsten" class="typology-details__find-results">
-          <typology-finds :typology="selectedTypology" />
+          <typology-finds :typology="selectedTypology"/>
         </div>
       </tabs>
     </div>
@@ -55,25 +60,26 @@
         tabs: [
           'Typologie Info',
           'Vondsten'
-        ]
+        ],
+        updatingTreeVisibility: false
       }
     },
     computed: {
-      hasValidSearchQuery () {
+      hasValidSearchQuery() {
         return this.searchQuery && this.searchQuery.length >= 2
       },
-      treeStyle () {
+      treeStyle() {
         if (!this.hasValidSearchQuery) {
           return
         }
 
-        if (this.hasVisibleTypologies ) {
+        if (this.hasVisibleTypologies) {
           return
         }
 
         return {visibility: 'hidden', height: '0px', border: '0px', padding: '0px'}
       },
-      hasVisibleTypologies () {
+      hasVisibleTypologies() {
         var values = Object.values(this.visibleTypologies)
 
         if (!values || values.length == 0) {
@@ -84,21 +90,31 @@
       }
     },
     methods: {
+      filterTree (val) {
+        this.updatingTreeVisibility = true
+
+        this.updateSearchQuery(val)
+      },
       updateSearchQuery: _.debounce(function (val) {
           this.searchQuery = val
         }
-        , 500
+        , 300
       ),
-      updateSelectedTypology (selection) {
+
+      updateSelectedTypology(selection) {
         this.selectedTypology = selection.typology
 
         if (this.selectedTypology.code) {
           window.location.hash = '#' + this.selectedTypology.code
         }
       },
-      updateVisibility (mainLevelTypology) {
+      updateVisibility(mainLevelTypology) {
         this.visibleTypologies['code_' + mainLevelTypology.code] = mainLevelTypology.match
-      }
+        this.resetUpdatingTreeVisibility()
+      },
+      resetUpdatingTreeVisibility: _.debounce(function () {
+        this.updatingTreeVisibility = false
+      }, 500)
     },
     async mounted() {
       this.typologyTree = window.typologyTree
@@ -133,7 +149,7 @@
 
 <style scoped>
   .typology-browser__container {
-    display:flex;
+    display: flex;
     justify-content: space-between;
     max-width: 80%;
     margin-left: auto;
