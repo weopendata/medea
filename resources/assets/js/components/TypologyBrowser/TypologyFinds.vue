@@ -10,7 +10,7 @@
     <!-- finds -->
     <div v-if="finds.length" class="typology-finds__results-container">
       <h2>Vondsten uit Middeleeuws Metaal</h2>
-      <span><a :href="allFindsWithTypologyLink">Bekijk alle vondsten ({{ findsCount }}) met referentie typology {{ typology.code }}</a></span>
+      <span><a :href="allFindsWithTypologyLink" target="_blank">Bekijk alle vondsten ({{ findsCount }}) behorend tot type {{ typology.label }}&nbsp;({{typology.code }})</a></span>
       <div class="typology-finds__container">
         <find-event-small v-for="find in finds" :find="find"/>
       </div>

@@ -28,7 +28,7 @@
 
     <div class="typology-details__container" v-if="selectedTypology && selectedTypology.code">
       <tabs :tabs="tabs">
-        <div slot="Typologie Info" class="typology-details-info">
+        <div slot="Referentietype" class="typology-details-info">
           <typology-info-card :typology="selectedTypology"/>
         </div>
 
@@ -58,7 +58,7 @@
         selectedTypology: {},
         visibleTypologies: {},
         tabs: [
-          'Typologie Info',
+          'Referentietype',
           'Vondsten'
         ],
         updatingTreeVisibility: false

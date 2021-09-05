@@ -46,7 +46,7 @@
     },
     methods: {
       goToDetail () {
-        window.location.href = this.uri
+        window.open(this.uri, '_blank')
       }
     },
     filters: {
