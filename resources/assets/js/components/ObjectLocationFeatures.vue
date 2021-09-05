@@ -54,7 +54,7 @@
 
   export default {
     name: "ObjectLocationFeatures",
-    props: ['context', 'excavation', 'find'],
+    props: ['context', 'excavation', 'find', 'typologyInformation'],
     computed: {
       finder() {
         return window.publicUserInfo || {}
@@ -63,9 +63,9 @@
         const d = new Date()
         d.setHours(12)
 
-        return (this.finder.name || '')
-          + ' (' + this.find.created_at.slice(0, 10) + '). ' +
-          this.findTitle +
+        return (this.finder.name || 'Middeleeuws Metaal')
+          + ' (' + this.find.created_at.slice(0, 4) + '). ' +
+          this.findTitle + ', MEDEA-ID ' + this.find.identifier +
           '. Geraadpleegd op ' + d.toJSON().slice(0, 10) +
           ' via ' + window.location.href
       },

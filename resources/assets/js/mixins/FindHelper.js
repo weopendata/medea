@@ -6,7 +6,7 @@ export default {
       }
 
       // Add a fallback for when we lack the PAN typology meta-data
-      if (!this.typologyInformation) {
+      if (!this.typologyInformation || !this.excavation) {
         const title = (this.find.object ? [
           this.find.object.objectCategory || 'ongeïdentificeerd',
           this.periodOverruled,
@@ -20,8 +20,10 @@ export default {
         return title + ' (ID-' + this.find.identifier + ')'
       }
 
+      return this.typologyInformation.label + ', ' + this.excavation.excavationTitle
+
       // Build a title based on the typology
-      var material = (this.find.object && this.find.object.objectMaterial) ? this.find.object.objectMaterial : this.find.material
+      /*var material = (this.find.object && this.find.object.objectMaterial) ? this.find.object.objectMaterial : this.find.material
       var initialPeriod = 'onbekend';
       var finalPeriod = 'onbekend'
 
@@ -34,7 +36,7 @@ export default {
       }
       var timeFrame = initialPeriod + ' - ' + finalPeriod
 
-      return this.typologyInformation.code + ' (' + this.typologyInformation.label + '), ' + timeFrame + ', ' + material
+      return this.typologyInformation.code + ' (' + this.typologyInformation.label + '), ' + timeFrame + ', ' + material*/
     },
     periodOverruled () {
       if (!this.find.object || !this.find.object.productionEvent) {

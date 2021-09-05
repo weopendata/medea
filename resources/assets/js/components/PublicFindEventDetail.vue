@@ -21,7 +21,7 @@
         </div>
         <div class="ui one column">
           <div class="column" :class="{'fe-validating':validating}">
-            <object-location-features :find="find" :excavation="excavation" :context="context" v-if="find.object"/>
+            <object-location-features :find="find" :excavation="excavation" :context="context" :typology-information="typologyInformation" v-if="find.object"/>
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
       </a>
     </div>
     <div class="card-bar text-right">
-      <a :href="'mailto:' + contact + '?Subject=MEDEA vondst ' + find.identifier" target="_top">
+      <a :href="'mailto:' + contact + '?Subject=Middeleeuws metaal vondst ' + find.identifier" target="_top">
         Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
       </a>
     </div>
