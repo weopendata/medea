@@ -40,7 +40,7 @@ class ExcavationRepository extends BaseRepository
     {
         $tentantStatement = NodeService::getTenantWhereStatement(['excavationEvent', 'searchArea']);
 
-        $queryString = "MATCH (excavationEvent:A9)-[r:AP3]->(searchArea:E27) WHERE  $tentantStatement AND excavationEvent.internalId = {excavationUUID}  RETURN excavationEvent, searchArea";
+        $queryString = "MATCH (excavationEvent:A9)-[r:AP3]->(searchArea:E27), (excavationEvent:A9)-[:P1]->(excavationTitle:E41) WHERE  $tentantStatement AND excavationEvent.internalId = {excavationUUID}  RETURN excavationEvent, excavationTitle, searchArea";
 
         $variables = [
             'excavationUUID' => $excavationUUID
@@ -61,6 +61,7 @@ class ExcavationRepository extends BaseRepository
 
             $metaData['searchArea'] = $searchArea;
             $metaData['internalId'] = $excavation->getProperty('internalId');
+            $metaData['excavationTitle'] = $row['excavationTitle']->getProperty('value');
 
             break;
         }

@@ -82,7 +82,7 @@
           return
         }
 
-        axios.get('/api/finds?limit=6&order=-identifier&status=Gepubliceerd&panid=' + this.typology.code)
+        axios.get('/api/finds?limit=8&order=-identifier&status=Gepubliceerd&panid=' + this.typology.code)
           .then(result => {
             this.finds = result.data
             this.fetching = false
@@ -119,7 +119,7 @@
   .typology-finds__container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     margin-top: 0.5rem;
   }
 

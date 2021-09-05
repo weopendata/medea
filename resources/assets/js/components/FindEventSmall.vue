@@ -7,10 +7,11 @@
     </div>
     <div class="find-event-small__content">
       <div class="find-event-small__title textual">
-        {{ title }} ({{ label }})
+        {{ find._panTypologyInfo.label }} ({{ find._panTypologyInfo.mainCategory }})
       </div>
-      <div>
-        {{ city }}
+      <br/>
+      <div style="font-size: 12px;">
+        {{ find._excavationInfo.excavationTitle }}
       </div>
     </div>
   </div>
@@ -29,12 +30,6 @@
       },
       uri() {
         return '/finds/' + this.find.identifier
-      },
-      title() {
-        return this.find._panTypologyInfo.mainCategory
-      },
-      label() {
-        return this.find._panTypologyInfo.label
       },
       city () {
         return this.find._excavationInfo
