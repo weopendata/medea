@@ -78,7 +78,7 @@
         }
 
         parts.push({
-          title: 'Context type',
+          title: 'Type context',
           value: this.context.contextType
         })
 
@@ -111,7 +111,7 @@
         })
 
         parts.push({
-          title: 'Karakter',
+          title: 'Karakter context',
           value: this.context.contextCharacter && this.context.contextCharacter.contextCharacterType
         })
 

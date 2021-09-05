@@ -2,7 +2,7 @@
   <div>
     <h4>Vindplaats</h4>
     <dl class="object-features_location-dl">
-      <dt>Locatie & tijdstip opgraving</dt>
+      <dt>Opgraving</dt>
       <dd>{{ excavationContext }}</dd>
     </dl>
 
@@ -60,17 +60,16 @@
           return context
         }
 
-        if (this.excavation.searchArea.location && this.excavation.searchArea.location.locationPlaceName) {
+        /*if (this.excavation.searchArea.location && this.excavation.searchArea.location.locationPlaceName) {
           context = this.excavation.searchArea.location.locationPlaceName.appellation
         }
 
         if (this.excavation.searchArea.location && this.excavation.searchArea.location.address && this.excavation.searchArea.location.address.locationAddressLocality) {
           context += ' ' + this.excavation.searchArea.location.address.locationAddressLocality
-        }
+        }*/
 
-        context += ', ' + this.excavation.excavationPeriod
 
-        return context
+        return this.excavation.excavationTitle + ', ' + this.excavation.excavationPeriod
       },
       archiveUri () {
         if (!this.excavation.publication) {

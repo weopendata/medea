@@ -1,6 +1,22 @@
 <template>
   <div>
     <h4>Object</h4>
+    <dl class="object-features_object-dl" v-if="find.object.amount">
+      <dt>Aantal</dt>
+      <dd>{{find.object.amount}}</dd>
+    </dl>
+    <dl class="object-features_object-dl" v-if="find.object.objectMaterial">
+      <dt>Materiaal</dt>
+      <dd>{{find.object.objectMaterial}}</dd>
+    </dl>
+    <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
+      <dt>Techniek</dt>
+      <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueType}}</dd>
+    </dl>
+    <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType.length">
+      <dt>Oppervlaktebehandeling</dt>
+      <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType}}</dd>
+    </dl>
     <dl class="object-features_object-dl" v-if="find.object.dimensions && find.object.dimensions.length">
       <template v-for="(dim, index) in find.object.dimensions">
         <dt>{{index == 0 ? 'Dimensies' : ''}}</dt>
@@ -8,42 +24,26 @@
           {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
       </template>
     </dl>
-    <dl class="object-features_object-dl" v-if="find.object.objectMaterial">
-      <dt>Materiaal</dt>
-      <dd>{{find.object.objectMaterial}}</dd>
-    </dl>
-    <dl class="object-features_object-dl" v-if="find.object.amount">
-      <dt>Aantal</dt>
-      <dd>{{find.object.amount}}</dd>
-    </dl>
-    <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
-      <dt>Techniek</dt>
-      <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueType}}</dd>
-    </dl>
     <dl class="object-features_object-dl" v-if="find.object.treatmentEvent&&find.object.treatmentEvent.modificationTechnique&&find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
       <dt>Conservatiebehandeling</dt>
       <dd>{{find.object.treatmentEvent.modificationTechnique.modificationTechniqueType}}</dd>
-    </dl>
-    <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType.length">
-      <dt>Oppervlaktebehandeling</dt>
-      <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType}}</dd>
     </dl>
     <dl class="object-features_object-dl" v-if="find.object.objectInscription&&find.object.objectInscription.objectInscriptionNote">
       <dt>Opschrift</dt>
       <dd>{{find.object.objectInscription.objectInscriptionNote}}</dd>
     </dl>
+    <dl class="object-features_object-dl" v-if="typeDescription">
+      <dt v-if="canUserSeeDetails">Typologische beschrijving</dt>
+      <dd v-if="canUserSeeDetails">{{typeDescription}}</dd>
+    </dl>
     <dl class="object-features_object-dl" v-if="find.object.objectDescription">
       <dt v-if="canUserSeeDetails">Beschrijving</dt>
       <dd v-if="canUserSeeDetails">{{find.object.objectDescription}}</dd>
     </dl>
-    <dl class="object-features_object-dl" v-if="typeDescription">
-      <dt v-if="canUserSeeDetails">Type-beschrijving</dt>
-      <dd v-if="canUserSeeDetails">{{typeDescription}}</dd>
-    </dl>
 
     <h4>Typologie</h4>
     <dl>
-      <dt>Category</dt>
+      <dt>Categorie</dt>
       <dd>{{ typology.mainCategory }}</dd>
     </dl>
     <dl>
@@ -117,7 +117,7 @@
 <style lang="scss" scoped>
 .object-features_object-dl {
   dd {
-    margin-left: calc(150px + 1rem);
+    margin-left: calc(160px + 1rem);
   }
 }
 
