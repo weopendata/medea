@@ -18,32 +18,70 @@
     <context-tree :is-root="true" :excavation="excavation" :context="find.object.context"></context-tree>
 
     <h4>Toegankelijkheid</h4>
-    <dl class="object-features_location-dl" v-if="find.object.objectNr">
+    <dl class="object-features_accessibility-dl" v-if="find.object.objectNr">
       <dt>Origineel inventarisnummer</dt>
       <dd>{{ find.object.objectNr }}</dd>
     </dl>
-    <dl class="object-features_location-dl">
-      <dt>Referentie</dt>
-      <dd>{{ currentLink }}</dd>
+    <dl class="object-features_accessibility-dl" v-if="depot">
+      <dt>Bewaarplaats van het ensemble</dt>
+      <dd>{{ depot }}</dd>
     </dl>
-    <dl class="object-features_location-dl" v-if="archiveUri">
+    <dl class="object-features_accessibility-dl" v-if="archiveUri">
       <dt>Archiefreferentie</dt>
       <dd>{{ archiveUri }}</dd>
     </dl>
-    <dl class="object-features_location-dl" v-if="researchUri">
-      <dt>Onderzoeksreferentie</dt>
+    <dl class="object-features_accessibility-dl" v-if="researchUri">
+      <dt>Andere databanken</dt>
       <dd>{{ researchUri }}</dd>
+    </dl>
+
+    <h4>Deze vondstfiche</h4>
+    <dl class="object-features_accessibility-dl">
+      <dt>Referentie</dt>
+      <dd>{{ currentLink }}</dd>
+    </dl>
+
+    <dl class="object-features_accessibility-dl">
+      <dt>Citeer deze vondstfiche</dt>
+      <dd class="cite">{{cite}}</dd>
     </dl>
   </div>
 </template>
 
 <script>
   import ContextTree from "./ContextTree";
+  import FindHelper from "../mixins/FindHelper";
 
   export default {
     name: "ObjectLocationFeatures",
     props: ['context', 'excavation', 'find'],
     computed: {
+      finder() {
+        return window.publicUserInfo || {}
+      },
+      cite() {
+        const d = new Date()
+        d.setHours(12)
+
+        return (this.finder.name || '')
+          + ' (' + this.find.created_at.slice(0, 10) + '). ' +
+          this.findTitle +
+          '. Geraadpleegd op ' + d.toJSON().slice(0, 10) +
+          ' via ' + window.location.href
+      },
+      depot () {
+        if (!this.excavation || !this.excavation.collection || !this.excavation.collection.group) {
+          return
+        }
+
+        var depot = this.excavation.collection.group.institutionName
+
+        if (this.excavation.collection.group.institutionAddress) {
+          depot += ', ' + this.excavation.collection.group.institutionAddress
+        }
+
+        return depot
+      },
       currentLink () {
         return window.location.href
       },
@@ -104,7 +142,8 @@
     },
     components: {
       ContextTree
-    }
+    },
+    mixins: [FindHelper]
   }
 </script>
 
@@ -118,6 +157,12 @@
   .object-features_location-dl {
     dd {
       margin-left: calc(170px + 1rem);
+    }
+  }
+
+  .object-features_accessibility-dl {
+    dd {
+      margin-left: calc(175px + 1rem);
     }
   }
 </style>

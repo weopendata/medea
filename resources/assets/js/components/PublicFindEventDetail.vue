@@ -34,12 +34,6 @@
            data-layout="button">
       </div>
     </div>
-    <div class="card-textual ui form">
-      <div class="field">
-        <label>Citeer deze vondstfiche</label>
-        <div class="cite" v-text="cite"></div>
-      </div>
-    </div>
     <div class="card-bar text-right" v-if="editable">
       <a class="btn" :href="'/finds/' + find.identifier + '/edit'">
         <i class="pencil icon"></i>
@@ -163,18 +157,6 @@
       },
       rectangleBounds() {
         return toPublicBounds(this.location)
-      },
-      finder() {
-        return window.publicUserInfo || {}
-      },
-      cite() {
-        const d = new Date()
-        d.setHours(12)
-        return (this.finder.name || '')
-          + ' (' + this.find.created_at.slice(0, 10) + '). ' +
-          this.findTitle +
-          '. Geraadpleegd op ' + d.toJSON().slice(0, 10) +
-          ' via ' + window.location.href
       },
       showRemarks() {
         return this.find.object.feedback && this.find.object.feedback.length && this.find.object.objectValidationStatus === 'Aan te passen' && this.find.person && this.user.email === this.find.person.email
