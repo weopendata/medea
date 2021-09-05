@@ -54,9 +54,7 @@
           return []
         }
 
-        var codes = Object.values(this.root.childrenCodes)
-
-        return codes
+        return Object.values(this.root.childrenCodes)
       },
       shouldCollapse() {
         if (this.searchQuery && this.searchQuery.length >= 2) {

@@ -6,6 +6,13 @@ use App\Repositories\CollectionRepository;
 use App\Services\NodeService;
 use Illuminate\Support\Arr;
 
+/**
+ * Class BaseObject
+ * This class used to be called "Object" to match the taxonomy used in the MEDEA project
+ * However, recent PHP versions have Object as an occupied name so BaseObject was the refactored name for this class.
+ *
+ * @package App\Models
+ */
 class BaseObject extends Base
 {
     public static $NODE_TYPE = 'E22';
@@ -241,8 +248,8 @@ class BaseObject extends Base
      * Dimension is not a main entity, so we create it in this object only
      *
      * @param $dimension array An array with value, type, unit
-     *
-     * @return Node
+     * @return \Everyman\Neo4j\Node
+     * @throws \Everyman\Neo4j\Exception
      */
     public function createDimensions($dimension)
     {

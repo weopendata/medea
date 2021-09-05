@@ -46,6 +46,33 @@ class ExcavationEvent extends Base
 
     protected $implicitModels = [
         [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'excavationTitle',
+                'name' => 'excavationTitle',
+                'value_node' => true,
+                'cidoc_type' => 'E41'
+            ]
+        ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'excavationID',
+                'name' => 'excavationID',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
+            ]
+        ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'excavationIDType',
+                'name' => 'excavationIDType',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
+            ]
+        ],
+        [
             'relationship' => 'P14',
             'config' => [
                 'key' => 'company',

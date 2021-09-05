@@ -238,28 +238,10 @@ class Context extends Base
 
         $contextDatingNode->relateTo($contextDatingPeriod, 'P140')->save();
 
-        // Add several attributes to this period node
-        if (!empty($contextDating['contextDatingPeriod']['contextDatingPeriodPrecision'])) {
-            $contextDatingPeriodPrecision = $this->createValueNode(
-                'contextDatingPeriodPrecision',
-                ['E52', $generalId, 'contextDatingPeriodPrecision'],
-                $contextDating['contextDatingPeriod']['contextDatingPeriodPrecision']
-            );
-
-            $contextDatingPeriod->relateTo($contextDatingPeriodPrecision, 'P2')->save();
-        }
-
-        if (!empty($contextDating['contextDatingPeriod']['contextDatingPeriodNature'])) {
-            $contextDatingPeriodNature = $this->createValueNode(
-                'contextDatingPeriodNature',
-                ['E52', $generalId, 'contextDatingPeriodNature'],
-                $contextDating['contextDatingPeriod']['contextDatingPeriodNature']
-            );
-
-            $contextDatingPeriod->relateTo($contextDatingPeriodNature, 'P2')->save();
-        }
-
-        if (!empty($contextDating['contextDatingTechnique']['contextDatingPeriodMethod'])) {
+        if (!empty($contextDating['contextDatingTechnique']['contextDatingPeriodMethod'])
+            || !empty($contextDating['contextDatingTechnique']['contextDatingPeriodPrecision'])
+            || !empty($contextDating['contextDatingTechnique']['contextDatingPeriodNature'])
+        ) {
             $contextDatingTechnique = $this->createValueNode(
                 'contextDatingTechnique',
                 ['E29', $generalId, 'contextDatingTechnique'],
@@ -268,13 +250,35 @@ class Context extends Base
 
             $contextDatingNode->relateTo($contextDatingTechnique, 'P33')->save();
 
-            $contextDatingPeriodMethod = $this->createValueNode(
-                'contextDatingPeriodMethod',
-                ['E29', $generalId, 'contextDatingPeriodMethod'],
-                $contextDating['contextDatingTechnique']['contextDatingPeriodMethod']
-            );
+            if (!empty($contextDating['contextDatingTechnique']['contextDatingPeriodMethod'])) {
+                $contextDatingPeriodMethod = $this->createValueNode(
+                    'contextDatingPeriodMethod',
+                    ['E29', $generalId, 'contextDatingPeriodMethod'],
+                    $contextDating['contextDatingTechnique']['contextDatingPeriodMethod']
+                );
 
-            $contextDatingTechnique->relateTo($contextDatingPeriodMethod, 'P2')->save();
+                $contextDatingTechnique->relateTo($contextDatingPeriodMethod, 'P2')->save();
+            }
+
+            if (!empty($contextDating['contextDatingTechnique']['contextDatingPeriodPrecision'])) {
+                $contextDatingPeriodPrecision = $this->createValueNode(
+                    'contextDatingPeriodPrecision',
+                    ['E52', $generalId, 'contextDatingPeriodPrecision'],
+                    $contextDating['contextDatingTechnique']['contextDatingPeriodPrecision']
+                );
+
+                $contextDatingTechnique->relateTo($contextDatingPeriodPrecision, 'P2')->save();
+            }
+
+            if (!empty($contextDating['contextDatingTechnique']['contextDatingPeriodNature'])) {
+                $contextDatingPeriodNature = $this->createValueNode(
+                    'contextDatingPeriodNature',
+                    ['E52', $generalId, 'contextDatingPeriodNature'],
+                    $contextDating['contextDatingTechnique']['contextDatingPeriodNature']
+                );
+
+                $contextDatingTechnique->relateTo($contextDatingPeriodNature, 'P2')->save();
+            }
         }
 
         if (!empty($contextDating['contextDatingRemark'])) {

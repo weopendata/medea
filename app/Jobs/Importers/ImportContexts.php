@@ -114,16 +114,20 @@ class ImportContexts extends AbstractImporter
             $contextDating = ['contextDatingPeriod' => []];
             $contextDating['contextDatingPeriod']['value'] = $data['contextDatingPeriod'];
 
+            if (!empty($data['contextDatingPeriodMethod'])) {
+                $contextDating['contextDatingTechnique'] = ['contextDatingPeriodMethod' => $data['contextDatingPeriodMethod']];
+            }
+
+            if (empty($contextDating['contextDatingTechnique'])) {
+                $contextDating['contextDatingTechnique'] = [];
+            }
+
             if (!empty($data['contextDatingPeriodPrecision'])) {
-                $contextDating['contextDatingPeriod']['contextDatingPeriodPrecision'] = $data['contextDatingPeriodPrecision'];
+                $contextDating['contextDatingTechnique']['contextDatingPeriodPrecision'] = $data['contextDatingPeriodPrecision'];
             }
 
             if (!empty($data['contextDatingPeriodNature'])) {
-                $contextDating['contextDatingPeriod']['contextDatingPeriodNature'] = $data['contextDatingPeriodNature'];
-            }
-
-            if (!empty($data['contextDatingPeriodMethod'])) {
-                $contextDating['contextDatingTechnique'] = ['contextDatingPeriodMethod' => $data['contextDatingPeriodMethod']];
+                $contextDating['contextDatingTechnique']['contextDatingPeriodNature'] = $data['contextDatingPeriodNature'];
             }
 
             if (!empty($data['contextDatingRemark'])) {

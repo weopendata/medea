@@ -5,8 +5,7 @@
         <h1 class="card-title">{{findTitle}}</h1>
         <div class="ui two columns doubling grid">
           <div class="column" :class="{'fe-validating':validating}">
-            <object-features-extended :find="find" :typology="typologyInformation" :excavation="excavation"
-                                      :context="context" v-if="find.object"/>
+            <object-features-extended :find="find" :typology="typologyInformation" v-if="find.object"/>
           </div>
           <div class="column scrolling">
             <div class="fe-imglist">
@@ -20,38 +19,43 @@
             </gmap-map>
           </div>
         </div>
-      </div>
-      <br/>
-      <div id="fb-root"></div>
-      <div class="card-textual ui form">
-        <div class="fb-share-button"
-             :data-href="'/finds/' + find.identifier"
-             data-layout="button">
+        <div class="ui one column">
+          <div class="column" :class="{'fe-validating':validating}">
+            <object-location-features :find="find" :excavation="excavation" :context="context" v-if="find.object"/>
+          </div>
         </div>
       </div>
-      <div class="card-textual ui form">
-        <div class="field">
-          <label>Citeer deze vondstfiche</label>
-          <div class="cite" v-text="cite"></div>
-        </div>
+    </div>
+    <br/>
+    <div id="fb-root"></div>
+    <div class="card-textual ui form">
+      <div class="fb-share-button"
+           :data-href="'/finds/' + find.identifier"
+           data-layout="button">
       </div>
-      <div class="card-bar text-right" v-if="editable">
-        <a class="btn" :href="'/finds/' + find.identifier + '/edit'">
-          <i class="pencil icon"></i>
-          Bewerken
-        </a>
+    </div>
+    <div class="card-textual ui form">
+      <div class="field">
+        <label>Citeer deze vondstfiche</label>
+        <div class="cite" v-text="cite"></div>
       </div>
-      <div class="card-bar text-right">
-        <a :href="'mailto:' + contact + '?Subject=MEDEA vondst ' + find.identifier" target="_top">
-          Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
-        </a>
-      </div>
+    </div>
+    <div class="card-bar text-right" v-if="editable">
+      <a class="btn" :href="'/finds/' + find.identifier + '/edit'">
+        <i class="pencil icon"></i>
+        Bewerken
+      </a>
+    </div>
+    <div class="card-bar text-right">
+      <a :href="'mailto:' + contact + '?Subject=MEDEA vondst ' + find.identifier" target="_top">
+        Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
+      </a>
+    </div>
     </div>
   </article>
 </template>
 
 <script>
-  import checkbox from 'semantic-ui-css/components/checkbox.min.js'
   import AddClassification from './AddClassification'
   import Classification from './Classification'
   import DtCheck from './DtCheck'
@@ -62,6 +66,7 @@
   import {toPublicBounds} from '../const.js'
   import ObjectFeaturesExtended from "./ObjectFeaturesExtended";
   import FindHelper from "../mixins/FindHelper";
+  import ObjectLocationFeatures from "./ObjectLocationFeatures";
 
   function sameValues(array) {
     return !!array.reduce((a, b) => a === b ? a : NaN)
@@ -198,6 +203,7 @@
     },
     mixins: [FindHelper],
     components: {
+      ObjectLocationFeatures,
       ObjectFeaturesExtended,
       AddClassification,
       Classification,

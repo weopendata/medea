@@ -54,44 +54,6 @@
       <dt>Datering type</dt>
       <dd>{{ typologyDate }}</dd>
     </dl>
-
-    <h4>Vindplaats</h4>
-    <dl class="object-features_location-dl">
-      <dt>Locatie & tijdstip opgraving</dt>
-      <dd>{{ excavationContext }}</dd>
-    </dl>
-    <dl class="object-features_location-dl" v-if="contextDating">
-      <dt>Datering context</dt>
-      <dd>{{ contextDating }}</dd>
-    </dl>
-
-    <dl class="object-features_location-dl" v-for="(contextPart, index) in contextParts">
-      <dt>{{ contextPart.title }}</dt>
-      <dd>{{ contextPart.value }}</dd>
-    </dl>
-
-    <dl class="object-features_location-dl" v-if="excavationSifting">
-      <dt>Zeven</dt>
-      <dd>{{ excavationSifting }}</dd>
-    </dl>
-    <dl class="object-features_location-dl" v-if="excavationMetalDetection">
-      <dt>Metaaldetectie</dt>
-      <dd>{{ excavationMetalDetection }}</dd>
-    </dl>
-
-    <h4>Toegankelijkheid</h4>
-    <dl class="object-features_location-dl">
-      <dt>Referentie</dt>
-      <dd>{{ currentLink }}</dd>
-    </dl>
-    <dl class="object-features_location-dl" v-if="archiveUri">
-      <dt>Archiefreferentie</dt>
-      <dd>{{ archiveUri }}</dd>
-    </dl>
-    <dl class="object-features_location-dl" v-if="researchUri">
-      <dt>Onderzoeksreferentie</dt>
-      <dd>{{ researchUri }}</dd>
-    </dl>
   </div>
 </template>
 
@@ -99,113 +61,8 @@
   import {fromDate} from '../const.js'
 
   export default {
-    props: ['find', 'typology', 'excavation', 'context'],
+    props: ['find', 'typology'],
     computed: {
-      archiveUri () {
-        if (!this.excavation.publication) {
-          return
-        }
-
-        if (this.excavation.publication.length === 0) {
-          return
-        }
-
-        if (! this.excavation.publication[0].archiveURI) {
-          return
-        }
-
-        return this.excavation.publication[0].archiveURI
-      },
-      researchUri () {
-        if (!this.excavation.publication) {
-          return
-        }
-
-        if (this.excavation.publication.length === 0) {
-          return
-        }
-
-        if (! this.excavation.publication[0].researchURI) {
-          return
-        }
-
-        return this.excavation.publication[0].researchURI
-      },
-      currentLink () {
-        return window.location.href
-      },
-      contextParts () {
-        var parts = []
-
-        if (! this.context) {
-          return parts
-        }
-
-        parts.push({
-          title: 'Legacy ID',
-          value: this.context.contextLegacyId && this.context.contextLegacyId.contextLegacyIdValue
-        })
-
-        parts.push({
-          title: 'Context type',
-          value: this.context.contextType
-        })
-
-        parts.push({
-          title: 'Context karakter',
-          value: this.context.contextCharacter && this.context.contextCharacter.contextCharacterType
-        })
-
-        parts.push({
-          title: 'Interpretatie context\n',
-          value: this.context.contextInterpretation
-        })
-
-        return parts.filter(part => part.value)
-      },
-      excavationSifting () {
-        return this.excavation && this.excavation.excavationProcedureSifting && this.excavation.excavationProcedureSifting.excavationProcedureSiftingType
-      },
-      excavationMetalDetection () {
-        return this.excavation && this.excavation.excavationProcedureMetalDetection && this.excavation.excavationProcedureMetalDetection.excavationProcedureMetalDetectionType
-      },
-      contextDating() {
-        if (!this.context) {
-          return
-        }
-
-        if (!this.context.contextDating || !this.context.contextDating.contextDatingPeriod) {
-          return
-        }
-
-        var dating = this.context.contextDating.contextDatingPeriod
-
-        if (this.context.contextDating.contextDatingTechnique && this.context.contextDating.contextDatingTechnique.contextDatingPeriodMethod) {
-          dating += ', ' + this.context.contextDating.contextDatingTechnique.contextDatingPeriodMethod
-        }
-
-        return dating
-      },
-      excavationContext() {
-        var context = ''
-
-
-        if (!this.excavation.searchArea) {
-          return context
-        }
-
-        if (this.excavation.searchArea.location && this.excavation.searchArea.location.locationPlaceName) {
-          context = this.excavation.searchArea.location.locationPlaceName.appellation
-        }
-
-        if (this.excavation.searchArea.location && this.excavation.searchArea.location.address && this.excavation.searchArea.location.address.locationAddressLocality) {
-          context += ' ' + this.excavation.searchArea.location.address.locationAddressLocality
-        }
-
-        context += ', ' + this.excavation.excavationPeriod
-
-        return context
-      },
       typologyDate() {
         var initialPeriod = 'onbekend';
         var finalPeriod = 'onbekend'
