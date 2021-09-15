@@ -1,9 +1,9 @@
 <template>
   <div>
     <h4>Object</h4>
-    <dl class="object-features_object-dl" v-if="find.object.amount">
+    <dl class="object-features_object-dl" v-if="find.object.objectNumberOfParts">
       <dt>Aantal</dt>
-      <dd>{{find.object.amount}}</dd>
+      <dd>{{find.object.objectNumberOfParts}}</dd>
     </dl>
     <dl class="object-features_object-dl" v-if="find.object.objectMaterial">
       <dt>Materiaal</dt>

@@ -35,9 +35,6 @@ class BaseObject extends Base
             'name' => 'validated_by'
         ],
         [
-            'name' => 'amount'
-        ],
-        [
             'name' => 'markings'
         ],
         [
@@ -97,6 +94,15 @@ class BaseObject extends Base
                 'name' => 'objectDescription',
                 'value_node' => true,
                 'cidoc_type' => 'E62'
+            ]
+        ],
+        [
+            'relationship' => 'P57',
+            'config' => [
+                'key' => 'objectNumberOfParts',
+                'name' => 'objectNumberOfParts',
+                'value_node' => true,
+                'cidoc_type' => 'E60'
             ]
         ],
         [

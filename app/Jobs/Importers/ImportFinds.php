@@ -267,6 +267,7 @@ class ImportFinds extends AbstractImporter
                 'width' => $width,
                 'height' => $height,
                 'photographNote' => @$data['photographNote'],
+                'photographCaption' => @$data['photographCaption'],
                 'photographRights' => [
                     'photographRightsAttribution' => @$data['photographRightsAttribution'],
                     'photographRightsLicense' => @$data['photographRightsLicense']
@@ -435,7 +436,7 @@ class ImportFinds extends AbstractImporter
     private function setAmount($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['amount'] = $value;
+        $find['object']['objectNumberOfParts'] = $value;
 
         return $find;
     }
@@ -621,6 +622,7 @@ class ImportFinds extends AbstractImporter
             'volledig?' => 'complete',
             'type beschrijving' => 'classificationDescription',
             'photographCaption' => 'photographCaption',
+            'photographNote' => 'photographNote',
             'photographRightsAttribution' => 'photographRightsAttribution',
             'photographRightsLicense' => 'photographRightsLicense',
             'conservatie' => 'conservation',

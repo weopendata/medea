@@ -22,6 +22,24 @@ class Photograph extends Base
                 'cidoc_type' => 'E30'
             ]
         ],
+        [
+            'relationship' => 'P3',
+            'config' => [
+                'key' => 'photographNote',
+                'name' => 'photographNote',
+                'value_node' => true,
+                'cidoc_type' => 'E62'
+            ]
+        ],
+        [
+            'relationship' => 'P3',
+            'config' => [
+                'key' => 'photographCaption',
+                'name' => 'photographCaption',
+                'value_node' => true,
+                'cidoc_type' => 'E62'
+            ]
+        ],
     ];
 
     protected $properties = [
@@ -37,9 +55,6 @@ class Photograph extends Base
         [
             'name' => 'src'
         ],
-        [
-            'name' => 'remarks'
-        ]
     ];
 
     public function createPhotographRights($data)
