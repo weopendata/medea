@@ -31,7 +31,17 @@ class Collection extends Base
                 'plural' => true,
                 'cidoc_type' => 'E40'
             ]
-        ]
+        ],
+        [
+            'relationship' => 'P2',
+            'config' => [
+                'key' => 'collectionType',
+                'name' => 'collectionType',
+                'plural' => false,
+                'cidoc_type' => 'E42',
+                'value_node' => true
+            ]
+        ],
     ];
 
     /**
@@ -76,9 +86,6 @@ class Collection extends Base
         ],
         [
             'name' => 'description'
-        ],
-        [
-            'name' => 'collectionType'
         ],
         [
             'name' => 'internalId',

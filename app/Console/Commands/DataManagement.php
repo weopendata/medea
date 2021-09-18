@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Collection;
 use App\Models\Context;
 use App\Models\ExcavationEvent;
+use App\Repositories\CollectionRepository;
 use App\Repositories\ContextRepository;
 use App\Repositories\ExcavationRepository;
+use App\Services\NodeService;
 use Illuminate\Console\Command;
 use App\Repositories\FindRepository;
 use App\Repositories\UserRepository;
@@ -56,6 +59,7 @@ class DataManagement extends Command
         $this->info('3. Remove single find.');
         $this->info('4. Remove all excavations.');
         $this->info('5. Remove all contexts.');
+        $this->info('6. Remove all collections.');
 
         $choice = $this->ask('Enter your choice of action: ');
         $this->executeCommand($choice);
@@ -85,6 +89,11 @@ class DataManagement extends Command
 
                 $this->removeAll($repository, $class);
                 break;
+            case 6:
+                $repository = app(CollectionRepository::class);
+                $class = Collection::class;
+
+                $this->removeAll($repository, $class);
                 break;
             default:
                 break;
@@ -153,6 +162,10 @@ class DataManagement extends Command
         $bar = $this->output->createProgressBar(count($nodes));
 
         foreach ($nodes as $node) {
+            if (is_array($node) && !empty($node['identifier'])) {
+                $node = NodeService::getById($node['identifier']);
+            }
+
             $model = new $class();
             $model->setNode($node);
 

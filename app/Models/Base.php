@@ -510,6 +510,7 @@ class Base
      * Take into account the explicit relationships that need cascading deletion
      *
      * @return void
+     * @throws Exception
      */
     public function delete()
     {

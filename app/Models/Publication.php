@@ -11,7 +11,7 @@ class Publication extends Base
 
     protected $hasUniqueId = true;
 
-    protected $properties = [
+    /*protected $properties = [
         [
             'name' => 'researchURI',
             'default_value' => null
@@ -20,7 +20,7 @@ class Publication extends Base
             'name' => 'archiveURI',
             'default_value' => null
         ],
-    ];
+    ];*/
 
     protected $relatedModels = [
         'P106' => [
@@ -33,6 +33,24 @@ class Publication extends Base
     ];
 
     protected $implicitModels = [
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'publicationResearchId',
+                'name' => 'publicationResearchId',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
+            ]
+        ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'publicationArchiveId',
+                'name' => 'publicationArchiveId',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
+            ]
+        ],
         [
             'relationship' => 'P102',
             'config' => [

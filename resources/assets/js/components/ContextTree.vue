@@ -9,7 +9,7 @@
     </div>
 
     <div @click="handleToggleCollapsed()" class="item-line" v-if="context.context">
-      <div>{{ collapsed ? 'Bekijk onderliggende context' : 'Verberg onderliggende context'}}</div>
+      <div>{{ collapsed ? 'Bekijk omvattende context' : 'Verberg omvattende context'}}</div>
       <div class="ui mini icon" style="margin-left: 1rem;">
         <i class="eye icon" v-if="collapsed"></i>
         <i class="eye slash icon" v-else></i>
