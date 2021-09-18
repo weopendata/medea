@@ -118,11 +118,11 @@
           return
         }
 
-        if (! this.excavation.publication[0].archiveURI) {
+        if (! this.excavation.publication[0].publicationArchiveURI) {
           return
         }
 
-        return this.excavation.publication[0].archiveURI
+        return this.excavation.publication[0].publicationArchiveURI
       },
       researchUri () {
         if (!this.excavation.publication) {
@@ -133,11 +133,11 @@
           return
         }
 
-        if (! this.excavation.publication[0].researchURI) {
+        if (! this.excavation.publication[0].publicationResearchURI) {
           return
         }
 
-        return this.excavation.publication[0].researchURI
+        return this.excavation.publication[0].publicationResearchURI
       },
     },
     components: {

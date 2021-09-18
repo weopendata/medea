@@ -36,8 +36,8 @@ class Publication extends Base
         [
             'relationship' => 'P1',
             'config' => [
-                'key' => 'publicationResearchId',
-                'name' => 'publicationResearchId',
+                'key' => 'publicationResearchURI',
+                'name' => 'publicationResearchURI',
                 'value_node' => true,
                 'cidoc_type' => 'E42'
             ]
@@ -45,8 +45,8 @@ class Publication extends Base
         [
             'relationship' => 'P1',
             'config' => [
-                'key' => 'publicationArchiveId',
-                'name' => 'publicationArchiveId',
+                'key' => 'publicationArchiveURI',
+                'name' => 'publicationArchiveURI',
                 'value_node' => true,
                 'cidoc_type' => 'E42'
             ]

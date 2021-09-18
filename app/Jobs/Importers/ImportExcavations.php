@@ -131,8 +131,8 @@ class ImportExcavations extends AbstractImporter
         // Add the Publication link
         $excavation['publication'] = [
             [
-                'researchURI' => array_get($data, 'reportResearchURI'),
-                'archiveURI' => array_get($data, 'reportArchiveURI'),
+                'publicationResearchURI' => array_get($data, 'reportResearchURI'),
+                'publicationArchiveURI' => array_get($data, 'reportArchiveURI'),
                 'publicationTitle' => array_get($data, 'reportTitle'),
                 'publicationCreation' => [
                     'publicationCreationActor' => [
