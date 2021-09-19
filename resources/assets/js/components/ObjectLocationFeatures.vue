@@ -17,6 +17,12 @@
 
     <context-tree :is-root="true" :excavation="excavation" :context="find.object.context"></context-tree>
 
+    <h4>Foto</h4>
+    <dl v-for="photographFeature in photographFeatures">
+      <dt>{{ photographFeature.key }}</dt>
+      <dd>{{ photographFeature.value }}</dd>
+    </dl>
+
     <h4>Toegankelijkheid</h4>
     <dl class="object-features_accessibility-dl" v-if="find.object.objectNr">
       <dt>Origineel inventarisnummer</dt>
@@ -56,6 +62,35 @@
     name: "ObjectLocationFeatures",
     props: ['context', 'excavation', 'find', 'typologyInformation'],
     computed: {
+      photographFeatures () {
+        var photographFeatures = []
+
+        if (this.find.object && this.find.object.photograph && this.find.object.photograph.length > 0) {
+          var photograph = this.find.object.photograph[0]
+
+          photographFeatures.push({
+            key: 'Licentie',
+            value: photograph.photographRights && photograph.photographRights.photographRightsLicense
+          })
+
+          photographFeatures.push({
+            key: 'Attributie',
+            value: photograph.photographRights && photograph.photographRights.photographRightsAttribution
+          })
+
+          photographFeatures.push({
+            key: 'Caption',
+            value: photograph.photographCaption
+          })
+
+          photographFeatures.push({
+            key: 'Opmerking',
+            value: photograph.photographNote
+          })
+        }
+
+        return photographFeatures.filter(r => r.value)
+      },
       finder() {
         return window.publicUserInfo || {}
       },
