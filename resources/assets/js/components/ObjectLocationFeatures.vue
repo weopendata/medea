@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div style="margin-top: 1rem;">
     <h4>Vindplaats</h4>
     <dl class="object-features_location-dl">
       <dt>Opgraving</dt>
       <dd>{{ excavationContext }}</dd>
     </dl>
 
-    <dl class="object-features_location-dl" v-if="excavationSifting">
+    <!--<dl class="object-features_location-dl" v-if="excavationSifting">
       <dt>Zeven</dt>
       <dd>{{ excavationSifting }}</dd>
-    </dl>
+    </dl>-->
     <dl class="object-features_location-dl" v-if="excavationMetalDetection">
       <dt>Metaaldetectie</dt>
       <dd>{{ excavationMetalDetection }}</dd>

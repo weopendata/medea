@@ -27,7 +27,7 @@
       </div>
     </div>
     <br/>
-    <div id="fb-root"></div>
+    <div id="fb-root" style="margin-top: -2.5rem;"></div>
     <div class="card-textual ui form">
       <div class="fb-share-button"
            :data-href="'/finds/' + find.identifier"

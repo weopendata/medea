@@ -16,11 +16,12 @@ export default {
         return console.warn('PhotoSwipe missing')
       }
 
-      if (this.image.src) {
+      // Always use the swipe behaviour
+      /*if (this.image.src) {
         window.open(this.image.src, '_blank')
 
         return
-      }
+      }*/
 
       var el = this.$el;
 
