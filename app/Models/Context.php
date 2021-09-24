@@ -48,14 +48,6 @@ class Context extends Base
         [
             'relationship' => 'P140',
             'config' => [
-                'key' => 'contextId',
-                'name' => 'contextId',
-                'cidoc_type' => 'E15'
-            ]
-        ],
-        [
-            'relationship' => 'P140',
-            'config' => [
                 'key' => 'contextLegacyId',
                 'name' => 'contextLegacyId',
                 'cidoc_type' => 'E15'
@@ -105,45 +97,6 @@ class Context extends Base
     public static function createInternalId($localContextId, $excavationId)
     {
         return $excavationId . '__' . $localContextId;
-    }
-
-    /**
-     * @param $contextId
-     * @return \Everyman\Neo4j\Node
-     * @throws \Everyman\Neo4j\Exception
-     */
-    public function createContextId($contextId)
-    {
-        $generalId = $this->getGeneralId();
-
-        $contextIdNode = NodeService::makeNode();
-        $contextIdNode->setProperty('name', 'contextId');
-        $contextIdNode->save();
-        $contextIdNode->addLabels([
-            self::makeLabel('E15'),
-            self::makeLabel('contextId'),
-            self::makeLabel($generalId)
-        ]);
-
-        $contextIdValueNode = $this->createValueNode(
-            'contextIdValue',
-            ['E42', $generalId, 'contextIdValue'],
-            $contextId['contextIdValue']
-        );
-
-        // Create the relationship
-        $contextIdNode->relateTo($contextIdValueNode, 'P37')->save();
-
-        // Add the type to the contextIdValueNode
-        $typeNode = $this->createValueNode(
-            'contextIdType',
-            ['E55', $generalId, 'contextIdType'],
-            'contextID'
-        );
-
-        $contextIdValueNode->relateTo($typeNode, 'P2')->save();
-
-        return $contextIdNode;
     }
 
     public function createContextLegacyId($contextLegacyId)

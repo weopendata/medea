@@ -35,12 +35,6 @@ class BaseObject extends Base
             'name' => 'validated_by'
         ],
         [
-            'name' => 'markings'
-        ],
-        [
-            'name' => 'complete'
-        ],
-        [
             'name' => 'classifiable'
         ]
     ];
@@ -85,6 +79,15 @@ class BaseObject extends Base
                 'name' => 'dimensions',
                 'plural' => true,
                 'cidoc_type' => 'E54'
+            ]
+        ],
+        [
+            'relationship' => 'P56',
+            'config' => [
+                'key' => 'distinguishingFeatures',
+                'name' => 'distinguishingFeatures',
+                'plural' => true,
+                'cidoc_type' => 'E25'
             ]
         ],
         [
@@ -164,7 +167,7 @@ class BaseObject extends Base
                 'value_node' => true,
                 'cidoc_type' => 'E42'
             ]
-        ]
+        ],
     ];
 
     /**
@@ -282,6 +285,25 @@ class BaseObject extends Base
         $dimensionNode->relateTo($dimensionUnit, 'P91')->save();
 
         return $dimensionNode;
+    }
+
+    public function createDistinguishingFeatures($distinguishingFeature)
+    {
+        $generalId = $this->getGeneralId();
+
+        $distinguishingFeatureNode = NodeService::makeNode();
+        $distinguishingFeatureNode->setProperty('name', 'distinguishingFeatures');
+        $distinguishingFeatureNode->save();
+
+        $distinguishingFeatureNode->addLabels([self::makeLabel('E25'), self::makeLabel('distinguishingFeature'), self::makeLabel($generalId)]);
+
+        $type = $this->createValueNode('distinguishingFeatureType', ['E55', $generalId], $distinguishingFeature['distinguishingFeatureType']);
+        $distinguishingFeatureNode->relateTo($type, 'P2')->save();
+
+        $value = $this->createValueNode('distinguishingFeatureNote', ['E62', $generalId], $distinguishingFeature['distinguishingFeatureNote']);
+        $distinguishingFeatureNode->relateTo($value, 'P3')->save();
+
+        return $distinguishingFeatureNode;
     }
 
     /**

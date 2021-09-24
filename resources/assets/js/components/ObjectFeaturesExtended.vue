@@ -24,13 +24,13 @@
           {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
       </template>
     </dl>
-    <dl class="object-features_object-dl" v-if="find.object.treatmentEvent&&find.object.treatmentEvent.modificationTechnique&&find.object.treatmentEvent.modificationTechnique.modificationTechniqueType">
+    <dl class="object-features_object-dl" v-if="conservationTreatment">
       <dt>Conservatiebehandeling</dt>
-      <dd>{{find.object.treatmentEvent.modificationTechnique.modificationTechniqueType}}</dd>
+      <dd>{{conservationTreatment}}</dd>
     </dl>
-    <dl class="object-features_object-dl" v-if="find.object.objectInscription&&find.object.objectInscription.objectInscriptionNote">
+    <dl class="object-features_object-dl" v-if="inscription">
       <dt>Opschrift</dt>
-      <dd>{{find.object.objectInscription.objectInscriptionNote}}</dd>
+      <dd>{{inscription}}</dd>
     </dl>
     <dl class="object-features_object-dl" v-if="typeDescription">
       <dt v-if="canUserSeeDetails">Typologische beschrijving</dt>
@@ -63,6 +63,12 @@
   export default {
     props: ['find', 'typology'],
     computed: {
+      inscription () {
+        return this.findDistinguishingFeature('opschrift')
+      },
+      conservationTreatment () {
+        return this.findDistinguishingFeature('conservering')
+      },
       typologyDate() {
         var initialPeriod = 'onbekend';
         var finalPeriod = 'onbekend'
@@ -101,6 +107,17 @@
       }
     },
     methods: {
+      findDistinguishingFeature(type) {
+        if (!this.find || !this.find.object.distinguishingFeatures) {
+          return
+        }
+
+        var conservationFeature = this.find.object.distinguishingFeatures.filter(feature => feature.distinguishingFeatureType === type)
+
+        if (conservationFeature && conservationFeature.length > 0) {
+          return conservationFeature[0].distinguishingFeatureNote
+        }
+      },
       typologyUri (code) {
         return window.location.protocol + "//" + window.location.host + '/typology-browser#' + code
       }

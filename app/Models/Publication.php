@@ -11,17 +11,6 @@ class Publication extends Base
 
     protected $hasUniqueId = true;
 
-    /*protected $properties = [
-        [
-            'name' => 'researchURI',
-            'default_value' => null
-        ],
-        [
-            'name' => 'archiveURI',
-            'default_value' => null
-        ],
-    ];*/
-
     protected $relatedModels = [
         'P106' => [
             'key' => 'publication',

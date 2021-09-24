@@ -40,6 +40,15 @@ class Photograph extends Base
                 'cidoc_type' => 'E62'
             ]
         ],
+        [
+            'relationship' => 'P1',
+            'config' => [
+                'key' => 'photographeFileName',
+                'name' => 'photographeFileName',
+                'value_node' => true,
+                'cidoc_type' => 'E42'
+            ]
+        ]
     ];
 
     protected $properties = [

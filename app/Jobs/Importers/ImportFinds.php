@@ -84,6 +84,7 @@ class ImportFinds extends AbstractImporter
 
         // If the find is not empty, remove a couple of things we know will be overwritten
         unset($find['object']['dimensions']);
+        unset($find['object']['distinguishingFeatures']);
         unset($find['object']['objectInscription']);
 
         foreach ($data as $property => $value) {
@@ -262,6 +263,7 @@ class ImportFinds extends AbstractImporter
             list($name, $name_small, $width, $height) = processImage(['src' => $imageData, 'name' => $photographName]);
 
             $photographs[] = [
+                'photographeFileName' => $name,
                 'src' => '/uploads/' . $name,
                 'resized' => '/uploads/' . $name_small,
                 'width' => $width,
@@ -444,7 +446,15 @@ class ImportFinds extends AbstractImporter
     private function setMarkings($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['markings'] = $value;
+
+        if (empty($find['object']['distinguishingFeatures'])) {
+            $find['object']['distinguishingFeatures'] = [];
+        }
+
+        $find['object']['distinguishingFeatures'][] = [
+            'distinguishingFeatureType' => 'merkteken',
+            'distinguishingFeatureNote' => $value
+        ];
 
         return $find;
     }
@@ -452,7 +462,15 @@ class ImportFinds extends AbstractImporter
     private function setComplete($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['complete'] = $value;
+
+        if (empty($find['object']['distinguishingFeatures'])) {
+            $find['object']['distinguishingFeatures'] = [];
+        }
+
+        $find['object']['distinguishingFeatures'][] = [
+            'distinguishingFeatureType' => 'volledigheid',
+            'distinguishingFeatureNote' => $value
+        ];
 
         return $find;
     }
@@ -506,7 +524,15 @@ class ImportFinds extends AbstractImporter
     private function setInscription($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['objectInscription'] = ['objectInscriptionNote' => $value];
+
+        if (empty($find['object']['distinguishingFeatures'])) {
+            $find['object']['distinguishingFeatures'] = [];
+        }
+
+        $find['object']['distinguishingFeatures'][] = [
+            'distinguishingFeatureType' => 'opschrift',
+            'distinguishingFeatureNote' => $value
+        ];
 
         return $find;
     }
@@ -559,7 +585,15 @@ class ImportFinds extends AbstractImporter
     private function setConservation($find, $value)
     {
         $find = $this->initObject($find);
-        $find['object']['treatmentEvent'] = ['modificationTechnique' => ['modificationTechniqueType' => $value]];
+
+        if (empty($find['object']['distinguishingFeatures'])) {
+            $find['object']['distinguishingFeatures'] = [];
+        }
+
+        $find['object']['distinguishingFeatures'][] = [
+            'distinguishingFeatureType' => 'conservering',
+            'distinguishingFeatureNote' => $value
+        ];
 
         return $find;
     }
@@ -625,7 +659,7 @@ class ImportFinds extends AbstractImporter
             'photographNote' => 'photographNote',
             'photographRightsAttribution' => 'photographRightsAttribution',
             'photographRightsLicense' => 'photographRightsLicense',
-            'conservatie' => 'conservation',
+            'geconserveerd?' => 'conservation',
         ];
 
         foreach ($mapping as $key => $newKey) {
