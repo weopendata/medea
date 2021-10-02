@@ -79,7 +79,7 @@ class ObjectRepository extends BaseRepository
     /**
      * @param $objectId
      * @param $classification_id
-     * @return |null
+     * @return Node|null
      * @throws \Exception
      */
     public function getClassification($objectId, $classification_id)
@@ -102,14 +102,14 @@ class ObjectRepository extends BaseRepository
     }
 
     /**
-     * Set the PAN ID classification, this can only occur once via uploads
+     * Create or replace a classification based on the value of the passed classification
      *
      * @param $objectId
-     * @param array $panIdClassification
+     * @param array $productionClassification
      * @return void |null |null
      * @throws \Everyman\Neo4j\Exception
      */
-    public function addPanIdClassification($objectId, array $panIdClassification)
+    public function upsertClassification($objectId, array $productionClassification)
     {
         $object = $this->getById($objectId);
 
@@ -118,10 +118,10 @@ class ObjectRepository extends BaseRepository
         }
 
         $tenantStatement = NodeService::getTenantWhereStatement(['n', 'classification', 'productionClassificationValue']);
-        $query = "match (n)-[*2..2]-(classification:E17)-[P42]-(productionClassificationValue:E55 {value: {panId} }) where id(n) = $objectId AND $tenantStatement return classification";
+        $query = "match (n)-[*2..2]-(classification:E17)-[P42]-(productionClassificationValue:E55 {value: {classificationValue} }) where id(n) = $objectId AND $tenantStatement return classification";
 
         $variables = [
-            'panId' => $panIdClassification['productionClassificationValue']
+            'classificationValue' => $productionClassification['productionClassificationValue']
         ];
 
         $client = $this->getClient();
@@ -154,7 +154,7 @@ class ObjectRepository extends BaseRepository
             $row = $results->current();
             $production_event = $row['productionEvent'];
 
-            $prodClassification = new ProductionClassification($panIdClassification);
+            $prodClassification = new ProductionClassification($productionClassification);
             $prodClassification->save();
 
             $production_event->relateTo($prodClassification->getNode(), 'P41')->save();
@@ -162,7 +162,7 @@ class ObjectRepository extends BaseRepository
             return;
         }
 
-        $production_event = new ProductionEvent(['productionClassification' => $panIdClassification]);
+        $production_event = new ProductionEvent(['productionClassification' => $productionClassification]);
         $production_event->save();
 
         $object->relateTo($production_event->getNode(), 'P108')->save();

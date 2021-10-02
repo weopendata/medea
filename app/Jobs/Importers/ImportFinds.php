@@ -53,17 +53,31 @@ class ImportFinds extends AbstractImporter
                 $this->addLog($index, 'Added a find ', $action, ['identifier' => $findId, 'data' => $data], true);
             }
 
+            if (empty($panId) || empty($data['publicationReference'])) {
+                return;
+            }
+
+            $find = app(FindRepository::class)->expandValues($findId);
+
             // Add the PAN classification
             if (!empty($panId)) {
-                $find = app(FindRepository::class)->expandValues($findId);
-
                 $productionClassification = [
                     'productionClassificationValue' => $panId,
                     'productionClassificationType' => 'Typologie',
                     'productionClassificationDescription' => $classificationDescription,
                 ];
 
-                app(ObjectRepository::class)->addPanIdClassification($find['object']['identifier'], $productionClassification);
+                app(ObjectRepository::class)->upsertClassification($find['object']['identifier'], $productionClassification);
+            }
+
+            // Add a classification for the publication if applicable
+            if (!empty($data['publicationReference'])) {
+                $productionClassification = [
+                    'productionClassificationValue' => $data['publicationReference'],
+                    'productionClassificationType' => 'Gelijkaardige vondst',
+                ];
+
+                app(ObjectRepository::class)->upsertClassification($find['object']['identifier'], $productionClassification);
             }
         } catch (\Exception $ex) {
             \Log::error($ex->getMessage());
