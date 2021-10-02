@@ -15,7 +15,7 @@
       <dd>{{ excavationMetalDetection }}</dd>
     </dl>
 
-    <context-tree :is-root="true" :excavation="excavation" :context="find.object.context"></context-tree>
+    <context-tree :is-root="true" :excavation="excavation" :context="find.object.context" v-if="find.object.context"/>
 
     <h4>Foto</h4>
     <dl v-for="photographFeature in photographFeatures">
@@ -45,6 +45,16 @@
     <dl class="object-features_accessibility-dl">
       <dt>Referentie</dt>
       <dd>{{ currentLink }}</dd>
+
+      <template v-if="find.excavationId">
+        <dt>Excavation ID</dt>
+        <dd>{{ find.excavationId }}</dd>
+      </template>
+
+      <template v-if="find.internalId">
+        <dt>Vondst ID</dt>
+        <dd>{{ find.internalId }}</dd>
+      </template>
     </dl>
 
     <dl class="object-features_accessibility-dl">
