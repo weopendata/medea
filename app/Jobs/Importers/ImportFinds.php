@@ -53,11 +53,9 @@ class ImportFinds extends AbstractImporter
                 $this->addLog($index, 'Added a find ', $action, ['identifier' => $findId, 'data' => $data], true);
             }
 
-            if (empty($panId) || empty($data['publicationReference'])) {
+            if (empty($panId) && empty($data['publicationReference'])) {
                 return;
             }
-
-            $find = app(FindRepository::class)->expandValues($findId);
 
             // Add the PAN classification
             if (!empty($panId)) {
