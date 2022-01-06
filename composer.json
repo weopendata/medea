@@ -27,6 +27,12 @@
         "filp/whoops": "~2.0",
         "laravel/tinker": "^2.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:weopendata/neo4jphp.git"
+        }
+    ],
     "autoload": {
         "classmap": [
             "database"
