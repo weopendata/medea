@@ -89,9 +89,13 @@ class ImportData implements ShouldQueue
     {
         if ($fileUploadType == 'excavation') {
             return new ImportExcavations($this->importJob->id);
-        } else if ($fileUploadType == 'context') {
+        }
+
+        if ($fileUploadType == 'context') {
             return new ImportContexts($this->importJob->id);
-        } else if ($fileUploadType == 'find') {
+        }
+
+        if ($fileUploadType == 'find') {
             return new ImportFinds($this->importJob->id);
         }
 

@@ -186,6 +186,14 @@ class FindRepository extends BaseRepository
         extract($this->getQueryStatements($filters, '', '', $validationStatus));
 
         $withStatement[] = 'find';
+        $withStatement = collect($withStatement)
+            ->filter(function ($statement) {
+                // Filter out the properties that will not be in the MATCH statement
+                return !in_array($statement, ['person', 'typologyClassification']);
+            })
+            ->values()
+            ->toArray();
+        
         $withStatement = array_unique($withStatement);
         $withStatement = implode(', ', $withStatement);
 
@@ -380,13 +388,13 @@ class FindRepository extends BaseRepository
         $startStatement = '';
 
         if (!empty($filters['query'])) {
-            // Replace the whitespace with the lucene syntax for white spaces text queries
+            // Replace the whitespace with the Lucene syntax for white spaces text queries
             $query = preg_replace('#\s+#', ' AND ', $filters['query']);
 
             $startStatement = "START object=node:node_auto_index('fulltext_description:(*" . $query . "*)') ";
         }
 
-        // Non personal find statement
+        // Non-personal find statement
         $initialStatement = '(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52)';
 
         // Check on validation status
