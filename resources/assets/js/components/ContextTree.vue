@@ -70,6 +70,11 @@
 
         return dating + ' (' + datingMetaData + ')'
       },
+      contextLegacyId () {
+        if (this.context.contextLegacyId && this.context.contextLegacyId.contextLegacyIdValue && typeof this.context.contextLegacyId.contextLegacyIdValue === 'string') {
+          return this.context.contextLegacyId.contextLegacyIdValue
+        }
+      },
       contextParts() {
         var parts = []
 
@@ -78,8 +83,8 @@
         }
 
         parts.push({
-          title: 'Type context',
-          value: this.context.contextType
+          title: 'Context',
+          value: this.contextLegacyId ? this.contextLegacyId + ' (' + this.context.contextType + ')' : this.context.contextType
         })
 
         // If the context is the last one, add the excavation details

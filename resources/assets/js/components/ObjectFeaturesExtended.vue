@@ -32,6 +32,10 @@
       <dt>Opschrift</dt>
       <dd>{{inscription}}</dd>
     </dl>
+    <dl class="object-features_object-dl" v-if="mark">
+      <dt>Merteken</dt>
+      <dd>{{mark}}</dd>
+    </dl>
     <dl class="object-features_object-dl" v-if="typeDescription">
       <dt v-if="canUserSeeDetails">Typologische beschrijving</dt>
       <dd v-if="canUserSeeDetails">{{typeDescription}}</dd>
@@ -68,6 +72,9 @@
       },
       conservationTreatment () {
         return this.findDistinguishingFeature('conservering')
+      },
+      mark () {
+        return this.findDistinguishingFeature('merkteken')
       },
       typologyDate() {
         var initialPeriod = 'onbekend';

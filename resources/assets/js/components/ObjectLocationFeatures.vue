@@ -34,11 +34,11 @@
     </dl>
     <dl class="object-features_accessibility-dl" v-if="archiveUri">
       <dt>Archiefreferentie</dt>
-      <dd>{{ archiveUri }}</dd>
+      <dd><a :href="archiveUri" target="_blank">{{ archiveUri }}</a></dd>
     </dl>
     <dl class="object-features_accessibility-dl" v-if="researchUri">
       <dt>Andere databanken</dt>
-      <dd>{{ researchUri }}</dd>
+      <dd><a :href="researchUri" target="_blank"> {{ researchUri }}</a></dd>
     </dl>
 
     <h4>Deze vondstfiche</h4>

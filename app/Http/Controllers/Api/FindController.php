@@ -30,11 +30,13 @@ class FindController extends Controller
 
         if ($type == 'heatmap') {
             return $this->makeHeatMapResponse($request);
-        } else if ($type == 'markers') {
-            return $this->makeMarkerResponse($request);
-        } else {
-            return $this->makeApiFindsResponse($request);
         }
+
+        if ($type == 'markers') {
+            return $this->makeMarkerResponse($request);
+        }
+
+        return $this->makeApiFindsResponse($request);
     }
 
     /**
@@ -91,9 +93,9 @@ class FindController extends Controller
             $user = $request->user();
 
             foreach ($finds as $find) {
-                if (empty($user) || (! empty($find['finderId']) && $find['finderId'] != $user->id)
-                    && ! in_array('onderzoeker', $user->getRoles())) {
-                    if (! empty($find['grid']) || ! empty($find['lat'])) {
+                if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
+                    && !in_array('onderzoeker', $user->getRoles())) {
+                    if (!empty($find['grid']) || !empty($find['lat'])) {
                         list($lat, $lon) = explode(',', $find['grid']);
 
                         $find['lat'] = $lat;
@@ -143,7 +145,7 @@ class FindController extends Controller
         }
 
         // Check if personal finds are set
-        if ($request->has('myfinds') && ! empty($request->user())) {
+        if ($request->has('myfinds') && !empty($request->user())) {
             $filters['myfinds'] = $request->user()->email;
         }
 
@@ -155,7 +157,7 @@ class FindController extends Controller
         $order_flow = 'ASC';
         $order_by = 'findDate';
 
-        if (! empty($order)) {
+        if (!empty($order)) {
             $first_char = substr($order, 0, 1);
 
             if ($first_char == '-') {
@@ -166,7 +168,7 @@ class FindController extends Controller
             }
         }
 
-        if (! isset($filters['embargo'])) {
+        if (!isset($filters['embargo'])) {
             $filters['embargo'] = 'false';
         }
 
@@ -181,7 +183,7 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int $id
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
@@ -199,17 +201,17 @@ class FindController extends Controller
      * Transform the find based on the role of the user
      * and its relationship to the find
      *
-     * @param array $find
-     * @param User $user
+     * @param  array $find
+     * @param  User  $user
      * @return array
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function transformFind($find, $user)
     {
         // If the user is not owner of the find and not a researcher, obscure the location to 1km accuracy
-        if (empty($user) || (! empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
-            && ! in_array('onderzoeker', $user->getRoles())) {
-            if (! empty($find['findSpot']['location']['lat'])) {
+        if (empty($user) || (!empty($find['person']['identifier']) && $find['person']['identifier'] != $user->id)
+            && !in_array('onderzoeker', $user->getRoles())) {
+            if (!empty($find['findSpot']['location']['lat'])) {
                 $find['findSpot']['location']['lat'] = round(($find['findSpot']['location']['lat']), 1);
                 $find['findSpot']['location']['lng'] = round(($find['findSpot']['location']['lng']), 1);
                 $find['findSpot']['location']['accuracy'] = 7000;
@@ -217,13 +219,13 @@ class FindController extends Controller
         }
 
         // Only administrators can see who published the find
-        if (empty($user) || ! in_array('administrator', $user->getRoles())) {
+        if (empty($user) || !in_array('administrator', $user->getRoles())) {
             unset($find['object']['validated_by']);
         }
 
         // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
-        if (empty($user) || (! $user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
+        if (empty($user) || (!$user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
             unset($find['object']['objectDescription']);
@@ -231,8 +233,8 @@ class FindController extends Controller
 
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
         // unless the user is the owner of the find (or is a registrator or adminstrator)
-        if (! (! empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
-            && ! empty($find['object']['objectNr']) && empty($find['object']['collection'])
+        if (!(!empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
+            && !empty($find['object']['objectNr']) && empty($find['object']['collection'])
         ) {
             unset($find['object']['objectNr']);
         }
@@ -246,10 +248,10 @@ class FindController extends Controller
         foreach ($objectClassifications as $objectClassification) {
             $creator = $classifications->getUser($objectClassification['identifier']);
 
-            if (! empty($creator)) {
+            if (!empty($creator)) {
                 $objectClassification['addedBy'] = $creator->getProperty('firstName') . ' ' . $creator->getProperty('lastName');
 
-                if (! empty($user) && $user->id == $creator->getId()) {
+                if (!empty($user) && $user->id == $creator->getId()) {
                     $objectClassification['addedByUser'] = true;
                 }
             }
@@ -257,7 +259,7 @@ class FindController extends Controller
             $enrichedClassifications[] = $objectClassification;
         }
 
-        if (! empty($objectClassifications)) {
+        if (!empty($objectClassifications)) {
             $find['object']['productionEvent']['productionClassification'] = $enrichedClassifications;
         }
 

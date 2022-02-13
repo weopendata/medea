@@ -283,11 +283,6 @@ class FindRepository extends BaseRepository
             if (empty($result['lat']) || empty($result['lng'])) {
                 continue;
             }
-            /*$pieces = explode(',', $result['coords']);
-
-            if (count($pieces) != 2) {
-                continue;
-            }*/
 
             $markers[] = [
                 'identifier' => $result['findId'],
