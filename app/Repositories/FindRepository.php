@@ -193,7 +193,7 @@ class FindRepository extends BaseRepository
             })
             ->values()
             ->toArray();
-        
+
         $withStatement = array_unique($withStatement);
         $withStatement = implode(', ', $withStatement);
 
@@ -259,16 +259,16 @@ class FindRepository extends BaseRepository
 
         $fullMatchStatement = rtrim($fullMatchStatement, ',');
 
-        $query = "MATCH $fullMatchStatement,  (find:E10)-[rFO:P12]->(object:E22)-[P157]->(context:S22)-[rCS:P53]->(searchArea:E27)-[]-(location:E53)
+        $query = "MATCH $fullMatchStatement,  (find:E10)-[rFO:P12]->(object:E22)-[P157]->(context:S22)-[rCS:P53]->(searchArea:E27)-[]-(location:E53), (location:E53)-[:P87]->(lat:E47 {name: 'lat'}),(location:E53)-[:P87]->(lng:E47 {name: 'lng'})
         WHERE $whereStatement";
 
         foreach ($optionalStatements as $optionalStatement) {
             $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
         }
 
-        $query .= " WITH $withStatement, location
+        $query .= " WITH $withStatement, location,lat,lng
         WHERE $whereStatement       
-        RETURN DISTINCT location.geoGrid as coords, id(find) as findId
+        RETURN DISTINCT id(find) as findId, lat.value as lat, lng.value as lng
         LIMIT 1000";
 
         if (!empty($startStatement)) {
@@ -280,17 +280,20 @@ class FindRepository extends BaseRepository
         $markers = [];
 
         foreach ($cypherQuery->getResultSet() as $result) {
-            $pieces = explode(',', $result['coords']);
+            if (empty($result['lat']) || empty($result['lng'])) {
+                continue;
+            }
+            /*$pieces = explode(',', $result['coords']);
 
             if (count($pieces) != 2) {
                 continue;
-            }
+            }*/
 
             $markers[] = [
                 'identifier' => $result['findId'],
                 'location' => [
-                    'lat' => (double)$pieces[0],
-                    'lng' => (double)$pieces[1]
+                    'lat' => (double)$result['lat'],
+                    'lng' => (double)$result['lng'],
                 ]
             ];
         }
