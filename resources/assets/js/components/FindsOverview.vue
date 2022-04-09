@@ -2,7 +2,6 @@
   <div>
     <div class="ui container" :class="{fetching:fetching}">
       <div class="list-left">
-        <pre>{{facets}}</pre>
         <finds-filter
             :name.sync="filterName"
             :model.sync="filterState"
