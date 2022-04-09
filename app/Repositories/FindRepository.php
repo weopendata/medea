@@ -193,10 +193,7 @@ class FindRepository extends BaseRepository
             $withProperties[] = $facetCountStatement . ' as ' . $facetCountName;
         }
 
-        $withStatements = array_merge($withStatement, $withProperties);
-        $withStatements = array_unique($withStatements);
-
-        $withStatement = implode(', ', $withStatements);
+        $withStatement = implode(', ', $withProperties);
 
         $fullMatchStatement = $initialStatement;
 
@@ -838,8 +835,6 @@ class FindRepository extends BaseRepository
      */
     public function getExportableData($findId)
     {
-        $tenantStatement = NodeService::getTenantWhereStatement(['person', 'find', 'category', 'material', 'object']);
-
         $query = 'MATCH (find:E10)-[P12]-(object:E22)
         WHERE ' . NodeService::getTenantWhereStatement(['find', 'object'])
             . ' OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"}) '
@@ -927,7 +922,7 @@ class FindRepository extends BaseRepository
             'period' => 'collect(distinct [p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p)).value])',
             'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
             'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
-            'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | last(nodes(p)).value])',
+            'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
         ];
     }
 }

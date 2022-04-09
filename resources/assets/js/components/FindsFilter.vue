@@ -40,11 +40,6 @@
           :prop="facet.prop"
           :options="facet.options"
       />
-      <!--<facet label="Periode" prop="period" :options="fields.classification.period"></facet>
-      <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
-      <facet label="Oppervlaktebehandeling" prop="modification" :options="modificationFields"></facet>
-      <facet label="Categorie" prop="category" :options="fields.object.category"></facet>
-      <facet label="Collecties" prop="collection" :options="fields.collections"></facet>-->
     </div>
   </div>
 </template>
@@ -128,19 +123,31 @@ export default {
       ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0)
     },
     periodFacetOptions () {
-      return this.facets['period']
+      var options = this.facets['period'] || []
+
+      return this.appendActiveFilterToFacetOptions('period', options)
     },
     materialFacetOptions () {
-      return this.facets['objectMaterial']
+      var options = this.facets['objectMaterial'] || []
+
+      return this.appendActiveFilterToFacetOptions('objectMaterial', options)
     },
     modificationFacetOptions () {
-      return this.facets['modification']
+      var options = this.facets['modification'] || []
+
+      return this.appendActiveFilterToFacetOptions('modification', options)
     },
     categoryFacetOptions () {
-      return this.facets['category']
+      var options = this.facets['category'] || []
+
+      return this.appendActiveFilterToFacetOptions('category', options)
     },
     collectionFacetOptions () {
-      return this.facets['collection']
+      var options = this.facets['collection'] || []
+
+      options = this.appendActiveFilterToFacetOptions('collection', options)
+
+      return [...this.fields.collections].filter(field => options.includes(field.value))
     },
     statusOptions () {
       if (!this.user) {
@@ -174,6 +181,19 @@ export default {
     }
   },
   methods: {
+    appendActiveFilterToFacetOptions(facetName, options) {
+      if (
+          this.model
+          && this.model[facetName]
+          && this.model[facetName] !== '*'
+          && (typeof this.model[facetName] === 'string' || !!isNaN(this.model[facetName]))
+          && !options.includes(this.model[facetName])
+      ) {
+        options.push(this.model[facetName])
+      }
+
+      return options
+    },
     resetFilters () {
       this.$parent.resetFilters()
     },

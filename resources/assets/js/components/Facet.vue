@@ -1,8 +1,20 @@
 <template>
   <div class="facet" v-if="options">
-    <h3 class="facet-title" @click="collapse"><i class="ui chevron icon" :class="shown?'down':'right'"></i> {{ label }}</h3>
+    <h3 class="facet-title" @click="collapse">
+      <i class="ui chevron icon" :class="shown?'down':'right'"></i>
+      {{ label }}
+    </h3>
     <div class="facet-options" v-if="shown">
-      <a href="#" class="facet-a" :class="{active:activeOption===opt.value}" @click.prevent="toggle(prop, opt.value)" v-for="opt in formattedOptions" :value="opt.value" v-text="opt.label"></a>
+      <a
+          v-for="(opt, index) in formattedOptions"
+          href="#"
+          class="facet-a"
+          :key="label + 'facet_option_' + index"
+          :class="{active: activeOption === opt.value}"
+          @click.prevent="toggle(prop, opt.value)"
+          :value="opt.value"
+          v-text="opt.label"
+      />
     </div>
   </div>
 </template>
@@ -17,7 +29,7 @@ export default {
     activeOption () {
       return this.$parent.model[this.prop]
     },
-    formattedOptions() {
+    formattedOptions () {
       return this.options.map(function (o) {
         return typeof o === 'string' ? { label: o, value: o } : o
       })

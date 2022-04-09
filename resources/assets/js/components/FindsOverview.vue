@@ -227,21 +227,23 @@ export default {
     fetch () {
       var model = inert(this.filterState)
       var type = model.type
-      /*if (model.status == 'Gepubliceerd') {
-        delete model.status
-      }*/
+
       if (model.name) {
         delete model.name
       }
+
       if (model.myfinds && this.user.isGuest) {
         delete model.myfinds
       }
+
       if (model.type) {
         delete model.type
       }
+
       var query = Object.keys(model).map(function (key, index) {
         return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
       }).filter(Boolean).join('&')
+
       query = query ? '/finds?' + query : '/finds?'
 
       // Do not fetch same query twice
@@ -250,12 +252,14 @@ export default {
         this.$http.get('/api' + query)
             .then(function (res) {
               this.paging = getPaging(res.headers)
-              this.finds = res.data
+              this.finds = res.data.finds
+              this.facets = res.data.facets
               this.fetching = false
             })
             .catch(function () {
               this.paging = {}
               this.finds = []
+              this.facets = []
               console.error('List: could not fetch finds')
             })
 

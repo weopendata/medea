@@ -108,7 +108,7 @@ class FindController extends Controller
                 if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
                     && !in_array('onderzoeker', $user->getRoles())) {
                     if (!empty($find['grid']) || !empty($find['lat'])) {
-                        list($lat, $lon) = explode(',', $find['grid']);
+                        [$lat, $lon] = explode(',', $find['grid']);
 
                         $find['lat'] = $lat;
                         $find['lng'] = $lon;
@@ -127,12 +127,14 @@ class FindController extends Controller
         // Add the collections as a full list, it's currently still feasible
         // that all collections can be added to the facet filter
         $fields = $this->list_values->getFindTemplate();
-        $fields['collections'] = collect(app(CollectionRepository::class)->getList())->map(function ($title, $identifier) {
-            return [
-                'value' => $identifier,
-                'label' => $title
-            ];
-        })->values();
+        $fields['collections'] = collect(app(CollectionRepository::class)->getList())
+            ->map(function ($title, $identifier) {
+                return [
+                    'value' => $identifier,
+                    'label' => $title,
+                ];
+            })
+            ->values();
 
         return response()
             ->view('pages.finds-list', [
@@ -152,7 +154,7 @@ class FindController extends Controller
                     'modification' => $request->input('modification', '*'),
                     'status' => $validated_status,
                     'embargo' => (boolean)$request->input('embargo', false),
-                    'showmap' => $request->input('showmap', null)
+                    'showmap' => $request->input('showmap', null),
                 ],
                 'fields' => $fields,
                 'link' => $linkHeader,
@@ -179,7 +181,7 @@ class FindController extends Controller
     /**
      * Transform the periods and add the time range of the period to it
      *
-     * @param array $fields
+     * @param  array $fields
      * @return array
      */
     private function transformPeriods($fields)
@@ -192,7 +194,7 @@ class FindController extends Controller
             'postmiddeleeuws' => '1501 / 1900',
             'modern' => '1901 / ' . Carbon::now()->year,
             'Wereldoorlog I' => '1914 / 1918',
-            'Wereldoorlog II' => '1940 / 1945'
+            'Wereldoorlog II' => '1940 / 1945',
         ];
 
         $periodFields = Arr::only($periodFields, $fields['classification']['period']);
@@ -209,7 +211,7 @@ class FindController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param CreateFindRequest $request
+     * @param  CreateFindRequest $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -228,13 +230,13 @@ class FindController extends Controller
         // Check for images, they need special processing before the Neo4j writing is initiated
         if (!empty($input['object']['photograph'])) {
             foreach ($input['object']['photograph'] as $image) {
-                list($name, $name_small, $width, $height) = $this->processImage($image);
+                [$name, $name_small, $width, $height] = $this->processImage($image);
 
                 $images[] = [
                     'src' => $request->root() . '/uploads/' . $name,
                     'resized' => $request->root() . '/uploads/' . $name_small,
                     'width' => $width,
-                    'height' => $height
+                    'height' => $height,
                 ];
             }
         }
@@ -261,7 +263,7 @@ class FindController extends Controller
         } catch (\Exception $ex) {
             return response()->json(
                 [
-                    'error' => $ex->getMessage()
+                    'error' => $ex->getMessage(),
                 ],
                 400
             );
@@ -271,7 +273,7 @@ class FindController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param ShowFindRequest $request
+     * @param  ShowFindRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws \Everyman\Neo4j\Exception
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -342,12 +344,12 @@ class FindController extends Controller
             'meta' => $meta,
             'typologyInformation' => $typologyInformation,
             'excavationInformation' => $excavationInformation,
-            'context' => $context
+            'context' => $context,
         ]);
     }
 
     /**
-     * @param array $find
+     * @param  array $find
      * @return array
      */
     private function fetchFindContext(array $find)
@@ -362,7 +364,7 @@ class FindController extends Controller
     }
 
     /**
-     * @param array $find
+     * @param  array $find
      * @return array
      */
     private function fetchExcavationInformation(array $find)
@@ -378,7 +380,7 @@ class FindController extends Controller
     }
 
     /**
-     * @param array $find
+     * @param  array $find
      * @return array
      */
     private function fetchPanTypologyInformation(array $find)
@@ -406,8 +408,8 @@ class FindController extends Controller
      * Transform the find based on the role of the user
      * and its relationship to the find
      *
-     * @param array $find
-     * @param User $user
+     * @param  array $find
+     * @param  User  $user
      * @return array
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
@@ -474,7 +476,7 @@ class FindController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param EditFindRequest $request
+     * @param  EditFindRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(EditFindRequest $request)
@@ -493,15 +495,15 @@ class FindController extends Controller
 
         return view('pages.finds-create', [
             'fields' => $fields,
-            'find' => $find
+            'find' => $find,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $findId
+     * @param  \Illuminate\Http\Request $request
+     * @param  int                      $findId
      * @return \Illuminate\Http\JsonResponse
      * @throws \Everyman\Neo4j\Exception
      */
@@ -518,13 +520,13 @@ class FindController extends Controller
             if (!empty($input['object']['photograph'])) {
                 foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {
-                        list($name, $name_small, $width, $height) = $this->processImage($image);
+                        [$name, $name_small, $width, $height] = $this->processImage($image);
 
                         $images[] = [
                             'src' => $request->root() . '/uploads/' . $name,
                             'resized' => $request->root() . '/uploads/' . $name_small,
                             'width' => $width,
-                            'height' => $height
+                            'height' => $height,
                         ];
                     } else {
                         $images[] = $image;
@@ -550,7 +552,7 @@ class FindController extends Controller
 
                 return response()->json(
                     [
-                        'error' => $ex->getMessage()
+                        'error' => $ex->getMessage(),
                     ],
                     400
                 );
@@ -563,7 +565,7 @@ class FindController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $findId
+     * @param  int $findId
      * @return \Illuminate\Http\Response
      */
     public function destroy($findId, DeleteFindRequest $request)
@@ -576,7 +578,7 @@ class FindController extends Controller
     /**
      * Process an image
      *
-     * @param array $image The configuration of an image, contains a base64 encoded image
+     * @param  array $image The configuration of an image, contains a base64 encoded image
      * @return array
      */
     private function processImage($image_config)
@@ -604,8 +606,8 @@ class FindController extends Controller
     /**
      * Register a create/update event
      *
-     * @param integer $userId
-     * @param string $action
+     * @param  integer $userId
+     * @param  string  $action
      * @return
      */
     private function registerPiwikEvent($userId, $action, $status)
@@ -614,9 +616,9 @@ class FindController extends Controller
 
         if ($status == 'Voorlopige versie') {
             $eventName .= 'Draft';
-        } elseif ($status == 'Klaar voor validatie') {
+        } else if ($status == 'Klaar voor validatie') {
             $eventName .= 'AndSubmit';
-        } elseif ($status == 'Aan te passen') {
+        } else if ($status == 'Aan te passen') {
             $eventName .= 'ButNotSubmit';
         } else {
             $eventName .= 'ButUnexpectedStatus';
