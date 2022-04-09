@@ -8,11 +8,12 @@ use App\Http\Requests\FindApiRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
 /**
  * This controller provides an API on top of FindEvent nodes, but also on Object nodes.
- * The two are mostly used in direct relationship with eachother.
+ * The two are mostly used in direct relationship with each other.
  *
  * @SuppressWarnings(PHPMD.UnusedLocalVariable)
  */
@@ -24,6 +25,11 @@ class FindController extends Controller
         $this->objects = new ObjectRepository();
     }
 
+    /**
+     * @param  FindApiRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function index(FindApiRequest $request)
     {
         $type = $request->input('type');
@@ -72,15 +78,16 @@ class FindController extends Controller
     }
 
     /**
-     * @param $request
+     * @param  Request $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    private function makeApiFindsResponse($request)
+    private function makeApiFindsResponse(Request $request)
     {
         extract($this->processQueryParts($request));
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
+        $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
 
         $finds = $result['data'];
         $count = $result['count'];
@@ -96,7 +103,7 @@ class FindController extends Controller
                 if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
                     && !in_array('onderzoeker', $user->getRoles())) {
                     if (!empty($find['grid']) || !empty($find['lat'])) {
-                        list($lat, $lon) = explode(',', $find['grid']);
+                        [$lat, $lon] = explode(',', $find['grid']);
 
                         $find['lat'] = $lat;
                         $find['lng'] = $lon;
@@ -124,8 +131,13 @@ class FindController extends Controller
 
         $linkHeader = implode(', ', $linkHeader);
 
+        $response = [
+            'finds' => $finds,
+            'facets' => $facetCounts
+        ];
+
         return response()
-            ->json($finds)
+            ->json($response)
             ->header('Link', $linkHeader)
             ->header('X-Total', $count);
     }

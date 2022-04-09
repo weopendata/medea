@@ -79,6 +79,7 @@ class FindController extends Controller
         }
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
+        $facetCounts = $this->finds->getFacetCounts($filters, $validated_status);
 
         $finds = $result['data'];
         $count = $result['count'];
@@ -136,6 +137,7 @@ class FindController extends Controller
         return response()
             ->view('pages.finds-list', [
                 'finds' => $finds,
+                'facets' => $facetCounts,
                 'filterState' => [
                     'limit' => $request->input('limit', null),
                     'offset' => $request->input('offset', null),

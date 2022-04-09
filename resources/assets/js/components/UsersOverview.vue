@@ -69,7 +69,7 @@
 </template>
 
 <script>
-  import TrUser from '@/components/TrUser';
+  import TrUser from './TrUser';
 
   import Notifications from '@/mixins/Notifications';
   import InviteUser from "./InviteUser";

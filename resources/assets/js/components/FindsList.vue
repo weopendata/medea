@@ -29,8 +29,7 @@
 </template>
 
 <script>
-import FindEvent from '@/components/FindEvent'
-import { inert, fromQuery } from '../const.js'
+import FindEvent from './FindEvent'
 
 export default {
   props: ['user', 'finds', 'paging', 'saved'],

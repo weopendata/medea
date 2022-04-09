@@ -8,11 +8,13 @@ use App\NodeConstants;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use App\Services\NodeService;
 use Everyman\Neo4j\Node;
+use Everyman\Neo4j\Query\ResultSet;
 use Everyman\Neo4j\Relationship;
 use Everyman\Neo4j\Cypher\Query;
 
 /**
  * Class FindRepository
+ *
  * @package App\Repositories
  */
 class FindRepository extends BaseRepository
@@ -45,7 +47,7 @@ class FindRepository extends BaseRepository
      * - excavation
      * - typology
      *
-     * @param integer $findId
+     * @param  integer $findId
      * @return array
      * @throws \Everyman\Neo4j\Exception
      */
@@ -61,9 +63,9 @@ class FindRepository extends BaseRepository
     /**
      * Get all of the finds for a person
      *
-     * @param Person $person The Person object
-     * @param integer $limit
-     * @param integer $offset
+     * @param  Person  $person The Person object
+     * @param  integer $limit
+     * @param  integer $offset
      * @return array
      * @throws \Everyman\Neo4j\Exception
      */
@@ -142,15 +144,15 @@ class FindRepository extends BaseRepository
      * Return FindEvents that are filtered
      * We expect that all filters are object filters (e.g. category, period, technique, material)
      * We'll have to build our query based on the filters that are configured,
-     * some are filters on object relationships, some on find event, some on classifications
+     * some are filters on object relationships, some on find events, some on classifications
      *
-     * @param array $filters
+     * @param  array  $filters
      *
-     * @param int $limit
-     * @param int $offset
-     * @param string $orderBy
-     * @param string $orderFlow
-     * @param string $validationStatus
+     * @param  int    $limit
+     * @param  int    $offset
+     * @param  string $orderBy
+     * @param  string $orderFlow
+     * @param  string $validationStatus
      * @return array
      * @throws \Exception
      */
@@ -161,12 +163,13 @@ class FindRepository extends BaseRepository
         $orderBy = 'findDate',
         $orderFlow = 'ASC',
         $validationStatus = '*'
-    ) {
-        extract($this->prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus));
+    )
+    {
+        extract($this->prepareFilteredFindsListQuery($filters, $validationStatus, $limit, $offset, $orderBy, $orderFlow));
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
 
-        $data = $this->parseApiResults($cypherQuery->getResultSet());
+        $data = $this->parseFilteredFindsListResults($cypherQuery->getResultSet());
 
         $count = $this->getCount($query, $variables);
 
@@ -174,10 +177,104 @@ class FindRepository extends BaseRepository
     }
 
     /**
+     * @param  array  $filters
+     * @param  string $validationStatus
+     * @return array
+     */
+    private function prepareFilteredFindsFacetCountQuery(array $filters, string $validationStatus)
+    {
+        extract($this->getQueryStatements($filters, '', '', $validationStatus));
+
+        // Facet counts are prepared in the "with" statement part of the query
+        $withProperties = [];
+        $facetCountStatements = $this->getFilteredFindsFacetCountStatements();
+
+        foreach ($facetCountStatements as $facetCountName => $facetCountStatement) {
+            $withProperties[] = $facetCountStatement . ' as ' . $facetCountName;
+        }
+
+        $withStatements = array_merge($withStatement, $withProperties);
+        $withStatements = array_unique($withStatements);
+
+        $withStatement = implode(', ', $withStatements);
+
+        $fullMatchStatement = $initialStatement;
+
+        if (!empty($fullMatchStatement)) {
+            $fullMatchStatement .= ', ' . $matchStatement;
+            $fullMatchStatement = trim($fullMatchStatement);
+        }
+
+        $fullMatchStatement = rtrim($fullMatchStatement, ',');
+
+        $query = "MATCH $fullMatchStatement
+        WHERE $whereStatement";
+
+        foreach ($optionalStatements as $optionalStatement) {
+            $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
+        }
+
+        $query .= " WITH $withStatement
+        RETURN " . implode(',', array_keys($facetCountStatements));
+
+        if (!empty($startStatement)) {
+            $query = $startStatement . $query;
+        }
+
+        return compact('query', 'variables');
+    }
+
+    /**
+     * @param  array       $filters
+     * @param  string|null $validationStatus
+     * @return array
+     */
+    public function getFacetCounts(array $filters, ?string $validationStatus = '*')
+    {
+        extract($this->prepareFilteredFindsFacetCountQuery($filters, $validationStatus));
+
+        $cypherQuery = new Query($this->getClient(), $query, $variables);
+
+        $facetResults = $cypherQuery->getResultSet();
+
+        if ($facetResults->count() == 0) {
+            return [];
+        }
+
+        $facetResultsRow = $facetResults[0];
+
+        $facetCountNames = array_keys($this->getFilteredFindsFacetCountStatements());
+        $facetCountResults = [];
+
+        // It could be that multiple values are bundled together, the query returns raw data which it then transforms into "Row" objects
+        // The raw data has the following structure: [[], [facet1], [facet2, facet3], [], [facet6], ... ]
+        foreach ($facetCountNames as $facetCountName) {
+            $facetValueCollections = $facetResultsRow[$facetCountName];
+            $facetCountResults[$facetCountName] = [];
+
+            if (empty($facetValueCollections)) {
+                continue;
+            }
+
+            foreach ($facetValueCollections as $facetValueCollection) {
+                if ($facetValueCollection->count() == 0) {
+                    continue;
+                }
+
+                foreach ($facetValueCollection as $facetValueItem) {
+                    $facetCountResults[$facetCountName][] = $facetValueItem;
+                }
+            }
+        }
+
+        return $facetCountResults;
+    }
+
+    /**
      * Get a heat map count for a filtered search
      *
-     * @param array $filters
-     * @param string $validationStatus
+     * @param  array  $filters
+     * @param  string $validationStatus
      * @return array
      * @throws \Exception
      */
@@ -222,7 +319,7 @@ class FindRepository extends BaseRepository
         foreach ($cypherQuery->getResultSet() as $result) {
             $heatMapResults[] = [
                 'count' => $result['findCount'],
-                'gridCenter' => $result['centre']
+                'gridCenter' => $result['centre'],
             ];
         }
 
@@ -232,7 +329,7 @@ class FindRepository extends BaseRepository
     /**
      * Return the first 1000 location pairs matching the filters
      *
-     * @param array $filters
+     * @param  array $filters
      * @return array
      * @throws \Exception
      */
@@ -289,7 +386,7 @@ class FindRepository extends BaseRepository
                 'location' => [
                     'lat' => (double)$result['lat'],
                     'lng' => (double)$result['lng'],
-                ]
+                ],
             ];
         }
 
@@ -300,16 +397,16 @@ class FindRepository extends BaseRepository
      * Prepare the filtered cypher query
      *
      *
-     * @param array $filters
-     * @param integer $limit
-     * @param integer $offset
-     * @param string $orderBy
-     * @param string $orderFlow
-     * @param string $validationStatus
+     * @param  array   $filters
+     * @param  string  $validationStatus
+     * @param  integer $limit
+     * @param  integer $offset
+     * @param  string  $orderBy
+     * @param  string  $orderFlow
      * @return array
      * @throws \Exception
      */
-    private function prepareFilteredQuery($filters, $limit, $offset, $orderBy, $orderFlow, $validationStatus)
+    private function prepareFilteredFindsListQuery($filters, $validationStatus, $limit = 50, $offset = 0, $orderBy = 'findDate', $orderFlow = 'ASC')
     {
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
 
@@ -361,8 +458,6 @@ class FindRepository extends BaseRepository
             $query = $startStatement . $query;
         }
 
-        //jj($query);
-
         return compact('query', 'variables');
     }
 
@@ -412,7 +507,7 @@ class FindRepository extends BaseRepository
             $matchStatements[] = '(object:E22)-[P42]-(period:E55)';
             $withStatement[] = 'period';
             $orderStatement = "period.value $orderFlow";
-        } elseif ($orderBy == 'findDate') {
+        } else if ($orderBy == 'findDate') {
             $withStatement[] = 'findDate';
             $orderStatement = "findDate.value $orderFlow";
         }
@@ -429,7 +524,7 @@ class FindRepository extends BaseRepository
                     $variables[$config['nodeName']] = (int)$filters[$property];
                 }
 
-                if (!empty($config['with']) && !in_array($config['with'], $this->getDefaultWithProperties())) {
+                if (!empty($config['with']) && !in_array($config['with'], $this->getDefaultWithStatementProperties())) {
                     $withStatement[] = $config['with'];
                 }
             }
@@ -460,7 +555,7 @@ class FindRepository extends BaseRepository
 
         $optionalStatements[] = [
             'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(typologyClassification:E55), (productionClassification:productionClassification)-[:P2]-(pcvType:E55 {value: "Typologie"})',
-            'where' => NodeService::getTenantWhereStatement(['object', 'productionEvent', 'productionClassification', 'typologyClassification'])
+            'where' => NodeService::getTenantWhereStatement(['object', 'productionEvent', 'productionClassification', 'typologyClassification']),
         ];
 
         $withStatement[] = 'typologyClassification';
@@ -475,16 +570,6 @@ class FindRepository extends BaseRepository
             'orderStatement',
             'variables'
         );
-    }
-
-    /**
-     * Get the default properties that are present in the with statement
-     *
-     * @return array
-     */
-    private function getDefaultWithProperties()
-    {
-        return ['classifications', 'location', 'latitude', 'longitude', 'locality', 'material', 'period', 'category', 'photograph', 'collection'];
     }
 
     /**
@@ -536,13 +621,13 @@ class FindRepository extends BaseRepository
                 'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
                 'where' => 'modificationTechniqueType.value = {modificationTechniqueType} AND ' . NodeService::getTenantWhereStatement(['modificationTechniqueType']),
                 'nodeName' => 'modificationTechniqueType',
-                'with' => 'modificationTechniqueType'
+                'with' => 'modificationTechniqueType',
             ],
             'embargo' => [
                 'match' => '(object:E22)',
                 'where' => 'object.embargo = {embargo} AND ' . NodeService::getTenantWhereStatement(['object']),
                 'nodeName' => 'embargo',
-                'with' => 'object'
+                'with' => 'object',
             ],
             'collection' => [
                 'match' => '(object:E22)-[P24]-(collection:E78)',
@@ -556,11 +641,11 @@ class FindRepository extends BaseRepository
                 'where' => 'productionClassificationValue.value =~ {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement([
                         'productionEvent',
                         'productionClassification',
-                        'productionClassificationValue'
+                        'productionClassificationValue',
                     ]),
                 'nodeName' => 'productionClassificationValue',
-                'with' => 'object'
-            ]
+                'with' => 'object',
+            ],
         ];
     }
 
@@ -618,8 +703,8 @@ class FindRepository extends BaseRepository
      * Get the count of a query by replacing the RETURN statement
      * This function assumes that find is declared in the query
      *
-     * @param string $query A cypher query string
-     * @param array $variables The variables and their variables for the query
+     * @param  string $query     A cypher query string
+     * @param  array  $variables The variables and their variables for the query
      *
      * @return integer
      */
@@ -642,11 +727,11 @@ class FindRepository extends BaseRepository
     /**
      * Parse the result set of the API cypher query
      *
-     * @param ResultSet $results
+     * @param  ResultSet $results
      *
      * @return array
      */
-    private function parseApiResults($results)
+    private function parseFilteredFindsListResults(ResultSet $results)
     {
         $data = [];
 
@@ -660,15 +745,15 @@ class FindRepository extends BaseRepository
             foreach ($result as $key => $val) {
                 if (!is_object($val)) {
                     $tmp[$key] = $val;
-                } elseif ($key == 'photograph' && $val->count()) {
+                } else if ($key == 'photograph' && $val->count()) {
                     $tmp[$key] = $val->current()->resized;
 
                     if (empty($tmp[$key])) {
                         $tmp[$key] = $val->current()->src;
                     }
-                } elseif ($key == 'collection' && $val->getProperty('title')) {
+                } else if ($key == 'collection' && $val->getProperty('title')) {
                     $tmp['collectionTitle'] = $val->getProperty('title');
-                } elseif ($key == 'classifications') {
+                } else if ($key == 'classifications') {
                     $tmp['classificationCount'] = 0;
                     $classifications = [];
 
@@ -677,7 +762,7 @@ class FindRepository extends BaseRepository
                     }
 
                     $tmp['classificationCount'] = collect($classifications)->unique()->count();
-                } elseif ($key == 'typologyClassification') {
+                } else if ($key == 'typologyClassification') {
                     if (!is_array($val)) {
                         $val = [$val];
                     }
@@ -715,7 +800,7 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param array $find
+     * @param  array $find
      * @return array
      */
     private function fetchExcavationInformation(array $find)
@@ -731,7 +816,7 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param array $find
+     * @param  array $find
      * @return array
      */
     private function fetchPanTypologyInformation(array $find)
@@ -747,7 +832,7 @@ class FindRepository extends BaseRepository
     /**
      * Get the exportable data points of a find event
      *
-     * @param integer $findId
+     * @param  integer $findId
      * @return array
      * @throws \Exception
      */
@@ -797,13 +882,9 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * Get all the bare nodes of a findEvent
+     * Get all the nodes of a findEvent
      *
-     * @param integer $limit
-     * @param integer $offset
-     *
-     * @return array
-     * @throws \Everyman\Neo4j\Exception
+     * @return \Everyman\Neo4j\Query\Row
      * @throws \Exception
      */
     public function getAll()
@@ -812,8 +893,41 @@ class FindRepository extends BaseRepository
 
         $findLabel = $client->makeLabel($this->label);
 
-        $findNodes = NodeService::getNodesForLabel($findLabel);
+        return NodeService::getNodesForLabel($findLabel);
+    }
 
-        return $findNodes;
+    /**
+     * Get the default properties that are present in the with statement
+     *
+     * @return array
+     */
+    private function getDefaultWithStatementProperties()
+    {
+        return [
+            'classifications',
+            'location',
+            'latitude',
+            'longitude',
+            'locality',
+            'material',
+            'period',
+            'category',
+            'photograph',
+            'collection',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getFilteredFindsFacetCountStatements()
+    {
+        return [
+            'category' => 'collect(distinct [p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p)).value])',
+            'period' => 'collect(distinct [p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p)).value])',
+            'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
+            'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
+            'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | last(nodes(p)).value])',
+        ];
     }
 }

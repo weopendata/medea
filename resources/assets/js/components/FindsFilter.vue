@@ -22,19 +22,29 @@
     <div class="facets">
       <div v-if="user.email && !isApplicationPublic" class="facet">
         <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
-        <a href="#" class="facet-a" :class="{active:name=='$val'}" @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="user.validator">Te valideren vondsten</a>
-        <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn vondsten</a>
-        <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved" v-text="fav.name"></a>
+        <a href="#" class="facet-a" :class="{active:name=='$val'}"
+           @click.prevent="restore({name:'$val', state:{status:'Klaar voor validatie'}})" v-if="user.validator">Te
+          valideren vondsten</a>
+        <a href="#" class="facet-a" :class="{active:model.myfinds}" @click.prevent="toggle('myfinds', true)">Mijn
+          vondsten</a>
+        <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved"
+           v-text="fav.name"></a>
       </div>
 
       <facet label="Validatie status" prop="status" :options="statusOptions" v-if="!isApplicationPublic"></facet>
       <facet label="Embargo" prop="embargo" :options="embargoOptions"></facet>
-      <facet label="Periode" prop="period" :options="fields.classification.period"></facet>
+      <facet
+          v-for="(facet, index) in dynamicFacetOptions"
+          :key="'facet_option_' + index"
+          :label="facet.label"
+          :prop="facet.prop"
+          :options="facet.options"
+      />
+      <!--<facet label="Periode" prop="period" :options="fields.classification.period"></facet>
       <facet label="Materiaal" prop="objectMaterial" :options="fields.object.objectMaterial"></facet>
-      <facet label="Techniek" prop="technique" :options="fields.object.technique"></facet>
       <facet label="Oppervlaktebehandeling" prop="modification" :options="modificationFields"></facet>
       <facet label="Categorie" prop="category" :options="fields.object.category"></facet>
-      <facet label="Collecties" prop="collection" :options="fields.collections"></facet>
+      <facet label="Collecties" prop="collection" :options="fields.collections"></facet>-->
     </div>
   </div>
 </template>
@@ -44,8 +54,8 @@ import ls from 'local-storage'
 
 import FindEvent from './FindEvent.vue';
 import Facet from './Facet.vue';
-import {inert} from '../const.js';
-import GlobalSettings from "../mixins/GlobalSettings";
+import { inert } from '../const.js';
+import GlobalSettings from '../mixins/GlobalSettings';
 
 var modificationFields = [
   'meerdere',
@@ -64,7 +74,7 @@ var modificationFields = [
 ]
 
 export default {
-  props: ['name', 'model', 'saved'],
+  props: ['name', 'model', 'saved', 'facets'],
   data () {
     const showFacets = ls('showFacets') || {}
 
@@ -87,9 +97,53 @@ export default {
       }, showFacets)
     }
   },
-  computed: {
+  computed: {
+    dynamicFacetOptions () {
+      return [
+        {
+          label: 'Periode',
+          prop: 'period',
+          options: this.periodFacetOptions
+        },
+        {
+          label: 'Materiaal',
+          prop: 'objectMaterial',
+          options: this.materialFacetOptions
+        },
+        {
+          label: 'Oppervlaktebehandeling',
+          prop: 'modification',
+          options: this.modificationFacetOptions
+        },
+        {
+          label: 'Categorie',
+          prop: 'category',
+          options: this.categoryFacetOptions
+        },
+        {
+          label: 'Collecties',
+          prop: 'collection',
+          options: this.collectionFacetOptions
+        }
+      ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0)
+    },
+    periodFacetOptions () {
+      return this.facets['period']
+    },
+    materialFacetOptions () {
+      return this.facets['objectMaterial']
+    },
+    modificationFacetOptions () {
+      return this.facets['modification']
+    },
+    categoryFacetOptions () {
+      return this.facets['category']
+    },
+    collectionFacetOptions () {
+      return this.facets['collection']
+    },
     statusOptions () {
-      if (! this.user) {
+      if (!this.user) {
         return;
       }
 
@@ -101,7 +155,7 @@ export default {
       }
     },
     embargoOptions () {
-      if (! this.user) {
+      if (!this.user) {
         return;
       }
 

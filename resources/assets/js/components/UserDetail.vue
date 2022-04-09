@@ -95,7 +95,7 @@
 </template>
 
 <script>
-  import UserCollections from '@/components/UserCollections'
+  import UserCollections from './UserCollections'
 
   import Notifications from '@/mixins/Notifications'
 
