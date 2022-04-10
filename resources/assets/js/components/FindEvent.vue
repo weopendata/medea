@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" style="width: 100%;">
     <div class="card-img">
       <a :href="uri" class="card-img-abs" v-if="cardCover" :style="{ 'background-image': 'url(\'' + find.photograph + '\')' }"></a>
       <a :href="uri" class="card-img-abs" v-else style="background:#fff"></a>

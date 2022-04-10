@@ -12,13 +12,22 @@
       </div>
       <div class="list-right">
         <div class="list-controls">
-          <span class="finds-order">
+          <span class="finds-order" v-if="displayOrderByOptions">
             Sorteren op:
             <a @click.prevent="sortBy('findDate')"
-               :class="{active:filterState.order=='findDate', reverse:filterState.order=='-findDate'}">vondstdatum</a>
+               :class="{active: filterState.order == 'findDate', reverse:filterState.order == '-findDate'}">vondstdatum</a>
             <a @click.prevent="sortBy('identifier')"
-               :class="{active:filterState.order=='identifier', reverse:filterState.order=='-identifier'}">vondstnummer (ID)</a>
+               :class="{active: filterState.order == 'identifier', reverse:filterState.order == '-identifier'}">vondstnummer (ID)</a>
           </span>
+
+          <span class="finds-card-style" v-if="displayCardStyleOptions">
+            Kaartstijl:
+            <a @click.prevent="setCardStyle('list')"
+               :class="{active: viewState.cardStyle == 'list'}">Lijst</a>
+            <a @click.prevent="setCardStyle('tile')"
+               :class="{active: viewState.cardStyle == 'tile'}">Tegels</a>
+          </span>
+
           <label class="pull-right">
             <button class="ui basic button" :class="{green:filterState.type=='map'}" @click="mapToggle('map')">Kaart
             </button>
@@ -71,6 +80,7 @@
             :saved="saved"
             :filterName="filterName"
             :filterState="filterState"
+            :cardStyle="cardStyle"
             @saveSearch="saveSearch"
             @rmSearch="rmSearch"
             @updateFilterName="updateFilterName"
@@ -123,6 +133,7 @@ export default {
       facets: window.initialFacets || {},
       fetching: false,
       filterState: window.filterState || ls('filterState') || {},
+      viewState: window.viewState || {},
       filterName: '',
       user: window.medeaUser,
       map: {
@@ -140,6 +151,19 @@ export default {
     }
   },
   computed: {
+    cardStyle () {
+      if (!this.viewState.cardStyle || !['list', 'tile'].includes(this.viewState.cardStyle)) {
+        return 'list'
+      }
+
+      return this.viewState.cardStyle
+    },
+    displayOrderByOptions () {
+      return !!this.viewState.displayOrderByOptions
+    },
+    displayCardStyleOptions () {
+      return !!this.viewState.displayCardStyleOptions
+    },
     markable () {
       return this.finds
           .filter(f => f.lat && f.accuracy == 1)
@@ -316,6 +340,9 @@ export default {
         this.filterState.order = type
       }
       this.fetch()
+    },
+    setCardStyle (cardStyle) {
+      this.viewState.cardStyle = cardStyle
     },
     persistSearches () {
       // Save the new list of favorites

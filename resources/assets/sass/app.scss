@@ -32,6 +32,12 @@
 @import "./introjs.min";
 
 /* FindsList */
+.find-results__container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	margin-top: 0.5rem;
+}
 
 .column img {
 	max-width: 100%;
@@ -328,6 +334,28 @@ span.required {
 		margin-left: 2px;
 	}
 }
+
+.finds-card-style {
+	float: left;
+	padding-top: 8px;
+	user-select: none;
+
+	a {
+		padding: 5px 8px;
+		cursor: pointer;
+
+		&:hover {
+			background-color: #eee;
+		}
+	}
+
+	.reverse,
+	.active {
+		font-weight: bold;
+		color: #000;
+	}
+}
+
 .wrapper-white {
 	background: white;
 }
