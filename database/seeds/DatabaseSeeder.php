@@ -26,8 +26,10 @@ class DatabaseSeeder extends Seeder
         // Get the Person label
         $label = $client->makeLabel('Person');
 
+        $adminEmail = 'foo@bar.com';
+
         // Get all of the Person node with the admin email
-        $nodes =  NodeService::getNodesForLabel($label, ['email' => 'foo@bar.com']);
+        $nodes =  NodeService::getNodesForLabel($label, ['email' => $adminEmail]);
 
         if ($nodes->count() == 0) {
             $users = new UserRepository();
@@ -39,7 +41,7 @@ class DatabaseSeeder extends Seeder
                 'firstName' => 'Medea',
                 'lastName' => 'Admin',
                 'password' => $password,
-                'email' => 'foo@bar.com',
+                'email' => $adminEmail,
                 'verified' => true,
                 'description' => 'Dit is de generieke admin user van het MEDEA platform.',
                 'personType' => [

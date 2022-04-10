@@ -62,6 +62,11 @@ Finally, run this query in neo4j to start indexing:
     WHERE has(n.fulltext_description)
     SET n.fulltext_description=n.fulltext_description
 
+## Backups
+
+To take backups in Neo4j 2.2 you can take a full copy of the data directory within the Neo4j root directory. 
+Zip this file and store it somewhere, when you need to restore a backup, simply overwrite the contents of the data folder with the contents of the zipped folder.
+
 ## Development documentation
 
 ### Export/Import data
@@ -77,7 +82,7 @@ The command that will perform the correct MySQL migration is:
 
     php artisan migrate --database='mysql'
 
-### Usefull commands while developing
+### Useful commands while developing
 
     php artisan medea:management
 
