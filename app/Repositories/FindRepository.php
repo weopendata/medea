@@ -623,7 +623,6 @@ class FindRepository extends BaseRepository
             ],
             'period' => [
                 'match' => '(object:E22)-[P42]-(period:E55)',
-                //"(object:E22)-[P106]-(pEvent:E12)-[P41]-(classification:E17)-[P42]-(period:E55)",
                 'where' => 'period.value = {period} AND ' . NodeService::getTenantWhereStatement(['period']),
                 'nodeName' => 'period',
                 'with' => 'period',
@@ -652,6 +651,26 @@ class FindRepository extends BaseRepository
                 'nodeName' => 'collection',
                 'with' => 'collection',
                 'varType' => 'int',
+            ],
+            'conservering' => [
+                'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "conservering"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
+                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'nodeName' => 'distinguishingFeatureValueNode',
+            ],
+            'volledigheid' => [
+                'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "volledigheid"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
+                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'nodeName' => 'distinguishingFeatureValueNode',
+            ],
+            'merkteken' => [
+                'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "merkteken"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
+                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'nodeName' => 'distinguishingFeatureValueNode',
+            ],
+            'opschrift' => [
+                'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "opschrift"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
+                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'nodeName' => 'distinguishingFeatureValueNode',
             ],
             'panid' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',

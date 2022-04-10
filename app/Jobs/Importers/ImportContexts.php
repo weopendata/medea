@@ -73,16 +73,6 @@ class ImportContexts extends AbstractImporter
         $searchAreaInternalId = SearchArea::createInternalId($data['C0_id']);
         $existingSearchArea = app(SearchAreaRepository::class)->getByInternalId($searchAreaInternalId);
 
-        /*if (empty($existingSearchArea)) {
-            $searchAreaId = app(SearchAreaRepository::class)->store(['internalId' => $searchAreaInternalId]);
-
-            if (!empty($searchAreaId)) {
-                $model['searchArea'] = ['id' => $searchAreaId];
-            }
-        } else {
-            $model['searchArea'] = ['id' => $existingSearchArea->getId()];
-        }*/
-
         if (!empty($existingSearchArea)) {
             $model['searchArea'] = ['id' => $existingSearchArea->getId()];
         }
