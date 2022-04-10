@@ -87,6 +87,10 @@ export default {
         technique: null,
         modification: null,
         objectMaterial: true,
+        conservering: null,
+        volledigheid: null,
+        merkteken: null,
+        opschrift: null,
         collections: null,
         collection: true
       }, showFacets)
@@ -94,26 +98,49 @@ export default {
   },
   computed: {
     dynamicFacetOptions () {
+      // Make a copy of the component property to trigger the reactive return value of this computed property
+      const facets = this.facets
+
       return [
+        {
+          label: 'Categorie',
+          prop: 'category',
+          options: this.getFilterFacetOptions('category', facets)
+        },
         {
           label: 'Periode',
           prop: 'period',
-          options: this.periodFacetOptions
+          options: this.getFilterFacetOptions('period', facets)
         },
         {
           label: 'Materiaal',
           prop: 'objectMaterial',
-          options: this.materialFacetOptions
+          options: this.getFilterFacetOptions('objectMaterial', facets)
         },
         {
           label: 'Oppervlaktebehandeling',
           prop: 'modification',
-          options: this.modificationFacetOptions
+          options: this.getFilterFacetOptions('modification', facets)
         },
         {
-          label: 'Categorie',
-          prop: 'category',
-          options: this.categoryFacetOptions
+          label: 'Conservering',
+          prop: 'conservering',
+          options: this.getFilterFacetOptions('conservering', facets)
+        },
+        {
+          label: 'Volledig',
+          prop: 'volledigheid',
+          options: this.getFilterFacetOptions('volledigheid', facets)
+        },
+        {
+          label: 'Merkteken',
+          prop: 'merkteken',
+          options: this.getFilterFacetOptions('merkteken', facets)
+        },
+        {
+          label: 'Opschrift',
+          prop: 'opschrift',
+          options: this.getFilterFacetOptions('opschrift', facets)
         },
         {
           label: 'Collecties',
@@ -122,30 +149,8 @@ export default {
         }
       ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0)
     },
-    periodFacetOptions () {
-      var options = this.facets['period'] || []
-
-      return this.appendActiveFilterToFacetOptions('period', options)
-    },
-    materialFacetOptions () {
-      var options = this.facets['objectMaterial'] || []
-
-      return this.appendActiveFilterToFacetOptions('objectMaterial', options)
-    },
-    modificationFacetOptions () {
-      var options = this.facets['modification'] || []
-
-      return this.appendActiveFilterToFacetOptions('modification', options)
-    },
-    categoryFacetOptions () {
-      var options = this.facets['category'] || []
-
-      return this.appendActiveFilterToFacetOptions('category', options)
-    },
     collectionFacetOptions () {
-      var options = this.facets['collection'] || []
-
-      options = this.appendActiveFilterToFacetOptions('collection', options)
+      const options = this.getFilterFacetOptions('collection', this.facets)
 
       return [...this.fields.collections].filter(field => options.includes(field.value))
     },
@@ -181,6 +186,11 @@ export default {
     }
   },
   methods: {
+    getFilterFacetOptions(facetName, facets) {
+      var options = facets[facetName] || []
+
+      return this.appendActiveFilterToFacetOptions(facetName, options)
+    },
     appendActiveFilterToFacetOptions(facetName, options) {
       if (
           this.model
@@ -226,6 +236,7 @@ export default {
       } else {
         this.model[filter] = this.model[filter] == value ? false : value
       }
+
       this.name = ''
       this.model.offset = 0
 

@@ -219,7 +219,11 @@ export default {
         technique: null,
         modification: null,
         objectMaterial: null,
-        collections: null
+        collections: null,
+        conservering: null,
+        volledigheid: null,
+        merkteken: null,
+        opschrift: null
       };
 
       this.fetch()

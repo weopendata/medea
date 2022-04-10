@@ -9,7 +9,7 @@
           v-for="(opt, index) in formattedOptions"
           href="#"
           class="facet-a"
-          :key="label + 'facet_option_' + index"
+          :key="label + '_facet_option_' + index"
           :class="{active: activeOption === opt.value}"
           @click.prevent="toggle(prop, opt.value)"
           :value="opt.value"
@@ -30,8 +30,8 @@ export default {
       return this.$parent.model[this.prop]
     },
     formattedOptions () {
-      return this.options.map(function (o) {
-        return typeof o === 'string' ? { label: o, value: o } : o
+      return this.options.map(function (option) {
+        return typeof option === 'string' ? { label: option, value: option } : option
       })
     }
   },
@@ -39,8 +39,8 @@ export default {
     collapse () {
       this.$parent.show[this.prop] = !this.shown
     },
-    toggle (p, o) {
-      return this.$parent.toggle(p, o)
+    toggle (prop, option) {
+      return this.$parent.toggle(prop, option)
     }
   }
 }

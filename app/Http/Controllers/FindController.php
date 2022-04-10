@@ -136,26 +136,40 @@ class FindController extends Controller
             })
             ->values();
 
+        // Prepare the filter state
+        $filterState = [
+            'limit' => $request->input('limit', null),
+            'offset' => $request->input('offset', null),
+            'query' => $request->input('query', ''),
+            'order' => $order,
+            'myfinds' => @$filters['myfinds'],
+            'collection' => (integer)$request->input('collection'),
+            'status' => $validated_status,
+            'embargo' => (boolean)$request->input('embargo', false),
+            'showmap' => $request->input('showmap', null),
+        ];
+
+        $filterFacets = [
+            'category',
+            'period',
+            'technique',
+            'objectMaterial',
+            'modification',
+            'conservering',
+            'volledigheid',
+            'merkteken',
+            'opschrift',
+        ];
+
+        foreach ($filterFacets as $filterFacet) {
+            $filterState[$filterFacet] = $request->input($filterFacet, '*');
+        }
+
         return response()
             ->view('pages.finds-list', [
                 'finds' => $finds,
                 'facets' => $facetCounts,
-                'filterState' => [
-                    'limit' => $request->input('limit', null),
-                    'offset' => $request->input('offset', null),
-                    'query' => $request->input('query', ''),
-                    'order' => $order,
-                    'myfinds' => @$filters['myfinds'],
-                    'category' => $request->input('category', '*'),
-                    'collection' => (integer)$request->input('collection'),
-                    'period' => $request->input('period', '*'),
-                    'technique' => $request->input('technique', '*'),
-                    'objectMaterial' => $request->input('objectMaterial', '*'),
-                    'modification' => $request->input('modification', '*'),
-                    'status' => $validated_status,
-                    'embargo' => (boolean)$request->input('embargo', false),
-                    'showmap' => $request->input('showmap', null),
-                ],
+                'filterState' => $filterState,
                 'fields' => $fields,
                 'link' => $linkHeader,
             ])->header('Link', $linkHeader);

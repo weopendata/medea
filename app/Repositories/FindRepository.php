@@ -262,6 +262,24 @@ class FindRepository extends BaseRepository
                     $facetCountResults[$facetCountName][] = $facetValueItem;
                 }
             }
+
+            // Make sure the values are unique
+            $facetCountResults[$facetCountName] = collect($facetCountResults[$facetCountName])
+                ->unique()
+                ->values()
+                ->toArray();
+        }
+
+        // For the facet "featureTypes" we need to work with a select number of types and we need to "unwind" them:
+        // featureTypes: ['type1', 'type2', ...] -> transform each value into a dedicated "facet"
+        // These facets will be treated as singular filters: "contains non-empty value" or "doesn't matter which value (empty, existing or non-empty"
+        // empty values can be the absence of the node, or the node containing an "empty" value, for example "Nee" or "Neen"
+        $featureTypes = $facetCountResults['featureTypes'];
+
+        unset($facetCountResults['featureTypes']);
+
+        foreach ($featureTypes as $featureType) {
+            $facetCountResults[$featureType] = ['Aanwezig'];
         }
 
         return $facetCountResults;
@@ -923,6 +941,7 @@ class FindRepository extends BaseRepository
             'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
             'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
             'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
+            'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])'
         ];
     }
 }
