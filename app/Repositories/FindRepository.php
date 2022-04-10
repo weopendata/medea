@@ -240,16 +240,18 @@ class FindRepository extends BaseRepository
 
         $facetResultsRow = $facetResults[0];
 
-        $facetCountNames = array_keys($this->getFilteredFindsFacetCountStatements());
+        $facetNames = array_keys($this->getFilteredFindsFacetCountStatements());
         $facetCountResults = [];
 
         // It could be that multiple values are bundled together, the query returns raw data which it then transforms into "Row" objects
         // The raw data has the following structure: [[], [facet1], [facet2, facet3], [], [facet6], ... ]
-        foreach ($facetCountNames as $facetCountName) {
-            $facetValueCollections = $facetResultsRow[$facetCountName];
-            $facetCountResults[$facetCountName] = [];
+        $omittedFilterFacets = explode(',', env('EXCLUDED_FILTER_FACETS',''));
 
-            if (empty($facetValueCollections)) {
+        foreach ($facetNames as $facetName) {
+            $facetValueCollections = $facetResultsRow[$facetName];
+            $facetCountResults[$facetName] = [];
+
+            if (empty($facetValueCollections) || in_array($facetName, $omittedFilterFacets)) {
                 continue;
             }
 
@@ -259,12 +261,12 @@ class FindRepository extends BaseRepository
                 }
 
                 foreach ($facetValueCollection as $facetValueItem) {
-                    $facetCountResults[$facetCountName][] = $facetValueItem;
+                    $facetCountResults[$facetName][] = $facetValueItem;
                 }
             }
 
             // Make sure the values are unique
-            $facetCountResults[$facetCountName] = collect($facetCountResults[$facetCountName])
+            $facetCountResults[$facetName] = collect($facetCountResults[$facetName])
                 ->unique()
                 ->values()
                 ->toArray();
