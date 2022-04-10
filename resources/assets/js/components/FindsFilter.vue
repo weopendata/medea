@@ -92,6 +92,7 @@ export default {
         merkteken: null,
         opschrift: null,
         collections: null,
+        photographCaption: null,
         collection: true
       }, showFacets)
     }
@@ -102,6 +103,11 @@ export default {
       const facets = this.facets
 
       return [
+        {
+          label: 'Foto',
+          prop: 'photographCaption',
+          options: this.getFilterFacetOptions('photographCaption', facets)
+        },
         {
           label: 'Categorie',
           prop: 'category',

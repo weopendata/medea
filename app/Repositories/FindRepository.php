@@ -186,8 +186,8 @@ class FindRepository extends BaseRepository
         extract($this->getQueryStatements($filters, '', '', $validationStatus));
 
         // Facet counts are prepared in the "with" statement part of the query
-        $withProperties = [];
-        $facetCountStatements = $this->getFilteredFindsFacetCountStatements();
+        $withProperties = ['count(photographCaption) as photographCaption'];
+        $facetCountStatements = $this->getFilteredFindsDistinctFacetValueStatements();
 
         foreach ($facetCountStatements as $facetCountName => $facetCountStatement) {
             $withProperties[] = $facetCountStatement . ' as ' . $facetCountName;
@@ -207,12 +207,14 @@ class FindRepository extends BaseRepository
         $query = "MATCH $fullMatchStatement
         WHERE $whereStatement";
 
-        foreach ($optionalStatements as $optionalStatement) {
-            $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
-        }
+        // Add the count of photograph captions, we just need to know if there are any or not, and counting is more
+        // efficient than retrieving the distinct values, which is the approach we use via the "facet statements"
+        $query .= "OPTIONAL MATCH (object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62) where " .  NodeService::getTenantWhereStatement(['object']);
+
+        $returnProperties = array_merge(array_keys($facetCountStatements), ['photographCaption']);
 
         $query .= " WITH $withStatement
-        RETURN " . implode(',', array_keys($facetCountStatements));
+        RETURN " . implode(',', $returnProperties);
 
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
@@ -240,7 +242,7 @@ class FindRepository extends BaseRepository
 
         $facetResultsRow = $facetResults[0];
 
-        $facetNames = array_keys($this->getFilteredFindsFacetCountStatements());
+        $facetNames = $this->getFacetNames();
         $facetCountResults = [];
 
         // It could be that multiple values are bundled together, the query returns raw data which it then transforms into "Row" objects
@@ -252,6 +254,12 @@ class FindRepository extends BaseRepository
             $facetCountResults[$facetName] = [];
 
             if (empty($facetValueCollections) || in_array($facetName, $omittedFilterFacets)) {
+                continue;
+            }
+
+            if (!is_iterable($facetValueCollections)) {
+                $facetCountResults[$facetName] = $facetValueCollections > 0 ? ['Aanwezig'] : [];
+
                 continue;
             }
 
@@ -529,10 +537,14 @@ class FindRepository extends BaseRepository
             $orderStatement = "findDate.value $orderFlow";
         }
 
-        foreach ($this->getFilterProperties() as $property => $config) {
+        foreach ($this->getFilterPropertyQueryStatements() as $property => $config) {
             if (isset($filters[$property])) {
                 $matchStatements[] = $config['match'];
-                $whereStatements[] = $config['where'];
+
+                if (!empty($config['where'])) {
+                    $whereStatements[] = $config['where'];
+                }
+
                 $variables[$config['nodeName']] = $filters[$property];
 
                 // If we have an integer value, convert the value we received from the request URI
@@ -600,7 +612,7 @@ class FindRepository extends BaseRepository
      * @return array
      * @throws \Exception
      */
-    public function getFilterProperties()
+    public function getFilterPropertyQueryStatements()
     {
         return [
             'objectMaterial' => [
@@ -651,6 +663,10 @@ class FindRepository extends BaseRepository
                 'nodeName' => 'collection',
                 'with' => 'collection',
                 'varType' => 'int',
+            ],
+            'photographCaption' => [
+                'match' => '(object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62)',
+                'nodeName' => '',
             ],
             'conservering' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "conservering"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
@@ -954,7 +970,7 @@ class FindRepository extends BaseRepository
     /**
      * @return array
      */
-    private function getFilteredFindsFacetCountStatements()
+    private function getFilteredFindsDistinctFacetValueStatements()
     {
         return [
             'category' => 'collect(distinct [p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p)).value])',
@@ -964,5 +980,13 @@ class FindRepository extends BaseRepository
             'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
             'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])'
         ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getFacetNames()
+    {
+        return array_merge(array_keys($this->getFilteredFindsDistinctFacetValueStatements()), ['photographCaption']);
     }
 }

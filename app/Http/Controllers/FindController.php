@@ -159,6 +159,7 @@ class FindController extends Controller
             'volledigheid',
             'merkteken',
             'opschrift',
+            'photographCaption'
         ];
 
         foreach ($filterFacets as $filterFacet) {

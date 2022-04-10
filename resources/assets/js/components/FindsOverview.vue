@@ -223,7 +223,8 @@ export default {
         conservering: null,
         volledigheid: null,
         merkteken: null,
-        opschrift: null
+        opschrift: null,
+        photographCaption: null
       };
 
       this.fetch()
