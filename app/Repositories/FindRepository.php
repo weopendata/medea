@@ -668,11 +668,6 @@ class FindRepository extends BaseRepository
                 'match' => '(object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62)',
                 'nodeName' => '',
             ],
-            'conservering' => [
-                'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "conservering"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
-                'nodeName' => 'distinguishingFeatureValueNode',
-            ],
             'volledigheid' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "volledigheid"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
                 'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),

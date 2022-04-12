@@ -155,11 +155,10 @@ class FindController extends Controller
             'technique',
             'objectMaterial',
             'modification',
-            'conservering',
             'volledigheid',
             'merkteken',
             'opschrift',
-            'photographCaption'
+            'photographCaption',
         ];
 
         foreach ($filterFacets as $filterFacet) {
@@ -171,6 +170,11 @@ class FindController extends Controller
                 'finds' => $finds,
                 'facets' => $facetCounts,
                 'filterState' => $filterState,
+                'viewState' => [
+                    'displayCardStyleOptions' => env('DISPLAY_CARD_STYLE_ON_FILTERS_PAGE', 'false') == 'true',
+                    'displayOrderByOptions' => env('DISPLAY_SORT_BY_ON_FILTERS_PAGE', 'false') == 'true',
+                    'cardStyle' => 'list',
+                ],
                 'fields' => $fields,
                 'link' => $linkHeader,
             ])->header('Link', $linkHeader);

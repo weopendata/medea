@@ -87,7 +87,6 @@ export default {
         technique: null,
         modification: null,
         objectMaterial: true,
-        conservering: null,
         volledigheid: null,
         merkteken: null,
         opschrift: null,
@@ -127,11 +126,6 @@ export default {
           label: 'Oppervlaktebehandeling',
           prop: 'modification',
           options: this.getFilterFacetOptions('modification', facets)
-        },
-        {
-          label: 'Conservering',
-          prop: 'conservering',
-          options: this.getFilterFacetOptions('conservering', facets)
         },
         {
           label: 'Volledig',
