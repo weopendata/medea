@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Eloquent\PanTypology;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -14,14 +15,14 @@ class UpdatePanTypologyTree extends Command
      *
      * @var string
      */
-    protected $signature = 'medea:update-pan-typology';
+    protected $signature = 'medea:update-pan-typology {type=seed}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update the PAN typology based tree structure.';
+    protected $description = 'Update the PAN typology based tree structure, options are: "pull" or "extract-dates"';
 
     /**
      * @const string
@@ -55,13 +56,36 @@ class UpdatePanTypologyTree extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return int
      * @throws GuzzleException
      */
     public function handle()
     {
         $this->info("Building up the top level typologies...");
 
+        $type = $this->argument('type');
+
+        if ($type == 'seed') {
+            $this->seedTypologies();
+
+            return 1;
+        }
+
+        if ($type == 'extract-dates') {
+            $this->seedDatesFromMetaData();
+
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return void
+     * @throws GuzzleException
+     */
+    private function seedTypologies()
+    {
         // Start by fetching the top level concepts, then for every top level concept, recursively build the branches of the tree
         $topLevelTypologies = $this->fetchTopLevelTypologies();
 
@@ -112,7 +136,7 @@ class UpdatePanTypologyTree extends Command
     }
 
     /**
-     * @param array $typology
+     * @param  array $typology
      * @return void
      */
     private function upsertTypology(array $typology)
@@ -137,10 +161,12 @@ class UpdatePanTypologyTree extends Command
 
         // Transform the raw typology data into a something that our Typology model can handle
         $typology = [
-          'code' => trim($typology['code']),
-          'label' => trim($typology['prefLabel'] ?? ''),
-          'uri' => trim($typology['uri']),
-          'meta' => $typology
+            'code' => trim($typology['code']),
+            'label' => trim($typology['prefLabel'] ?? ''),
+            'uri' => trim($typology['uri']),
+            'meta' => $typology,
+            'start_year' => array_get($typology, 'properties.InitialDate.0'),
+            'end_year' => array_get($typology, 'properties.FinalDate.0'),
         ];
 
         try {
@@ -161,7 +187,7 @@ class UpdatePanTypologyTree extends Command
     }
 
     /**
-     * @param string $uri
+     * @param  string $uri
      * @return mixed
      * @throws GuzzleException
      */
@@ -169,7 +195,7 @@ class UpdatePanTypologyTree extends Command
     {
         $client = new Client([
             'base_uri' => $uri,
-            'timeout' => 60
+            'timeout' => 60,
         ]);
 
         try {
@@ -185,5 +211,33 @@ class UpdatePanTypologyTree extends Command
             // It might be because we're doing too many requests
             sleep(10);
         }
+    }
+
+    /**
+     * @return void
+     */
+    private function seedDatesFromMetaData()
+    {
+        \DB::connection()->getPdo()->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+
+        $this->info("Seeding start_year and end_year from the meta property of pan typology entries.");
+
+        $typologyCount = PanTypology::count();
+
+        $progressBar = $this->output->createProgressBar($typologyCount);
+
+        PanTypology
+            ::orderBy('id')
+            ->chunk(100, function ($typologies) use (&$progressBar) {
+                foreach ($typologies as $typology) {
+                    $meta = $typology->meta;
+
+                    $typology->start_year = array_get($meta, 'properties.InitialDate.0');
+                    $typology->end_year = array_get($meta, 'properties.FinalDate.0');
+                    $typology->save();
+                }
+
+                $progressBar->advance($typologies->count());
+            });
     }
 }

@@ -185,8 +185,24 @@ class FindController extends Controller
         }
 
         // For the PAN ID filter, if set, make it a wildcard query so that we search for the given pan ID, but also any of its children
-        if (!empty($filters['panid'])) {
-            $filters['panid'] .= '.*';
+        $panIds = explode(',', array_get($filters, 'panid') ?? '');
+
+        if (!empty($panIds)) {
+            $filters['panid'] = [];
+
+            foreach ($panIds as $panId) {
+                $filters['panid'][] = $panId . '.*';
+            }
+        }
+
+        // If we have date filters, we replace the pan id filter
+        $startPeriod = $request->input('startPeriod');
+        $endPeriod = $request->input('endPeriod');
+
+        if (!empty($startPeriod) || !empty($endPeriod)) {
+            unset($filters['panid']);
+
+
         }
 
         return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');

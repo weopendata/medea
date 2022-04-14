@@ -73,7 +73,8 @@ class PanTypologyRepository
             return $typology;
         }
 
-        // TODO: this snippet below can be removed, or updated. The assumption that the path of the node contains the parent path is wrong, i.e. 05-01-91-03
+        // NOTE: this snippet below can be removed, or updated. The assumption that the path of the node contains the parent path is wrong, i.e. 05-01-91-03
+        // I'll leave this here as a reminder in case someone has the idea to base the logic based on the assumption that paths contain the parent's path as a sub-path
         /*// Remove the last piece of the code, which is the code for the child/leaf itself and keep the other parts, which is the unique code for the parent
         array_pop($pieces);
 

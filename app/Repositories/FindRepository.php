@@ -537,7 +537,7 @@ class FindRepository extends BaseRepository
             $orderStatement = "findDate.value $orderFlow";
         }
 
-        foreach ($this->getFilterPropertyQueryStatements() as $property => $config) {
+        foreach ($this->getFilterPropertyQueryStatements($filters) as $property => $config) {
             if (isset($filters[$property])) {
                 $matchStatements[] = $config['match'];
 
@@ -545,12 +545,21 @@ class FindRepository extends BaseRepository
                     $whereStatements[] = $config['where'];
                 }
 
-                $variables[$config['nodeName']] = $filters[$property];
+                if (is_array($config['whereVariableName'])) {
+                    $index = 0;
+                    foreach ($config['whereVariableName'] as $whereVariableName) {
+                        $variables[$whereVariableName] = $filters[$property][$index];
+
+                        $index++;
+                    }
+                } else {
+                    $variables[$config['whereVariableName']] = $filters[$property];
+                }
 
                 // If we have an integer value, convert the value we received from the request URI
                 // Neo4j makes a strict distinction between integers and strings
                 if (@$config['varType'] == 'int') {
-                    $variables[$config['nodeName']] = (int)$filters[$property];
+                    $variables[$config['whereVariableName']] = (int)$filters[$property];
                 }
 
                 if (!empty($config['with']) && !in_array($config['with'], $this->getDefaultWithStatementProperties())) {
@@ -606,91 +615,111 @@ class FindRepository extends BaseRepository
      *
      * The key of the filter properties map is the key that is normally passed down through the filters
      * array. This means you can look up filter names by index and fetch their configuration easily and quickly.
-     * The nodeName property is the name of the variable that the where statement contains, this can be used
+     * The whereVariableName property is the name of the variable that the where statement contains, this can be used
      * to pass down the name of the variable in the bindings of the query builder.
      *
      * @return array
      * @throws \Exception
      */
-    public function getFilterPropertyQueryStatements()
+    public function getFilterPropertyQueryStatements(array $filters)
     {
+        // "panid" can contain multiple values to filter on, this is something we need to take into account in our query statements
+        $panIdWhereStatement = 'productionClassificationValue.value =~ {productionClassificationValue}';
+        $panIdWhereStatementVariables = ['productionClassificationValue'];
+
+        if (!empty($filters['panid']) || count($filters['panid']) > 1) {
+            $panIdWhereStatement = '';
+            $panIdWhereStatementVariables = [];
+
+            $index = 0;
+            foreach ($filters['panid'] as $panId) {
+                $panIdWhereVariable = 'productionClassificationValue' . $index;
+                $panIdWhereStatement .= 'productionClassificationValue.value =~ {' . $panIdWhereVariable . '} OR ';
+                $panIdWhereStatementVariables[] = $panIdWhereVariable;
+
+                $index++;
+            }
+
+            $panIdWhereStatement = rtrim($panIdWhereStatement, 'OR ');
+        }
+
         return [
             'objectMaterial' => [
                 'match' => '(object:E22)-[P45]-(material:E57)',
                 'where' => 'material.value = {material} AND ' . NodeService::getTenantWhereStatement(['material']),
-                'nodeName' => 'material',
+                'whereVariableName' => 'material',
                 'with' => 'material',
             ],
             'technique' => [
                 'match' => '(object:E22)-[producedBy:P108]-(pEvent:E12)-[P33]-(techniqueNode:E29)-[hasTechniquetype:P2]-(technique:E55)',
                 'where' => 'technique.value = {technique} AND ' . NodeService::getTenantWhereStatement(['technique']),
-                'nodeName' => 'technique',
+                'whereVariableName' => 'technique',
                 'with' => 'technique',
             ],
             'category' => [
                 'match' => '(object:E22)-[categoryType:P2]-(category:E55)',
                 'where' => 'category.value = {category} AND ' . NodeService::getTenantWhereStatement(['category']),
-                'nodeName' => 'category',
+                'whereVariableName' => 'category',
                 'with' => 'category',
             ],
             'period' => [
                 'match' => '(object:E22)-[P42]-(period:E55)',
                 'where' => 'period.value = {period} AND ' . NodeService::getTenantWhereStatement(['period']),
-                'nodeName' => 'period',
+                'whereVariableName' => 'period',
                 'with' => 'period',
             ],
             'findSpot' => [
                 'match' => '(find:E10)-[P7]->(findSpot:E27)-[P2]->(findSpotType:E55)',
                 'where' => 'findSpotType.value = {findSpotType} AND ' . NodeService::getTenantWhereStatement(['findSpotType']),
-                'nodeName' => 'findSpotType',
+                'whereVariableName' => 'findSpotType',
                 'with' => 'findSpotType',
             ],
             'modification' => [
                 'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
                 'where' => 'modificationTechniqueType.value = {modificationTechniqueType} AND ' . NodeService::getTenantWhereStatement(['modificationTechniqueType']),
-                'nodeName' => 'modificationTechniqueType',
+                'whereVariableName' => 'modificationTechniqueType',
                 'with' => 'modificationTechniqueType',
             ],
             'embargo' => [
                 'match' => '(object:E22)',
                 'where' => 'object.embargo = {embargo} AND ' . NodeService::getTenantWhereStatement(['object']),
-                'nodeName' => 'embargo',
+                'whereVariableName' => 'embargo',
                 'with' => 'object',
             ],
             'collection' => [
                 'match' => '(object:E22)-[P24]-(collection:E78)',
                 'where' => 'id(collection)= {collection} AND ' . NodeService::getTenantWhereStatement(['collection']),
-                'nodeName' => 'collection',
+                'whereVariableName' => 'collection',
                 'with' => 'collection',
                 'varType' => 'int',
             ],
             'photographCaption' => [
                 'match' => '(object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62)',
-                'nodeName' => '',
+                'whereVariableName' => '',
             ],
             'volledigheid' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "volledigheid"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
-                'nodeName' => 'distinguishingFeatureValueNode',
+                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'whereVariableName' => 'distinguishingFeatureValueNode',
             ],
             'merkteken' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "merkteken"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
-                'nodeName' => 'distinguishingFeatureValueNode',
+                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'whereVariableName' => 'distinguishingFeatureValueNode',
             ],
             'opschrift' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "opschrift"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'distinguishingFeatureValueNode.value <> "Nee" and distinguishingFeatureValueNode.value <> "nee" AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
-                'nodeName' => 'distinguishingFeatureValueNode',
+                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'whereVariableName' => 'distinguishingFeatureValueNode',
             ],
             'panid' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',
-                'where' => 'productionClassificationValue.value =~ {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement([
+                'where' => '(' . $panIdWhereStatement . ') AND ' . NodeService::getTenantWhereStatement([
                         'productionEvent',
                         'productionClassification',
                         'productionClassificationValue',
                     ]),
-                'nodeName' => 'productionClassificationValue',
+                'whereVariableName' => $panIdWhereStatementVariables,
                 'with' => 'object',
             ],
         ];

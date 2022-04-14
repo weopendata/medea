@@ -15,13 +15,13 @@ class PanTypology extends Model
     protected $guarded = [];
 
     protected $casts = [
-      'meta' => 'json'
+        'meta' => 'json',
     ];
 
     /**
      * @return BelongsTo
      */
-    public function parent() : BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(PanTypology::class, 'parent_id', 'id');
     }
@@ -29,7 +29,7 @@ class PanTypology extends Model
     /**
      * @return HasMany
      */
-    public function children() : HasMany
+    public function children(): HasMany
     {
         return $this->hasMany(PanTypology::class, 'parent_id', 'id');
     }
