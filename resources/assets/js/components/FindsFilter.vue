@@ -19,6 +19,7 @@
     </div>
 
     <br/>
+
     <div class="facets">
       <div v-if="user.email && !isApplicationPublic" class="facet">
         <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
@@ -29,6 +30,16 @@
           vondsten</a>
         <a href="#" class="facet-a" :class="{active:name==fav.name}" @click.prevent="restore(fav)" v-for="fav in saved"
            v-text="fav.name"></a>
+      </div>
+
+      <div class="facet" v-if="canFilterOnTypologyDates">
+        <h3 class="facet-title">Datering</h3>
+        <div class="facet-date-container">
+          <div style="margin-right: 0.5rem; margin-left: 1rem;">van - tot:</div>
+          <input type="number" v-model="model.startYear" class="facet-date-filter"/>
+          <div>&nbsp;-&nbsp;</div>
+          <input type="number" v-model="model.endYear" class="facet-date-filter"/>
+        </div>
       </div>
 
       <facet label="Validatie status" prop="status" :options="statusOptions" v-if="!isApplicationPublic"></facet>
@@ -69,7 +80,7 @@ var modificationFields = [
 ]
 
 export default {
-  props: ['name', 'model', 'saved', 'facets'],
+  props: ['name', 'model', 'saved', 'facets', 'excludedFacets'],
   data () {
     const showFacets = ls('showFacets') || {}
 
@@ -97,6 +108,13 @@ export default {
     }
   },
   computed: {
+    canFilterOnTypologyDates () {
+      if (!this.excludedFacets) {
+        return true
+      }
+
+      return !this.excludedFacets.includes('datering')
+    },
     dynamicFacetOptions () {
       // Make a copy of the component property to trigger the reactive return value of this computed property
       const facets = this.facets
@@ -147,7 +165,7 @@ export default {
           prop: 'collection',
           options: this.collectionFacetOptions
         }
-      ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0)
+      ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0 && !this.excludedFacets.includes(dynamicFacet.prop))
     },
     collectionFacetOptions () {
       const options = this.getFilterFacetOptions('collection', this.facets)
@@ -279,3 +297,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+input[type='number'] {
+  -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+</style>

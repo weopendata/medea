@@ -33,526 +33,611 @@
 
 /* FindsList */
 .find-results__container {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-start;
-	margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
 }
 
 .column img {
-	max-width: 100%;
+  max-width: 100%;
 }
-.list-right>.items {
-	transition: opacity .2s;
+
+.list-right > .items {
+  transition: opacity .2s;
 }
-.fetching .list-right>.items {
-	opacity: 0.5;
-	transition: opacity .6s;
+
+.fetching .list-right > .items {
+  opacity: 0.5;
+  transition: opacity .6s;
 }
+
 .paging {
-	overflow: auto;
-	min-height: 2em;
+  overflow: auto;
+  min-height: 2em;
 }
-.paging>.button {
-	position: relative;
-	z-index: 1;
+
+.paging > .button {
+  position: relative;
+  z-index: 1;
 }
+
 .paging-current {
-	line-height: 2.5em;
-	@media (min-width: 450px) {
-		position: absolute;
-		width: 100%;
-		left: 0;
-		right: 0;
-		text-align: center;
-	}
+  line-height: 2.5em;
+  @media (min-width: 450px) {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
 }
 
 /* Base */
 
 dl {
-	margin: 0 0 .5em;
+  margin: 0 0 .5em;
 }
+
 dt {
-	float: left;
-	margin-right: 1rem;
-	color: #999;
+  float: left;
+  margin-right: 1rem;
+  color: #999;
 }
+
 dd {
-	margin-left: 135px;
+  margin-left: 135px;
 }
+
 .ui.create-container.form {
-	margin: 0 auto;
-	max-width: 800px;
+  margin: 0 auto;
+  max-width: 800px;
 }
-.double-labeled>input:nth-child(2) {
-	border-radius: 0!important;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	border-left-color: transparent;
-	border-right-color: transparent;
+
+.double-labeled > input:nth-child(2) {
+  border-radius: 0 !important;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
 }
-.double-labeled>.label:nth-child(3) {
-	border-radius: 0!important;
+
+.double-labeled > .label:nth-child(3) {
+  border-radius: 0 !important;
 }
-.double-labeled>input:last-child {
-	border-top-left-radius: 0!important;
-	border-bottom-left-radius: 0!important;
-	border-left-color: transparent;
+
+.double-labeled > input:last-child {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left-color: transparent;
 }
 
 /* Map */
 
 .map-controls {
-	position: absolute;
-	left: 10px;
-	z-index: 123245;
-	top: 60px;
-	max-width: 20em;
+  position: absolute;
+  left: 10px;
+  z-index: 123245;
+  top: 60px;
+  max-width: 20em;
 }
+
 .map-modal {
-	background: white;
-	padding: .5rem 1rem;
+  background: white;
+  padding: .5rem 1rem;
 }
+
 .vue-map-size {
-	display: block;
-	height: 300px;
-	@media (min-height: 450px) {
-		height: 350px;
-	}
-	@media (min-height: 500px) {
-		height: 400px;
-	}
+  display: block;
+  height: 300px;
+  @media (min-height: 450px) {
+    height: 350px;
+  }
+  @media (min-height: 500px) {
+    height: 400px;
+  }
 }
 
 /* Vue transitioning */
 
 .fromleft-transition {
-	transition: transform .5s ease;
-	transform: translateX(0);
+  transition: transform .5s ease;
+  transform: translateX(0);
 }
+
 .fromleft-enter,
 .fromleft-leave {
-	transform: translateX(-100%);
+  transform: translateX(-100%);
 }
+
 .fromright-transition {
-	transition: transform .5s ease;
-	transform: translateX(0);
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 60vh;
+  transition: transform .5s ease;
+  transform: translateX(0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60vh;
 }
+
 .fromright-enter,
 .fromright-leave {
-	transform: translateX(100%);
+  transform: translateX(100%);
 }
 
 /* This effect is based on body class */
 
 .fixed-top {
-	position: fixed;
-	z-index: 2;
-	top: 0;
-	left: 0;
-	right: 0;
-	.ui.menu {
-		background: white;
-	}
-	nav {
-		margin-bottom: 0;
-	}
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  .ui.menu {
+    background: white;
+  }
+
+  nav {
+    margin-bottom: 0;
+  }
 }
+
 .nav-home {
-	height: 0;
-	.ui.green.menu .active.item {
-		border-color: black !important;
-		color: black !important;
-	}
+  height: 0;
+
+  .ui.green.menu .active.item {
+    border-color: black !important;
+    color: black !important;
+  }
 }
+
 .listview {
-	padding-top: 20px;
-	height: calc(100% - 40px);
-	overflow: auto;
+  padding-top: 20px;
+  height: calc(100% - 40px);
+  overflow: auto;
 }
+
 .list-controls {
-	overflow: auto;
+  overflow: auto;
 }
+
 .ui.basic.button:hover {
-	background: none!important;
+  background: none !important;
 }
+
 @media (min-width: 768px) {
-	.list-left {
-		float: left;
-		width: 25%;
-		padding-right: 16px;
-		padding-bottom: 3rem;
-	}
-	.list-right {
-		position: relative;
-		float: right;
-		width: 75%;
-		padding-left: 16px;
-	}
+  .list-left {
+    float: left;
+    width: 25%;
+    padding-right: 16px;
+    padding-bottom: 3rem;
+  }
+  .list-right {
+    position: relative;
+    float: right;
+    width: 75%;
+    padding-left: 16px;
+  }
 }
+
 .mapview {
-	margin-top: 1.5em;
-	height: 50vh;
+  margin-top: 1.5em;
+  height: 50vh;
 }
+
 .card-help {
-	position: absolute;
-	z-index: 3;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 24px;
-	overflow: auto;
-	background-color: white;
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px;
+  overflow: auto;
+  background-color: white;
 }
+
 .help-block {
-	margin-top: 5px;
-	color: #888;
+  margin-top: 5px;
+  color: #888;
 }
 
 /* FindsList > Empty state */
 
 h1,
 h2 {
-	small {
-		display: block;
-		opacity: .4;
-	}
+  small {
+    display: block;
+    opacity: .4;
+  }
 }
+
 .status-lg,
 .finds-empty {
-	margin: 10% auto;
+  margin: 10% auto;
 }
+
 .finds-cta {
-	margin: 5% auto;
+  margin: 5% auto;
 }
 
 .fe-overview-map {
-	height: 100%;
-	display:block;
+  height: 100%;
+  display: block;
 }
 
 /* FindsCreate > step */
 
 .step.muted {
-	h3 {
-		color: #888;
-		cursor: pointer;
-		&:hover {
-			opacity: 1;
-		}
-	}
-	.field,
-	.fields,
-	.message,
-	h4,
-	ul,
-	p {
-		display: none!important
-	}
+  h3 {
+    color: #888;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .field,
+  .fields,
+  .message,
+  h4,
+  ul,
+  p {
+    display: none !important
+  }
 }
+
 .step.active {
-	margin-bottom: 3rem;
+  margin-bottom: 3rem;
 }
+
 .step.required h3::after,
 h4.required::after {
-	content: '*';
-	color: red;
-	margin-left: 4px;
+  content: '*';
+  color: red;
+  margin-left: 4px;
 }
+
 .step.completed {
-	h3 {
-		color: #090;
-	}
-	h3::after {
-		color: #090;
-	}
+  h3 {
+    color: #090;
+  }
+
+  h3::after {
+    color: #090;
+  }
 }
+
 span.required {
-	color: red;
+  color: red;
 }
 
 /* FindsCreate > clear form field */
 
 .field {
-	position: relative;
-	>.delete {
-		position: absolute;
-		left: 100%;
-		bottom: 0;
-		width: 36px;
-		height:  36px;
-		line-height: 34px;
-		cursor: pointer;
-		color: #900;
-		opacity: .5;
-		&:hover {
-			opacity: 1;
-		}
-	}
+  position: relative;
+
+  > .delete {
+    position: absolute;
+    left: 100%;
+    bottom: 0;
+    width: 36px;
+    height: 36px;
+    line-height: 34px;
+    cursor: pointer;
+    color: #900;
+    opacity: .5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 /* FindsCreate > feedback */
 
 .li-feedback {
-	cursor: pointer;
-	&:hover {
-		text-decoration: underline;
-	}
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 /* FindsList > FindsFilter */
 
 .finds-order {
-	float: left;
-	padding-top: 8px;
-	user-select: none;
-	a {
-		padding: 5px 8px;
-		cursor: pointer;
-		&:hover {
-			background-color: #eee;
-		}
-	}
-	.reverse,
-	.active {
-		font-weight: bold;
-		color: #000;
-	}
-	.active::after {
-		content: "\25b2";
-		margin-left: 2px;
-	}
-	.reverse::after {
-		content: "\25bc";
-		margin-left: 2px;
-	}
+  float: left;
+  padding-top: 8px;
+  user-select: none;
+
+  a {
+    padding: 5px 8px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #eee;
+    }
+  }
+
+  .reverse,
+  .active {
+    font-weight: bold;
+    color: #000;
+  }
+
+  .active::after {
+    content: "\25b2";
+    margin-left: 2px;
+  }
+
+  .reverse::after {
+    content: "\25bc";
+    margin-left: 2px;
+  }
 }
 
 .finds-card-style {
-	float: left;
-	padding-top: 8px;
-	user-select: none;
+  float: left;
+  padding-top: 8px;
+  user-select: none;
 
-	a {
-		padding: 5px 8px;
-		cursor: pointer;
+  a {
+    padding: 5px 8px;
+    cursor: pointer;
 
-		&:hover {
-			background-color: #eee;
-		}
-	}
+    &:hover {
+      background-color: #eee;
+    }
+  }
 
-	.reverse,
-	.active {
-		font-weight: bold;
-		color: #000;
-	}
+  .reverse,
+  .active {
+    font-weight: bold;
+    color: #000;
+  }
 }
 
 .wrapper-white {
-	background: white;
+  background: white;
 }
 
 /* FindDetail > Form Classification*/
 
 .field-publications {
-	.input+.input {
-		margin-top: .5rem;
-	}
+  .input + .input {
+    margin-top: .5rem;
+  }
 }
 
 /* Utils */
 
 .text-right {
-	text-align: right;
+  text-align: right;
 }
+
 .pull-right {
-	float: right;
+  float: right;
 }
 
 /* Facet */
 
 .facets {
-	margin-bottom: 2em;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
-	background-color: white;
+  margin-bottom: 2em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
+  background-color: white;
 }
+
 .facet {
-	&+.facet {
-		border-top: 1px solid #ccc;
-	}
+  & + .facet {
+    border-top: 1px solid #ccc;
+  }
 }
+
+.facet-date-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0.2rem;
+}
+
+.facet-date-filter {
+  width: 5rem !important;
+  height: 1rem;
+}
+
 .facet-a {
-	display: block;
-	padding: 3px 5px 3px 16px;
-	line-height: 1em;
-	color: #666;
-	&:hover {
-		text-decoration: underline;
-	}
-	&.active {
-		color: black;
-		font-weight: bold;
-		background: #ddd;
-		border-radius: 2px;
-		&::before {
-			float: right;
-			content: 'x';
-			color: red;
-		}
-	}
-	&:last-child {
-		margin-bottom: 10px;
-	}
+  display: block;
+  padding: 3px 5px 3px 16px;
+  line-height: 1em;
+  color: #666;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.active {
+    color: black;
+    font-weight: bold;
+    background: #ddd;
+    border-radius: 2px;
+
+    &::before {
+      float: right;
+      content: 'x';
+      color: red;
+    }
+  }
+
+  &:last-child {
+    margin-bottom: 10px;
+  }
 }
+
 .facet-title {
-	margin: 0;
-	padding: 10px 5px;
-	font-size: 14px;
-	cursor: pointer;
-	>.icon {
-		display: inline-block;
-		padding-left: 2px;
-		width: 18px;
-		text-align: center;
-	}
+  margin: 0;
+  padding: 10px 5px;
+  font-size: 14px;
+  cursor: pointer;
+
+  > .icon {
+    display: inline-block;
+    padding-left: 2px;
+    width: 18px;
+    text-align: center;
+  }
 }
 
 /* Admin - User panel*/
 
 .tr-toggle {
-	cursor: pointer;
-	background: #f0f4f8;
-	color: #999;
-	&:hover {
-		background: #bdc3c7;
-	}
-	&::after {
-		content: '\2718';
-	}
-	&.on {
-		background: #27ae60;
-		color: white;
-		&:hover {
-			background: #2ecc71;
-		}
-		&::after {
-			content: '\2713';
-		}
-	}
+  cursor: pointer;
+  background: #f0f4f8;
+  color: #999;
+
+  &:hover {
+    background: #bdc3c7;
+  }
+
+  &::after {
+    content: '\2718';
+  }
+
+  &.on {
+    background: #27ae60;
+    color: white;
+
+    &:hover {
+      background: #2ecc71;
+    }
+
+    &::after {
+      content: '\2713';
+    }
+  }
 }
 
 /* Notifications */
 
 .ui.menu .ui.dropdown.item-notif .menu {
-	width: 23em;
-	max-height: 60vh;
-	overflow: auto;
-	.item {
-		white-space: pre-wrap;
-	}
-	.item:hover {
-		background: rgba(0, 0, 0, 0.05) !important;
-		color: rgba(0, 0, 0, 0.95) !important;
-		cursor: pointer;
-	}
+  width: 23em;
+  max-height: 60vh;
+  overflow: auto;
+
+  .item {
+    white-space: pre-wrap;
+  }
+
+  .item:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: rgba(0, 0, 0, 0.95) !important;
+    cursor: pointer;
+  }
 }
+
 .ui.menu .item > .text > .circular.label {
-	margin: -.35em .2em;
+  margin: -.35em .2em;
 }
+
 .read {
-	background: #f5f5f5 !important;
-	color: #999 !important;
-	font-weight: 300;
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  font-weight: 300;
 }
 
 /* Password strength component */
 
-.pw-strength-fit>input {
-	border-bottom-right-radius: 0!important;
-	border-bottom-left-radius: 0!important;
+.pw-strength-fit > input {
+  border-bottom-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
+
 .pw-strength {
-	position: relative;
-	margin: -1px 0 24px;
-	background: #ddd;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
+  position: relative;
+  margin: -1px 0 24px;
+  background: #ddd;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
+
 .pw-strength::after {
-	content: 'Kies een sterk wachtwoord.';
-	position: absolute;
-	top: 6px;
-	font-size: 12px;
+  content: 'Kies een sterk wachtwoord.';
+  position: absolute;
+  top: 6px;
+  font-size: 12px;
 }
+
 .pw-strength-line {
-	border-bottom: 6px solid #ddd;
-	border-bottom-left-radius: 4px;
-	width: 1%;
-	transition: border-color .3s, width .3s;
+  border-bottom: 6px solid #ddd;
+  border-bottom-left-radius: 4px;
+  width: 1%;
+  transition: border-color .3s, width .3s;
 }
+
 .pw-strength1::after {
-	content: 'Zwak';
-	color: #c00;
+  content: 'Zwak';
+  color: #c00;
 }
-.pw-strength1>.pw-strength-line {
-	border-color: #f00;
-	width: 25%;
+
+.pw-strength1 > .pw-strength-line {
+  border-color: #f00;
+  width: 25%;
 }
+
 .pw-strength2::after {
-	content: 'OK';
-	color: #c60;
+  content: 'OK';
+  color: #c60;
 }
-.pw-strength2>.pw-strength-line {
-	border-color: #f90;
-	width: 50%;
+
+.pw-strength2 > .pw-strength-line {
+  border-color: #f90;
+  width: 50%;
 }
+
 .pw-strength3::after {
-	content: 'Veilig';
-	color: #00f;
+  content: 'Veilig';
+  color: #00f;
 }
-.pw-strength3>.pw-strength-line {
-	border-color: #66f;
-	width: 75%;
+
+.pw-strength3 > .pw-strength-line {
+  border-color: #66f;
+  width: 75%;
 }
+
 .pw-strength4::after {
-	content: 'Perfect';
-	color: #090;
+  content: 'Perfect';
+  color: #090;
 }
-.pw-strength4>.pw-strength-line {
-	border-color: #0c0;
-	border-bottom-right-radius: 4px;
-	width: 100%;
+
+.pw-strength4 > .pw-strength-line {
+  border-color: #0c0;
+  border-bottom-right-radius: 4px;
+  width: 100%;
 }
 
 .modals {
-	position: fixed;
-	background: rgba(0, 0, 0, .5);
-	top: 0;
-	right: 0;
-	left: 0;
-	bottom: 0;
-	overflow: auto;
-	z-index: 3;
-	padding: 3em 0;
-	>.modal {
-		margin: 0 auto;
-		padding: 1em;
-		background: white;
-		max-width: 40em;
-	}
+  position: fixed;
+  background: rgba(0, 0, 0, .5);
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  overflow: auto;
+  z-index: 3;
+  padding: 3em 0;
+
+  > .modal {
+    margin: 0 auto;
+    padding: 1em;
+    background: white;
+    max-width: 40em;
+  }
 }
 
 /* Table */
 
-.th-sortable>a::after {
+.th-sortable > a::after {
   display: inline-block;
   vertical-align: middle;
   content: ' ';
@@ -561,18 +646,20 @@ span.required {
   opacity: .2;
   background: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==) no-repeat center right;
 }
-.th-sortable.down>a::after {
+
+.th-sortable.down > a::after {
   opacity: 1;
   background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=);
 }
-.th-sortable.up>a::after {
+
+.th-sortable.up > a::after {
   opacity: 1;
   background-image: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==);
 }
 
 /* Using column isof field bacause spacing issue in classification */
 
-.field>.grid>.column>label {
+.field > .grid > .column > label {
   display: block;
   margin: 0em 0em 0.28571429rem 0em;
   color: rgba(0, 0, 0, 0.87);

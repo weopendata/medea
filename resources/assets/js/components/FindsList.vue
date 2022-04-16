@@ -1,15 +1,18 @@
 <template>
   <div>
     <div class="find-results__container">
-      <template v-if="finds.length">
+      <div v-if="fetching">
+        <i class="spinner icon"></i><div class="ui active inline loader"></div>Bezig met zoeken...
+      </div>
+      <div v-else-if="finds.length">
         <template v-if="cardStyle == 'tile'">
           <find-event-small v-for="(find, index) in finds" :key="'find_result_' + index" :find="find"/>
         </template>
         <template v-else>
           <find-event v-for="(find, index) in finds" :key="'find_result_' + index" :find="find" :user="user"/>
         </template>
-      </template>
-      <div v-if="!finds.length" class="finds-empty">
+      </div>
+      <div v-else-if="!finds.length" class="finds-empty">
         <h1>
           Geen resultaten
           <br><small>Er zijn geen vondsten die voldoen aan de criteria</small>
@@ -47,7 +50,7 @@ import FindEvent from './FindEvent'
 import FindEventSmall from './FindEventSmall.vue'
 
 export default {
-  props: ['user', 'finds', 'paging', 'saved', 'cardStyle'],
+  props: ['user', 'finds', 'fetching', 'paging', 'saved', 'cardStyle'],
   data () {
     return {
       favName: '',

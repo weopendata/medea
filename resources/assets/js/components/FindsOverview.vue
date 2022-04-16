@@ -7,6 +7,7 @@
             :model.sync="filterState"
             :saved="saved"
             :facets="facets"
+            :excludedFacets="excludedFacets"
             @filtersChanged="filtersChanged"
         />
       </div>
@@ -75,6 +76,7 @@
         </div>
         <finds-list
             :finds="finds"
+            :fetching="fetching"
             :user="user"
             :paging="paging"
             :saved="saved"
@@ -105,6 +107,7 @@ import { inert, toPublicBounds, findTitle } from '../const.js'
 import ls from 'local-storage'
 
 import { getPaging } from '../helpers/helpers';
+import { fetchFinds, fetchFindsMap } from '../api/finds.js'
 
 const HEATMAP_RADIUS = 0.05;
 
@@ -131,6 +134,7 @@ export default {
       paging: getPaging(window.link),
       finds: window.initialFinds || [],
       facets: window.initialFacets || {},
+      excludedFacets: window.excludedFacets || [],
       fetching: false,
       filterState: window.filterState || ls('filterState') || {},
       viewState: window.viewState || {},
@@ -147,7 +151,8 @@ export default {
         strokeWeight: 1
       },
       rawmap: null,
-      loaded: false
+      loaded: false,
+      cancelTokens: {}
     }
   },
   computed: {
@@ -277,18 +282,25 @@ export default {
       // Do not fetch same query twice
       if (listQuery !== query) {
         this.fetching = true
-        this.$http.get('/api' + query)
-            .then(function (res) {
+
+        fetchFinds(query)
+            .then(res => {
               this.paging = getPaging(res.headers)
               this.finds = res.data.finds
               this.facets = res.data.facets
               this.fetching = false
             })
-            .catch(function () {
+            .catch(error => {
+              if (axios.isCancel(error)) {
+                return
+              }
+
+              console.error('Could not fetch list of finds, something went wrong.', error)
+
               this.paging = {}
               this.finds = []
               this.facets = []
-              console.error('List: could not fetch finds')
+              this.fetching = false
             })
 
         // Do not push state on first load
@@ -301,11 +313,20 @@ export default {
       // Do not fetch same query twice
       if (type && heatmapQuery !== query) {
         heatmapQuery = query
-        this.$http.get('/api' + query + '&type=heatmap')
-            .then(({ data }) => this.rawmap = data)
-            .catch(function () {
+
+        fetchFindsMap(query)
+            .then(({ data }) => {
+              this.rawmap = data
+              console.log(this.rawmap)
+            })
+            .catch(function (error) {
+              if (axios.isCancel(error)) {
+                return
+              }
+
+              console.error('Could not fetch finds heatmap', error)
+
               this.rawmap = []
-              console.error('List: could not fetch finds heatmap')
             })
       }
 

@@ -16,7 +16,7 @@ class PanTypologyRepository
     /**
      * PanTypologyRepository constructor.
      *
-     * @param PanTypology $typology
+     * @param  PanTypology $typology
      */
     public function __construct(PanTypology $typology)
     {
@@ -33,7 +33,7 @@ class PanTypologyRepository
     }
 
     /**
-     * @param string $code
+     * @param  string $code
      * @return PanTypology|null
      */
     public function findByCode(string $code)
@@ -48,7 +48,7 @@ class PanTypologyRepository
      * Typologies are uniquely identified by their code:
      * Examples: 01, 01-02, 02-03-01-04
      *
-     * @param array $typology
+     * @param  array $typology
      * @return PanTypology
      * @throws \Exception
      */
@@ -93,7 +93,31 @@ class PanTypologyRepository
     }
 
     /**
-     * @param string $code
+     * @param  int|null $startYear
+     * @param  int|null $endYear
+     * @return array
+     */
+    public function getPanIdsForDateRange(?int $startYear = null, ?int $endYear = null): array
+    {
+        if (is_null($startYear) && is_null($endYear)) {
+            return [];
+        }
+
+        return PanTypology
+            ::when(!is_null($startYear), function ($query) use ($startYear) {
+                return $query->where('start_year', '>=', $startYear);
+            })
+            ->when(!is_null($endYear), function ($query) use ($endYear) {
+                return $query->where('end_year', '<=', $endYear);
+            })
+            ->select('id')
+            ->get()
+            ->pluck('id')
+            ->toArray();
+    }
+
+    /**
+     * @param  string $code
      * @return array
      */
     public function getMetaForPanId(string $code)
@@ -119,7 +143,7 @@ class PanTypologyRepository
             'finalPeriod' => array_get($panTypology, 'meta.finalperiod'),
             'code' => $panTypology['code'],
             'imageUrl' => array_get($panTypology, 'meta.imageUrl'),
-            'mainCategory' => $mainCategory
+            'mainCategory' => $mainCategory,
         ];
     }
 
@@ -171,7 +195,7 @@ class PanTypologyRepository
                         'imageUrl',
                         'scopeNotes',
                         'definitions',
-                        'properties'
+                        'properties',
                     ]
                 );
 
@@ -185,7 +209,7 @@ class PanTypologyRepository
                         'uri',
                         'depth',
                         'code',
-                        'parent_code'
+                        'parent_code',
                     ]
                 );
 
@@ -213,13 +237,13 @@ class PanTypologyRepository
 
         return [
             'tree' => array_values($tree),
-            'map' => $allTypologies->toArray()
+            'map' => $allTypologies->toArray(),
         ];
     }
 
     /**
-     * @param array $array
-     * @param string $path
+     * @param  array  $array
+     * @param  string $path
      * @return mixed
      * @throws \Exception
      */

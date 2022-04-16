@@ -90,7 +90,7 @@ export default {
 
       axios.get('/api/finds?limit=8&order=-identifier&status=Gepubliceerd&panid=' + this.typology.code)
           .then(result => {
-            this.finds = result.data
+            this.finds = result.data.finds
             this.fetching = false
             this.findsCount = result.headers['x-total']
           })

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\Pager;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\ProcessesFindFilters;
 use App\Http\Requests\FindApiRequest;
 use App\Http\Requests\ShowFindRequest;
 use App\Repositories\FindRepository;
@@ -14,11 +15,11 @@ use Illuminate\Support\Arr;
 /**
  * This controller provides an API on top of FindEvent nodes, but also on Object nodes.
  * The two are mostly used in direct relationship with each other.
- *
- * @SuppressWarnings(PHPMD.UnusedLocalVariable)
  */
 class FindController extends Controller
 {
+    use ProcessesFindFilters;
+
     public function __construct()
     {
         $this->finds = new FindRepository();
@@ -140,72 +141,6 @@ class FindController extends Controller
             ->json($response)
             ->header('Link', $linkHeader)
             ->header('X-Total', $count);
-    }
-
-    /**
-     * @param $request
-     * @return array
-     */
-    private function processQueryParts($request)
-    {
-        $filters = $request->all();
-
-        $validatedStatus = $request->input('status', 'Gepubliceerd');
-
-        if (empty($request->user())) {
-            $validatedStatus = 'Gepubliceerd';
-        }
-
-        // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
-            $filters['myfinds'] = $request->user()->email;
-        }
-
-        $limit = $request->input('limit', 20);
-        $offset = $request->input('offset', 0);
-
-        $order = $request->input('order', null);
-
-        $order_flow = 'ASC';
-        $order_by = 'findDate';
-
-        if (!empty($order)) {
-            $first_char = substr($order, 0, 1);
-
-            if ($first_char == '-') {
-                $order_flow = 'DESC';
-                $order_by = substr($order, 1, strlen($order));
-            } else {
-                $order_by = $order;
-            }
-        }
-
-        if (!isset($filters['embargo'])) {
-            $filters['embargo'] = 'false';
-        }
-
-        // For the PAN ID filter, if set, make it a wildcard query so that we search for the given pan ID, but also any of its children
-        $panIds = explode(',', array_get($filters, 'panid') ?? '');
-
-        if (!empty($panIds)) {
-            $filters['panid'] = [];
-
-            foreach ($panIds as $panId) {
-                $filters['panid'][] = $panId . '.*';
-            }
-        }
-
-        // If we have date filters, we replace the pan id filter
-        $startPeriod = $request->input('startPeriod');
-        $endPeriod = $request->input('endPeriod');
-
-        if (!empty($startPeriod) || !empty($endPeriod)) {
-            unset($filters['panid']);
-
-
-        }
-
-        return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');
     }
 
     /**

@@ -16,6 +16,12 @@ npm run prod
 ```
 
 * Create a public/uploads folder to store uploads into
+* Seed the PAN typologies
+
+```
+php artisan medea:update-pan-typology seed
+php artisan medea:update-pan-typology extract-dates
+```
 
 ### Full text support
 

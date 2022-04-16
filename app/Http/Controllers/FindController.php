@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Pager;
+use App\Http\Controllers\Traits\ProcessesFindFilters;
 use App\Http\Requests\CreateFindRequest;
 use App\Http\Requests\DeleteFindRequest;
 use App\Http\Requests\EditFindRequest;
@@ -28,6 +29,8 @@ use PiwikTracker;
 
 class FindController extends Controller
 {
+    use ProcessesFindFilters;
+
     public function __construct()
     {
         $this->finds = new FindRepository();
@@ -43,43 +46,13 @@ class FindController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->all();
-
         $limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
 
-        // Default ordering is "created at", sorted in a descending way
-        $order = $request->input('order', '-identifier');
+        extract($this->processQueryParts($request));
 
-        $order_flow = 'ASC';
-        $order_by = 'findDate';
-
-        if (!empty($order)) {
-            $first_char = substr($order, 0, 1);
-
-            if ($first_char == '-') {
-                $order_flow = 'DESC';
-                $order_by = substr($order, 1, strlen($order));
-            }
-        }
-
-        $validated_status = $request->input('status', 'Gepubliceerd');
-
-        if (empty($request->user())) {
-            $validated_status = 'Gepubliceerd';
-        }
-
-        // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
-            $filters['myfinds'] = $request->user()->email;
-        }
-
-        if (!isset($filters['embargo'])) {
-            $filters['embargo'] = 'false';
-        }
-
-        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validated_status);
-        $facetCounts = $this->finds->getFacetCounts($filters, $validated_status);
+        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
+        $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
 
         $finds = $result['data'];
         $count = $result['count'];
@@ -141,10 +114,10 @@ class FindController extends Controller
             'limit' => $request->input('limit', null),
             'offset' => $request->input('offset', null),
             'query' => $request->input('query', ''),
-            'order' => $order,
+            'order' => $request->input('order', null),
             'myfinds' => @$filters['myfinds'],
             'collection' => (integer)$request->input('collection'),
-            'status' => $validated_status,
+            'status' => $validatedStatus,
             'embargo' => (boolean)$request->input('embargo', false),
             'showmap' => $request->input('showmap', null),
         ];
@@ -170,6 +143,7 @@ class FindController extends Controller
                 'finds' => $finds,
                 'facets' => $facetCounts,
                 'filterState' => $filterState,
+                'excludedFacets' => explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [],
                 'viewState' => [
                     'displayCardStyleOptions' => env('DISPLAY_CARD_STYLE_ON_FILTERS_PAGE', 'false') == 'true',
                     'displayOrderByOptions' => env('DISPLAY_SORT_BY_ON_FILTERS_PAGE', 'false') == 'true',

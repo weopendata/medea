@@ -209,7 +209,7 @@ class FindRepository extends BaseRepository
 
         // Add the count of photograph captions, we just need to know if there are any or not, and counting is more
         // efficient than retrieving the distinct values, which is the approach we use via the "facet statements"
-        $query .= "OPTIONAL MATCH (object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62) where " .  NodeService::getTenantWhereStatement(['object']);
+        $query .= "OPTIONAL MATCH (object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62) where " . NodeService::getTenantWhereStatement(['object']);
 
         $returnProperties = array_merge(array_keys($facetCountStatements), ['photographCaption']);
 
@@ -247,7 +247,7 @@ class FindRepository extends BaseRepository
 
         // It could be that multiple values are bundled together, the query returns raw data which it then transforms into "Row" objects
         // The raw data has the following structure: [[], [facet1], [facet2, facet3], [], [facet6], ... ]
-        $omittedFilterFacets = explode(',', env('EXCLUDED_FILTER_FACETS',''));
+        $omittedFilterFacets = explode(',', env('EXCLUDED_FILTER_FACETS', ''));
 
         foreach ($facetNames as $facetName) {
             $facetValueCollections = $facetResultsRow[$facetName];
@@ -537,7 +537,7 @@ class FindRepository extends BaseRepository
             $orderStatement = "findDate.value $orderFlow";
         }
 
-        foreach ($this->getFilterPropertyQueryStatements($filters) as $property => $config) {
+        foreach ($this->getFilterPropertyQueryStatements() as $property => $config) {
             if (isset($filters[$property])) {
                 $matchStatements[] = $config['match'];
 
@@ -545,16 +545,7 @@ class FindRepository extends BaseRepository
                     $whereStatements[] = $config['where'];
                 }
 
-                if (is_array($config['whereVariableName'])) {
-                    $index = 0;
-                    foreach ($config['whereVariableName'] as $whereVariableName) {
-                        $variables[$whereVariableName] = $filters[$property][$index];
-
-                        $index++;
-                    }
-                } else {
-                    $variables[$config['whereVariableName']] = $filters[$property];
-                }
+                $variables[$config['whereVariableName']] = $filters[$property];
 
                 // If we have an integer value, convert the value we received from the request URI
                 // Neo4j makes a strict distinction between integers and strings
@@ -621,28 +612,8 @@ class FindRepository extends BaseRepository
      * @return array
      * @throws \Exception
      */
-    public function getFilterPropertyQueryStatements(array $filters)
+    public function getFilterPropertyQueryStatements()
     {
-        // "panid" can contain multiple values to filter on, this is something we need to take into account in our query statements
-        $panIdWhereStatement = 'productionClassificationValue.value =~ {productionClassificationValue}';
-        $panIdWhereStatementVariables = ['productionClassificationValue'];
-
-        if (!empty($filters['panid']) || count($filters['panid']) > 1) {
-            $panIdWhereStatement = '';
-            $panIdWhereStatementVariables = [];
-
-            $index = 0;
-            foreach ($filters['panid'] as $panId) {
-                $panIdWhereVariable = 'productionClassificationValue' . $index;
-                $panIdWhereStatement .= 'productionClassificationValue.value =~ {' . $panIdWhereVariable . '} OR ';
-                $panIdWhereStatementVariables[] = $panIdWhereVariable;
-
-                $index++;
-            }
-
-            $panIdWhereStatement = rtrim($panIdWhereStatement, 'OR ');
-        }
-
         return [
             'objectMaterial' => [
                 'match' => '(object:E22)-[P45]-(material:E57)',
@@ -714,12 +685,22 @@ class FindRepository extends BaseRepository
             ],
             'panid' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',
-                'where' => '(' . $panIdWhereStatement . ') AND ' . NodeService::getTenantWhereStatement([
+                'where' => 'productionClassificationValue.value =~ {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement([
                         'productionEvent',
                         'productionClassification',
                         'productionClassificationValue',
                     ]),
-                'whereVariableName' => $panIdWhereStatementVariables,
+                'whereVariableName' => 'productionClassificationValue',
+                'with' => 'object',
+            ],
+            'panids' => [
+                'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',
+                'where' => 'productionClassificationValue.value IN {panIdValues} AND ' . NodeService::getTenantWhereStatement([
+                        'productionEvent',
+                        'productionClassification',
+                        'productionClassificationValue',
+                    ]),
+                'whereVariableName' => 'panIdValues',
                 'with' => 'object',
             ],
         ];
@@ -1002,7 +983,7 @@ class FindRepository extends BaseRepository
             'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
             'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
             'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
-            'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])'
+            'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])',
         ];
     }
 
