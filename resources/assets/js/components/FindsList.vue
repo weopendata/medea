@@ -2,7 +2,7 @@
   <div>
     <div class="find-results__container">
       <div v-if="fetching">
-        <i class="spinner icon"></i><div class="ui active inline loader"></div>Bezig met zoeken...
+        Bezig met zoeken...
       </div>
       <div v-else-if="finds.length">
         <template v-if="cardStyle == 'tile'">

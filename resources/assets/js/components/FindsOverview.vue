@@ -311,13 +311,12 @@ export default {
       }
 
       // Do not fetch same query twice
-      if (type && heatmapQuery !== query) {
+      if (heatmapQuery !== query) {
         heatmapQuery = query
 
         fetchFindsMap(query)
             .then(({ data }) => {
               this.rawmap = data
-              console.log(this.rawmap)
             })
             .catch(function (error) {
               if (axios.isCancel(error)) {
