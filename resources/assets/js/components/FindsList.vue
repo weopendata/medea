@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="find-results__container">
-      <div v-if="fetching">
-        Bezig met zoeken...
+      <div class="find-results__loading" v-if="fetching">
+        <div style="margin: auto; font-size: 1.5rem;">Bezig met zoeken...</div>
       </div>
       <div v-else-if="finds.length">
         <template v-if="cardStyle == 'tile'">
@@ -19,7 +19,7 @@
         </h1>
       </div>
     </div>
-    <div v-if="finds.length" class="paging">
+    <div v-if="finds.length && !fetching" class="paging">
       <div class="paging-current">
         Pagina {{ currentPage }} van {{ totalPages }}
       </div>

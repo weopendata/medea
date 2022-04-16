@@ -110,6 +110,8 @@ class FindController extends Controller
             ->values();
 
         // Prepare the filter state
+        $excludedFacets = explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [];
+
         $filterState = [
             'limit' => $request->input('limit', null),
             'offset' => $request->input('offset', null),
@@ -119,7 +121,7 @@ class FindController extends Controller
             'collection' => (integer)$request->input('collection'),
             'status' => $validatedStatus,
             'embargo' => (boolean)$request->input('embargo', false),
-            'showmap' => $request->input('showmap', null),
+            'showmap' => $request->input('showmap', null)
         ];
 
         $filterFacets = [
@@ -132,9 +134,21 @@ class FindController extends Controller
             'merkteken',
             'opschrift',
             'photographCaption',
+            'datering',
         ];
 
         foreach ($filterFacets as $filterFacet) {
+            if (in_array($filterFacet, $excludedFacets)) {
+                continue;
+            }
+
+            if ($filterFacet == 'datering') {
+                $filterState['startYear'] = $request->input('startYear');
+                $filterState['endYear'] = $request->input('endYear');
+
+                continue;
+            }
+
             $filterState[$filterFacet] = $request->input($filterFacet, '*');
         }
 
@@ -143,7 +157,7 @@ class FindController extends Controller
                 'finds' => $finds,
                 'facets' => $facetCounts,
                 'filterState' => $filterState,
-                'excludedFacets' => explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [],
+                'excludedFacets' => $excludedFacets,
                 'viewState' => [
                     'displayCardStyleOptions' => env('DISPLAY_CARD_STYLE_ON_FILTERS_PAGE', 'false') == 'true',
                     'displayOrderByOptions' => env('DISPLAY_SORT_BY_ON_FILTERS_PAGE', 'false') == 'true',

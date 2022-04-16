@@ -252,7 +252,9 @@ export default {
         volledigheid: null,
         merkteken: null,
         opschrift: null,
-        photographCaption: null
+        photographCaption: null,
+        startYear: null,
+        endYear: null
       };
 
       this.fetch()
