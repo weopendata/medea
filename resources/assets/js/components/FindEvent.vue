@@ -7,7 +7,7 @@
     <div class="card-content">
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
-        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{find.locality}}</a></span>
+        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{findLocality}}</a></span>
         <div>
           Status: {{ find.validation }}
           <span v-if="classificationCount&&find.validation == 'Gepubliceerd'">
@@ -54,6 +54,9 @@ export default {
     ObjectFeatures
   },
   computed: {
+    findLocality () {
+      return find.locality || find.excavationAddressLocality
+    },
     editable () {
       return ['Aan te passen', 'Voorlopige versie'].indexOf(this.find.validation) !== -1
       // Finder    if 'Aan te passen' or 'Voorlopige versie'

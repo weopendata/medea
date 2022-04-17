@@ -36,7 +36,7 @@ class ExcavationRepository extends BaseRepository
      * @return array
      * @throws \Exception
      */
-    public function getMetaDataForExcavation($excavationUUID)
+    public function getMetaDataForExcavation(string $excavationUUID)
     {
         $tentantStatement = NodeService::getTenantWhereStatement(['excavationEvent', 'searchArea']);
 

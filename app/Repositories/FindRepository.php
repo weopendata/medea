@@ -306,7 +306,7 @@ class FindRepository extends BaseRepository
      */
     public function getHeatMap($filters, $validationStatus)
     {
-        extract($this->getQueryStatements($filters, '', '', $validationStatus));
+        extract($this->getQueryStatements($filters, '', '', $validationStatus, ['excavationTitle', 'locationAddressLocality', 'typologie']));
 
         $withStatement[] = 'find';
         $withStatement = collect($withStatement)
@@ -441,6 +441,7 @@ class FindRepository extends BaseRepository
             'findDate',
             'person',
             'validation',
+            '[p in (object)-[:P1]->(:E42) | last(nodes(p)).value] as objectNr',
             '[p in (object)-[:P108]-(:E12)-[:P41]-(:E17) | last(nodes(p))] as classifications',
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53) | last(nodes(p))] as location',
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P87]-(:E47{name:"lat"}) | last(nodes(p))] as latitude',
@@ -474,11 +475,32 @@ class FindRepository extends BaseRepository
             $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
         }
 
+        $returnProperties = [
+            "distinct find",
+            "id(find) as identifier",
+            "classifications",
+            "typologyClassification",
+            "findDate.value as findDate",
+            "validation.value as validation",
+            "person.email as email",
+            "id(person) as finderId",
+            "head(period).value as period",
+            "head(material).value as material",
+            "head(category).value as category",
+            "head(collection) as collection",
+            "photograph",
+            "head(latitude).value as lat",
+            "head(longitude).value as lng",
+            "head(locality).value as locality",
+            "head(location).accuracy as accuracy",
+            "head(location).geoGrid as grid",
+            "excavationTitle.value as excavationTitle",
+            "locationAddressLocality.value as excavationAddressLocality",
+            "head(objectNr) as objectNr"
+        ];
+
         $query .= " WITH $withStatement
-        RETURN distinct find, id(find) as identifier, classifications, typologyClassification, findDate.value as findDate, validation.value as validation, person.email as email, id(person) as finderId, head(period).value as period, head(material).value as material, head(category).value as category, head(collection) as collection, photograph, head(latitude).value as lat, head(longitude).value as lng, head(locality).value as locality, head(location).accuracy as accuracy, head(location).geoGrid as grid
-        ORDER BY $orderStatement
-        SKIP $offset
-        LIMIT $limit";
+        RETURN " . implode(', ', $returnProperties) . " ORDER BY $orderStatement SKIP $offset LIMIT $limit";
 
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
@@ -495,7 +517,7 @@ class FindRepository extends BaseRepository
      * @return array
      * @throws \Exception
      */
-    private function getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus)
+    private function getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus, ?array $excludeOptionalStatements = [])
     {
         $matchStatements = [];
         $whereStatements = [];
@@ -576,19 +598,41 @@ class FindRepository extends BaseRepository
         $whereStatement = implode(' AND ', $whereStatements);
 
         // Add the optional statements
+        $availableOptionalStatements = [
+            'person' => [
+                'match' => '(find:E10)-[P29]-(person:person)',
+                'where' => NodeService::getTenantWhereStatement(['find', 'person']),
+            ],
+            'typology' => [
+                'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(typologyClassification:E55), (productionClassification:productionClassification)-[:P2]-(pcvType:E55 {value: "Typologie"})',
+                'where' => NodeService::getTenantWhereStatement(['object', 'productionEvent', 'productionClassification', 'typologyClassification']),
+                'with' => ['typologyClassification'],
+            ],
+            'excavationTitle' => [
+                'match' => '(excavationEvent:A9)-[:P1]->(excavationTitle:E41)',
+                'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
+                'with' => ['excavationTitle'],
+            ],
+            'locationAddressLocality' => [
+                'match' => '(excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E47)-[:P87]->(locationAddressLocality:E45{name:"locationAddressLocality"})',
+                'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
+                'with' => ['locationAddressLocality'],
+            ],
+        ];
+
         $optionalStatements = [];
 
-        $optionalStatements[] = [
-            'match' => '(find:E10)-[P29]-(person:person)',
-            'where' => NodeService::getTenantWhereStatement(['find', 'person']),
-        ];
+        foreach ($availableOptionalStatements as $optionalStatementName => $availableOptionalStatement) {
+            if (in_array($optionalStatementName, $excludeOptionalStatements)) {
+                continue;
+            }
 
-        $optionalStatements[] = [
-            'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(typologyClassification:E55), (productionClassification:productionClassification)-[:P2]-(pcvType:E55 {value: "Typologie"})',
-            'where' => NodeService::getTenantWhereStatement(['object', 'productionEvent', 'productionClassification', 'typologyClassification']),
-        ];
+            $optionalStatements[] = $availableOptionalStatement;
 
-        $withStatement[] = 'typologyClassification';
+            if (!empty($availableOptionalStatement['with'])) {
+                $withStatement = array_merge($withStatement, $availableOptionalStatement['with']);
+            }
+        }
 
         return compact(
             'startStatement',
@@ -838,6 +882,13 @@ class FindRepository extends BaseRepository
                             continue;
                         }
 
+                        // We have an issue where if the value is 0X (i.e. 02) the value is returned as 2
+                        // We need to have the proper typology code, so we handle that issue here, instead of fiddling
+                        // with the underlying library
+                        if (strlen($classificationValue) == 1) {
+                            $classificationValue = '0' . $classificationValue;
+                        }
+
                         if (preg_match('#^\d{2}(-\d{2})*$#', $classificationValue)) {
                             $tmp['panId'] = $classificationValue;
                         }
@@ -848,14 +899,18 @@ class FindRepository extends BaseRepository
             $data[] = $tmp;
         }
 
-        // Append PAN reference type information if we can
-        return collect($data)
-            ->map(function ($result) {
-                $excavationInfo = $this->fetchExcavationInformation($result);
-                $panTypologyInformation = $this->fetchPanTypologyInformation($result);
+        $panIds = collect(array_pluck($data, 'panId') ?? [])
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
 
-                $result['_excavationInfo'] = $excavationInfo;
-                $result['_panTypologyInfo'] = $panTypologyInformation;
+        $panTypologyInformation = app(PanTypologyRepository::class)->getPanTypologyInformationForIds($panIds);
+
+        // Append PAN reference type information if applicable
+        return collect($data)
+            ->map(function ($result) use ($panTypologyInformation) {
+                $result['_panTypologyInfo'] = @$panTypologyInformation[$result['panId']] ?? [];
 
                 return $result;
             })
@@ -990,7 +1045,7 @@ class FindRepository extends BaseRepository
             'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
             'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
             'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])',
-            'findSpotLocation' => 'collect(distinct [p in (find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])'
+            'findSpotLocation' => 'collect(distinct [p in (find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
         ];
 
         $excludedFacets = explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [];

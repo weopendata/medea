@@ -32,6 +32,25 @@ export function findTitle (find) {
   if (!find) {
     return 'Probleem met vondst'
   }
+
+  if (find._panTypologyInfo && find._panTypologyInfo.label) {
+    let title = find._panTypologyInfo.label + '(' + find._panTypologyInfo.mainCategory + ')'
+
+    if (find.material) {
+      title += ', ' + find.material
+    }
+
+    if (find.excavationTitle) {
+      title += ', ' + find.excavationTitle
+    }
+
+    if (find.objectNr) {
+      title += ', vondstnummer: ' + find.objectNr
+    }
+
+    return title
+  }
+
   const title = (find.object ? [
     find.object.objectCategory || 'ongeïdentificeerd',
     find.object.period,

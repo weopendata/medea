@@ -124,7 +124,16 @@ class FindController extends Controller
             'showmap' => $request->input('showmap', null),
             'startYear' => $request->input('startYear'),
             'endYear' => $request->input('endYear'),
+            'panid' => $request->input('panid'),
         ];
+
+        if (!empty($filterState['panid'])) {
+            $panTypology = app(PanTypologyRepository::class)->findByCode($filterState['panid']);
+
+            if ($panTypology) {
+                $filterState['panidLabel'] = $panTypology['label'];
+            }
+        }
 
         $filterFacets = [
             'category',

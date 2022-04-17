@@ -21,22 +21,6 @@ export default {
       }
 
       return this.typologyInformation.label + ', ' + this.excavation.excavationTitle
-
-      // Build a title based on the typology
-      /*var material = (this.find.object && this.find.object.objectMaterial) ? this.find.object.objectMaterial : this.find.material
-      var initialPeriod = 'onbekend';
-      var finalPeriod = 'onbekend'
-
-      if (this.typologyInformation.initialPeriod && this.typologyInformation.initialPeriod.label) {
-        initialPeriod = this.typologyInformation.initialPeriod.label
-      }
-
-      if (this.typologyInformation.finalPeriod && this.typologyInformation.finalPeriod.label) {
-        finalPeriod = this.typologyInformation.finalPeriod.label
-      }
-      var timeFrame = initialPeriod + ' - ' + finalPeriod
-
-      return this.typologyInformation.code + ' (' + this.typologyInformation.label + '), ' + timeFrame + ', ' + material*/
     },
     periodOverruled () {
       if (!this.find.object || !this.find.object.productionEvent) {

@@ -45,6 +45,70 @@ class PanTypologyRepository
     }
 
     /**
+     * @param  array $panIds
+     * @return array
+     */
+    public function getPanTypologyInformationForIds(array $panIds)
+    {
+        if (empty($panIds)) {
+            return [];
+        }
+
+        $parentIds = [];
+
+        $panTypologyInformation = $this
+            ->typology
+            ->whereIn('code', $panIds)
+            ->get()
+            ->mapWithKeys(function ($result) use (&$parentIds) {
+                if (!empty($result['parent_id'])) {
+                    $parentIds[] = $result['parent_id'];
+                }
+
+                return [
+                    $result['code'] => [
+                        'uri' => $result['uri'],
+                        'label' => $result['label'],
+                        'initialPeriod' => array_get($result, 'meta.initialperiod'),
+                        'finalPeriod' => array_get($result, 'meta.finalperiod'),
+                        'code' => $result['code'],
+                        'imageUrl' => array_get($result, 'meta.imageUrl'),
+                        'mainCategory' => $result['label'],
+                        'parent_id' => $result['parent_id']
+                    ],
+                ];
+            });
+
+        $parentLabels = [];
+
+        if (!empty($parentIds)) {
+            $parentLabels = $this
+                ->typology
+                ->whereIn('id', $parentIds)
+                ->get()
+                ->mapWithKeys(function ($typology) {
+                    return [
+                      $typology['id'] => $typology['label']
+                    ];
+                })
+                ->toArray();
+        }
+
+        return $panTypologyInformation
+            ->map(function ($typology) use ($parentLabels) {
+                if (!empty($typology['parent_id']) && !empty($parentLabels[$typology['parent_id']])) {
+                    $typology['mainCategory'] = $parentLabels[$typology['parent_id']];
+                }
+
+                unset($typology['parent_id']);
+
+                return $typology;
+            })
+            ->toArray();
+
+    }
+
+    /**
      * Typologies are uniquely identified by their code:
      * Examples: 01, 01-02, 02-03-01-04
      *

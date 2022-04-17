@@ -256,6 +256,7 @@ export default {
         photographCaption: null,
         startYear: null,
         endYear: null,
+        panid: null,
         findSpotLocation: null
       };
 
@@ -277,9 +278,13 @@ export default {
         delete model.type
       }
 
-      var query = Object.keys(model).map(function (key, index) {
-        return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
-      }).filter(Boolean).join('&')
+      var query = Object
+          .keys(model)
+          .map(function (key, index) {
+            return model[key] && model[key] !== '*' ? key + '=' + encodeURIComponent(model[key]) : null
+          })
+          .filter(Boolean)
+          .join('&')
 
       query = query ? '/finds?' + query : '/finds?'
 

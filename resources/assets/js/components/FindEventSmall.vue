@@ -11,7 +11,7 @@
       </div>
       <br/>
       <div style="font-size: 12px;">
-        {{ find._excavationInfo.excavationTitle }}
+        {{ find.excavationTitle }}
       </div>
     </div>
   </div>
@@ -32,11 +32,7 @@
         return '/finds/' + this.find.identifier
       },
       city () {
-        return this.find._excavationInfo
-          && this.find._excavationInfo.searchArea
-          && this.find._excavationInfo.searchArea.location
-          && this.find._excavationInfo.searchArea.location.address
-          && this.find._excavationInfo.searchArea.location.address.locationAddressLocality
+        return this.find.excavationAddressLocality
       }
     },
     methods: {

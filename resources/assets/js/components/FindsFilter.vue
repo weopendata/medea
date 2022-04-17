@@ -9,7 +9,7 @@
       </form>
     </div>
 
-    <div class="ui">
+    <div class="ui" style="margin-bottom: 1rem;">
       <div class="field">
         <button class="ui icon button" @click="resetFilters()">
           Reset filters
@@ -18,7 +18,17 @@
       </div>
     </div>
 
-    <br/>
+    <div class="facets" style="padding: 0.5rem;" v-if="panIdFilter">
+      <div class="pan-id-filter-line">
+        Alle vondsten zijn momenteel gefilterd op typologie "{{ panIdFilterLabel }}"
+      </div>
+      <div class="pan-id-filter-line">
+        <a :href="'/typology-browser#' + panIdFilter">Bekijk de typologie {{ panIdFilterLabel }}</a>
+      </div>
+      <div class="pan-id-filter-line">
+        <a href="" @click.prevent="removePanIdFilter()">Verwijder de typologie filter</a>
+      </div>
+    </div>
 
     <div class="facets">
       <div v-if="user.email && !isApplicationPublic" class="facet">
@@ -32,7 +42,7 @@
            v-text="fav.name"></a>
       </div>
 
-      <div class="facet" v-if="canFilterOnTypologyDates">
+      <div class="facet" v-if="canFilterOnPanTypologyDates">
         <h3 class="facet-title">Datering</h3>
         <div class="facet-date-container">
           <div style="margin-right: 0.5rem; margin-left: 1rem;">van - tot:</div>
@@ -109,7 +119,17 @@ export default {
     }
   },
   computed: {
-    canFilterOnTypologyDates () {
+    panIdFilter () {
+      return this.model.panid
+    },
+    panIdFilterLabel () {
+      if (this.model.panidLabel) {
+        return this.model.panidLabel
+      }
+
+      return this.model.panid
+    },
+    canFilterOnPanTypologyDates () {
       if (!this.excludedFacets) {
         return true
       }
@@ -210,6 +230,11 @@ export default {
     }
   },
   methods: {
+    removePanIdFilter () {
+      this.model['panid'] = null
+
+      this.$emit('filtersChanged')
+    },
     getFilterFacetOptions(facetName, facets) {
       var options = facets[facetName] || []
 
@@ -312,5 +337,9 @@ input[type='number'] {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+}
+
+.pan-id-filter-line {
+  margin-bottom: 0.5rem;
 }
 </style>
