@@ -115,6 +115,7 @@ export default {
         photographCaption: null,
         collection: true,
         findSpotLocation: null,
+        excavationLocation: null
       }, showFacets)
     }
   },
@@ -165,6 +166,11 @@ export default {
           label: 'Locatie',
           prop: 'findSpotLocation',
           options: this.getFilterFacetOptions('findSpotLocation', facets)
+        },
+        {
+          label: 'Locatie',
+          prop: 'excavationLocation',
+          options: this.getFilterFacetOptions('excavationLocation', facets)
         },
         {
           label: 'Oppervlaktebehandeling',

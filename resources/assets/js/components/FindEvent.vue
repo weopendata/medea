@@ -7,7 +7,8 @@
     <div class="card-content">
       <div class="card-textual">
         <a :href="uri" class="card-title">{{findTitle}}</a>
-        <span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{findLocality}}</a></span>
+        <span v-if="find.excavationAddressLocality"><span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van {{findLocality}}</span></span>
+        <span v-else>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{findLocality}}</a></span>
         <div>
           Status: {{ find.validation }}
           <span v-if="classificationCount&&find.validation == 'Gepubliceerd'">
@@ -55,7 +56,7 @@ export default {
   },
   computed: {
     findLocality () {
-      return find.locality || find.excavationAddressLocality
+      return this.find.locality || this.find.excavationAddressLocality
     },
     editable () {
       return ['Aan te passen', 'Voorlopige versie'].indexOf(this.find.validation) !== -1
@@ -99,7 +100,7 @@ export default {
     },
     mapFocus (accuracy) {
       if (!this.find.lat) {
-        return alert('LatLng is missing, this will never happen')
+        return
       }
       accuracy = parseInt(accuracy == 'city' ? 7000 : this.find.accuracy || 1) * 2
 

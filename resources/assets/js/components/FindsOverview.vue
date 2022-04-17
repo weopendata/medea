@@ -257,7 +257,8 @@ export default {
         startYear: null,
         endYear: null,
         panid: null,
-        findSpotLocation: null
+        findSpotLocation: null,
+        excavationLocation: null
       };
 
       this.fetch()

@@ -183,7 +183,7 @@ class FindRepository extends BaseRepository
      */
     private function prepareFilteredFindsFacetCountQuery(array $filters, string $validationStatus)
     {
-        extract($this->getQueryStatements($filters, '', '', $validationStatus));
+        extract($this->getQueryStatements($filters, '', '', $validationStatus, ['person', 'typology', 'excavationTitle']));
 
         // Facet counts are prepared in the "with" statement part of the query
         $withProperties = ['count(photographCaption) as photographCaption'];
@@ -210,6 +210,10 @@ class FindRepository extends BaseRepository
         // Add the count of photograph captions, we just need to know if there are any or not, and counting is more
         // efficient than retrieving the distinct values, which is the approach we use via the "facet statements"
         $query .= "OPTIONAL MATCH (object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62) where " . NodeService::getTenantWhereStatement(['object']);
+
+        foreach ($optionalStatements as $optionalStatement) {
+            $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
+        }
 
         $returnProperties = array_merge(array_keys($facetCountStatements), ['photographCaption']);
 
@@ -306,7 +310,7 @@ class FindRepository extends BaseRepository
      */
     public function getHeatMap($filters, $validationStatus)
     {
-        extract($this->getQueryStatements($filters, '', '', $validationStatus, ['excavationTitle', 'locationAddressLocality', 'typologie']));
+        extract($this->getQueryStatements($filters, '', '', $validationStatus, ['excavationTitle', 'excavationLocation', 'typologie']));
 
         $withStatement[] = 'find';
         $withStatement = collect($withStatement)
@@ -495,8 +499,8 @@ class FindRepository extends BaseRepository
             "head(location).accuracy as accuracy",
             "head(location).geoGrid as grid",
             "excavationTitle.value as excavationTitle",
-            "locationAddressLocality.value as excavationAddressLocality",
-            "head(objectNr) as objectNr"
+            "excavationLocation.value as excavationAddressLocality",
+            "head(objectNr) as objectNr",
         ];
 
         $query .= " WITH $withStatement
@@ -505,6 +509,8 @@ class FindRepository extends BaseRepository
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
         }
+
+        //jj($query);
 
         return compact('query', 'variables');
     }
@@ -613,10 +619,10 @@ class FindRepository extends BaseRepository
                 'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
                 'with' => ['excavationTitle'],
             ],
-            'locationAddressLocality' => [
-                'match' => '(excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E47)-[:P87]->(locationAddressLocality:E45{name:"locationAddressLocality"})',
+            'excavationLocation' => [
+                'match' => '(excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(excavationLocation:E45{name:"locationAddressLocality"})',
                 'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
-                'with' => ['locationAddressLocality'],
+                'with' => ['excavationLocation'],
             ],
         ];
 
@@ -717,6 +723,11 @@ class FindRepository extends BaseRepository
                 'match' => '(find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(locationAddressLocality:E45{name:"locationAddressLocality"})',
                 'where' => 'locationAddressLocality.value = {findSpotLocation}',
                 'whereVariableName' => 'findSpotLocation',
+            ],
+            'excavationLocation' => [
+                'match' => '(object:E22)-[:P157]-(:S22)-[:P53]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(excavationLocation:E45{name:"locationAddressLocality"})',
+                'where' => 'excavationLocation.value = {excavationLocation}',
+                'whereVariableName' => 'excavationLocation',
             ],
             'volledigheid' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "volledigheid"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
@@ -1046,6 +1057,7 @@ class FindRepository extends BaseRepository
             'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
             'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])',
             'findSpotLocation' => 'collect(distinct [p in (find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
+            'excavationLocation' => 'collect(distinct [p in (excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
         ];
 
         $excludedFacets = explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [];

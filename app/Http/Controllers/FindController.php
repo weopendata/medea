@@ -146,6 +146,7 @@ class FindController extends Controller
             'opschrift',
             'photographCaption',
             'findSpotLocation',
+            'excavationLocation'
         ];
 
         foreach ($filterFacets as $filterFacet) {
