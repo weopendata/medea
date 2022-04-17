@@ -103,7 +103,8 @@ export default {
         opschrift: null,
         collections: null,
         photographCaption: null,
-        collection: true
+        collection: true,
+        findSpotLocation: null,
       }, showFacets)
     }
   },
@@ -139,6 +140,11 @@ export default {
           label: 'Materiaal',
           prop: 'objectMaterial',
           options: this.getFilterFacetOptions('objectMaterial', facets)
+        },
+        {
+          label: 'Locatie',
+          prop: 'findSpotLocation',
+          options: this.getFilterFacetOptions('findSpotLocation', facets)
         },
         {
           label: 'Oppervlaktebehandeling',

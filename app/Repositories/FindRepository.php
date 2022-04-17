@@ -275,6 +275,7 @@ class FindRepository extends BaseRepository
 
             // Make sure the values are unique
             $facetCountResults[$facetName] = collect($facetCountResults[$facetName])
+                ->sort()
                 ->unique()
                 ->values()
                 ->toArray();
@@ -668,6 +669,11 @@ class FindRepository extends BaseRepository
                 'match' => '(object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62)',
                 'whereVariableName' => '',
             ],
+            'findSpotLocation' => [
+                'match' => '(find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(locationAddressLocality:E45{name:"locationAddressLocality"})',
+                'where' => 'locationAddressLocality.value = {findSpotLocation}',
+                'whereVariableName' => 'findSpotLocation',
+            ],
             'volledigheid' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "volledigheid"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
                 'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
@@ -977,14 +983,27 @@ class FindRepository extends BaseRepository
      */
     private function getFilteredFindsDistinctFacetValueStatements()
     {
-        return [
+        $facets = [
             'category' => 'collect(distinct [p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p)).value])',
             'period' => 'collect(distinct [p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p)).value])',
             'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
             'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
             'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
             'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])',
+            'findSpotLocation' => 'collect(distinct [p in (find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])'
         ];
+
+        $excludedFacets = explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [];
+
+        if (empty($excludedFacets)) {
+            return $facets;
+        }
+
+        return collect($facets)
+            ->filter(function ($facetValue, $facetKey) use ($excludedFacets) {
+                return !in_array($facetKey, $excludedFacets);
+            })
+            ->toArray();
     }
 
     /**

@@ -237,6 +237,7 @@ export default {
       } else if (find.validation != 'Gepubliceerd' && !this.user.administrator) {
         console.warn('List: Security error, this user is not allowed to see this find')
       }
+
       return true
     },
     resetFilters () {
@@ -254,7 +255,8 @@ export default {
         opschrift: null,
         photographCaption: null,
         startYear: null,
-        endYear: null
+        endYear: null,
+        findSpotLocation: null
       };
 
       this.fetch()

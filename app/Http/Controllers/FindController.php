@@ -121,7 +121,9 @@ class FindController extends Controller
             'collection' => (integer)$request->input('collection'),
             'status' => $validatedStatus,
             'embargo' => (boolean)$request->input('embargo', false),
-            'showmap' => $request->input('showmap', null)
+            'showmap' => $request->input('showmap', null),
+            'startYear' => $request->input('startYear'),
+            'endYear' => $request->input('endYear'),
         ];
 
         $filterFacets = [
@@ -134,18 +136,11 @@ class FindController extends Controller
             'merkteken',
             'opschrift',
             'photographCaption',
-            'datering',
+            'findSpotLocation',
         ];
 
         foreach ($filterFacets as $filterFacet) {
             if (in_array($filterFacet, $excludedFacets)) {
-                continue;
-            }
-
-            if ($filterFacet == 'datering') {
-                $filterState['startYear'] = $request->input('startYear');
-                $filterState['endYear'] = $request->input('endYear');
-
                 continue;
             }
 
