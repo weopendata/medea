@@ -4,7 +4,7 @@
       <div class="find-results__loading" v-if="fetching">
         <div style="margin: auto; font-size: 1.5rem;">Bezig met zoeken...</div>
       </div>
-      <div v-else-if="finds.length">
+      <div v-else-if="finds.length" class="find-results__container">
         <template v-if="cardStyle == 'tile'">
           <find-event-small v-for="(find, index) in finds" :key="'find_result_' + index" :find="find"/>
         </template>
