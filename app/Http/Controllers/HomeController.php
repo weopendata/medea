@@ -29,7 +29,7 @@ class HomeController extends Controller
         $this->finds = new FindRepository();
         $stats = $this->finds->getStatistics();
 
-        $homePageTemplateName = env('HOME_PAGE__TEMPLATE_NAME');
+        $homePageTemplateName = env('HOME_PAGE_TEMPLATE_NAME');
         $homePageTemplateName = empty($homePageTemplateName) ? 'home' : 'home-' . $homePageTemplateName;
 
         if (file_exists(base_path('resources/views/static/' . $homePageTemplateName . '.blade.php'))) {
