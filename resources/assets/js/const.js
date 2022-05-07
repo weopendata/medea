@@ -28,7 +28,7 @@ export function fromQuery (query) {
 
 // FindEvent helpers
 export function doesFindBelongToExcavation (find) {
-  return find.excavationtitle
+  return find.excavationTitle
 }
 
 export function doesFindHaveAPanTypology (find) {
@@ -54,7 +54,7 @@ export function findExcavationInfoString (find) {
     return
   }
 
-  let title = ', ' + find.excavationTitle
+  let title = find.excavationTitle
 
   if (find.objectNr) {
     title += ', vondstnummer: ' + find.objectNr

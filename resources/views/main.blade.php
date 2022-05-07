@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.min.css" />
     <script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - MEDEA</title>
+    <title>@yield('title')</title>
     @if (!empty($meta))
       @foreach ($meta as $property => $content)
         <meta property="{{$property}}" content="{{$content}}">

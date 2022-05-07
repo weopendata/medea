@@ -4,7 +4,7 @@
       <div class="ui secondary green pointing menu">
         <a href="/" class="item" :class="path == '/' ? 'active' : ''">Home</a>
         <a href="/finds" class="item" :class="path == 'finds' ? 'active' : ''">Vondsten</a>
-        <a class="item" :class="path == '/collections' ? 'active' : ''" href="/collections" v-if="true || !isApplicationPublic">Collecties</a>
+        <a class="item" :class="path == '/collections' ? 'active' : ''" href="/collections" v-if="!isApplicationPublic">Collecties</a>
         <template v-if="! this.isGuest">
           <a href="/persons" class="item" :class="path == '/persons' ? 'active' : ''">Leden</a>
           <a href="/finds/create" class="item" :class="path == '/finds/create' ? 'active' : ''" data-step="2" data-intro="Klik hier om een nieuwe vondst te registreren." id="findsCreate">Nieuwe vondst</a>

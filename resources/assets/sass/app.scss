@@ -32,6 +32,11 @@
 @import "./introjs.min";
 
 /* FindsList */
+
+body {
+  background-color: $backgroundColor;
+}
+
 .find-results__container {
   display: flex;
   flex-wrap: wrap;

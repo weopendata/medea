@@ -22,12 +22,19 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
         $this->finds = new FindRepository();
         $stats = $this->finds->getStatistics();
+
+        $homePageTemplateName = env('HOME_PAGE__TEMPLATE_NAME');
+        $homePageTemplateName = empty($homePageTemplateName) ? 'home' : 'home-' . $homePageTemplateName;
+
+        if (file_exists(base_path('resources/views/static/' . $homePageTemplateName . '.blade.php'))) {
+            return view('static.' . $homePageTemplateName, ['stats' => $stats, 'backgroundColor' => 'blue']);
+        }
 
         return view('static.home', ['stats' => $stats]);
     }
