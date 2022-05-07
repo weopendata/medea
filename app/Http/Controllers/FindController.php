@@ -46,53 +46,6 @@ class FindController extends Controller
      */
     public function index(Request $request)
     {
-        /*$limit = $request->input('limit', 20);
-        $offset = $request->input('offset', 0);
-
-        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
-        $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
-
-        $finds = $result['data'];
-        $count = $result['count'];
-
-        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
-
-        $linkHeader = [];
-
-        $query_string = $this->buildQueryString($request);
-
-        foreach ($pages as $rel => $page_info) {
-            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . '>;rel=' . $rel;
-        }
-
-        $linkHeader = implode(', ', $linkHeader);
-
-        // If a user is a researcher or personal finds have been set, return the exact
-        // find location, if not, round up to 2 digits, which lowers the accuracy to 1km
-        if (empty($filters['myfinds'])) {
-            $adjusted_finds = [];
-
-            $user = $request->user();
-
-            // Make sure only authorized users have access to specific location information
-            foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
-                    && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['grid']) || !empty($find['lat'])) {
-                        [$lat, $lon] = explode(',', $find['grid']);
-
-                        $find['lat'] = $lat;
-                        $find['lng'] = $lon;
-
-                        $find['accuracy'] = 7000;
-                    }
-                }
-
-                $adjusted_finds[] = $find;
-            }
-
-            $finds = $adjusted_finds;
-        }*/
         extract($this->processQueryParts($request));
 
         // Get the fields a user can choose from in order to filter through the finds
