@@ -46,10 +46,8 @@ class FindController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit', 20);
+        /*$limit = $request->input('limit', 20);
         $offset = $request->input('offset', 0);
-
-        extract($this->processQueryParts($request));
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
         $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
@@ -94,7 +92,8 @@ class FindController extends Controller
             }
 
             $finds = $adjusted_finds;
-        }
+        }*/
+        extract($this->processQueryParts($request));
 
         // Get the fields a user can choose from in order to filter through the finds
         // Add the collections as a full list, it's currently still feasible
@@ -159,8 +158,8 @@ class FindController extends Controller
 
         return response()
             ->view('pages.finds-list', [
-                'finds' => $finds,
-                'facets' => $facetCounts,
+                'finds' => [],
+                'facets' => [],
                 'filterState' => $filterState,
                 'excludedFacets' => $excludedFacets,
                 'viewState' => [
@@ -169,8 +168,7 @@ class FindController extends Controller
                     'cardStyle' => 'list',
                 ],
                 'fields' => $fields,
-                'link' => $linkHeader,
-            ])->header('Link', $linkHeader);
+            ]);
     }
 
     /**

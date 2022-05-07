@@ -6,18 +6,24 @@
     </div>
     <div class="card-content">
       <div class="card-textual">
-        <a :href="uri" class="card-title">{{findTitle}}</a>
-        <span v-if="find.excavationAddressLocality"><span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van {{findLocality}}</span></span>
-        <span v-else>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{findLocality}}</a></span>
-        <div>
-          Status: {{ find.validation }}
-          <span v-if="classificationCount&&find.validation == 'Gepubliceerd'">
+        <template v-if="!doesFindBelongToExcavation(find) || !doesFindHaveAPanTypology(find)">
+          <a :href="uri" class="card-title">{{findTitle}}</a>
+          <span v-if="find.excavationAddressLocality"><span>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van {{findLocality}}</span></span>
+          <span v-else>Gevonden <span v-if="find.findDate">op {{find.findDate|fromDate}}</span> in de buurt van <a href="#mapview" @click="mapFocus('city')">{{findLocality}}</a></span>
+          <div>
+            Status: {{ find.validation }}
+            <span v-if="classificationCount&&find.validation == 'Gepubliceerd'">
             - {{classificationCount}} classificatie{{classificationCount > 1 ? 's' : ''}}
           </span>
-        </div>
-        <div v-if="find.collectionTitle">
-          Collectie: {{ find.collectionTitle }}
-        </div>
+          </div>
+          <div v-if="find.collectionTitle">
+            Collectie: {{ find.collectionTitle }}
+          </div>
+        </template>
+        <template v-else>
+          <a :href="uri" class="card-title">{{ findPanTypologyTitle(find) }}</a>
+          <span>{{ findExcavationInfoString(find) }}</span>
+        </template>
       </div>
       <div class="card-bar">
         <a class="btn" :href="uri" v-if="user.validator&&find.validation == 'Klaar voor validatie'">
@@ -47,7 +53,7 @@
 
 <script>
 import ObjectFeatures from './ObjectFeatures';
-import { fromDate, findTitle } from '../const.js'
+import { fromDate, findTitle, doesFindBelongToExcavation, doesFindHaveAPanTypology, findPanTypologyTitle, findExcavationInfoString } from '../const.js'
 
 export default {
   props: ['user', 'find'],
@@ -89,10 +95,15 @@ export default {
     }
   },
   methods: {
+    doesFindBelongToExcavation,
+    doesFindHaveAPanTypology,
+    findPanTypologyTitle,
+    findExcavationInfoString,
     rm () {
       if (!confirm('Ben je zeker dat vondst #' + this.find.identifier + ' verwijderd mag worden?')) {
         return
       }
+
       this.$http.delete('/finds/' + this.find.identifier).then(function (res) {
         this.$root.fetch()
         this.find.validation = 'Wordt verwijderd'

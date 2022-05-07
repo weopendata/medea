@@ -30,6 +30,11 @@
       </div>
     </div>
 
+    <div style="display: flex; justify-content: space-between;">
+      <h3>Filter opties</h3>
+      <span style="margin-top: 0.2rem;" v-if="fetching">(bezig met bijwerken...)</span>
+    </div>
+
     <div class="facets">
       <div v-if="user.email && !isApplicationPublic" class="facet">
         <h3 class="facet-title"><i class="ui star icon"></i> Favorieten</h3>
@@ -60,6 +65,7 @@
           :label="facet.label"
           :prop="facet.prop"
           :options="facet.options"
+          :disabled="fetching"
       />
     </div>
   </div>
@@ -90,7 +96,7 @@ var modificationFields = [
 ]
 
 export default {
-  props: ['name', 'model', 'saved', 'facets', 'excludedFacets'],
+  props: ['name', 'fetching', 'model', 'saved', 'facets', 'excludedFacets'],
   data () {
     const showFacets = ls('showFacets') || {}
 

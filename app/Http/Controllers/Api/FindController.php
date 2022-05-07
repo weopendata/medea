@@ -39,6 +39,14 @@ class FindController extends Controller
             return $this->makeHeatMapResponse($request);
         }
 
+        if ($type == 'count') {
+            return $this->makeFindsCountResponse($request);
+        }
+
+        if ($type == 'facets') {
+            return $this->makeFindsFacetCountResponse($request);
+        }
+
         if ($type == 'markers') {
             return $this->makeMarkerResponse($request);
         }
@@ -88,10 +96,8 @@ class FindController extends Controller
         extract($this->processQueryParts($request));
 
         $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
-        $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
 
         $finds = $result['data'];
-        $count = $result['count'];
 
         // If a user is a researcher or personal finds have been set, return the exact
         // find location, if not, round up to 2 digits, which lowers the accuracy to about 10 km
@@ -120,27 +126,50 @@ class FindController extends Controller
             $finds = $adjusted_finds;
         }
 
-        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
-
-        $linkHeader = [];
-
-        $query_string = $this->buildQueryString($request);
-
-        foreach ($pages as $rel => $page_info) {
-            $linkHeader[] = '<' . $request->url() . '?offset=' . $page_info[0] . '&limit=' . $page_info[1] . '&' . $query_string . '>;rel=' . $rel;
-        }
-
-        $linkHeader = implode(', ', $linkHeader);
-
         $response = [
             'finds' => $finds,
-            'facets' => $facetCounts
         ];
 
-        return response()
-            ->json($response)
-            ->header('Link', $linkHeader)
-            ->header('X-Total', $count);
+        return response()->json($response);
+    }
+
+    /**
+     * @param  Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function makeFindsFacetCountResponse(Request $request)
+    {
+        extract($this->processQueryParts($request));
+
+        $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
+
+        return response()->json(['facets' => $facetCounts]);
+    }
+
+    /**
+     * @param  Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function makeFindsCountResponse(Request $request)
+    {
+        extract($this->processQueryParts($request));
+
+        $count = app(FindRepository::class)->getFindsCountForFilter($filters, $validatedStatus);
+
+        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
+
+        $countResponse = [
+            'total_count' => $count,
+        ];
+
+        foreach ($pages as $rel => $page_info) {
+            $countResponse[$rel] = [
+                'offset' => $page_info[0],
+                'limit' => $page_info[1]
+            ];
+        }
+
+        return response()->json($countResponse);
     }
 
     /**

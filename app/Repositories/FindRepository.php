@@ -171,9 +171,20 @@ class FindRepository extends BaseRepository
 
         $data = $this->parseFilteredFindsListResults($cypherQuery->getResultSet());
 
-        $count = $this->getCount($query, $variables);
+        return ['data' => $data];
+    }
 
-        return ['data' => $data, 'count' => $count];
+    /**
+     * @param         $filters
+     * @param  string $validationStatus
+     * @return int
+     * @throws \Exception
+     */
+    public function getFindsCountForFilter($filters, $validationStatus = '*'): int
+    {
+        extract($this->prepareFilteredFindsListQuery($filters, $validationStatus));
+
+        return $this->getCount($query, $variables);
     }
 
     /**

@@ -7,6 +7,7 @@
             :model.sync="filterState"
             :saved="saved"
             :facets="facets"
+            :fetching="fetchingFacets"
             :excludedFacets="excludedFacets"
             @filtersChanged="filtersChanged"
         />
@@ -106,8 +107,7 @@ import HelpText from '../mixins/HelpText'
 import { inert, toPublicBounds, findTitle } from '../const.js'
 import ls from 'local-storage'
 
-import { getPaging } from '../helpers/helpers';
-import { fetchFinds, fetchFindsMap } from '../api/finds.js'
+import { fetchFinds, fetchFindsFacetInfo, fetchFindsMap, fetchFindsPagingInfo } from '../api/finds.js'
 
 const HEATMAP_RADIUS = 0.05;
 
@@ -131,11 +131,12 @@ let listQuery, heatmapQuery
 export default {
   data () {
     return {
-      paging: getPaging(window.link),
+      paging: {},
       finds: window.initialFinds || [],
       facets: window.initialFacets || {},
       excludedFacets: window.excludedFacets || [],
       fetching: false,
+      fetchingFacets: false,
       filterState: window.filterState || ls('filterState') || {},
       viewState: window.viewState || {},
       filterName: '',
@@ -295,10 +296,10 @@ export default {
 
         fetchFinds(query)
             .then(res => {
-              this.paging = getPaging(res.headers)
               this.finds = res.data.finds
-              this.facets = res.data.facets
               this.fetching = false
+              this.fetchFindsFacetInfo(query)
+              this.fetchFindsPagingInfo(query)
             })
             .catch(error => {
               if (axios.isCancel(error)) {
@@ -309,7 +310,7 @@ export default {
 
               this.paging = {}
               this.finds = []
-              this.facets = []
+              this.facets = {}
               this.fetching = false
             })
 
@@ -341,6 +342,28 @@ export default {
 
       // Store the state in local storage
       ls('filterState', model)
+    },
+    fetchFindsPagingInfo (query) {
+      fetchFindsPagingInfo(query)
+          .then(response => {
+            this.paging = response.data
+          })
+          .catch(error => {
+            this.paging = {}
+          })
+    },
+    fetchFindsFacetInfo (query) {
+      this.fetchingFacets = true
+
+      fetchFindsFacetInfo(query)
+        .then(response => {
+          this.facets = response.data.facets
+          this.fetchingFacets = false
+        })
+      .catch(error => {
+        this.facets = {}
+        this.fetchingFacets = false
+      })
     },
     mapToggle (v) {
       if (this.filterState.type === v) {
@@ -405,7 +428,7 @@ export default {
       //this.persistSearches()
     }
   },
-  ready () {
+  mounted () {
     // If the order by is empty when the app is ready,
     // make sure the default sorting is set to the id, in a descending way
     if (!this.filterState.order) {

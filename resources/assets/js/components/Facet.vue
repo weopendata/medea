@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  props: ['prop', 'options', 'label'],
+  props: ['prop', 'options', 'label', 'disabled'],
   computed: {
     shown () {
       return this.$parent.show[this.prop]

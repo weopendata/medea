@@ -13,7 +13,7 @@
       window.filterState = {!! json_encode($filterState) !!};
       window.viewState = {!! json_encode($viewState) !!};
       window.fields = {!! json_encode($fields) !!};
-      window.link = {!! json_encode($link) !!};
+      //window.link = {!! json_encode(@$link) !!};
     </script>
 @endsection
 
