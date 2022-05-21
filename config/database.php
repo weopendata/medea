@@ -92,8 +92,16 @@ return [
             'username' => env('NEO4J_USER'),
             'password' => env('NEO4J_PASSWORD'),
             'database' => ''
-        ]
+        ],
 
+        'elasticsearch' => [
+            'driver' => 'elastic',
+            'host' => env('ELASTIC_HOST', 'localhost'),
+            'port' => env('ELASTIC_PORT', 7474),
+            'username' => env('ELASTIC_USER'),
+            'password' => env('ELASTIC_PASSWORD'),
+            'database' => ''
+        ]
     ],
 
     /*

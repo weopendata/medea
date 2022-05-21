@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Events\FindEventStored;
 use App\Models\FindEvent;
 use App\Models\ProductionClassification;
 use App\NodeConstants;
@@ -38,7 +39,12 @@ class FindRepository extends BaseRepository
 
         $find->save();
 
-        return $find->getId();
+        $findId = $find->getId();
+
+        // TODO: handle it by indexing it via the indexing service + add a new clause that filters on "id" so we can reuse the getAllWithFilters
+        event(new FindEventStored($findId));
+
+        return $findId;
     }
 
     /**
@@ -96,6 +102,12 @@ class FindRepository extends BaseRepository
         return ['data' => $finds, 'count' => count($relationships)];
     }
 
+    /**
+     * @param  int  $findId
+     * @param  null $user
+     * @return array
+     * @throws \Everyman\Neo4j\Exception
+     */
     public function expandValues($findId, $user = null)
     {
         $find = parent::expandValues($findId);
@@ -188,6 +200,7 @@ class FindRepository extends BaseRepository
     }
 
     /**
+     * @deprecated
      * @param  array  $filters
      * @param  string $validationStatus
      * @return array
@@ -463,10 +476,19 @@ class FindRepository extends BaseRepository
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P87]-(:E47{name:"lng"}) | last(nodes(p))] as longitude',
             '[p in (find:E10)-[:P7]-(:E27)-[:P53]-(:E53)-[:P89]-(:E53)-[:P87]-(:locationAddressLocality)|last(nodes(p))] as locality',
             '[p in (object:E22)-[:P45]-(:E57) | last(nodes(p))] as material',
+            '[p in (object:E22)-[:P108]-(:E12)-[:P33]-(:E29)-[:P2]-(:E55) | last(nodes(p))] as technique',
+            '[p in (object:E22)-[:P108]-(:E11)-[:P33]-(:E29)-[:P2]-(:E55) | last(nodes(p))] as modification',
+            '[p in (object:E22)-[:P157]-(:S22)-[:P53]->(:E27)-[:P53]->(:E53)-[:P87]-(:E47{name:"lat"}) | last(nodes(p))] as excavationLatitude',
+            '[p in (object:E22)-[:P157]-(:S22)-[:P53]->(:E27)-[:P53]->(:E53)-[:P87]-(:E47{name:"lng"}) | last(nodes(p))] as excavationLongitude',
+            '[p in (complete:E25)-[:P3]->(:E62) | last(nodes(p))] as complete',
+            '[p in (mark:E25)-[:P3]->(:E62) | last(nodes(p))] as mark',
+            '[p in (insignia:E25)-[:P3]->(:E62) | last(nodes(p))] as insignia',
+            '[p in (object:E22)-[:P3]->(:E62{name:"objectDescription"}) | last(nodes(p))] as description',
             '[p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p))] as period',
             '[p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p))] as category',
             '[p in (object:E22)-[:P62]-(:E38) | last(nodes(p))] as photograph',
             '[p in (object:E22)-[:P24]-(:E78) | last(nodes(p))] as collection',
+            '[p in (object:E22)-[:P62]-(:E38)-[:P3]-(:E62) | last(nodes(p))] as photographCaption',
         ];
 
         $withStatements = array_merge($withStatement, $withProperties);
@@ -502,16 +524,26 @@ class FindRepository extends BaseRepository
             "head(period).value as period",
             "head(material).value as material",
             "head(category).value as category",
+            "head(technique).value as technique",
+            "head(modification).value as modification",
+            "head(mark).value as mark",
+            "head(insignia).value as insignia",
+            "head(complete).value as complete",
             "head(collection) as collection",
             "photograph",
+            "head(photographCaption).value as photographCaption",
             "head(latitude).value as lat",
             "head(longitude).value as lng",
+            "head(excavationLatitude).value as excavationLat",
+            "head(excavationLongitude).value as excavationLng",
+            "head(description).value as objectDescription",
             "head(locality).value as locality",
             "head(location).accuracy as accuracy",
             "head(location).geoGrid as grid",
             "excavationTitle.value as excavationTitle",
             "excavationLocation.value as excavationAddressLocality",
             "head(objectNr) as objectNr",
+            "find.elasticSearchId as elasticSearchId",
         ];
 
         $query .= " WITH $withStatement
@@ -520,8 +552,6 @@ class FindRepository extends BaseRepository
         if (!empty($startStatement)) {
             $query = $startStatement . $query;
         }
-
-        //jj($query);
 
         return compact('query', 'variables');
     }
@@ -634,6 +664,18 @@ class FindRepository extends BaseRepository
                 'match' => '(excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(excavationLocation:E45{name:"locationAddressLocality"})',
                 'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
                 'with' => ['excavationLocation'],
+            ],
+            'volledigheid' => [
+                'match' => '(object:E22)-[:P56]->(complete:E25)-[:P2]->(:E55 {value: "volledigheid"})',
+                'where' => NodeService::getTenantWhereStatement(['complete']),
+            ],
+            'merkteken' => [
+                'match' => '(object:E22)-[:P56]->(mark:E25)-[:P2]->(:E55 {value: "merkteken"})',
+                'where' => NodeService::getTenantWhereStatement(['mark']),
+            ],
+            'opschrift' => [
+                'match' => '(object:E22)-[:P56]->(insignia:E25)-[:P2]->(:E55 {value: "opschrift"})',
+                'where' => NodeService::getTenantWhereStatement(['insignia']),
             ],
         ];
 
@@ -1025,13 +1067,25 @@ class FindRepository extends BaseRepository
      * @return \Everyman\Neo4j\Query\Row
      * @throws \Exception
      */
-    public function getAll()
+    public function getAll(?int $limit = 100, ?int $offset = 0)
     {
         $client = $this->getClient();
 
         $findLabel = $client->makeLabel($this->label);
 
-        return NodeService::getNodesForLabel($findLabel);
+        return NodeService::getNodesForLabel($findLabel, [], $limit, $offset);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCountOfAllFinds(): int
+    {
+        $client = $this->getClient();
+
+        $findLabel = $client->makeLabel($this->label);
+
+        return NodeService::getNodesCountForLabel($findLabel);
     }
 
     /**
@@ -1081,6 +1135,7 @@ class FindRepository extends BaseRepository
             ->filter(function ($facetValue, $facetKey) use ($excludedFacets) {
                 return !in_array($facetKey, $excludedFacets);
             })
+            ->values()
             ->toArray();
     }
 

@@ -12,6 +12,7 @@ use Everyman\Neo4j\Query\Row;
 
 /**
  * Class NodeService
+ *
  * @package App\Services
  */
 class NodeService
@@ -57,7 +58,7 @@ class NodeService
     }
 
     /**
-     * @param string | array $propertyNames
+     * @param  string | array $propertyNames
      * @return string | null
      * @throws \Exception
      */
@@ -98,12 +99,14 @@ class NodeService
     }
 
     /**
-     * @param Label $label
-     * @param array $properties
+     * @param  Label    $label
+     * @param  array    $properties
+     * @param  int|null $limit
+     * @param  int|null $offset
      * @return \Everyman\Neo4j\Query\Row
      * @throws \Exception
      */
-    public static function getNodesForLabel(Label $label, $properties = [])
+    public static function getNodesForLabel(Label $label, $properties = [], ?int $limit = 50, ?int $offset = 0)
     {
         $whereStatement = self::getTenantWhereStatement(['n']);
 
@@ -111,7 +114,19 @@ class NodeService
             $whereStatement .= " AND n.$key=\"$value\"";
         }
 
-        $query = "MATCH (n:{$label->getName()}) WHERE $whereStatement return n";
+        $query = "MATCH (n:{$label->getName()}) WHERE $whereStatement RETURN n";
+
+        if (!empty($limit) || !empty($offset)) {
+            $query .= ' order by n.id';
+        }
+
+        if (!empty($offset)) {
+            $query .= " skip $offset";
+        }
+
+        if (!empty($limit)) {
+            $query .= " limit $limit";
+        }
 
         $cypherQuery = new Query(self::getClient(), $query);
         $results = $cypherQuery->getResultSet();
@@ -128,6 +143,26 @@ class NodeService
         }
 
         return new Row(self::getClient(), [], $nodes);
+    }
+
+    /**
+     * @param  Label    $label
+     * @return int
+     */
+    public static function getNodesCountForLabel(Label $label)
+    {
+        $whereStatement = self::getTenantWhereStatement(['n']);
+
+        $query = "MATCH (n:{$label->getName()}) WHERE $whereStatement RETURN count(n) as count";
+
+        $cypherQuery = new Query(self::getClient(), $query);
+        $results = $cypherQuery->getResultSet();
+
+        if ($results->count() < 1) {
+            return 0;
+        }
+
+        return $results[0]['count'];
     }
 
     /**

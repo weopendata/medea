@@ -1,0 +1,114 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "type": "custom",
+            "tokenizer": "keyword",
+            "filter": [
+              "lowercase",
+              "my_ascii_folding"
+            ]
+          }
+        },
+        "filter": {
+          "my_ascii_folding": {
+            "type": "asciifolding",
+            "preserve_original": true
+          }
+        },
+        "normalizer": {
+          "lowerasciinormalizer": {
+            "type": "custom",
+            "filter": [
+              "lowercase",
+              "asciifolding"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "findId": {
+        "type": "keyword"
+      },
+      "title": {
+        "type": "keyword"
+      },
+      "fts_description": {
+        "type": "text"
+      },
+      "findDate": {
+        "type": "date"
+      },
+      "validation": {
+        "type": "keyword"
+      },
+      "collection": {
+        "type": "keyword"
+      },
+      "location": {
+        "type": "geo_point"
+      },
+      "accuracy": {
+        "type": "keyword"
+      },
+      "objectNr": {
+        "type": "keyword"
+      },
+      "objectCategory": {
+        "type": "keyword"
+      },
+      "objectPeriod": {
+        "type": "keyword"
+      },
+      "objectMaterial": {
+        "type": "keyword"
+      },
+      "objectTechnique": {
+        "type": "keyword"
+      },
+      "excavationTitle": {
+        "type": "keyword"
+      },
+      "excavationLocality": {
+        "type": "keyword"
+      },
+      "findSpotLocality": {
+        "type": "keyword"
+      },
+      "contextName": {
+        "type": "keyword"
+      },
+      "photograph_path": {
+        "type": "keyword"
+      },
+      "panId": {
+        "type": "keyword"
+      },
+      "panInitialPeriod": {
+        "type" : "integer",
+        "coerce": true
+      },
+      "panFinalPeriod": {
+        "type" : "integer",
+        "coerce": true
+      },
+      "complete": {
+        "type": "keyword"
+      },
+      "mark": {
+        "type": "keyword"
+      },
+      "inscription": {
+        "type": "keyword"
+      },
+      "photographCaptionPresent": {
+        "type": "keyword"
+      }
+    }
+  }
+}

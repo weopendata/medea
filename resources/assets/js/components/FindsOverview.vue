@@ -107,7 +107,7 @@ import HelpText from '../mixins/HelpText'
 import { inert, toPublicBounds, findTitle } from '../const.js'
 import ls from 'local-storage'
 
-import { fetchFinds, fetchFindsFacetInfo, fetchFindsMap, fetchFindsPagingInfo } from '../api/finds.js'
+import { fetchFinds, fetchFindsMap } from '../api/finds.js'
 
 const HEATMAP_RADIUS = 0.05;
 
@@ -132,8 +132,8 @@ export default {
   data () {
     return {
       paging: {},
-      finds: window.initialFinds || [],
-      facets: window.initialFacets || {},
+      finds: [],
+      facets: {},
       excludedFacets: window.excludedFacets || [],
       fetching: false,
       fetchingFacets: false,
@@ -295,11 +295,11 @@ export default {
         this.fetching = true
 
         fetchFinds(query)
-            .then(res => {
-              this.finds = res.data.finds
+            .then(response => {
+              this.finds = response.data.finds
+              this.paging = response.data.paging
+              this.facets = response.data.facets
               this.fetching = false
-              this.fetchFindsFacetInfo(query)
-              this.fetchFindsPagingInfo(query)
             })
             .catch(error => {
               if (axios.isCancel(error)) {
@@ -342,28 +342,6 @@ export default {
 
       // Store the state in local storage
       ls('filterState', model)
-    },
-    fetchFindsPagingInfo (query) {
-      fetchFindsPagingInfo(query)
-          .then(response => {
-            this.paging = response.data
-          })
-          .catch(error => {
-            this.paging = {}
-          })
-    },
-    fetchFindsFacetInfo (query) {
-      this.fetchingFacets = true
-
-      fetchFindsFacetInfo(query)
-        .then(response => {
-          this.facets = response.data.facets
-          this.fetchingFacets = false
-        })
-      .catch(error => {
-        this.facets = {}
-        this.fetchingFacets = false
-      })
     },
     mapToggle (v) {
       if (this.filterState.type === v) {

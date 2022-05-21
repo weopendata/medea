@@ -5,15 +5,17 @@ namespace App\Console\Commands;
 use App\Models\Collection;
 use App\Models\Context;
 use App\Models\ExcavationEvent;
-use App\Repositories\CollectionRepository;
-use App\Repositories\ContextRepository;
-use App\Repositories\ExcavationRepository;
-use App\Services\NodeService;
-use Illuminate\Console\Command;
-use App\Repositories\FindRepository;
-use App\Repositories\UserRepository;
 use App\Models\FindEvent;
 use App\Models\Person;
+use App\Repositories\CollectionRepository;
+use App\Repositories\ContextRepository;
+use App\Repositories\ElasticSearch\FindRepository as ElasticFindRepository;
+use App\Repositories\ExcavationRepository;
+use App\Repositories\FindRepository;
+use App\Repositories\UserRepository;
+use App\Services\IndexingService;
+use App\Services\NodeService;
+use Illuminate\Console\Command;
 
 class DataManagement extends Command
 {
@@ -60,8 +62,10 @@ class DataManagement extends Command
         $this->info('4. Remove all excavations.');
         $this->info('5. Remove all contexts.');
         $this->info('6. Remove all collections.');
+        $this->info('7. Index all finds');
 
-        $choice = $this->ask('Enter your choice of action: ');
+        $choice = $this->ask('Enter your choice of action');
+
         $this->executeCommand($choice);
     }
 
@@ -95,6 +99,8 @@ class DataManagement extends Command
 
                 $this->removeAll($repository, $class);
                 break;
+            case 7:
+                $this->indexFinds();
             default:
                 break;
         }
@@ -102,7 +108,7 @@ class DataManagement extends Command
 
     private function removeSingleFind()
     {
-        $id = $this->ask('Enter the ID of the find we can remove: ');
+        $id = $this->ask('Enter the ID of the find we can remove');
 
         $this->finds->delete($id);
 
@@ -177,5 +183,42 @@ class DataManagement extends Command
 
         $this->info('');
         $this->info("Removed $count nodes.");
+    }
+
+    /**
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
+    private function indexFinds()
+    {
+        $findsCount = app(FindRepository::class)->getCountOfAllFinds();
+        $bar = $this->output->createProgressBar($findsCount);
+
+        $limit = 20;
+        $offset = 0;
+
+        $finds = app(FindRepository::class)->getAllWithFilter([], $limit, $offset);
+
+        while (count($finds['data']) > 0) {
+            foreach ($finds['data'] as $find) {
+                try {
+                    app(IndexingService::class)->indexFind($find);
+                } catch (\Exception $ex) {
+                    \Log::error($ex->getMessage());
+                    \Log::error($ex->getTraceAsString());
+                }
+
+                $bar->advance();
+            }
+
+            $offset += $limit;
+
+            $finds = app(FindRepository::class)->getAllWithFilter([], $limit, $offset);
+        }
+
+        $elasticCount = app(ElasticFindRepository::class)->getIndexCount();
+
+        $this->info('');
+        $this->info("We found $findsCount FindEvent nodes, the index contains $elasticCount documents");
     }
 }

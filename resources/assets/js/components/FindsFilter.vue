@@ -151,7 +151,7 @@ export default {
         {
           label: 'Foto',
           prop: 'photographCaption',
-          options: this.getFilterFacetOptions('photographCaption', facets)
+          options: this.getFilterFacetOptions('photographCaptionPresent', facets)
         },
         {
           label: 'Categorie',
@@ -166,17 +166,17 @@ export default {
         {
           label: 'Materiaal',
           prop: 'objectMaterial',
-          options: this.getFilterFacetOptions('objectMaterial', facets)
+          options: this.getFilterFacetOptions('material', facets)
         },
         {
           label: 'Locatie',
           prop: 'findSpotLocation',
-          options: this.getFilterFacetOptions('findSpotLocation', facets)
+          options: this.getFilterFacetOptions('findSpotLocality', facets)
         },
         {
           label: 'Locatie',
           prop: 'excavationLocation',
-          options: this.getFilterFacetOptions('excavationLocation', facets)
+          options: this.getFilterFacetOptions('excavationLocality', facets)
         },
         {
           label: 'Oppervlaktebehandeling',
@@ -186,17 +186,17 @@ export default {
         {
           label: 'Volledig',
           prop: 'volledigheid',
-          options: this.getFilterFacetOptions('volledigheid', facets)
+          options: this.getFilterFacetOptions('complete', facets)
         },
         {
           label: 'Merkteken',
           prop: 'merkteken',
-          options: this.getFilterFacetOptions('merkteken', facets)
+          options: this.getFilterFacetOptions('mark', facets)
         },
         {
           label: 'Opschrift',
           prop: 'opschrift',
-          options: this.getFilterFacetOptions('opschrift', facets)
+          options: this.getFilterFacetOptions('insignia', facets)
         },
         {
           label: 'Collecties',

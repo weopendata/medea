@@ -293,4 +293,15 @@ class ObjectRepository extends BaseRepository
 
         return $objectNode->relateTo($typeNode, 'P2')->save();
     }
+
+    /**
+     * @param  int $objectNodeId
+     * @return void
+     */
+    public function getFtsValueForNodeId(int $objectNodeId)
+    {
+        $objectNode = $this->getById($objectNodeId);
+
+        return $objectNode->getProperty('fulltext_description');
+    }
 }

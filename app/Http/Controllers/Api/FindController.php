@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Pager;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\ProcessesFindFilters;
 use App\Http\Requests\FindApiRequest;
 use App\Http\Requests\ShowFindRequest;
-use App\Repositories\FindRepository;
+use App\Repositories\ElasticSearch\FindRepository as ElasticFindRepository;
 use App\Repositories\ObjectRepository;
+use App\Services\FindService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -22,7 +22,7 @@ class FindController extends Controller
 
     public function __construct()
     {
-        $this->finds = new FindRepository();
+        $this->finds = new ElasticFindRepository();
         $this->objects = new ObjectRepository();
     }
 
@@ -41,10 +41,6 @@ class FindController extends Controller
 
         if ($type == 'count') {
             return $this->makeFindsCountResponse($request);
-        }
-
-        if ($type == 'facets') {
-            return $this->makeFindsFacetCountResponse($request);
         }
 
         if ($type == 'markers') {
@@ -95,81 +91,15 @@ class FindController extends Controller
     {
         extract($this->processQueryParts($request));
 
-        $result = $this->finds->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow, $validatedStatus);
-
-        $finds = $result['data'];
-
-        // If a user is a researcher or personal finds have been set, return the exact
-        // find location, if not, round up to 2 digits, which lowers the accuracy to about 10 km
-        if (empty($filters['myfinds'])) {
-            $adjusted_finds = [];
-
-            $user = $request->user();
-
-            foreach ($finds as $find) {
-                if (empty($user) || (!empty($find['finderId']) && $find['finderId'] != $user->id)
-                    && !in_array('onderzoeker', $user->getRoles())) {
-                    if (!empty($find['grid']) || !empty($find['lat'])) {
-                        [$lat, $lon] = explode(',', $find['grid']);
-
-                        $find['lat'] = $lat;
-                        $find['lng'] = $lon;
-
-                        $accuracy = isset($find['accuracy']) ? $find['accuracy'] : 1;
-                        $find['accuracy'] = max(7000, $accuracy);
-                    }
-                }
-
-                $adjusted_finds[] = $find;
-            }
-
-            $finds = $adjusted_finds;
-        }
+        $result = app(FindService::class)->getAllWithFilter($filters, $limit, $offset, $order_by, $order_flow);
 
         $response = [
-            'finds' => $finds,
+            'finds' => $result['data'],
+            'facets' => $result['facets'],
+            'paging' => $result['paging']
         ];
 
         return response()->json($response);
-    }
-
-    /**
-     * @param  Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function makeFindsFacetCountResponse(Request $request)
-    {
-        extract($this->processQueryParts($request));
-
-        $facetCounts = $this->finds->getFacetCounts($filters, $validatedStatus);
-
-        return response()->json(['facets' => $facetCounts]);
-    }
-
-    /**
-     * @param  Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function makeFindsCountResponse(Request $request)
-    {
-        extract($this->processQueryParts($request));
-
-        $count = app(FindRepository::class)->getFindsCountForFilter($filters, $validatedStatus);
-
-        $pages = Pager::calculatePagingInfo($limit, $offset, $count);
-
-        $countResponse = [
-            'total_count' => $count,
-        ];
-
-        foreach ($pages as $rel => $page_info) {
-            $countResponse[$rel] = [
-                'offset' => $page_info[0],
-                'limit' => $page_info[1]
-            ];
-        }
-
-        return response()->json($countResponse);
     }
 
     /**

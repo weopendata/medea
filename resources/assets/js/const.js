@@ -69,7 +69,7 @@ export function findTitle (find) {
   }
 
   if (doesFindHaveAPanTypology(find)) {
-    let title = find._panTypologyInfo.label + '(' + find._panTypologyInfo.mainCategory + ')'
+    let title = find._panTypologyInfo.label + ' (' + find._panTypologyInfo.mainCategory + ')'
 
     if (find.material) {
       title += ', ' + find.material

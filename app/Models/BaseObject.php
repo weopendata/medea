@@ -202,7 +202,7 @@ class BaseObject extends Base
     }
 
     /**
-     * Fill in the Fulltest Search field
+     * Fill in the Fulltext Search field
      *
      * @param array $properties The properties assigned to an Object node
      *

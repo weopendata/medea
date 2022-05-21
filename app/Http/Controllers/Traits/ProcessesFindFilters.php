@@ -75,6 +75,13 @@ trait ProcessesFindFilters
             unset($filters['endYear']);
         }
 
-        return compact('filters', 'limit', 'offset', 'order_by', 'order_flow', 'validatedStatus');
+        $filters['validation'] = $validatedStatus;
+
+        // TODO: find a better approach to mapping front-end fields to back-end API field names
+        if ($order_by == 'identifier') {
+            $order_by = 'findId';
+        }
+
+        return compact('filters', 'limit', 'offset', 'order_by', 'order_flow');
     }
 }

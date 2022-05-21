@@ -19,6 +19,9 @@ class FindEvent extends Base
         [
             'name' => 'excavationId'
         ],
+        [
+            'name' => 'elasticSearchId'
+        ]
     ];
 
     protected $relatedModels = [

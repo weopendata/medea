@@ -71,7 +71,7 @@ class FindController extends Controller
             'order' => $request->input('order', null),
             'myfinds' => @$filters['myfinds'],
             'collection' => (integer)$request->input('collection'),
-            'status' => $validatedStatus,
+            'status' => $request->input('status', 'Gepubliceerd'),
             'embargo' => (boolean)$request->input('embargo', false),
             'showmap' => $request->input('showmap', null),
             'startYear' => $request->input('startYear'),
@@ -111,8 +111,6 @@ class FindController extends Controller
 
         return response()
             ->view('pages.finds-list', [
-                'finds' => [],
-                'facets' => [],
                 'filterState' => $filterState,
                 'excludedFacets' => $excludedFacets,
                 'viewState' => [
