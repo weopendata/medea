@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Transformers\FindFacetsTransformer;
+use App\Transformers\FindLocationsTransformer;
 use App\Transformers\FindsTransformer;
 use App\Transformers\Transformer;
 
@@ -24,6 +25,15 @@ class TransformerService
     public static function transformFindFacets(array $findFacets): array
     {
         return self::transform($findFacets, new FindFacetsTransformer);
+    }
+
+    /**
+     * @param  array $findLocations
+     * @return array
+     */
+    public static function transformFindLocations(array $findLocations): array
+    {
+        return self::transform($findLocations, new FindLocationsTransformer);
     }
 
     /**

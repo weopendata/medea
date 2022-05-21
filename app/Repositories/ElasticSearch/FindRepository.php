@@ -193,6 +193,29 @@ class FindRepository extends BaseRepository
     }
 
     /**
+     * @param  array|null $filters
+     * @return array
+     */
+    public function getFindLocations(?array $filters = []): array
+    {
+        $boolQuery = $this->buildQueryFromFilters($filters);
+        $boolQuery->addFilter(new Exists('location'));
+
+        $query = new Query();
+        $query->setQuery($boolQuery);
+        $query->setSize(1000);
+        $query->setSource(['location', 'findId']);
+
+        $search = $this->createSearch();
+        $search->setQuery($query);
+
+        return [
+            'markers' => $this->performSearch($search),
+            'total' => $this->getTotalHits(),
+        ];
+    }
+
+    /**
      * @param  array $filters
      * @return BoolQuery
      */
@@ -273,7 +296,7 @@ class FindRepository extends BaseRepository
             $query
                 ->addFilter(
                     new Range($propertyName, [
-                        'lte' => (int) $filterValue,
+                        'lte' => (int)$filterValue,
                     ])
                 );
 
@@ -284,7 +307,7 @@ class FindRepository extends BaseRepository
             $query
                 ->addFilter(
                     new Range($propertyName, [
-                        'gte' => (int) $filterValue,
+                        'gte' => (int)$filterValue,
                     ])
                 );
 
@@ -385,6 +408,20 @@ class FindRepository extends BaseRepository
             $location['lon'] = $find['excavationLng'];
         }
 
+        $gridCentre = [
+            'lat' => null,
+            'lon' => null,
+        ];
+
+        if (!empty($find['grid'])) {
+            $parts = explode(',', $find['grid']);
+
+            if (!empty($parts[0]) && !empty($parts[1]) && is_double($parts[0]) && is_double($parts[1])) {
+                $gridCentre['lon'] = $parts[0];
+                $gridCentre['lat'] = $parts[1];
+            }
+        }
+
         $ftsDescription = '';
 
         $ftsFields = [
@@ -429,6 +466,7 @@ class FindRepository extends BaseRepository
             'embargo' => array_get($find, 'embargo'),
             'collection' => array_get($find, 'collection'),
             'fts_description' => trim($ftsDescription),
+            'grid_centre' => $gridCentre,
         ];
 
         if (!empty($location['lat'])) {

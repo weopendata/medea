@@ -327,6 +327,7 @@ class FindRepository extends BaseRepository
     /**
      * Get a heat map count for a filtered search
      *
+     * @deprecated
      * @param  array  $filters
      * @param  string $validationStatus
      * @return array
@@ -383,6 +384,7 @@ class FindRepository extends BaseRepository
     /**
      * Return the first 1000 location pairs matching the filters
      *
+     * @deprecated
      * @param  array $filters
      * @return array
      * @throws \Exception

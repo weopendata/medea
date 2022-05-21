@@ -59,6 +59,9 @@
       "location": {
         "type": "geo_point"
       },
+      "grid_centre": {
+        "type": "geo_point"
+      },
       "accuracy": {
         "type": "keyword"
       },

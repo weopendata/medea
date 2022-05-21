@@ -47,11 +47,10 @@ class FindController extends Controller
     }
 
     /**
-     * @param $request
+     * @param  Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
      */
-    private function makeMarkerResponse($request)
+    private function makeMarkerResponse(Request $request)
     {
         if (env('APP_EXPOSE_EXACT_LOCATIONS') != true) {
             abort(403);
@@ -59,7 +58,7 @@ class FindController extends Controller
 
         extract($this->processQueryParts($request));
 
-        $markers = $this->finds->getFindLocations($filters);
+        $markers = app(FindService::class)->getFindLocations($filters);
 
         return response()->json($markers);
     }

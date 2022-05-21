@@ -47,10 +47,10 @@ class FindsTransformer extends Transformer
             unset($find[$property]);
         }
 
-        if (!empty($find['location']) && !empty($find['location']['lat'])) {
+        /*if (!empty($find['location']) && !empty($find['location']['lat'])) {
             $find['lat'] = array_get($find, 'location.lat');
             $find['lng'] = array_get($find, 'location.lon');
-        }
+        }*/
 
         if (!empty($find['excavationLocality'])) {
             $find['locality'] = $find['excavationLocality'];
@@ -66,7 +66,6 @@ class FindsTransformer extends Transformer
     {
         return [
             'fts_description',
-            'location',
             'photographCaptionPresent',
         ];
     }

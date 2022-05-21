@@ -29,6 +29,17 @@ class FindService
     }
 
     /**
+     * @param  array|null $filters
+     * @return array
+     */
+    public function getFindLocations(?array $filters = []): array
+    {
+        $findLocations = app(FindRepository::class)->getFindLocations($filters);
+
+        return TransformerService::transformFindLocations($findLocations);
+    }
+
+    /**
      * @param  array $finds
      * @param  array $filters
      * @return array

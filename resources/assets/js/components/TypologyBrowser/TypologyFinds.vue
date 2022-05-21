@@ -74,7 +74,7 @@ export default {
             return {
               identifier: f.identifier,
               title: '',
-              position: { lat: parseFloat(f.location.lat), lng: parseFloat(f.location.lng) }
+              position: { lat: parseFloat(f.location.lat), lng: parseFloat(f.location.lon) }
             }
           })
     }
@@ -92,7 +92,7 @@ export default {
           .then(result => {
             this.finds = result.data.finds
             this.fetching = false
-            this.findsCount = result.headers['x-total']
+            this.findsCount = result.data.paging.total_count
           })
           .catch(error => {
             console.log(error)
@@ -102,7 +102,7 @@ export default {
 
       axios.get('/api/finds?type=markers&status=Gepubliceerd&panid=' + this.typology.code)
           .then(result => {
-            this.findCoordinates = result.data
+            this.findCoordinates = result.data.markers
           })
           .catch(error => {
             console.log(error)
