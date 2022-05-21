@@ -2,6 +2,8 @@
 
 namespace App\Transformers;
 
+use App\Repositories\ElasticSearch\FindRepository;
+
 class FindFacetsTransformer extends Transformer
 {
     /**
@@ -19,12 +21,7 @@ class FindFacetsTransformer extends Transformer
             'inscription' => 'insignia',
         ];
 
-        $presenceFacetProperties = [
-            'mark',
-            'insignia',
-            'complete',
-            'photographCaptionPresent'
-        ];
+        $presenceFacetProperties = FindRepository::PRESENCE_FACET_PROPERTIES;
 
         $excludedFacets = explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [];
 
@@ -32,7 +29,7 @@ class FindFacetsTransformer extends Transformer
 
         collect($findFacets)
             ->filter(function ($facetValue, $facetKey) use ($excludedFacets) {
-                return !in_array($facetKey, $excludedFacets) && !empty($facetValue);
+                return !in_array($facetKey, $excludedFacets);
             })
             ->each(function ($facetValue, $facetKey) use ($presenceFacetProperties, $propertyMapping, &$facetsResult) {
                 $outgoingFacetKey = @$propertyMapping[$facetKey] ?? $facetKey;

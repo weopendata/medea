@@ -8,7 +8,11 @@ use Elastica\Document;
 use Elastica\Exception\ResponseException;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\Exists;
+use Elastica\Query\MatchQuery;
+use Elastica\Query\Range;
 use Elastica\Query\Term;
+use Elastica\Query\Wildcard;
 use Elastica\ResultSet;
 
 class FindRepository extends BaseRepository
@@ -28,18 +32,17 @@ class FindRepository extends BaseRepository
         'complete',
         'findSpotLocality',
         'excavationLocality',
-        'photographCaptionPresent'
-        // TODO: add the rest of the facets
-        /**
-         * 'category' => 'collect(distinct [p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p)).value])',
-         * 'period' => 'collect(distinct [p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p)).value])',
-         * 'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
-         * 'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
-         * 'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
-         * 'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])',
-         * 'findSpotLocation' => 'collect(distinct [p in (find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
-         * 'excavationLocation' => 'collect(distinct [p in (excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
-         */
+        'photographCaptionPresent',
+    ];
+
+    /**
+     * @const array
+     */
+    const PRESENCE_FACET_PROPERTIES = [
+        'mark',
+        'insignia',
+        'complete',
+        'photographCaptionPresent',
     ];
 
     /**
@@ -161,13 +164,11 @@ class FindRepository extends BaseRepository
         ?string $orderFlow = 'ASC'
     ): array
     {
-        $boolQuery = new BoolQuery();
+        $boolQuery = $this->buildQueryFromFilters($filters);
 
-        $filters = $this->keepValidFilters($filters);
+        //jj($boolQuery->toArray());
 
-        foreach ($filters as $filterName => $filterValue) {
-            $this->applyFilter($boolQuery, $filterName, $filterValue);
-        }
+        $orderBy = @$this->getFilterKeyToPropertyMapping()[$orderBy] ?? $orderBy;
 
         $query = new Query();
         $query->setQuery($boolQuery);
@@ -184,7 +185,7 @@ class FindRepository extends BaseRepository
 
         $findResults = $this->parseDocumentsFromResultSet($resultSet);
         $findResults = $this->appendMetaDataToFindResults($findResults);
-        $facetCounts = $this->parseAggregations($resultSet);
+        $facetCounts = $this->parseAggregations($resultSet, $filters);
 
         return [
             'data' => $findResults,
@@ -209,44 +210,11 @@ class FindRepository extends BaseRepository
          * $startStatement = "START object=node:node_auto_index('fulltext_description:(*" . $query . "*)') ";
          * }
          *
-         * // Non-personal find statement
-         * $initialStatement = '(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52)';
-         *
          * $withStatement = ['validation', 'person'];
-         *
-         * // In our query find.id is aliased as identifier
-         * $orderStatement = 'identifier ' . $orderFlow;
-         *
-         * if ($orderBy == 'period') {
-         * $matchStatements[] = '(object:E22)-[P42]-(period:E55)';
-         * $withStatement[] = 'period';
-         * $orderStatement = "period.value $orderFlow";
-         * } else if ($orderBy == 'findDate') {
-         * $withStatement[] = 'findDate';
-         * $orderStatement = "findDate.value $orderFlow";
-         * }
-         *
          * foreach ($this->getFilterPropertyQueryStatements() as $property => $config) {
          * if (isset($filters[$property])) {
          * $matchStatements[] = $config['match'];
          *
-         * if (!empty($config['where'])) {
-         * $whereStatements[] = $config['where'];
-         * }
-         *
-         * $variables[$config['whereVariableName']] = $filters[$property];
-         *
-         * // If we have an integer value, convert the value we received from the request URI
-         * // Neo4j makes a strict distinction between integers and strings
-         * if (@$config['varType'] == 'int') {
-         * $variables[$config['whereVariableName']] = (int)$filters[$property];
-         * }
-         *
-         * if (!empty($config['with']) && !in_array($config['with'], $this->getDefaultWithStatementProperties())) {
-         * $withStatement[] = $config['with'];
-         * }
-         * }
-         * }
          *
          * if (!empty($email)) {
          * if ($validationStatus == '*') {
@@ -262,56 +230,26 @@ class FindRepository extends BaseRepository
          *
          * $matchStatement = implode(', ', $matchStatements);
          * $whereStatement = implode(' AND ', $whereStatements);
-         *
-         * // Add the optional statements
-         * $availableOptionalStatements = [
-         * 'person' => [
-         * 'match' => '(find:E10)-[P29]-(person:person)',
-         * 'where' => NodeService::getTenantWhereStatement(['find', 'person']),
-         * ],
-         * 'typology' => [
-         * 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(typologyClassification:E55), (productionClassification:productionClassification)-[:P2]-(pcvType:E55 {value: "Typologie"})',
-         * 'where' => NodeService::getTenantWhereStatement(['object', 'productionEvent', 'productionClassification', 'typologyClassification']),
-         * 'with' => ['typologyClassification'],
-         * ],
-         * 'excavationTitle' => [
-         * 'match' => '(excavationEvent:A9)-[:P1]->(excavationTitle:E41)',
-         * 'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
-         * 'with' => ['excavationTitle'],
-         * ],
-         * 'excavationLocation' => [
-         * 'match' => '(excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(excavationLocation:E45{name:"locationAddressLocality"})',
-         * 'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
-         * 'with' => ['excavationLocation'],
-         * ],
-         * 'volledigheid' => [
-         * 'match' => '(object:E22)-[:P56]->(complete:E25)-[:P2]->(:E55 {value: "volledigheid"})',
-         * 'where' => NodeService::getTenantWhereStatement(['complete']),
-         * ],
-         * 'merkteken' => [
-         * 'match' => '(object:E22)-[:P56]->(mark:E25)-[:P2]->(:E55 {value: "merkteken"})',
-         * 'where' => NodeService::getTenantWhereStatement(['mark']),
-         * ],
-         * 'opschrift' => [
-         * 'match' => '(object:E22)-[:P56]->(insignia:E25)-[:P2]->(:E55 {value: "opschrift"})',
-         * 'where' => NodeService::getTenantWhereStatement(['insignia']),
-         * ],
-         * ];
-         *
-         * $optionalStatements = [];
-         *
-         * foreach ($availableOptionalStatements as $optionalStatementName => $availableOptionalStatement) {
-         * if (in_array($optionalStatementName, $excludeOptionalStatements)) {
-         * continue;
-         * }
-         *
-         * $optionalStatements[] = $availableOptionalStatement;
-         *
-         * if (!empty($availableOptionalStatement['with'])) {
-         * $withStatement = array_merge($withStatement, $availableOptionalStatement['with']);
-         * }
-         * }
          */
+    }
+
+    /**
+     * @param  array $filters
+     * @return BoolQuery
+     */
+    private function buildQueryFromFilters(array $filters): BoolQuery
+    {
+        $boolQuery = new BoolQuery();
+
+        $filters = $this->keepValidFilters($filters);
+
+        // TODO:
+        // 'myfinds' -> just add the email and take into account validation station '*'
+        foreach ($filters as $filterName => $filterValue) {
+            $this->applyFilter($boolQuery, $filterName, $filterValue);
+        }
+
+        return $boolQuery;
     }
 
     /**
@@ -348,12 +286,76 @@ class FindRepository extends BaseRepository
      */
     private function applyFilter(BoolQuery $query, string $filterName, $filterValue)
     {
-        if (is_string($filterValue)) {
-            $termQuery = new Term();
-            $termQuery->setParam($filterName, $filterValue);
-
-            $query->addFilter($termQuery);
+        if (!is_string($filterValue)) {
+            return;
         }
+
+        $propertyName = $this->getFilterKeyToPropertyMapping()[$filterName];
+
+        if (in_array($propertyName, self::PRESENCE_FACET_PROPERTIES)) {
+            // unless the value is empty, there's only 1 way we interpret this filter, which is either
+            // the absence of a value for the field
+            // OR
+            // a non "nee" value
+            $existsQuery = new Exists($propertyName);
+
+            $termQuery = new Term();
+            $termQuery->setParam($propertyName, 'nee');
+
+            $boolQuery = new BoolQuery();
+            $boolQuery->addShould((new BoolQuery())->addMustNot($existsQuery));
+            $boolQuery->addShould((new BoolQuery())->addMustNot($termQuery));
+            $boolQuery->setMinimumShouldMatch(1);
+
+            $query->addFilter($boolQuery);
+
+            return;
+        }
+
+        if (in_array($propertyName, ['panFinalPeriod'])) {
+            $query
+                ->addFilter(
+                    new Range($propertyName, [
+                        'lte' => (int) $filterValue,
+                    ])
+                );
+
+            return;
+        }
+
+        if (in_array($propertyName, ['panInitialPeriod'])) {
+            $query
+                ->addFilter(
+                    new Range($propertyName, [
+                        'gte' => (int) $filterValue,
+                    ])
+                );
+
+            return;
+        }
+
+        if ($propertyName === 'fts_description') {
+            $match = new MatchQuery();
+            $match->setFieldParam($propertyName, 'query', $filterValue);
+            $match->setFieldFuzziness($propertyName, 3);
+
+            $query->addMust($match);
+
+            return;
+        }
+
+        if ($propertyName == 'panId') {
+            $wildCard = new Wildcard($propertyName, $filterValue . '*');
+
+            $query->addMust($wildCard);
+
+            return;
+        }
+
+        $termQuery = new Term();
+        $termQuery->setParam($propertyName, $filterValue);
+
+        $query->addFilter($termQuery);
     }
 
     /**
@@ -362,16 +364,33 @@ class FindRepository extends BaseRepository
      */
     private function keepValidFilters(array $filters): array
     {
-        return array_only($filters, $this->getFilterKeyNames());
+        return array_only($filters, array_keys($this->getFilterKeyToPropertyMapping()));
     }
 
     /**
      * @return array
      */
-    private function getFilterKeyNames(): array
+    private function getFilterKeyToPropertyMapping(): array
     {
         return [
-            'validation',
+            'validation' => 'validation',
+            'photographCaption' => 'photographCaptionPresent',
+            'category' => 'objectCategory',
+            'period' => 'objectPeriod',
+            'objectMaterial' => 'objectMaterial',
+            'findSpotLocation' => 'findSpotLocality',
+            'excavationLocation' => 'excavationLocality',
+            'modification' => 'modification',
+            'volledigheid' => 'complete',
+            'merkteken' => 'mark',
+            'opschrift' => 'inscription',
+            'collection' => 'collection',
+            'identifier' => 'findId',
+            'startYear' => 'panInitialPeriod',
+            'endYear' => 'panFinalPeriod',
+            'embargo' => 'embargo',
+            'query' => 'fts_description',
+            'panid' => 'panId',
         ];
     }
 
@@ -449,6 +468,7 @@ class FindRepository extends BaseRepository
             'inscription' => in_array(strtolower(array_get($find, 'insignia') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',
             'photograph_path' => array_get($find, 'photograph'),
             'photographCaptionPresent' => !empty($find['photographCaption']) ? 'yes' : 'no',
+            'embargo' => array_get($find, 'embargo'),
             'collection' => array_get($find, 'collection'),
             'fts_description' => trim($ftsDescription),
         ];
@@ -485,15 +505,25 @@ class FindRepository extends BaseRepository
 
     /**
      * @param  ResultSet $resultSet
-     * @return void
+     * @return array
      */
-    private function parseAggregations(ResultSet $resultSet): array
+    private function parseAggregations(ResultSet $resultSet, array $filters): array
     {
         $facetCounts = [];
+        $filterNameToPropertyNameMapping = array_flip($this->getFilterKeyToPropertyMapping());
 
         foreach (self::AGGREGATION_FIELDS as $aggregationField) {
             $facetCount = array_get($resultSet->getAggregation($aggregationField), 'buckets') ?? [];
-            $facetCounts[$aggregationField] = $this->transformAggregationBucket($facetCount);
+            $facetCount = $this->transformAggregationBucket($facetCount);
+
+            $filterNameForAggregationField = $filterNameToPropertyNameMapping[$aggregationField];
+
+            // Append the filter value to the corresponding facet count, if the filter value is not in the facet count
+            if (!empty($filters[$filterNameForAggregationField]) && !array_key_exists($filters[$filterNameForAggregationField], $facetCount)) {
+                $facetCount[$filters[$filterNameForAggregationField]] = 0;
+            }
+
+            $facetCounts[$aggregationField] = $facetCount;
         }
 
         return $facetCounts;

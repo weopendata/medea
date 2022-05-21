@@ -466,6 +466,7 @@ class FindRepository extends BaseRepository
 
         $withProperties = [
             'find',
+            'object.embargo as embargo',
             'findDate',
             'person',
             'validation',
@@ -514,6 +515,7 @@ class FindRepository extends BaseRepository
 
         $returnProperties = [
             "distinct find",
+            "embargo as embargo",
             "id(find) as identifier",
             "classifications",
             "typologyClassification",

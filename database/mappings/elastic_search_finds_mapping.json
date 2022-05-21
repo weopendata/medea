@@ -103,6 +103,9 @@
       "mark": {
         "type": "keyword"
       },
+      "embargo": {
+        "type": "keyword"
+      },
       "inscription": {
         "type": "keyword"
       },

@@ -39,10 +39,6 @@ class FindController extends Controller
             return $this->makeHeatMapResponse($request);
         }
 
-        if ($type == 'count') {
-            return $this->makeFindsCountResponse($request);
-        }
-
         if ($type == 'markers') {
             return $this->makeMarkerResponse($request);
         }

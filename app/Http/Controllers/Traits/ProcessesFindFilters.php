@@ -49,7 +49,8 @@ trait ProcessesFindFilters
             $filters['embargo'] = 'false';
         }
 
-        if (!empty($filters['panid'])) {
+        // deprecated
+        /*if (!empty($filters['panid'])) {
             $filters['panid'] = $filters['panid'] . '.*';
         }
 
@@ -73,14 +74,9 @@ trait ProcessesFindFilters
 
             unset($filters['startYear']);
             unset($filters['endYear']);
-        }
+        }*/
 
         $filters['validation'] = $validatedStatus;
-
-        // TODO: find a better approach to mapping front-end fields to back-end API field names
-        if ($order_by == 'identifier') {
-            $order_by = 'findId';
-        }
 
         return compact('filters', 'limit', 'offset', 'order_by', 'order_flow');
     }
