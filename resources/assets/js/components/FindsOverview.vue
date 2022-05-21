@@ -109,7 +109,7 @@ import ls from 'local-storage'
 
 import { fetchFinds, fetchFindsMap } from '../api/finds.js'
 
-const HEATMAP_RADIUS = 0.0249; // This represents ~5km
+const HEATMAP_RADIUS = 0.0220; // This represents ~5km - 0.05 represents ~10km
 
 window.startIntro = function () {
   introJs()
