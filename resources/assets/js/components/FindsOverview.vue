@@ -109,7 +109,7 @@ import ls from 'local-storage'
 
 import { fetchFinds, fetchFindsMap } from '../api/finds.js'
 
-const HEATMAP_RADIUS = 0.0220; // This represents ~5km - 0.05 represents ~10km
+const HEATMAP_RADIUS = 0.0221;  // This represents half of ~5km which is our grid size - https://www.nhc.noaa.gov/gccalc.shtml
 
 window.startIntro = function () {
   introJs()
