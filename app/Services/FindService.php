@@ -40,6 +40,17 @@ class FindService
     }
 
     /**
+     * @param  array|null $filters
+     * @return array
+     */
+    public function getHeatMap(?array $filters): array
+    {
+        $heatMap = app(FindRepository::class)->getHeatMap($filters);
+
+        return TransformerService::transformFindsHeatMap($heatMap);
+    }
+
+    /**
      * @param  array $finds
      * @param  array $filters
      * @return array

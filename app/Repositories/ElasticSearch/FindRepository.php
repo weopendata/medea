@@ -4,6 +4,8 @@ namespace App\Repositories\ElasticSearch;
 
 use App\Repositories\Eloquent\PanTypologyRepository;
 use Carbon\Carbon;
+use Elastica\Aggregation\GeohashGrid;
+use Elastica\Aggregation\GeotileGridAggregation;
 use Elastica\Document;
 use Elastica\Exception\ResponseException;
 use Elastica\Query;
@@ -216,6 +218,32 @@ class FindRepository extends BaseRepository
     }
 
     /**
+     * @param  array|null $filters
+     * @return array
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-geohashgrid-aggregation.html
+     */
+    public function getHeatMap(?array $filters = []): array
+    {
+        $boolQuery = $this->buildQueryFromFilters($filters);
+        $boolQuery->addFilter(new Exists('location'));
+
+        $geoGridAggregation = new GeohashGrid('geoGridAggregation', 'location');
+        $geoGridAggregation->setPrecision(5);
+
+        $query = new Query();
+        $query->setQuery($boolQuery);
+        $query->addAggregation($geoGridAggregation);
+
+        $search = $this->createSearch();
+        $search->setQuery($query);
+
+        $resultSet = $search->search();
+        $geoGridAggregationResults = $resultSet->getAggregation('geoGridAggregation');
+
+        return array_get($geoGridAggregationResults, 'buckets');
+    }
+
+    /**
      * @param  array $filters
      * @return BoolQuery
      */
@@ -408,20 +436,6 @@ class FindRepository extends BaseRepository
             $location['lon'] = $find['excavationLng'];
         }
 
-        $gridCentre = [
-            'lat' => null,
-            'lon' => null,
-        ];
-
-        if (!empty($find['grid'])) {
-            $parts = explode(',', $find['grid']);
-
-            if (!empty($parts[0]) && !empty($parts[1]) && is_double($parts[0]) && is_double($parts[1])) {
-                $gridCentre['lon'] = $parts[0];
-                $gridCentre['lat'] = $parts[1];
-            }
-        }
-
         $ftsDescription = '';
 
         $ftsFields = [
@@ -466,7 +480,6 @@ class FindRepository extends BaseRepository
             'embargo' => array_get($find, 'embargo'),
             'collection' => array_get($find, 'collection'),
             'fts_description' => trim($ftsDescription),
-            'grid_centre' => $gridCentre,
         ];
 
         if (!empty($location['lat'])) {

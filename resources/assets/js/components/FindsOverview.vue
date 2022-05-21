@@ -109,7 +109,7 @@ import ls from 'local-storage'
 
 import { fetchFinds, fetchFindsMap } from '../api/finds.js'
 
-const HEATMAP_RADIUS = 0.05;
+const HEATMAP_RADIUS = 0.0249; // This represents ~5km
 
 window.startIntro = function () {
   introJs()
@@ -196,18 +196,19 @@ export default {
     },
     heatmap () {
       var max = this.heatmapMax
+
       return this.rawmap && this.rawmap.map(x => {
-        let co = x.gridCenter.split(',')
+        const gridCentre = x.centre
         return {
           options: {
             fillOpacity: 0.1 + 0.6 * x.count / max,
             strokeWeight: 0
           },
           bounds: {
-            north: parseFloat(co[0]) + HEATMAP_RADIUS,
-            south: parseFloat(co[0]) - HEATMAP_RADIUS,
-            east: parseFloat(co[1]) + HEATMAP_RADIUS,
-            west: parseFloat(co[1]) - HEATMAP_RADIUS
+            north: parseFloat(gridCentre['lat']) + HEATMAP_RADIUS,
+            south: parseFloat(gridCentre['lat']) - HEATMAP_RADIUS,
+            east: parseFloat(gridCentre['lon']) + HEATMAP_RADIUS,
+            west: parseFloat(gridCentre['lon']) - HEATMAP_RADIUS
           }
         }
       })

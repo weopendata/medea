@@ -92,6 +92,9 @@
       "contextName": {
         "type": "keyword"
       },
+      "modification": {
+        "type": "keyword"
+      },
       "photograph_path": {
         "type": "keyword"
       },

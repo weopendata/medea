@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Transformers\FindFacetsTransformer;
 use App\Transformers\FindLocationsTransformer;
+use App\Transformers\FindsHeatMapTransformer;
 use App\Transformers\FindsTransformer;
 use App\Transformers\Transformer;
 
@@ -34,6 +35,15 @@ class TransformerService
     public static function transformFindLocations(array $findLocations): array
     {
         return self::transform($findLocations, new FindLocationsTransformer);
+    }
+
+    /**
+     * @param  array $findsHeatMap
+     * @return array
+     */
+    public static function transformFindsHeatMap(array $findsHeatMap): array
+    {
+        return self::transform($findsHeatMap, new FindsHeatMapTransformer());
     }
 
     /**

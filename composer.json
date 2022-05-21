@@ -18,7 +18,8 @@
         "pda/pheanstalk": "^4.0",
         "guzzlehttp/guzzle": "^7.0",
         "ruflin/elastica": "~7.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "saikiran/geohash": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

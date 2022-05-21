@@ -72,7 +72,7 @@ class FindController extends Controller
     {
         extract($this->processQueryParts($request));
 
-        $heatMap = $this->finds->getHeatMap($filters, $validatedStatus);
+        $heatMap = app(FindService::class)->getHeatMap($filters);
 
         return response()->json($heatMap);
     }
