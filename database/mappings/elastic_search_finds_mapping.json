@@ -35,6 +35,12 @@
       "findId": {
         "type": "keyword"
       },
+      "finderEmail": {
+        "type": "keyword"
+      },
+      "finderId": {
+        "type": "keyword"
+      },
       "title": {
         "type": "keyword"
       },

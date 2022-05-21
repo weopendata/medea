@@ -15,15 +15,18 @@ trait ProcessesFindFilters
     {
         $filters = $request->all();
 
-        $validatedStatus = $request->input('status', 'Gepubliceerd');
+        $validatedStatus = $request->input('status');
+
+        // Depending on whether the user is logged in, tweak the filters so that it matches its search profile
+        unset($filters['finderEmail']);
 
         if (empty($request->user())) {
-            $validatedStatus = 'Gepubliceerd';
-        }
-
-        // Check if personal finds are set
-        if ($request->has('myfinds') && !empty($request->user())) {
-            $filters['myfinds'] = $request->user()->email;
+            $filters['validation'] = 'Gepubliceerd';
+        } else if ($request->has('myfinds')) {
+            $filters['finderEmail'] = $request->user()->email;
+            $filters['validation'] = $validatedStatus;
+        } else {
+            $filters['validation'] = $validatedStatus;
         }
 
         $limit = $request->input('limit', 20);
@@ -48,35 +51,6 @@ trait ProcessesFindFilters
         if (!isset($filters['embargo'])) {
             $filters['embargo'] = 'false';
         }
-
-        // deprecated
-        /*if (!empty($filters['panid'])) {
-            $filters['panid'] = $filters['panid'] . '.*';
-        }
-
-        // If we have date filters, we replace the pan id filter
-        $startPeriod = $request->input('startYear');
-        $endPeriod = $request->input('endYear');
-
-        if (!empty($startPeriod) || !empty($endPeriod)) {
-            $filters['panids'] = app(PanTypologyRepository::class)->getPanIdsForDateRange($startPeriod, $endPeriod);
-
-            // If no matching panids are found for the given date range, set the filter to something that will return no results
-            if (empty($filters['panids'])) {
-                $filters['panids'] = ['-1'];
-            }
-
-            $filters['panids'] = collect($filters['panids'])
-                ->map(function ($panId) {
-                    return (string) ($panId . '');
-                })
-                ->toArray();
-
-            unset($filters['startYear']);
-            unset($filters['endYear']);
-        }*/
-
-        $filters['validation'] = $validatedStatus;
 
         return compact('filters', 'limit', 'offset', 'order_by', 'order_flow');
     }

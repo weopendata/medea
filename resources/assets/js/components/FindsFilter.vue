@@ -58,7 +58,7 @@
       </div>
 
       <facet label="Validatie status" prop="status" :options="statusOptions" v-if="!isApplicationPublic"></facet>
-      <facet label="Embargo" prop="embargo" :options="embargoOptions"></facet>
+      <facet label="Embargo" prop="embargo" :options="embargoOptions" v-if="!isApplicationPublic"></facet>
       <facet
           v-for="(facet, index) in dynamicFacetOptions"
           :key="'facet_option_' + index"

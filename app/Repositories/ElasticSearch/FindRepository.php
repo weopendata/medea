@@ -166,8 +166,6 @@ class FindRepository extends BaseRepository
     {
         $boolQuery = $this->buildQueryFromFilters($filters);
 
-        //jj($boolQuery->toArray());
-
         $orderBy = @$this->getFilterKeyToPropertyMapping()[$orderBy] ?? $orderBy;
 
         $query = new Query();
@@ -192,45 +190,6 @@ class FindRepository extends BaseRepository
             'facets' => $facetCounts,
             'total' => $resultSet->getTotalHits(),
         ];
-
-        /**
-         *  $matchStatements = [];
-         * $whereStatements = [];
-         *
-         * $email = @$filters['myfinds'];
-         *
-         * $variables = [];
-         *
-         * $startStatement = '';
-         *
-         * if (!empty($filters['query'])) {
-         * // Replace the whitespace with the Lucene syntax for white spaces text queries
-         * $query = preg_replace('#\s+#', ' AND ', $filters['query']);
-         *
-         * $startStatement = "START object=node:node_auto_index('fulltext_description:(*" . $query . "*)') ";
-         * }
-         *
-         * $withStatement = ['validation', 'person'];
-         * foreach ($this->getFilterPropertyQueryStatements() as $property => $config) {
-         * if (isset($filters[$property])) {
-         * $matchStatements[] = $config['match'];
-         *
-         *
-         * if (!empty($email)) {
-         * if ($validationStatus == '*') {
-         * $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
-         * } else {
-         * $whereStatements[] = "person.email = '$email' AND validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
-         * $variables['validationStatus'] = $validationStatus;
-         * }
-         * }
-         *
-         * // Add the multi-tenancy statement
-         * $whereStatements[] = NodeService::getTenantWhereStatement(['object', 'find']);
-         *
-         * $matchStatement = implode(', ', $matchStatements);
-         * $whereStatement = implode(' AND ', $whereStatements);
-         */
     }
 
     /**
@@ -243,8 +202,6 @@ class FindRepository extends BaseRepository
 
         $filters = $this->keepValidFilters($filters);
 
-        // TODO:
-        // 'myfinds' -> just add the email and take into account validation station '*'
         foreach ($filters as $filterName => $filterValue) {
             $this->applyFilter($boolQuery, $filterName, $filterValue);
         }
@@ -286,7 +243,7 @@ class FindRepository extends BaseRepository
      */
     private function applyFilter(BoolQuery $query, string $filterName, $filterValue)
     {
-        if (!is_string($filterValue)) {
+        if (empty($filterValue) || !is_string($filterValue)) {
             return;
         }
 
@@ -391,6 +348,7 @@ class FindRepository extends BaseRepository
             'embargo' => 'embargo',
             'query' => 'fts_description',
             'panid' => 'panId',
+            'finderEmail' => 'finderEmail',
         ];
     }
 
@@ -399,7 +357,7 @@ class FindRepository extends BaseRepository
      * @param  string|null $elasticSearchId
      * @return Document
      */
-    private function createDocument(array $find, ?string $elasticSearchId = null)
+    private function createDocument(array $find, ?string $elasticSearchId = null): Document
     {
         $findDate = null;
 
@@ -417,12 +375,12 @@ class FindRepository extends BaseRepository
             'lon' => null,
         ];
 
-        if (!empty($find['lng']) && !empty($find['lat'])) {
+        if (!empty($find['lng']) && !empty($find['lat']) && is_double($find['lng']) && is_double($find['lat'])) {
             $location['lat'] = $find['lat'];
             $location['lon'] = $find['lng'];
         }
 
-        if (!empty($find['excavationLng']) && !empty($find['excavationLat'])) {
+        if (!empty($find['excavationLng']) && !empty($find['excavationLat']) && is_double($find['excavationLng']) && is_double($find['excavationLat'])) {
             $location['lat'] = $find['excavationLat'];
             $location['lon'] = $find['excavationLng'];
         }

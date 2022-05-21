@@ -61,8 +61,11 @@ class LoginController extends Controller
                 // Check password and verification
                 if (! $user->verified) {
                     $message_bag = new MessageBag();
+
                     return redirect()->back()->with('errors', $message_bag->add('email', 'Dit emailadres is nog niet geverifieerd.'));
-                } elseif (Hash::check($password, $user->password)) {
+                }
+
+                if (Hash::check($password, $user->password)) {
                     Auth::login($user);
 
                     // Register the event to Piwik
