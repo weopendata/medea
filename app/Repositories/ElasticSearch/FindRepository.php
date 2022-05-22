@@ -426,14 +426,14 @@ class FindRepository extends BaseRepository
             'lon' => null,
         ];
 
-        if (!empty($find['lng']) && !empty($find['lat']) && is_double($find['lng']) && is_double($find['lat'])) {
-            $location['lat'] = $find['lat'];
-            $location['lon'] = $find['lng'];
+        if (!empty($find['lng']) && !empty($find['lat']) && is_numeric($find['lng']) && is_numeric($find['lat'])) {
+            $location['lat'] = (double)$find['lat'];
+            $location['lon'] = (double) $find['lng'];
         }
 
-        if (!empty($find['excavationLng']) && !empty($find['excavationLat']) && is_double($find['excavationLng']) && is_double($find['excavationLat'])) {
-            $location['lat'] = $find['excavationLat'];
-            $location['lon'] = $find['excavationLng'];
+        if (!empty($find['excavationLng']) && !empty($find['excavationLat']) && is_numeric($find['excavationLng']) && is_numeric($find['excavationLat'])) {
+            $location['lat'] = (double) $find['excavationLat'];
+            $location['lon'] = (double) $find['excavationLng'];
         }
 
         $ftsDescription = '';
@@ -470,8 +470,8 @@ class FindRepository extends BaseRepository
             'finderId' => array_get($find, 'finderId'),
             'finderEmail' => array_get($find, 'email'),
             'panId' => array_get($find, 'panId'),
-            'panInitialPeriod' => array_get($find, 'panTypologyInfo.initialPeriod'),
-            'panFinalPeriod' => array_get($find, 'panTypologyInfo.finalPeriod'),
+            'panInitialPeriod' => array_get($find, '_panTypologyInfo.startYear'),
+            'panFinalPeriod' => array_get($find, '_panTypologyInfo.endYear'),
             'complete' => in_array(strtolower(array_get($find, 'complete') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',
             'mark' => in_array(strtolower(array_get($find, 'mark') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',
             'inscription' => in_array(strtolower(array_get($find, 'insignia') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',

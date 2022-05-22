@@ -109,7 +109,7 @@ import ls from 'local-storage'
 
 import { fetchFinds, fetchFindsMap } from '../api/finds.js'
 
-const HEATMAP_RADIUS = 0.0221;  // This represents half of ~5km which is our grid size - https://www.nhc.noaa.gov/gccalc.shtml
+const HEATMAP_GRID_BOX_SIZE = 0.0221;  // This represents half of ~5km which is our grid size - https://www.nhc.noaa.gov/gccalc.shtml
 
 window.startIntro = function () {
   introJs()
@@ -205,10 +205,10 @@ export default {
             strokeWeight: 0
           },
           bounds: {
-            north: parseFloat(gridCentre['lat']) + HEATMAP_RADIUS,
-            south: parseFloat(gridCentre['lat']) - HEATMAP_RADIUS,
-            east: parseFloat(gridCentre['lon']) + HEATMAP_RADIUS,
-            west: parseFloat(gridCentre['lon']) - HEATMAP_RADIUS
+            north: parseFloat(gridCentre['lat']) + HEATMAP_GRID_BOX_SIZE,
+            south: parseFloat(gridCentre['lat']) - HEATMAP_GRID_BOX_SIZE,
+            east: parseFloat(gridCentre['lon']) + HEATMAP_GRID_BOX_SIZE,
+            west: parseFloat(gridCentre['lon']) - HEATMAP_GRID_BOX_SIZE
           }
         }
       })

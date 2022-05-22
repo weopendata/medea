@@ -74,7 +74,9 @@ class PanTypologyRepository
                         'code' => $result['code'],
                         'imageUrl' => array_get($result, 'meta.imageUrl'),
                         'mainCategory' => $result['label'],
-                        'parent_id' => $result['parent_id']
+                        'parent_id' => $result['parent_id'],
+                        'startYear' => $result['start_year'],
+                        'endYear' => $result['end_year'],
                     ],
                 ];
             });
