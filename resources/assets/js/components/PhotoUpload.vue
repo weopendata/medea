@@ -1,6 +1,6 @@
 <template>
   <div class="photo-upload">
-    <div class="photo-upload-img" v-for="image in photograph" @click="rm($index)" :class="{'photo-error':feedback[image.identifier]}" :title="'Foto '+(image.identifier||'nieuw')">
+    <div class="photo-upload-img" v-for="(image, index) in photograph" @click="rm(index)" :class="{'photo-error':feedback[image.identifier]}" :title="'Foto '+(image.identifier||'nieuw')">
       <img :src="image.src">
       <ul v-if="feedback[image.identifier]">
         <li v-for="remark in imgRemarks[image.identifier]">{{ remark }}</li>

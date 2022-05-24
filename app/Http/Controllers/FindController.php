@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\FindEventStored;
+use App\Events\FindEventUpdated;
 use App\Helpers\Pager;
 use App\Http\Controllers\Traits\ProcessesFindFilters;
 use App\Http\Requests\CreateFindRequest;
@@ -98,7 +100,7 @@ class FindController extends Controller
             'opschrift',
             'photographCaption',
             'findSpotLocation',
-            'excavationLocation'
+            'excavationLocation',
         ];
 
         foreach ($filterFacets as $filterFacet) {
@@ -170,21 +172,18 @@ class FindController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
      * @param  CreateFindRequest $request
-     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(CreateFindRequest $request, UserRepository $users)
+    public function store(CreateFindRequest $request)
     {
-        $input = $request->getInput();
-
         $user = $request->user();
 
         if (empty($user)) {
             abort('401');
         }
+
+        $input = $request->getInput();
 
         $images = [];
 
@@ -209,9 +208,10 @@ class FindController extends Controller
             $input['object']['objectValidationStatus'] = 'Klaar voor validatie';
         }
 
-        // Make find
         try {
             $findId = $this->finds->store($input);
+
+            event(new FindEventStored($findId));
 
             // Send a confirmation email to the user
             $input['identifier'] = $findId;
@@ -287,6 +287,7 @@ class FindController extends Controller
         $view = 'pages.finds-detail';
         $typologyInformation = [];
         $excavationInformation = [];
+        $context = [];
 
         if (array_get($find, 'object.classifiable') == 'false') {
             $view = 'pages.public-finds-detail';
@@ -468,11 +469,11 @@ class FindController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Everyman\Neo4j\Exception
      */
-    public function update(UpdateFindRequest $request, $findId)
+    public function update(UpdateFindRequest $request, int $findId)
     {
-        $find_node = $this->finds->getById($findId);
+        $findNode = $this->finds->getById($findId);
 
-        if (!empty($find_node)) {
+        if (!empty($findNode)) {
             $input = $request->input();
 
             $images = [];
@@ -481,11 +482,11 @@ class FindController extends Controller
             if (!empty($input['object']['photograph'])) {
                 foreach ($input['object']['photograph'] as $image) {
                     if (empty($image['identifier'])) {
-                        [$name, $name_small, $width, $height] = $this->processImage($image);
+                        [$name, $resizedName, $width, $height] = $this->processImage($image);
 
                         $images[] = [
                             'src' => $request->root() . '/uploads/' . $name,
-                            'resized' => $request->root() . '/uploads/' . $name_small,
+                            'resized' => $request->root() . '/uploads/' . $resizedName,
                             'width' => $width,
                             'height' => $height,
                         ];
@@ -499,10 +500,12 @@ class FindController extends Controller
             $input['person'] = ['id' => $request->getOwnerId()];
 
             $find = new FindEvent();
-            $find->setNode($find_node);
+            $find->setNode($findNode);
 
             try {
                 $find->update($input);
+
+                event(new FindEventUpdated($findId));
 
                 $this->registerPiwikEvent($request->user()->id, 'Update', @$input['object']['objectValidationStatus']);
 
@@ -537,31 +540,31 @@ class FindController extends Controller
     }
 
     /**
-     * Process an image
-     *
-     * @param  array $image The configuration of an image, contains a base64 encoded image
+     * @param  array $image_config
      * @return array
      */
-    private function processImage($image_config)
+    private function processImage(array $image_config)
     {
         $image = \Image::make($image_config['src']);
 
         $public_path = public_path('uploads/');
 
-        $image_name = str_random(6) . '_' . $image_config['name'];
-        $image_name_small = 'small_' . $image_name;
+        $imageName = str_random(6) . '_' . $image_config['name'];
+        $resizedName = 'small_' . $imageName;
 
-        $image->save($public_path . $image_name);
+        $image->save($public_path . $imageName);
         $width = $image->width();
         $height = $image->height();
 
         // Resize the image and save it under a different name
-        $image->resize(640, 480, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        })->save($public_path . $image_name_small);
+        $image
+            ->resize(640, 480, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->save($public_path . $resizedName);
 
-        return [$image_name, $image_name_small, $width, $height];
+        return [$imageName, $resizedName, $width, $height];
     }
 
     /**

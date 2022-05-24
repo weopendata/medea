@@ -24,7 +24,7 @@ class BaseRepository
     }
 
     /**
-     * @param array $properties
+     * @param  array $properties
      * @return int
      * @throws \Everyman\Neo4j\Exception
      */
@@ -37,8 +37,8 @@ class BaseRepository
     }
 
     /**
-     * @param integer $nodeId
-     * @param array $nodeData
+     * @param  integer $nodeId
+     * @param  array   $nodeData
      * @return bool
      * @throws \Everyman\Neo4j\Exception
      */
@@ -61,15 +61,15 @@ class BaseRepository
     }
 
     /**
-     * @param integer $id
-     * @return array|\Everyman\Neo4j\Node|null
+     * @param  integer $nodeId
+     * @return \Everyman\Neo4j\Node|void
      * @throws \Everyman\Neo4j\Exception
      */
-    public function getById($id)
+    public function getById(int $nodeId)
     {
         $client = $this->getClient();
 
-        $node = $client->getNode($id);
+        $node = $client->getNode($nodeId);
 
         if (empty($node)) {
             return;
@@ -80,8 +80,6 @@ class BaseRepository
                 return $node;
             }
         }
-
-        return null;
     }
 
     /**
@@ -100,7 +98,7 @@ class BaseRepository
         LIMIT 1";
 
         $variables = [
-            'internalId' => $internalId
+            'internalId' => $internalId,
         ];
 
         $cypherQuery = new Query($this->getClient(), $queryString, $variables);
@@ -114,8 +112,8 @@ class BaseRepository
     }
 
     /**
-     * @param string $property
-     * @param string $value
+     * @param  string $property
+     * @param  string $value
      * @return array|\Everyman\Neo4j\Node
      * @throws \Everyman\Neo4j\Exception
      */
@@ -130,7 +128,7 @@ class BaseRepository
         LIMIT 1";
 
         $variables = [
-            'propertyValue' => $value
+            'propertyValue' => $value,
         ];
 
         $cypherQuery = new Query($this->getClient(), $queryString, $variables);
@@ -145,8 +143,8 @@ class BaseRepository
     /**
      * Get all the bare nodes
      *
-     * @param integer $limit
-     * @param integer $offset
+     * @param  integer $limit
+     * @param  integer $offset
      *
      * @return \Everyman\Neo4j\Query\Row
      * @throws \Everyman\Neo4j\Exception
@@ -189,7 +187,7 @@ class BaseRepository
     }
 
     /**
-     * @param integer $id
+     * @param  integer $id
      * @return bool
      * @throws \Everyman\Neo4j\Exception
      */
@@ -225,7 +223,7 @@ class BaseRepository
      * Fetches the relevant data that the front-end needs
      * in order to visualize a certain find and it's related data
      *
-     * @param integer
+     * @param  integer
      *
      * @return array
      * @throws \Everyman\Neo4j\Exception
@@ -245,7 +243,7 @@ class BaseRepository
     }
 
     /**
-     * @param string $internalId
+     * @param  string $internalId
      * @return array
      */
     public function getDataViaInternalId($internalId)

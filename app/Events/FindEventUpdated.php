@@ -10,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FindEventStored
+class FindEventUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -32,7 +32,7 @@ class FindEventStored
     /**
      * @return int
      */
-    public function getFindId()
+    public function getFindId(): int
     {
         return $this->findId;
     }

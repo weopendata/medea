@@ -4,6 +4,8 @@
 namespace App\Jobs\Importers;
 
 
+use App\Events\FindEventStored;
+use App\Events\FindEventUpdated;
 use App\Models\Context;
 use App\Models\FindEvent;
 use App\Repositories\ContextRepository;
@@ -42,18 +44,30 @@ class ImportFinds extends AbstractImporter
             $classificationDescription = @$find['classificationDescription'];
             unset($find['PANid']);
 
-            // Perform the create/update of the find
+            // Perform the creation / update of the find
             if ($action == 'update') {
                 app(FindRepository::class)->update($findId, $find);
+
+                event(new FindEventUpdated($findId));
 
                 $this->addLog($index, 'Updated a find ', $action, ['identifier' => $findId, 'data' => $data], true);
             } else {
                 $findId = app(FindRepository::class)->store($find);
 
+                event(new FindEventStored($findId));
+
                 $this->addLog($index, 'Added a find ', $action, ['identifier' => $findId, 'data' => $data], true);
             }
 
             if (empty($panId) && empty($data['publicationReference'])) {
+                return;
+            }
+
+            $objectId = app(FindRepository::class)->getRelatedObjectId($findId);
+
+            if (empty($objectId)) {
+                \Log::error("No object ID found for find ID $findId");
+
                 return;
             }
 
@@ -65,7 +79,7 @@ class ImportFinds extends AbstractImporter
                     'productionClassificationDescription' => $classificationDescription,
                 ];
 
-                app(ObjectRepository::class)->upsertClassification($find['object']['identifier'], $productionClassification);
+                app(ObjectRepository::class)->upsertClassification($objectId, $productionClassification);
             }
 
             // Add a classification for the publication if applicable
@@ -75,7 +89,7 @@ class ImportFinds extends AbstractImporter
                     'productionClassificationType' => 'Gelijkaardige vondst',
                 ];
 
-                app(ObjectRepository::class)->upsertClassification($find['object']['identifier'], $productionClassification);
+                app(ObjectRepository::class)->upsertClassification($objectId, $productionClassification);
             }
         } catch (\Exception $ex) {
             \Log::error($ex->getMessage());
@@ -272,7 +286,7 @@ class ImportFinds extends AbstractImporter
 
             $imageData = Storage::disk('ftp')->get($value);
 
-            list($name, $name_small, $width, $height) = processImage(['src' => $imageData, 'name' => $photographName]);
+            [$name, $name_small, $width, $height] = processImage(['src' => $imageData, 'name' => $photographName]);
 
             $photographs[] = [
                 'photographeFileName' => $name,

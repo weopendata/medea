@@ -4,14 +4,11 @@ namespace App\Repositories;
 
 use App\Events\FindEventStored;
 use App\Models\FindEvent;
-use App\Models\ProductionClassification;
-use App\NodeConstants;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use App\Services\NodeService;
-use Everyman\Neo4j\Node;
+use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Query\ResultSet;
 use Everyman\Neo4j\Relationship;
-use Everyman\Neo4j\Cypher\Query;
 
 /**
  * Class FindRepository
@@ -29,20 +26,16 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param $properties
+     * @param array $properties
      * @return int
      * @throws \Everyman\Neo4j\Exception
      */
-    public function store($properties)
+    public function store(array $properties)
     {
         $find = new FindEvent($properties);
-
         $find->save();
 
         $findId = $find->getId();
-
-        // TODO: handle it by indexing it via the indexing service + add a new clause that filters on "id" so we can reuse the getAllWithFilters
-        event(new FindEventStored($findId));
 
         return $findId;
     }
@@ -67,7 +60,7 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * Get all of the finds for a person
+     * Get all the finds for a person
      *
      * @param  Person  $person The Person object
      * @param  integer $limit
@@ -187,144 +180,6 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param         $filters
-     * @param  string $validationStatus
-     * @return int
-     * @throws \Exception
-     */
-    public function getFindsCountForFilter($filters, $validationStatus = '*'): int
-    {
-        extract($this->prepareFilteredFindsListQuery($filters, $validationStatus));
-
-        return $this->getCount($query, $variables);
-    }
-
-    /**
-     * @deprecated
-     * @param  array  $filters
-     * @param  string $validationStatus
-     * @return array
-     */
-    private function prepareFilteredFindsFacetCountQuery(array $filters, string $validationStatus)
-    {
-        extract($this->getQueryStatements($filters, '', '', $validationStatus, ['person', 'typology', 'excavationTitle']));
-
-        // Facet counts are prepared in the "with" statement part of the query
-        $withProperties = ['count(photographCaption) as photographCaption'];
-        $facetCountStatements = $this->getFilteredFindsDistinctFacetValueStatements();
-
-        foreach ($facetCountStatements as $facetCountName => $facetCountStatement) {
-            $withProperties[] = $facetCountStatement . ' as ' . $facetCountName;
-        }
-
-        $withStatement = implode(', ', $withProperties);
-
-        $fullMatchStatement = $initialStatement;
-
-        if (!empty($fullMatchStatement)) {
-            $fullMatchStatement .= ', ' . $matchStatement;
-            $fullMatchStatement = trim($fullMatchStatement);
-        }
-
-        $fullMatchStatement = rtrim($fullMatchStatement, ',');
-
-        $query = "MATCH $fullMatchStatement
-        WHERE $whereStatement";
-
-        // Add the count of photograph captions, we just need to know if there are any or not, and counting is more
-        // efficient than retrieving the distinct values, which is the approach we use via the "facet statements"
-        $query .= "OPTIONAL MATCH (object:E22)-[:P62]-(:E38)-[:P3]-(photographCaption:E62) where " . NodeService::getTenantWhereStatement(['object']);
-
-        foreach ($optionalStatements as $optionalStatement) {
-            $query .= ' OPTIONAL MATCH ' . $optionalStatement['match'] . ' WHERE ' . $optionalStatement['where'];
-        }
-
-        $returnProperties = array_merge(array_keys($facetCountStatements), ['photographCaption']);
-
-        $query .= " WITH $withStatement
-        RETURN " . implode(',', $returnProperties);
-
-        if (!empty($startStatement)) {
-            $query = $startStatement . $query;
-        }
-
-        return compact('query', 'variables');
-    }
-
-    /**
-     * @param  array       $filters
-     * @param  string|null $validationStatus
-     * @return array
-     */
-    public function getFacetCounts(array $filters, ?string $validationStatus = '*')
-    {
-        extract($this->prepareFilteredFindsFacetCountQuery($filters, $validationStatus));
-
-        $cypherQuery = new Query($this->getClient(), $query, $variables);
-
-        $facetResults = $cypherQuery->getResultSet();
-
-        if ($facetResults->count() == 0) {
-            return [];
-        }
-
-        $facetResultsRow = $facetResults[0];
-
-        $facetNames = $this->getFacetNames();
-        $facetCountResults = [];
-
-        // It could be that multiple values are bundled together, the query returns raw data which it then transforms into "Row" objects
-        // The raw data has the following structure: [[], [facet1], [facet2, facet3], [], [facet6], ... ]
-        $omittedFilterFacets = explode(',', env('EXCLUDED_FILTER_FACETS', ''));
-
-        foreach ($facetNames as $facetName) {
-            $facetValueCollections = $facetResultsRow[$facetName];
-            $facetCountResults[$facetName] = [];
-
-            if (empty($facetValueCollections) || in_array($facetName, $omittedFilterFacets)) {
-                continue;
-            }
-
-            if (!is_iterable($facetValueCollections)) {
-                $facetCountResults[$facetName] = $facetValueCollections > 0 ? ['Aanwezig'] : [];
-
-                continue;
-            }
-
-            foreach ($facetValueCollections as $facetValueCollection) {
-                if ($facetValueCollection->count() == 0) {
-                    continue;
-                }
-
-                foreach ($facetValueCollection as $facetValueItem) {
-                    $facetCountResults[$facetName][] = $facetValueItem;
-                }
-            }
-
-            // Make sure the values are unique
-            $facetCountResults[$facetName] = collect($facetCountResults[$facetName])
-                ->sort()
-                ->unique()
-                ->values()
-                ->toArray();
-        }
-
-        // For the facet "featureTypes" we need to work with a select number of types and we need to "unwind" them:
-        // featureTypes: ['type1', 'type2', ...] -> transform each value into a dedicated "facet"
-        // These facets will be treated as singular filters: "contains non-empty value" or "doesn't matter which value (empty, existing or non-empty"
-        // empty values can be the absence of the node, or the node containing an "empty" value, for example "Nee" or "Neen"
-        $featureTypes = $facetCountResults['featureTypes'];
-
-        unset($facetCountResults['featureTypes']);
-
-        foreach ($featureTypes as $featureType) {
-            $facetCountResults[$featureType] = ['Aanwezig'];
-        }
-
-        return $facetCountResults;
-    }
-
-    /**
      * Prepare the filtered cypher query
      *
      *
@@ -421,8 +276,7 @@ class FindRepository extends BaseRepository
             "head(location).geoGrid as grid",
             "excavationTitle.value as excavationTitle",
             "excavationLocation.value as excavationAddressLocality",
-            "head(objectNr) as objectNr",
-            "find.elasticSearchId as elasticSearchId",
+            "head(objectNr) as objectNr"
         ];
 
         $query .= " WITH $withStatement
@@ -464,10 +318,9 @@ class FindRepository extends BaseRepository
         // Non-personal find statement
         $initialStatement = '(find:E10)-[P12]-(object:E22)-[objectVal:P2]-(validation), (find:E10)-[P4]-(findDate:E52)';
 
-        // Check on validation status
         if ($validationStatus == '*') {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
-        } else {
+        } elseif (!empty($validationStatus)) {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
             $variables['validationStatus'] = $validationStatus;
         }
@@ -640,6 +493,11 @@ class FindRepository extends BaseRepository
                 'whereVariableName' => 'embargo',
                 'with' => 'object',
             ],
+            'id' => [
+                'match' => '(find:E10)',
+                'where' => 'id(find) = {id} AND ' . NodeService::getTenantWhereStatement(['find']),
+                'whereVariableName' => 'id',
+            ],
             'collection' => [
                 'match' => '(object:E22)-[P24]-(collection:E78)',
                 'where' => 'id(collection)= {collection} AND ' . NodeService::getTenantWhereStatement(['collection']),
@@ -747,31 +605,6 @@ class FindRepository extends BaseRepository
         }
 
         return $statistics;
-    }
-
-    /**
-     * Get the count of a query by replacing the RETURN statement
-     * This function assumes that find is declared in the query
-     *
-     * @param  string $query     A cypher query string
-     * @param  array  $variables The variables and their variables for the query
-     *
-     * @return integer
-     */
-    private function getCount($query, $variables)
-    {
-        $chunks = explode('RETURN', $query);
-
-        $statement = $chunks[0];
-
-        $countQuery = $statement . ' RETURN count(distinct find) as findCount';
-        $countQuery = new Query($this->getClient(), $countQuery, $variables);
-
-        $results = $countQuery->getResultSet();
-
-        $countResult = $results->current();
-
-        return $countResult['findCount'];
     }
 
     /**
@@ -989,40 +822,24 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @return array
+     * @param  int $findId
+     * @return int|void
      */
-    private function getFilteredFindsDistinctFacetValueStatements()
+    public function getRelatedObjectId(int $findId)
     {
-        $facets = [
-            'category' => 'collect(distinct [p in (object:E22)-[:P2]-(:E55{name:"objectCategory"}) | last(nodes(p)).value])',
-            'period' => 'collect(distinct [p in (object:E22)-[:P42]-(:E55{name:"period"}) | last(nodes(p)).value])',
-            'objectMaterial' => 'collect(distinct [p in (object:E22)-[:P45]-(:E57) | last(nodes(p)).value])',
-            'modification' => 'collect(distinct [p in (object:E22)-[:P108]->(:E11)-[:P33]->(:E29)-[:P2]->(:E55) | last(nodes(p)).value])',
-            'collection' => 'collect(distinct [p in (object:E22)-[:P24]-(:E78) | id(last(nodes(p)))])',
-            'featureTypes' => 'collect(distinct [p in (object:E22)-[:P56]->(:E25)-[:P2]->(:E55) | last(nodes(p)).value])',
-            'findSpotLocation' => 'collect(distinct [p in (find:E10)-[:P7]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
-            'excavationLocation' => 'collect(distinct [p in (excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(:E45{name:"locationAddressLocality"}) | last(nodes(p)).value])',
-        ];
+        $query = 'MATCH (find:E10)-[P12]-(object:E22)
+        WHERE id(find) = {findId} AND '. NodeService::getTenantWhereStatement(['find', 'object']) .
+        'RETURN id(object) as objectId';
 
-        $excludedFacets = explode(',', env('EXCLUDED_FILTER_FACETS')) ?? [];
+        $cypherQuery = new Query($this->getClient(), $query, ['findId' => $findId]);
+        $results = $cypherQuery->getResultSet();
 
-        if (empty($excludedFacets)) {
-            return $facets;
+        if ($results->count() < 1) {
+            return;
         }
 
-        return collect($facets)
-            ->filter(function ($facetValue, $facetKey) use ($excludedFacets) {
-                return !in_array($facetKey, $excludedFacets);
-            })
-            ->values()
-            ->toArray();
-    }
+        $result = $results->current();
 
-    /**
-     * @return array
-     */
-    private function getFacetNames()
-    {
-        return array_merge(array_keys($this->getFilteredFindsDistinctFacetValueStatements()), ['photographCaption']);
+        return @$result['objectId'];
     }
 }

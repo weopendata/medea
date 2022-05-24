@@ -3,25 +3,22 @@
 namespace App\Services;
 
 use App\Repositories\ElasticSearch\FindRepository;
-use \App\Repositories\FindRepository as Neo4JFindRepository;
 
 class IndexingService
 {
     /**
-     * @param  array $find
+     * @param  array $find A flat representation of find data that can be indexed
      * @return void
      * @throws \Exception
      */
     public function indexFind(array $find)
     {
-        $elasticSearchId = array_get($find, 'elasticSearchId');
+        $elasticSearchId = null;
 
-        if (empty($elasticSearchId)) {
-            $findDocument = app(FindRepository::class)->getByNeo4jId($find['identifier']);
+        $findDocument = app(FindRepository::class)->getByNeo4jId($find['identifier']);
 
-            if (!empty($findDocument)) {
-                $elasticSearchId = $findDocument['id'];
-            }
+        if (!empty($findDocument)) {
+            $elasticSearchId = $findDocument['id'];
         }
 
         if (empty($elasticSearchId)) {
@@ -30,9 +27,6 @@ class IndexingService
             if (empty($elasticSearchId)) {
                 throw new \Exception("Something went wrong while indexing find with ID " . $find['identifier']);
             }
-
-            $findNode = app(Neo4JFindRepository::class)->getByID($find['identifier']);
-            $findNode->setProperty('elasticSearchId', $elasticSearchId);
 
             return;
         }

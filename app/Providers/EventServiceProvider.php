@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use App\Events\FindEventStored;
+use App\Events\FindEventUpdated;
+use App\Listeners\HandleFindEventStored;
+use App\Listeners\HandleFindEventUpdated;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -13,8 +16,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\SomeEvent' => [
-            'App\Listeners\EventListener',
+        FindEventStored::class => [
+            HandleFindEventStored::class
+        ],
+
+        FindEventUpdated::class => [
+            HandleFindEventUpdated::class
         ],
     ];
 
@@ -26,8 +33,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //parent::boot($events);
-
-        //
+        parent::boot();
     }
 }
