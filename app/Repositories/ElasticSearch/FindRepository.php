@@ -151,7 +151,33 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param  array       $filters
+     * @param  int|null    $limit
+     * @param  int|null    $offset
+     * @param  string|null $orderBy
+     * @param  string|null $orderFlow
+     * @return array
+     */
+    public function getAll(
+        ?int    $limit = 20,
+        ?int    $offset = 0,
+        ?string $orderBy = 'findDate',
+        ?string $orderFlow = 'ASC'
+    ): array
+    {
+        $query = $this->createSearchQuery([], $orderBy, $orderFlow, $limit, $offset);
+
+        $search = $this->createSearch();
+        $search->setQuery($query);
+
+        $resultSet = $search->search();
+
+        $findResults = $this->parseDocumentsFromResultSet($resultSet);
+
+        return $findResults;
+    }
+
+    /**
+     * @param  array|null  $filters
      * @param  int|null    $limit
      * @param  int|null    $offset
      * @param  string|null $orderBy
@@ -159,22 +185,14 @@ class FindRepository extends BaseRepository
      * @return array
      */
     public function getAllWithFilter(
-        array   $filters,
+        ?array  $filters = [],
         ?int    $limit = 20,
         ?int    $offset = 0,
         ?string $orderBy = 'findDate',
         ?string $orderFlow = 'ASC'
     ): array
     {
-        $boolQuery = $this->buildQueryFromFilters($filters);
-
-        $orderBy = @$this->getFilterKeyToPropertyMapping()[$orderBy] ?? $orderBy;
-
-        $query = new Query();
-        $query->setQuery($boolQuery);
-        $query->setSize($limit);
-        $query->setFrom($offset);
-        $query->addSort([$orderBy => ['order' => $orderFlow]]);
+        $query = $this->createSearchQuery($filters, $orderBy, $orderFlow, $limit, $offset);
 
         $this->applyFacetAggregations($query);
 
@@ -428,12 +446,12 @@ class FindRepository extends BaseRepository
 
         if (!empty($find['lng']) && !empty($find['lat']) && is_numeric($find['lng']) && is_numeric($find['lat'])) {
             $location['lat'] = (double)$find['lat'];
-            $location['lon'] = (double) $find['lng'];
+            $location['lon'] = (double)$find['lng'];
         }
 
         if (!empty($find['excavationLng']) && !empty($find['excavationLat']) && is_numeric($find['excavationLng']) && is_numeric($find['excavationLat'])) {
-            $location['lat'] = (double) $find['excavationLat'];
-            $location['lon'] = (double) $find['excavationLng'];
+            $location['lat'] = (double)$find['excavationLat'];
+            $location['lon'] = (double)$find['excavationLng'];
         }
 
         $ftsDescription = '';
@@ -560,5 +578,28 @@ class FindRepository extends BaseRepository
                 return $result;
             })
             ->toArray();
+    }
+
+    /**
+     * @param  array  $filters
+     * @param  string $orderBy
+     * @param  string $orderFlow
+     * @param  int    $limit
+     * @param  int    $offset
+     * @return Query
+     */
+    private function createSearchQuery(array $filters, string $orderBy, string $orderFlow, int $limit, int $offset): Query
+    {
+        $boolQuery = $this->buildQueryFromFilters($filters);
+
+        $orderBy = @$this->getFilterKeyToPropertyMapping()[$orderBy] ?? $orderBy;
+
+        $query = new Query();
+        $query->setQuery($boolQuery);
+        $query->setSize($limit);
+        $query->setFrom($offset);
+        $query->addSort([$orderBy => ['order' => $orderFlow]]);
+
+        return $query;
     }
 }

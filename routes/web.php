@@ -19,7 +19,6 @@ Route::get('help', 'HomeController@help');
 Route::get('voorwaarden', 'HomeController@voorwaarden');
 
 Route::resource('finds', 'FindController');
-//Route::resource('persons', 'UserController');
 Route::resource('collections', 'CollectionController');
 Route::get('typology-browser', 'TypologyController@show');
 

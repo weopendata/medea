@@ -182,4 +182,9 @@ class FindController extends Controller
 
         return $find;
     }
+
+    public function handleThirdPartyRequest()
+    {
+        
+    }
 }

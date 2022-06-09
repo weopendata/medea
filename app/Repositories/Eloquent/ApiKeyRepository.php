@@ -48,6 +48,18 @@ class ApiKeyRepository
     }
 
     /**
+     * @param  string $apiKey
+     * @return bool
+     */
+    public function doesApiKeyExist(string $apiKey): bool
+    {
+        return $this
+            ->model
+            ->where('api_key', $apiKey)
+            ->exists();
+    }
+
+    /**
      * @param  int $apiKeyId
      * @return void
      */
