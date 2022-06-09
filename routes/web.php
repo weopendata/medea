@@ -35,6 +35,8 @@ Route::group(['middleware' => 'roles:administrator'], function () {
     Route::post('/api/uploads/{uploadId}/upload', 'UploadController@startUpload');
     Route::get('/api/uploads/{import_job_id}/logs', 'UploadController@getLogs');
     Route::post('/api/administrators', 'UserController@storeUser');
+    Route::resource('/api-keys', 'ApiKeyController');
+    Route::get('/api/api-keys', 'ApiKeyController@get');
 });
 
 Route::group(['middleware' => 'roles:detectorist|registrator|vondstexpert'], function () {

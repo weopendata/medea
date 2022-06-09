@@ -12,13 +12,14 @@ use Illuminate\Http\Request;
 
 class UploadController extends Controller
 {
-    public function index()
+    /**
+     * @return \Illuminate\Http\Response
+     */
+    public function index(): \Illuminate\Http\Response
     {
-        $uploads = [];
-
         return response()
             ->view('pages.uploads', [
-                'uploads' => $uploads
+                'uploads' => []
             ]);
     }
 

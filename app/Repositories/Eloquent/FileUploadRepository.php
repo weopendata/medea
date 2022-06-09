@@ -19,8 +19,8 @@ class FileUploadRepository
     }
 
     /**
-     * @param array $fileUpload
-     * @return mixed
+     * @param  array $fileUpload
+     * @return int
      */
     public function store(array $fileUpload)
     {
@@ -34,7 +34,7 @@ class FileUploadRepository
     /**
      * @return array
      */
-    public function get()
+    public function get(): array
     {
         return $this
             ->model
@@ -85,7 +85,7 @@ class FileUploadRepository
     }
 
     /**
-     * @param integer $uploadId
+     * @param  integer $uploadId
      */
     public function delete($uploadId)
     {
