@@ -5,7 +5,6 @@ namespace App\Repositories\ElasticSearch;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use Carbon\Carbon;
 use Elastica\Aggregation\GeohashGrid;
-use Elastica\Aggregation\GeotileGridAggregation;
 use Elastica\Document;
 use Elastica\Exception\ResponseException;
 use Elastica\Query;
@@ -151,32 +150,6 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param  int|null    $limit
-     * @param  int|null    $offset
-     * @param  string|null $orderBy
-     * @param  string|null $orderFlow
-     * @return array
-     */
-    public function getAll(
-        ?int    $limit = 20,
-        ?int    $offset = 0,
-        ?string $orderBy = 'findDate',
-        ?string $orderFlow = 'ASC'
-    ): array
-    {
-        $query = $this->createSearchQuery([], $orderBy, $orderFlow, $limit, $offset);
-
-        $search = $this->createSearch();
-        $search->setQuery($query);
-
-        $resultSet = $search->search();
-
-        $findResults = $this->parseDocumentsFromResultSet($resultSet);
-
-        return $findResults;
-    }
-
-    /**
      * @param  array|null  $filters
      * @param  int|null    $limit
      * @param  int|null    $offset
@@ -189,12 +162,15 @@ class FindRepository extends BaseRepository
         ?int    $limit = 20,
         ?int    $offset = 0,
         ?string $orderBy = 'findDate',
-        ?string $orderFlow = 'ASC'
+        ?string $orderFlow = 'ASC',
+        bool $withFacets = true
     ): array
     {
         $query = $this->createSearchQuery($filters, $orderBy, $orderFlow, $limit, $offset);
 
-        $this->applyFacetAggregations($query);
+        if ($withFacets) {
+            $this->applyFacetAggregations($query);
+        }
 
         $search = $this->createSearch();
         $search->setQuery($query);
@@ -203,7 +179,12 @@ class FindRepository extends BaseRepository
 
         $findResults = $this->parseDocumentsFromResultSet($resultSet);
         $findResults = $this->appendMetaDataToFindResults($findResults);
-        $facetCounts = $this->parseAggregations($resultSet, $filters);
+
+        $facetCounts = [];
+
+        if ($withFacets) {
+            $facetCounts = $this->parseAggregations($resultSet, $filters);
+        }
 
         return [
             'data' => $findResults,
@@ -471,30 +452,69 @@ class FindRepository extends BaseRepository
             $ftsDescription .= ' ' . @$find[$ftsField];
         }
 
+        // Convert fields that are indexed with numerical doubles to actual double typed values
+        $fieldsThatAreDoubles = [
+            'depth',
+            'width',
+            'height',
+            'diameter',
+            'weight',
+            'amount',
+        ];
+
+        foreach ($fieldsThatAreDoubles as $doubleField) {
+            if (empty($find[$doubleField])) {
+                $find[$doubleField] = null;
+
+                continue;
+            }
+
+            $find[$doubleField] = (double)$find[$doubleField];
+        }
+
         $findDocument = [
-            'findId' => $find['identifier'],
+            'findId' => $find['findId'],
+            'findUUID' => @$find['findUUID'],
+            'excavationId' => @$find['excavationId'],
+            'contextId' => @$find['contextId'],
             'excavationTitle' => @$find['excavationTitle'],
             'findDate' => $findDate,
             'objectNr' => array_get($find, 'objectNr'),
-            'objectCategory' => array_get($find, 'category'),
-            'objectPeriod' => array_get($find, 'period'),
-            'objectMaterial' => array_get($find, 'material'),
+            'objectCategory' => array_get($find, 'objectCategory'),
+            'objectPeriod' => array_get($find, 'objectPeriod'),
+            'objectMaterial' => array_get($find, 'objectMaterial'),
             'validation' => array_get($find, 'validation'),
-            'objectTechnique' => array_get($find, 'technique'),
+            'objectTechnique' => array_get($find, 'objectTechnique'),
             'modification' => array_get($find, 'modification'),
+            'surfaceTreatment' => array_get($find, 'treatment'),
+            'width' => array_get($find, 'width'),
+            'widthUnit' => array_get($find, 'widthUnit'),
+            'height' => array_get($find, 'height'),
+            'heightUnit' => array_get($find, 'heightUnit'),
+            'depth' => array_get($find, 'depth'),
+            'depthUnit' => array_get($find, 'depthUnit'),
+            'diameter' => array_get($find, 'diameter'),
+            'diameterUnit' => array_get($find, 'diameterUnit'),
+            'weight' => array_get($find, 'weight'),
+            'weightUnit' => array_get($find, 'weightUnit'),
             'findSpotLocality' => array_get($find, 'locality'),
             'excavationLocality' => array_get($find, 'excavationAddressLocality'),
             'accuracy' => array_get($find, 'accuracy'),
             'finderId' => array_get($find, 'finderId'),
             'finderEmail' => array_get($find, 'email'),
             'panId' => array_get($find, 'panId'),
-            'panInitialPeriod' => array_get($find, '_panTypologyInfo.startYear'),
-            'panFinalPeriod' => array_get($find, '_panTypologyInfo.endYear'),
-            'complete' => in_array(strtolower(array_get($find, 'complete') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',
-            'mark' => in_array(strtolower(array_get($find, 'mark') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',
-            'inscription' => in_array(strtolower(array_get($find, 'insignia') ?? ''), ["nee", "neen", "onbekend"]) ? 'Nee' : 'Ja',
-            'photograph_path' => array_get($find, 'photograph'),
-            'photographCaptionPresent' => !empty($find['photographCaption']) ? 'yes' : 'no',
+            'panInitialPeriod' => array_get($find, 'panInitialPeriod'),
+            'panFinalPeriod' => array_get($find, 'panFinalPeriod'),
+            'conversation' => array_get($find, 'conservation'),
+            'complete' => array_get($find, 'complete'),
+            'mark' => array_get($find, 'mark'),
+            'inscription' => array_get($find, 'insignia'),
+            'photographPath' => array_get($find, 'photographPath'),
+            'photographCaption' => array_get($find, 'photographCaption'),
+            'photographNote' => array_get($find, 'photographNote'),
+            'photographAttribution' => array_get($find, 'photographRightsAttribution'),
+            'photographLicense' => array_get($find, 'photographRightsLicense'),
+            'photographCaptionPresent' => array_get($find, 'photographCaptionPresent'),
             'embargo' => array_get($find, 'embargo'),
             'collection' => array_get($find, 'collection'),
             'fts_description' => trim($ftsDescription),
@@ -560,7 +580,7 @@ class FindRepository extends BaseRepository
      * @param  array $findResults
      * @return array
      */
-    private function appendMetaDataToFindResults(array $findResults)
+    private function appendMetaDataToFindResults(array $findResults): array
     {
         $panIds = collect(array_pluck($findResults, 'panId') ?? [])
             ->filter()

@@ -32,7 +32,7 @@ class FindsTransformer extends Transformer
             'objectMaterial' => 'material',
             'objectTechnique' => 'technique',
             'inscription' => 'insignia',
-            'photograph_path' => 'photograph',
+            'photographPath' => 'photograph',
             'findSpotLocality' => 'locality',
             'finderEmail' => 'email',
         ];
@@ -46,11 +46,6 @@ class FindsTransformer extends Transformer
 
             unset($find[$property]);
         }
-
-        /*if (!empty($find['location']) && !empty($find['location']['lat'])) {
-            $find['lat'] = array_get($find, 'location.lat');
-            $find['lng'] = array_get($find, 'location.lon');
-        }*/
 
         if (!empty($find['excavationLocality'])) {
             $find['locality'] = $find['excavationLocality'];

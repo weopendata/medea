@@ -13,11 +13,12 @@ class FindService
      * @param  int|null    $offset
      * @param  string|null $orderBy
      * @param  string|null $orderFlow
+     * @param  bool        $withFacets
      * @return array
      */
-    public function getAllWithFilter(array $filters, ?int $limit = 20, ?int $offset = 0, ?string $orderBy = 'findDate', ?string $orderFlow = 'ASC'): array
+    public function getAllWithFilter(array $filters, ?int $limit = 20, ?int $offset = 0, ?string $orderBy = 'findDate', ?string $orderFlow = 'ASC', bool $withFacets = true): array
     {
-        $findsResult = app(FindRepository::class)->getAllWithFilter($filters, $limit, $offset, $orderBy, $orderFlow);
+        $findsResult = app(FindRepository::class)->getAllWithFilter($filters, $limit, $offset, $orderBy, $orderFlow, $withFacets);
 
         $findsResult['data'] = TransformerService::transformFinds($findsResult['data']);
         $findsResult['facets'] = TransformerService::transformFindFacets($findsResult['facets']);

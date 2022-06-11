@@ -73,10 +73,14 @@ class DataManagement extends Command
     {
         switch ($choice) {
             case 1:
-                $this->removeAllFinds();
+                if ($this->confirm("Are you sure you want to remove all finds?")) {
+                    $this->removeAllFinds();
+                }
                 break;
             case 2:
-                $this->removeAllUsers();
+                if ($this->confirm("Are you sure you want to remove all users?")) {
+                    $this->removeAllUsers();
+                }
                 break;
             case 3:
                 $this->removeSingleFind();
@@ -85,27 +89,41 @@ class DataManagement extends Command
                 $repository = app(ExcavationRepository::class);
                 $class = ExcavationEvent::class;
 
-                $this->removeAll($repository, $class);
+                if ($this->confirm("Are you sure you want to remove all excavations?")) {
+                    $this->removeAll($repository, $class);
+                }
+
                 break;
             case 5:
                 $repository = app(ContextRepository::class);
                 $class = Context::class;
 
-                $this->removeAll($repository, $class);
+                if ($this->confirm("Are you sure you want to remove all contexts?")) {
+                    $this->removeAll($repository, $class);
+                }
+
                 break;
             case 6:
                 $repository = app(CollectionRepository::class);
                 $class = Collection::class;
 
-                $this->removeAll($repository, $class);
+                if ($this->confirm("Are you sure you want to remove all collections?")) {
+                    $this->removeAll($repository, $class);
+                }
+
                 break;
             case 7:
                 $this->indexFinds();
+                break;
             default:
                 break;
         }
     }
 
+    /**
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
     private function removeSingleFind()
     {
         $id = $this->ask('Enter the ID of the find we can remove');
@@ -115,11 +133,15 @@ class DataManagement extends Command
         $this->info('Removed find with ID ' . $id);
     }
 
+    /**
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
     private function removeAllUsers()
     {
         $count = 0;
 
-        $userNodes = $this->users->getAll();
+        $userNodes = $this->users->getAllNodes();
 
         $bar = $this->output->createProgressBar(count($userNodes));
 
@@ -137,11 +159,15 @@ class DataManagement extends Command
         $this->info("Removed $count Person nodes.");
     }
 
+    /**
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
     private function removeAllFinds()
     {
         $count = 0;
 
-        $findNodes = $this->finds->getAll();
+        $findNodes = $this->finds->getAllNodes();
 
         $bar = $this->output->createProgressBar(count($findNodes));
 
@@ -159,11 +185,17 @@ class DataManagement extends Command
         $this->info("Removed $count FindEvent nodes.");
     }
 
-    private function removeAll($repository, $class)
+    /**
+     * @param         $repository
+     * @param  string $class
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
+    private function removeAll($repository, string $class)
     {
         $count = 0;
 
-        $nodes = $repository->getAll();
+        $nodes = $repository->getAllNodes();
 
         $bar = $this->output->createProgressBar(count($nodes));
 
@@ -191,6 +223,9 @@ class DataManagement extends Command
      */
     private function indexFinds()
     {
+        // Make sure the mapping has been made in the index
+        app(\App\Repositories\ElasticSearch\FindRepository::class)->createIndexIfAbsent(database_path('mappings/elastic_search_finds_mapping.json'));
+
         $findsCount = app(FindRepository::class)->getCountOfAllFinds();
         $bar = $this->output->createProgressBar($findsCount);
 
@@ -202,7 +237,13 @@ class DataManagement extends Command
         while (count($finds['data']) > 0) {
             foreach ($finds['data'] as $find) {
                 try {
-                    app(IndexingService::class)->indexFind($find);
+                    app(IndexingService::class)->indexFind($find['identifier']);
+
+                    // Factor in a short resting period
+                    // The reason why is that Neo4j or the system that runs it runs out of open files
+                    // and needs time to close them again. Not adding a sleep causes a curl error 7 - could not connect
+                    // indicating that the Neo4J can't handle anymore requests.
+                    sleep(1);
                 } catch (\Exception $ex) {
                     \Log::error($ex->getMessage());
                     \Log::error($ex->getTraceAsString());

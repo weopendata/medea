@@ -58,10 +58,10 @@ class FindEvent extends Base
     /**
      * @param string $excavationId
      * @param string $contextId
-     * @param string $findId
+     * @param string|int $findId
      * @return string
      */
-    public static function createInternalId($excavationId, $contextId, $findId)
+    public static function createInternalId(string $excavationId, string $contextId, $findId): string
     {
         return $excavationId . '__' . $contextId . '__' . $findId;
     }

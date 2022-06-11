@@ -48,7 +48,7 @@ class PanTypologyRepository
      * @param  array $panIds
      * @return array
      */
-    public function getPanTypologyInformationForIds(array $panIds)
+    public function getPanTypologyInformationForIds(array $panIds): array
     {
         if (empty($panIds)) {
             return [];

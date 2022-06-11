@@ -127,7 +127,7 @@ If this is the case, add "ulimit -n 40000" to in the do_start() function of the 
 
 In local or production environments it might be that this solves the issue with open files for Neo4j itself, but in some cases it might be that your webserver set-up, 
 either the webserver itself or the underlying PHP process hits its open files limits as well. In the case of production, you can configure user level open files configurations, 
-do this for php-fpm. In local set-ups, the easiest way is to increase system wide open files settings and then running the PHP server from the cli, skipping tools like Laravel Valet.
+do this for php-fpm. In local set-ups, the easiest way is to increase your system open files settings and then running the PHP server from the cli, skipping tools like Laravel Valet.
 
 ```
 # Note, this might cause the "uploads" route to be inaccessible.

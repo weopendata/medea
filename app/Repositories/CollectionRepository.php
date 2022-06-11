@@ -75,15 +75,15 @@ class CollectionRepository extends BaseRepository
     /**
      * Get all the collection nodes
      *
-     * @param integer $limit
-     * @param integer $offset
-     * @param string $sortBy The field to sort by (title|created_at)
-     * @param string $sortOrder The sort order (ASC|DESC)
+     * @param  integer $limit
+     * @param  integer $offset
+     * @param string   $sortBy The field to sort by (title|created_at)
+     * @param string   $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      * @throws \Exception
      */
-    public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
+    public function getAll(int $limit = 50, int $offset = 0, string $sortBy = '', string $sortOrder = 'DESC')
     {
         $client = $this->getClient();
 

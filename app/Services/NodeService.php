@@ -99,14 +99,14 @@ class NodeService
     }
 
     /**
-     * @param  Label    $label
-     * @param  array    $properties
-     * @param  int|null $limit
-     * @param  int|null $offset
+     * @param  Label      $label
+     * @param  array|null $properties
+     * @param  int|null   $limit
+     * @param  int|null   $offset
      * @return \Everyman\Neo4j\Query\Row
      * @throws \Exception
      */
-    public static function getNodesForLabel(Label $label, $properties = [], ?int $limit = 50, ?int $offset = 0)
+    public static function getNodesForLabel(Label $label, ?array $properties = [], ?int $limit = 50, ?int $offset = 0): Row
     {
         $whereStatement = self::getTenantWhereStatement(['n']);
 

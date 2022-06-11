@@ -143,18 +143,20 @@ class BaseRepository
     /**
      * Get all the bare nodes
      *
-     * @param  integer $limit
-     * @param  integer $offset
-     *
+     * @param  int|null $limit
+     * @param  int|null $offset
      * @return \Everyman\Neo4j\Query\Row
-     * @throws \Everyman\Neo4j\Exception
      * @throws \Exception
      */
-    public function getAll()
+    public function getAllNodes(?int $limit = null, ?int $offset = null): \Everyman\Neo4j\Query\Row
     {
         $client = $this->getClient();
 
         $label = $client->makeLabel($this->label);
+
+        if (!empty($limit)) {
+            return NodeService::getNodesForLabel($label, [], $limit, $offset);
+        }
 
         return NodeService::getNodesForLabel($label);
     }
@@ -221,14 +223,13 @@ class BaseRepository
 
     /**
      * Fetches the relevant data that the front-end needs
-     * in order to visualize a certain find and it's related data
+     * in order to visualize a certain find, and its related data
      *
-     * @param  integer
-     *
+     * @param  int $id
      * @return array
      * @throws \Everyman\Neo4j\Exception
      */
-    public function expandValues($id)
+    public function expandValues(int $id)
     {
         $node = $this->getById($id);
 

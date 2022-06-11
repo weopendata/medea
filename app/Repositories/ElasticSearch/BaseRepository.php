@@ -3,6 +3,8 @@
 namespace App\Repositories\ElasticSearch;
 
 use Elastica\Client;
+use Elastica\Index;
+use Elastica\Mapping;
 use Elastica\Search;
 
 class BaseRepository
@@ -41,6 +43,30 @@ class BaseRepository
 
         $this->client = new Client($elasticSearchConfig);
         $this->index = $this->client->getIndex($elasticSearchConfig['index']);
+    }
+
+    /**
+     * @param  string $pathToMappingFile
+     * @return void
+     */
+    public function createIndexIfAbsent(string $pathToMappingFile)
+    {
+        $indexExists = $this->index->exists();
+
+        if ($indexExists) {
+            return;
+        }
+
+        $indexConfiguration = json_decode(file_get_contents($pathToMappingFile), true);
+
+        $settings = $indexConfiguration['settings'];
+        $mappingProperties = $indexConfiguration['mappings']['properties'];
+
+        $this->index->create();
+        $this->index->close();
+        $this->index->setSettings($settings);
+        $this->index->setMapping(new Mapping($mappingProperties));
+        $this->index->open();
     }
 
     /**

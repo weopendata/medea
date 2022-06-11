@@ -35,6 +35,15 @@
       "findId": {
         "type": "keyword"
       },
+      "findUUID": {
+        "type": "keyword"
+      },
+      "contextId": {
+        "type": "keyword"
+      },
+      "excavationId": {
+        "type": "keyword"
+      },
       "finderEmail": {
         "type": "keyword"
       },
@@ -80,6 +89,51 @@
       "objectTechnique": {
         "type": "keyword"
       },
+      "surfaceTreatment": {
+        "type": "keyword"
+      },
+      "depth": {
+        "type": "double",
+        "coerce": "true"
+      },
+      "depthUnit": {
+        "type": "keyword"
+      },
+      "width": {
+        "type": "double",
+        "coerce": "true"
+      },
+      "widthUnit": {
+        "type": "keyword"
+      },
+      "height": {
+        "type": "double",
+        "coerce": "true"
+      },
+      "heightUnit": {
+        "type": "keyword"
+      },
+      "diameter": {
+        "type": "double",
+        "coerce": "true"
+      },
+      "diameterUnit": {
+        "type": "keyword"
+      },
+      "weight": {
+        "type": "double",
+        "coerce": "true"
+      },
+      "weightUnit": {
+        "type": "keyword"
+      },
+      "amount": {
+        "type": "double",
+        "coerce": "true"
+      },
+      "classificationDescription" : {
+        "type": "text"
+      },
       "excavationTitle": {
         "type": "keyword"
       },
@@ -95,19 +149,34 @@
       "modification": {
         "type": "keyword"
       },
-      "photograph_path": {
+      "photographPath": {
+        "type": "keyword"
+      },
+      "photographCaption": {
+        "type": "keyword"
+      },
+      "photographNote": {
+        "type": "text"
+      },
+      "photographAttribution": {
+        "type": "keyword"
+      },
+      "photographLicense": {
         "type": "keyword"
       },
       "panId": {
         "type": "keyword"
       },
       "panInitialPeriod": {
-        "type" : "integer",
+        "type": "integer",
         "coerce": true
       },
       "panFinalPeriod": {
-        "type" : "integer",
+        "type": "integer",
         "coerce": true
+      },
+      "embargo": {
+        "type": "keyword"
       },
       "complete": {
         "type": "keyword"
@@ -115,10 +184,10 @@
       "mark": {
         "type": "keyword"
       },
-      "embargo": {
+      "inscription": {
         "type": "keyword"
       },
-      "inscription": {
+      "conservation": {
         "type": "keyword"
       },
       "photographCaptionPresent": {

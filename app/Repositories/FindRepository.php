@@ -26,7 +26,7 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * @param array $properties
+     * @param  array $properties
      * @return int
      * @throws \Everyman\Neo4j\Exception
      */
@@ -60,48 +60,12 @@ class FindRepository extends BaseRepository
     }
 
     /**
-     * Get all the finds for a person
-     *
-     * @param  Person  $person The Person object
-     * @param  integer $limit
-     * @param  integer $offset
-     * @return array
-     * @throws \Everyman\Neo4j\Exception
-     */
-    public function getForPerson($person, $limit = 20, $offset = 0)
-    {
-        // Get all of the related finds
-        $personNode = $person->getNode();
-
-        $relationships = $personNode->getRelationships(['P29'], Relationship::DirectionOut);
-
-        // Apply paging by taking a slice of the relationships array
-        $relationships = array_slice($relationships, $offset, $limit);
-
-        $finds = [];
-
-        foreach ($relationships as $relation) {
-            $find_node = $relation->getEndNode();
-
-            $findEvent = new FindEvent();
-            $findEvent->setNode($find_node);
-
-            // Get the entire data that's behind the find
-            $find = $findEvent->getValues();
-
-            $finds[] = $find;
-        }
-
-        return ['data' => $finds, 'count' => count($relationships)];
-    }
-
-    /**
      * @param  int  $findId
      * @param  null $user
      * @return array
      * @throws \Everyman\Neo4j\Exception
      */
-    public function expandValues($findId, $user = null)
+    public function expandValues($findId, $user = null): array
     {
         $find = parent::expandValues($findId);
 
@@ -119,24 +83,26 @@ class FindRepository extends BaseRepository
 
         $variables = [];
         $variables['userId'] = (int)$user->id;
-        $variables['findId'] = (int)$findId;
+        $variables['findId'] = (int)$findId; // Cast it to an integer typed value, Neo4J does not convert it automatically
 
         $client = $this->getClient();
 
         $cypher_query = new Query($client, $query, $variables);
         $results = $cypher_query->getResultSet();
 
-        if ($results->count() > 0) {
-            foreach ($results as $result) {
-                $relationship = $result->current();
+        if ($results->count() == 0) {
+            return $find;
+        }
 
-                $classification_id = $relationship->getEndNode()->getId();
+        foreach ($results as $result) {
+            $relationship = $result->current();
 
-                if (!empty($find['object']) && !empty($find['object']['productionEvent']['productionClassification'])) {
-                    foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
-                        if ($classification['identifier'] == $classification_id) {
-                            $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
-                        }
+            $classification_id = $relationship->getEndNode()->getId();
+
+            if (!empty($find['object']) && !empty($find['object']['productionEvent']['productionClassification'])) {
+                foreach ($find['object']['productionEvent']['productionClassification'] as $index => $classification) {
+                    if ($classification['identifier'] == $classification_id) {
+                        $find['object']['productionEvent']['productionClassification'][$index]['me'] = $relationship->getType();
                     }
                 }
             }
@@ -152,7 +118,6 @@ class FindRepository extends BaseRepository
      * some are filters on object relationships, some on find events, some on classifications
      *
      * @param  array  $filters
-     *
      * @param  int    $limit
      * @param  int    $offset
      * @param  string $orderBy
@@ -276,7 +241,7 @@ class FindRepository extends BaseRepository
             "head(location).geoGrid as grid",
             "excavationTitle.value as excavationTitle",
             "excavationLocation.value as excavationAddressLocality",
-            "head(objectNr) as objectNr"
+            "head(objectNr) as objectNr",
         ];
 
         $query .= " WITH $withStatement
@@ -320,7 +285,7 @@ class FindRepository extends BaseRepository
 
         if ($validationStatus == '*') {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
-        } elseif (!empty($validationStatus)) {
+        } else if (!empty($validationStatus)) {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
             $variables['validationStatus'] = $validationStatus;
         }
@@ -776,10 +741,12 @@ class FindRepository extends BaseRepository
     /**
      * Get all the nodes of a findEvent
      *
+     * @param  int|null $limit
+     * @param  int|null $offset
      * @return \Everyman\Neo4j\Query\Row
      * @throws \Exception
      */
-    public function getAll(?int $limit = 100, ?int $offset = 0)
+    public function getAll(?int $limit = 100, ?int $offset = 0): \Everyman\Neo4j\Query\Row
     {
         $client = $this->getClient();
 
@@ -828,8 +795,8 @@ class FindRepository extends BaseRepository
     public function getRelatedObjectId(int $findId)
     {
         $query = 'MATCH (find:E10)-[P12]-(object:E22)
-        WHERE id(find) = {findId} AND '. NodeService::getTenantWhereStatement(['find', 'object']) .
-        'RETURN id(object) as objectId';
+        WHERE id(find) = {findId} AND ' . NodeService::getTenantWhereStatement(['find', 'object']) .
+            'RETURN id(object) as objectId';
 
         $cypherQuery = new Query($this->getClient(), $query, ['findId' => $findId]);
         $results = $cypherQuery->getResultSet();

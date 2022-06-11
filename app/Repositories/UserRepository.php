@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 
 /**
  * Class UserRepository
+ *
  * @package App\Repositories
  */
 class UserRepository extends BaseRepository
@@ -21,7 +22,7 @@ class UserRepository extends BaseRepository
     /**
      * Create a new user
      *
-     * @param array $properties
+     * @param  array $properties
      *
      * @return Person
      * @throws \Everyman\Neo4j\Exception
@@ -37,7 +38,7 @@ class UserRepository extends BaseRepository
     /**
      * Get a user based on an email
      *
-     * @param string $email
+     * @param  string $email
      *
      * @return Node|void
      * @throws \Exception
@@ -59,7 +60,7 @@ class UserRepository extends BaseRepository
     /**
      * Get a user based on the token and email
      *
-     * @param string $token
+     * @param  string $token
      *
      * @return Node
      * @throws \Everyman\Neo4j\Exception
@@ -86,7 +87,7 @@ class UserRepository extends BaseRepository
     /**
      * Check if a user exists
      *
-     * @param string $email
+     * @param  string $email
      *
      * @return boolean
      * @throws \Exception
@@ -103,7 +104,7 @@ class UserRepository extends BaseRepository
     /**
      * Verify a user with a certain token
      *
-     * @param string $token
+     * @param  string $token
      *
      * @return Node
      * @throws \Exception
@@ -133,7 +134,7 @@ class UserRepository extends BaseRepository
     /**
      * Deny and delete a user with a certain token
      *
-     * @param string $token
+     * @param  string $token
      *
      * @return Node
      * @throws \Everyman\Neo4j\Exception
@@ -163,9 +164,9 @@ class UserRepository extends BaseRepository
     /**
      * Make a vote connection between a user and a classification
      *
-     * @param Node $classification
-     * @param integer $personId
-     * @param string $vote_type agree|disagree
+     * @param  Node    $classification
+     * @param  integer $personId
+     * @param  string  $vote_type agree|disagree
      *
      * @return \Everyman\Neo4j\PropertyContainer
      * @throws \Everyman\Neo4j\Exception
@@ -180,15 +181,14 @@ class UserRepository extends BaseRepository
     /**
      * Get all the user nodes
      *
-     * @param integer $limit
-     * @param integer $offset
-     * @param string $sortBy The field to sort by (firstName|created_at)
-     * @param string $sortOrder The sort order (ASC|DESC)
-     *
+     * @param  integer $limit
+     * @param  integer $offset
+     * @param  string  $sortBy    The field to sort by (firstName|created_at)
+     * @param  string  $sortOrder The sort order (ASC|DESC)
      * @return array
      * @throws \Exception
      */
-    public function getAll($limit = 50, $offset = 0, $sortBy = null, $sortOrder = 'DESC')
+    public function getAll(int $limit = 50, int $offset = 0, string $sortBy = '', string $sortOrder = 'DESC')
     {
         $client = $this->getClient();
 
@@ -204,7 +204,7 @@ class UserRepository extends BaseRepository
             // Statements in functions don't seem to work with the jadell library
             if ($sortBy == 'firstName') {
                 $orderBy = 'LOWER(n.firstName)';
-            } elseif ($sortBy == 'lastName') {
+            } else if ($sortBy == 'lastName') {
                 $orderBy = 'LOWER(n.lastName)';
             } else {
                 $orderBy = 'n.created_at';
@@ -240,9 +240,9 @@ class UserRepository extends BaseRepository
     /**
      * Returns a list of person by name
      *
-     * @param string $name
-     * @param int $limit
-     * @param int $offset
+     * @param  string $name
+     * @param  int    $limit
+     * @param  int    $offset
      * @return array
      */
     public function getByName($name, $limit = 10, $offset = 0)
@@ -283,11 +283,11 @@ class UserRepository extends BaseRepository
     /**
      * Get all users with only a specific set of data points
      *
-     * @param array $fields
-     * @param integer $limit
-     * @param integer $offset
-     * @param string $sortBy The field to sort by
-     * @param string $sortOrder The sort order (ASC|DESC)
+     * @param  array   $fields
+     * @param  integer $limit
+     * @param  integer $offset
+     * @param  string  $sortBy    The field to sort by
+     * @param  string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
@@ -332,10 +332,10 @@ class UserRepository extends BaseRepository
     /**
      * Get all the bare nodes of a findEvent
      *
-     * @param integer $limit
-     * @param integer $offset
-     * @param string $sortBy The field to sort by
-     * @param string $sortOrder The sort order (ASC|DESC)
+     * @param  integer $limit
+     * @param  integer $offset
+     * @param  string  $sortBy    The field to sort by
+     * @param  string  $sortOrder The sort order (ASC|DESC)
      *
      * @return array
      */
@@ -389,7 +389,7 @@ class UserRepository extends BaseRepository
     /**
      * Get the find count for a user
      *
-     * @param integer $userId
+     * @param  integer $userId
      *
      * @return int
      * @throws \Exception

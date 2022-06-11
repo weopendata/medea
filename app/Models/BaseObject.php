@@ -26,17 +26,17 @@ class BaseObject extends Base
         ],
         [
             'name' => 'embargo',
-            'default_value' => 'false'
+            'default_value' => 'false',
         ],
         [
             'name' => 'validated_at',
         ],
         [
-            'name' => 'validated_by'
+            'name' => 'validated_by',
         ],
         [
-            'name' => 'classifiable'
-        ]
+            'name' => 'classifiable',
+        ],
     ];
 
     protected $relatedModels = [
@@ -45,7 +45,7 @@ class BaseObject extends Base
             'model_name' => 'ProductionEvent',
             'cascade_delete' => true,
             'required' => false,
-            'reverse_relationship' => 'P108'
+            'reverse_relationship' => 'P108',
         ],
         'P62' => [
             'key' => 'photograph',
@@ -53,14 +53,14 @@ class BaseObject extends Base
             'cascade_delete' => true,
             'required' => false,
             'plural' => true,
-            'reverse_relationship' => 'P62'
+            'reverse_relationship' => 'P62',
         ],
         'P24' => [
             'key' => 'collection',
             'model_name' => 'Collection',
             'cascade_delete' => false,
             'link_only' => true,
-            'reverse_relationship' => 'P46'
+            'reverse_relationship' => 'P46',
         ],
         'P157' => [
             'key' => 'context',
@@ -78,8 +78,8 @@ class BaseObject extends Base
                 'key' => 'dimensions',
                 'name' => 'dimensions',
                 'plural' => true,
-                'cidoc_type' => 'E54'
-            ]
+                'cidoc_type' => 'E54',
+            ],
         ],
         [
             'relationship' => 'P56',
@@ -87,8 +87,8 @@ class BaseObject extends Base
                 'key' => 'distinguishingFeatures',
                 'name' => 'distinguishingFeatures',
                 'plural' => true,
-                'cidoc_type' => 'E25'
-            ]
+                'cidoc_type' => 'E25',
+            ],
         ],
         [
             'relationship' => 'P3',
@@ -96,8 +96,8 @@ class BaseObject extends Base
                 'key' => 'objectDescription',
                 'name' => 'objectDescription',
                 'value_node' => true,
-                'cidoc_type' => 'E62'
-            ]
+                'cidoc_type' => 'E62',
+            ],
         ],
         [
             'relationship' => 'P57',
@@ -105,8 +105,8 @@ class BaseObject extends Base
                 'key' => 'objectNumberOfParts',
                 'name' => 'objectNumberOfParts',
                 'value_node' => true,
-                'cidoc_type' => 'E60'
-            ]
+                'cidoc_type' => 'E60',
+            ],
         ],
         [
             'relationship' => 'P45',
@@ -114,8 +114,8 @@ class BaseObject extends Base
                 'key' => 'objectMaterial',
                 'name' => 'objectMaterial',
                 'value_node' => true,
-                'cidoc_type' => 'E57'
-            ]
+                'cidoc_type' => 'E57',
+            ],
         ],
         [
             'relationship' => 'P2',
@@ -123,8 +123,8 @@ class BaseObject extends Base
                 'key' => 'objectValidationStatus',
                 'name' => 'objectValidationStatus',
                 'value_node' => true,
-                'cidoc_type' => 'E55'
-            ]
+                'cidoc_type' => 'E55',
+            ],
         ],
         [
             'relationship' => 'P2',
@@ -132,23 +132,23 @@ class BaseObject extends Base
                 'key' => 'objectCategory',
                 'name' => 'objectCategory',
                 'value_node' => true,
-                'cidoc_type' => 'E55'
-            ]
+                'cidoc_type' => 'E55',
+            ],
         ], [
             'relationship' => 'P128',
             'config' => [
                 'key' => 'objectInscription',
                 'name' => 'objectInscription',
-                'cidoc_type' => 'E34'
-            ]
+                'cidoc_type' => 'E34',
+            ],
         ],
         [
             'relationship' => 'P108',
             'config' => [
                 'key' => 'treatmentEvent',
                 'name' => 'treatmentEvent',
-                'cidoc_type' => 'E11'
-            ]
+                'cidoc_type' => 'E11',
+            ],
         ],
         [
             'relationship' => 'P42',
@@ -156,8 +156,8 @@ class BaseObject extends Base
                 'key' => 'period',
                 'name' => 'period',
                 'value_node' => true,
-                'cidoc_type' => 'E55'
-            ]
+                'cidoc_type' => 'E55',
+            ],
         ],
         [
             'relationship' => 'P1',
@@ -165,8 +165,8 @@ class BaseObject extends Base
                 'key' => 'objectNr',
                 'name' => 'objectNr',
                 'value_node' => true,
-                'cidoc_type' => 'E42'
-            ]
+                'cidoc_type' => 'E42',
+            ],
         ],
     ];
 
@@ -174,7 +174,7 @@ class BaseObject extends Base
      * Overwrite the constructor and construct a full text field
      * after construction of the subtree
      *
-     * @param array $properties
+     * @param  array $properties
      *
      * @return Base
      * @throws \Everyman\Neo4j\Exception
@@ -183,7 +183,7 @@ class BaseObject extends Base
     {
         parent::__construct($properties);
 
-        if (! empty($properties)) {
+        if (!empty($properties)) {
             $this->updateFtsField($properties);
         }
     }
@@ -204,7 +204,7 @@ class BaseObject extends Base
     /**
      * Fill in the Fulltext Search field
      *
-     * @param array $properties The properties assigned to an Object node
+     * @param  array $properties The properties assigned to an Object node
      *
      * @return void
      * @throws \Everyman\Neo4j\Exception
@@ -224,7 +224,7 @@ class BaseObject extends Base
         $description = '';
 
         foreach ($fulltextProperties as $property) {
-            if (! empty($value = Arr::get($properties, $property))) {
+            if (!empty($value = Arr::get($properties, $property))) {
                 $description .= $value . ' ';
             }
         }
@@ -232,7 +232,7 @@ class BaseObject extends Base
         // Check if there's a collection linked to this object, if so, then add the title to the FTS field
         $collection = app(CollectionRepository::class)->getCollectionForObject($this->node->getId());
 
-        if (! empty($collection['title'])) {
+        if (!empty($collection['title'])) {
             $description .= ' ' . $collection['title'];
         }
 
@@ -248,7 +248,7 @@ class BaseObject extends Base
     {
         parent::update($properties);
 
-        if (! empty($properties)) {
+        if (!empty($properties)) {
             $this->updateFtsField($properties);
         }
     }
@@ -256,11 +256,11 @@ class BaseObject extends Base
     /**
      * Dimension is not a main entity, so we create it in this object only
      *
-     * @param $dimension array An array with value, type, unit
+     * @param  array $dimension An array with value, type, unit
      * @return \Everyman\Neo4j\Node
      * @throws \Everyman\Neo4j\Exception
      */
-    public function createDimensions($dimension)
+    public function createDimensions(array $dimension)
     {
         $generalId = $this->getGeneralId();
 
@@ -326,13 +326,13 @@ class BaseObject extends Base
         // Relate the created nodes to the main inscription Node
         $inscriptionNode->relateTo($noteNode, 'P3')->save();
 
-        if (! empty($inscription['objectInscriptionType'])) {
+        if (!empty($inscription['objectInscriptionType'])) {
             $typeNode = $this->createValueNode('objectInscriptionType', ['E55', $generalId, 'objectInscriptionType'], $inscription['objectInscriptionType']);
             $inscriptionNode->relateTo($typeNode, 'P2')->save();
         }
 
-        if (! empty($inscription['objectInscriptionLocation'])
-            && ! empty($inscription['objectInscriptionLocation']['inscriptionLocationAppellation'])) {
+        if (!empty($inscription['objectInscriptionLocation'])
+            && !empty($inscription['objectInscriptionLocation']['inscriptionLocationAppellation'])) {
             $locationNode = $this->createValueNode('objectInscriptionLocation', ['E53', $generalId, 'objectInscriptionLocation'], 'objectInscriptionLocation');
 
             $appellationNode = $this->createValueNode(
@@ -374,7 +374,7 @@ class BaseObject extends Base
         $modificationNode->addLabels([
             self::makeLabel('E29'),
             self::makeLabel('modificationTechnique'),
-            self::makeLabel($generalId)
+            self::makeLabel($generalId),
         ]);
 
         $treatmentNode->relateTo($modificationNode, 'P33')->save();

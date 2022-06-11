@@ -16,6 +16,11 @@ class ExportController extends Controller
         $this->finds = $finds;
     }
 
+    /**
+     * @param  ExportFindsRequest $request
+     * @return \Illuminate\Http\Response|mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
     public function export(ExportFindsRequest $request)
     {
         set_time_limit(300);
@@ -40,8 +45,8 @@ class ExportController extends Controller
 
         $writer->insertOne($header);
 
-        // Get all the bare (not connected) FindEvent nodes
-        $finds = $this->finds->getAll();
+        // Get all FindEvent nodes
+        $finds = $this->finds->getAllNodes();
 
         foreach ($finds as $findNode) {
             // Get the data for the findEvent
