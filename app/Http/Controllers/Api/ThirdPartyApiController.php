@@ -20,7 +20,10 @@ class ThirdPartyApiController extends Controller
         $limit = $request->input('limit', 100);
         $offset = $request->input('offset', 0);
 
-        return response()->json(app(FindService::class)->getAllWithFilter([], $limit, $offset, 'findDate', 'ASC', false));
+        $results = app(FindService::class)->getAllWithFilter([], $limit, $offset, 'findDate', 'ASC', false);
+        $finds = $results['data'];
+
+        return response()->json($finds);
     }
 
     /**
