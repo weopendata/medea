@@ -18,16 +18,16 @@ class ContextRepository extends BaseRepository
 
     /**
      * @param  int $contextId
-     * @return void
+     * @return string
      * @throws Exception
      */
-    public function getRelatedContextId(int $contextId)
+    public function getRelatedContextInternalId(int $contextId)
     {
         $tenantStatement = NodeService::getTenantWhereStatement(['context']);
 
         $queryString = "MATCH (context:S22)-[:O22]->(relatedContext:S22) 
         WHERE id(context)={contextId} AND $tenantStatement
-        RETURN relatedContext.local_context_id as localContextId";
+        RETURN relatedContext.internalId as internalId";
 
         $variables = [
             'contextId' => $contextId,
@@ -37,7 +37,7 @@ class ContextRepository extends BaseRepository
 
         // Return the first hit
         foreach ($cypherQuery->getResultSet() as $row) {
-            return $row['localContextId'];
+            return $row['internalId'];
         }
     }
 }

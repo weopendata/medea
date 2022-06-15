@@ -48,9 +48,17 @@ class ContextsTransformer extends Transformer
             }
         }
 
+        $relatedContext = '';
+
+        if (!empty($context['relatedContext'])) {
+            $pieces = explode('__', $context['relatedContext']);
+            $relatedContext = array_pop($pieces);
+        }
+
         $transformedContext = [
             'excavationId' => $excavationId,
-            'contextId' => $contextExcavationId
+            'contextId' => $contextExcavationId,
+            'relatedContextId' => $relatedContext
         ];
 
         foreach ($propertyMapping as $key => $path) {
@@ -64,6 +72,8 @@ class ContextsTransformer extends Transformer
 
             $transformedContext[$key] = $value;
         }
+
+        unset($transformedContext['relatedContext']);
 
         return $transformedContext;
     }

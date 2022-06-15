@@ -21,7 +21,7 @@ class ContextService
         foreach ($contextNodes as $contextNode) {
             $context = app(ContextRepository::class)->expandValues($contextNode->getId());
 
-            $context['relatedContext'] = app(ContextRepository::class)->getRelatedContextId($contextNode->getId());
+            $context['relatedContext'] = app(ContextRepository::class)->getRelatedContextInternalId($contextNode->getId());
 
             $contexts[] = $context;
         }
