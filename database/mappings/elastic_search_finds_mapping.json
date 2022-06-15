@@ -89,6 +89,9 @@
       "objectTechnique": {
         "type": "keyword"
       },
+      "objectDescription": {
+        "type": "text"
+      },
       "surfaceTreatment": {
         "type": "keyword"
       },

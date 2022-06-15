@@ -113,6 +113,7 @@ class IndexingService
             'panId' => array_get($panTypology, 'panId'),
             'panInitialPeriod' => array_get($panTypology, 'startYear'),
             'panFinalPeriod' => array_get($panTypology, 'endYear'),
+            'classificationDescription' => array_get($panTypology, 'classificationDescription'),
             'conservation' => in_array(strtolower(array_get($conservation, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
             'complete' => in_array(strtolower(array_get($complete, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
             'mark' => in_array(strtolower(array_get($mark, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
@@ -175,8 +176,8 @@ class IndexingService
     private function fetchPanTypology(array $object): array
     {
         $panTypology = collect(array_get($object, 'productionEvent.productionClassification') ?? [])
-            ->filter(function ($dimension) {
-                return @$dimension['productionClassificationType'] == 'Typologie';
+            ->filter(function ($classification) {
+                return @$classification['productionClassificationType'] == 'Typologie';
             })
             ->first();
 
@@ -195,6 +196,7 @@ class IndexingService
 
         return [
             'panId' => $panId,
+            'classificationDescription' => array_get($information, 'productionClassificationDescription'),
             'startYear' => array_get($information, 'startYear'),
             'endYear' => array_get($information, 'endYear'),
         ];

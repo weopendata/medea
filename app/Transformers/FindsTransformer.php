@@ -31,6 +31,7 @@ class FindsTransformer extends Transformer
             'objectCategory' => 'category',
             'objectMaterial' => 'material',
             'objectTechnique' => 'technique',
+            'objectDescription' => 'description',
             'inscription' => 'insignia',
             'photographPath' => 'photograph',
             'findSpotLocality' => 'locality',
