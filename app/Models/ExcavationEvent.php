@@ -17,6 +17,15 @@ class ExcavationEvent extends Base
     protected $properties = [
         [
             'name' => 'internalId' // An ID used to uniquely identify the find without the internal Neo4J ID
+        ],
+        [
+            'name' => 'excavationCustomNumber'
+        ],
+        [
+            'name' => 'remarks'
+        ],
+        [
+            'name' => 'inventoryCompleteness'
         ]
     ];
 

@@ -55,7 +55,7 @@ class ImportExcavations extends AbstractImporter
      * @param array $data
      * @return array
      */
-    private function createExcavationModel(array $data)
+    private function createExcavationModel(array $data): array
     {
         $excavation = [];
 
@@ -65,7 +65,7 @@ class ImportExcavations extends AbstractImporter
             'excavationIDType' => 'excavationIDType',
             'excavationCustomNumber' => 'excavationCustomNumber',
             'excavationPeriod' => 'excavationPeriod',
-            //'remarks' => 'remarks', // Not yet clear how this is mapped
+            'remarks' => 'remarks',
             'depotName' => 'depotName',
             'depotAddress' => 'depotAddress',
             'depotId' => 'depotId'
@@ -116,12 +116,13 @@ class ImportExcavations extends AbstractImporter
         // Map the metal and sifting methods
         $metalDetectionValue = $this->parseMetalDetectionValue($data['metalDetectionUsed']);
         $siftingTypeValue = $this->parseSiftingTypeValue($data['siftingUsed']);
-        //$inventoryCompletenessValue = $this->parseInventoryCompleteness($data['inventoryCompleteness']);
+        $inventoryCompletenessValue = $this->parseInventoryCompleteness($data['inventoryCompleteness']);
 
         $excavation['internalId'] = $excavation['excavationID'];
         $excavation['company'] = ['companyName' => $data['excavationCompany']];
         $excavation['excavationProcedureSifting'] = $siftingTypeValue;
         $excavation['excavationProcedureMetalDetection'] = $metalDetectionValue;
+        $excavation['inventoryCompleteness'] = $inventoryCompletenessValue;
 
         // Add the Person link
         $excavation['person'] = [
@@ -134,6 +135,7 @@ class ImportExcavations extends AbstractImporter
                 'publicationResearchURI' => array_get($data, 'reportResearchURI'),
                 'publicationArchiveURI' => array_get($data, 'reportArchiveURI'),
                 'publicationTitle' => array_get($data, 'reportTitle'),
+                'publicationContact' => array_get($data, 'reportAuthor'),
                 'publicationCreation' => [
                     'publicationCreationActor' => [
                         [
