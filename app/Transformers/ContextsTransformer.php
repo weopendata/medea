@@ -32,7 +32,8 @@ class ContextsTransformer extends Transformer
             'contextDatingPeriodPrecision' => 'contextDating.contextDatingTechnique.contextDatingPeriodPrecision',
             'contextDatingPeriodNature' => 'contextDating.contextDatingTechnique.contextDatingPeriodNature',
             'contextDatingPeriodMethod' => 'contextDating.contextDatingTechnique.contextDatingPeriodMethod',
-            'contextDatingRemark' => 'contextDating.contextDatingRemark'
+            'contextDatingRemark' => 'contextDating.contextDatingRemark',
+            'relatedContext' => 'relatedContext'
         ];
 
         $excavationId = array_get($context, 'excavationId');

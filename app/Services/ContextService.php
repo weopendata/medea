@@ -14,14 +14,16 @@ class ContextService
      */
     public function getAll(int $limit = 20, int $offset = 0)
     {
-        $excavationNodes = app(ContextRepository::class)->getAllNodes($limit, $offset);
+        $contextNodes = app(ContextRepository::class)->getAllNodes($limit, $offset);
 
         $contexts = [];
 
-        foreach ($excavationNodes as $excavationNode) {
-            $excavation = app(ContextRepository::class)->expandValues($excavationNode->getId());
+        foreach ($contextNodes as $contextNode) {
+            $context = app(ContextRepository::class)->expandValues($contextNode->getId());
 
-            $contexts[] = $excavation;
+            $context['relatedContext'] = app(ContextRepository::class)->getRelatedContextId($contextNode->getId());
+
+            $contexts[] = $context;
         }
 
         return app(TransformerService::class)->transformContexts($contexts);
