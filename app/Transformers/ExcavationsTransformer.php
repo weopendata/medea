@@ -44,6 +44,7 @@ class ExcavationsTransformer extends Transformer
             'reportPublisher' => 'publication.0.publicationCreation.0.publicationCreationActor.publicationCreationActorName',
             'reportPlace' => 'publication.0.publicationCreation.0.publicationCreationLocation.publicationCreationLocationAppellation',
             'reportDate' => 'publication.0.publicationCreation.0.publicationCreationTimeSpan.date',
+            'reportAuthor' => 'publication.0.publicationContact',
             'searchAreaDescription' => 'searchArea.searchAreaDescription',
             'searchAreaStreet' => 'searchArea.location.address.locationAddressStreet',
             'searchAreaNumber' => 'searchArea.location.address.locationAddressNumber',

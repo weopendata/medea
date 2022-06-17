@@ -53,8 +53,6 @@ class UserRepository extends BaseRepository
         if ($user_nodes->count() > 0) {
             return $user_nodes->current();
         }
-
-        return;
     }
 
     /**
