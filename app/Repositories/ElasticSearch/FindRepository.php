@@ -511,7 +511,7 @@ class FindRepository extends BaseRepository
             'conservation' => array_get($find, 'conservation'),
             'complete' => array_get($find, 'complete'),
             'mark' => array_get($find, 'mark'),
-            'inscription' => array_get($find, 'insignia'),
+            'inscription' => array_get($find, 'inscription'),
             'photographPath' => array_get($find, 'photographPath'),
             'photographCaption' => array_get($find, 'photographCaption'),
             'photographNote' => array_get($find, 'photographNote'),
