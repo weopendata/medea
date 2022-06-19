@@ -8,6 +8,12 @@ use App\Repositories\ElasticSearch\FindRepository;
 class FindService
 {
     /**
+     * TODO: make sure that either the end-result covers all uses cases:
+     *  - third party API responses
+     *  - application API responses
+     *  or
+     *  - have different methods/transformers per use case
+     *
      * @param  array       $filters
      * @param  int|null    $limit
      * @param  int|null    $offset

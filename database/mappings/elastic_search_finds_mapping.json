@@ -95,11 +95,11 @@
       "surfaceTreatment": {
         "type": "keyword"
       },
-      "depth": {
+      "length": {
         "type": "double",
         "coerce": "true"
       },
-      "depthUnit": {
+      "lengthUnit": {
         "type": "keyword"
       },
       "width": {

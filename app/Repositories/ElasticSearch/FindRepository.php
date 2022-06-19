@@ -454,7 +454,7 @@ class FindRepository extends BaseRepository
 
         // Convert fields that are indexed with numerical doubles to actual double typed values
         $fieldsThatAreDoubles = [
-            'depth',
+            'length',
             'width',
             'height',
             'diameter',
@@ -492,8 +492,8 @@ class FindRepository extends BaseRepository
             'widthUnit' => array_get($find, 'widthUnit'),
             'height' => array_get($find, 'height'),
             'heightUnit' => array_get($find, 'heightUnit'),
-            'depth' => array_get($find, 'depth'),
-            'depthUnit' => array_get($find, 'depthUnit'),
+            'length' => array_get($find, 'length'),
+            'lengthUnit' => array_get($find, 'lengthUnit'),
             'diameter' => array_get($find, 'diameter'),
             'diameterUnit' => array_get($find, 'diameterUnit'),
             'weight' => array_get($find, 'weight'),

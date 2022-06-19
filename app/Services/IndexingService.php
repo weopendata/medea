@@ -61,8 +61,8 @@ class IndexingService
         $object = $find['object'];
 
         $width = $this->fetchDimensionFromObject($object, 'breedte');
-        $height = $this->fetchDimensionFromObject($object, 'hoogte');
-        $depth = $this->fetchDimensionFromObject($object, 'diepte');
+        $length = $this->fetchDimensionFromObject($object, 'lengte');
+        $height = $this->fetchDimensionFromObject($object, 'diepte');
         $diameter = $this->fetchDimensionFromObject($object, 'diameter');
         $weight = $this->fetchDimensionFromObject($object, 'gewicht');
 
@@ -94,10 +94,10 @@ class IndexingService
             'treatment' => array_get($object, 'productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType'),
             'width' => array_get($width, 'measurementValue'),
             'widthUnit' => array_get($width, 'dimensionUnit'),
+            'length' => array_get($length, 'measurementValue'),
+            'lengthUnit' => array_get($length, 'dimensionUnit'),
             'height' => array_get($height, 'measurementValue'),
             'heightUnit' => array_get($height, 'dimensionUnit'),
-            'depth' => array_get($depth, 'measurementValue'),
-            'depthUnit' => array_get($depth, 'dimensionUnit'),
             'diameter' => array_get($diameter, 'measurementValue'),
             'diameterUnit' => array_get($diameter, 'dimensionUnit'),
             'weight' => array_get($weight, 'dimensionUnit'),
