@@ -202,4 +202,22 @@ class IndexingService
         ];
     }
 
+    /**
+     * @param  int $findId
+     * @return boolean
+     */
+    public function deleteFind(int $findId): bool
+    {
+        $findDocument = app(FindRepository::class)->getByNeo4jId($findId);
+
+        if (empty($findDocument)) {
+            return false;
+        }
+
+        $deleted = app(FindRepository::class)->delete($findDocument['id']);
+
+        app(FindRepository::class)->refreshIndex();
+
+        return $deleted;
+    }
 }

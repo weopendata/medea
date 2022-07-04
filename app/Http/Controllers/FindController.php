@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\FindEventDeleted;
 use App\Events\FindEventStored;
 use App\Events\FindEventUpdated;
 use App\Helpers\Pager;
@@ -529,12 +530,16 @@ class FindController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $findId
-     * @return \Illuminate\Http\Response
+     * @param  int               $findId
+     * @param  DeleteFindRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Everyman\Neo4j\Exception
      */
-    public function destroy($findId, DeleteFindRequest $request)
+    public function destroy(int $findId, DeleteFindRequest $request)
     {
         $this->finds->delete($findId);
+
+        event(new FindEventDeleted($findId));
 
         return response()->json(['success' => true]);
     }

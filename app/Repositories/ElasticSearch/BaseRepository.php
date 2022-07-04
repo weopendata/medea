@@ -70,6 +70,24 @@ class BaseRepository
     }
 
     /**
+     * @param  string $elasticSearchId
+     * @return bool
+     */
+    public function delete(string $elasticSearchId): bool
+    {
+        try {
+            $response = $this->index->deleteById($elasticSearchId);
+
+            return $response->isOk();
+        } catch (\Exception $ex) {
+            \Log::error($ex->getMessage());
+            \Log::error($ex->getTraceAsString());
+        }
+
+        return false;
+    }
+
+    /**
      * Create a Search object based on the index and type
      *
      * @return Search
