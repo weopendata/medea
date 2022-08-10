@@ -341,14 +341,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 input[type='number'] {
-  -moz-appearance:textfield;
+  -moz-appearance:textfield !important;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+  -webkit-appearance: none !important;
 }
 
 .pan-id-filter-line {
