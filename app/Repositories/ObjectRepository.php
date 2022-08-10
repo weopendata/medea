@@ -12,6 +12,7 @@ use Carbon\Carbon;
 
 /**
  * Class ObjectRepository
+ *
  * @package App\Repositories
  */
 class ObjectRepository extends BaseRepository
@@ -34,8 +35,8 @@ class ObjectRepository extends BaseRepository
     /**
      * Add a classification to an object
      *
-     * @param integer $objectId The id of the object
-     * @param array $classification The configuration of the classification
+     * @param  integer $objectId       The id of the object
+     * @param  array   $classification The configuration of the classification
      * @return \Everyman\Neo4j\Node
      * @throws \Everyman\Neo4j\Exception
      */
@@ -102,10 +103,39 @@ class ObjectRepository extends BaseRepository
     }
 
     /**
+     * @param  int   $objectId
+     * @param  array $productionClassification
+     * @return void
+     * @throws \Everyman\Neo4j\Exception
+     */
+    public function updatePanTypologyClassification(int $objectId, array $productionClassification)
+    {
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'classification']);
+        $query = "MATCH (n)-[*2..2]-(classification:E17)-[P2]-(:E55 {value: \"Typologie\"}) WHERE id(n) = $objectId AND $tenantStatement return classification";
+
+        $client = $this->getClient();
+
+        $cypherQuery = new Query($client, $query);
+        $result = $cypherQuery->getResultSet();
+
+        if ($result->count() > 0) {
+            $classification = $result->current()->current();
+
+            $classification = app(ClassificationRepository::class)->getById($classification->getId());
+            $classificationObject = new ProductionClassification();
+            $classificationObject->setNode($classification);
+
+            $classificationObject->delete();
+        }
+
+        $this->upsertClassification($objectId, $productionClassification);
+    }
+
+    /**
      * Create or replace a classification based on the value of the passed classification
      *
-     * @param $objectId
-     * @param array $productionClassification
+     * @param        $objectId
+     * @param  array $productionClassification
      * @return void |null |null
      * @throws \Everyman\Neo4j\Exception
      */
@@ -121,7 +151,7 @@ class ObjectRepository extends BaseRepository
         $query = "match (n)-[*2..2]-(classification:E17)-[P42]-(productionClassificationValue:E55 {value: {classificationValue} }) where id(n) = $objectId AND $tenantStatement return classification";
 
         $variables = [
-            'classificationValue' => $productionClassification['productionClassificationValue']
+            'classificationValue' => $productionClassification['productionClassificationValue'],
         ];
 
         $client = $this->getClient();
@@ -129,7 +159,6 @@ class ObjectRepository extends BaseRepository
         $cypherQuery = new Query($client, $query, $variables);
         $result = $cypherQuery->getResultSet();
 
-        // Remove the PanID classification
         if ($result->count() > 0) {
             $classification = $result->current()->current();
 
@@ -171,7 +200,7 @@ class ObjectRepository extends BaseRepository
     /**
      * Get the related user id for a given object
      *
-     * @param integer $objectId The id of the object
+     * @param  integer $objectId The id of the object
      *
      * @return integer
      * @throws \Exception
@@ -200,7 +229,7 @@ class ObjectRepository extends BaseRepository
     /**
      * Get the related findEvent id for a given object
      *
-     * @param integer $objectId The id of the object
+     * @param  integer $objectId The id of the object
      *
      * @return integer
      * @throws \Exception
@@ -229,10 +258,10 @@ class ObjectRepository extends BaseRepository
     /**
      * Set the validation status of an object
      *
-     * @param integer $objectId The id of the object
-     * @param string $status The new status of the object
-     * @param array $feedback The given feedback on different properties
-     * @param boolean $embargo
+     * @param  integer $objectId The id of the object
+     * @param  string  $status   The new status of the object
+     * @param  array   $feedback The given feedback on different properties
+     * @param  boolean $embargo
      *
      * @return \Everyman\Neo4j\PropertyContainer
      * @throws \Everyman\Neo4j\Exception

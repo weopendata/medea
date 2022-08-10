@@ -2,10 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Constants\UploadTypes;
 use App\Import\Csv;
 use App\Jobs\Importers\ImportContexts;
 use App\Jobs\Importers\ImportExcavations;
 use App\Jobs\Importers\ImportFinds;
+use App\Jobs\Importers\UpdateFindsPanTypologies;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -79,7 +81,7 @@ class ImportData implements ShouldQueue
     /**
      * @param string $status
      */
-    private function updateStatus($status)
+    private function updateStatus(string $status)
     {
         $this->importJob->status = $status;
         $this->importJob->save();
@@ -87,16 +89,20 @@ class ImportData implements ShouldQueue
 
     private function getProcessor(string $fileUploadType)
     {
-        if ($fileUploadType == 'excavation') {
+        if ($fileUploadType == UploadTypes::EXCAVATION_UPLOAD) {
             return new ImportExcavations($this->importJob->id);
         }
 
-        if ($fileUploadType == 'context') {
+        if ($fileUploadType == UploadTypes::CONTEXT_UPLOAD) {
             return new ImportContexts($this->importJob->id);
         }
 
-        if ($fileUploadType == 'find') {
+        if ($fileUploadType == UploadTypes::FIND_UPLOAD) {
             return new ImportFinds($this->importJob->id);
+        }
+
+        if ($fileUploadType == UploadTypes::FIND_PAN_UPLOAD) {
+            return new UpdateFindsPanTypologies($this->importJob->id);
         }
 
         throw new \Exception("No processor found for $fileUploadType");

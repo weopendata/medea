@@ -22,14 +22,14 @@ class ClassificationRepository extends BaseRepository
     /**
      * @param $classification_id
      * @param $user_id
-     * @return |null
+     * @return array|\Everyman\Neo4j\Node|\Everyman\Neo4j\Path|\Everyman\Neo4j\Query\Row|\Everyman\Neo4j\Relationship|mixed|null |null
      * @throws \Exception
      */
     public function getVoteOfUser($classification_id, $user_id)
     {
         $tenantStatement = NodeService::getTenantWhereStatement(['person', 'n']);
 
-        $query = "match (person:person)-[r:agree|disagree]-(n:productionClassification) where id(n) = $classification_id AND id(person) = $user_id AND $tenantStatement return r";
+        $query = "MATCH (person:person)-[r:agree|disagree]-(n:productionClassification) WHERE id(n) = $classification_id AND id(person) = $user_id AND $tenantStatement RETURN r";
 
         $client = $this->getClient();
 

@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Constants\UploadTypes;
 use App\Models\Eloquent\FileUpload;
 use App\Models\Eloquent\ImportJob;
 use App\Repositories\Eloquent\FileUploadRepository;
@@ -85,7 +86,7 @@ class UploadController extends Controller
         $this->validate($request, [
             'file' => 'file|required',
             'name' => 'min:2|required',
-            'type' => 'required|in:excavation,find,context'
+            'type' => 'required|in:' . implode(',', UploadTypes::getUploadTypeValues())
         ]);
 
         $fileName = $request->input('name');

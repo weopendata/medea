@@ -2,13 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Events\FindEventStored;
 use App\Models\FindEvent;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
 use Everyman\Neo4j\Query\ResultSet;
-use Everyman\Neo4j\Relationship;
 
 /**
  * Class FindRepository

@@ -141,6 +141,8 @@
             return 'Contexten'
           case 'find':
             return 'Vondsten'
+          case 'pan':
+            return 'Vondsten - PAN'
         }
       }
     },

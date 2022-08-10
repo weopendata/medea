@@ -53,6 +53,10 @@
           {
             label: 'Vondsten',
             value: 'find',
+          },
+          {
+            label: 'Vondsten - PAN',
+            value: 'pan'
           }
         ]
       }
