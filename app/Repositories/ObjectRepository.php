@@ -119,13 +119,25 @@ class ObjectRepository extends BaseRepository
         $result = $cypherQuery->getResultSet();
 
         if ($result->count() > 0) {
-            $classification = $result->current()->current();
+            foreach ($result as $row) {
+                try {
+                    $nodeId = $row->current()->getId();
 
-            $classification = app(ClassificationRepository::class)->getById($classification->getId());
-            $classificationObject = new ProductionClassification();
-            $classificationObject->setNode($classification);
+                    $classification = app(ClassificationRepository::class)->getById($nodeId);
 
-            $classificationObject->delete();
+                    if (empty($classification)) {
+                        continue;
+                    }
+
+                    $classificationObject = new ProductionClassification();
+                    $classificationObject->setNode($classification);
+
+                    $classificationObject->delete();
+                } catch (\Exception $ex) {
+                    \Log::error($ex->getMessage());
+                    \Log::error($ex->getTraceAsString());
+                }
+            }
         }
 
         $this->upsertClassification($objectId, $productionClassification);
