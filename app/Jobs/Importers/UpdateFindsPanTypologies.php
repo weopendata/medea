@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Importers;
 
+use App\Repositories\ClassificationRepository;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
 
@@ -33,6 +34,15 @@ class UpdateFindsPanTypologies extends AbstractImporter
 
             if (empty($objectId)) {
                 throw new \Exception("No object node found, attached to the find with identifier $findId");
+            }
+
+            // If the classification description is empty, keep the old one attached to the existing pan reference typology
+            $panClassification = app(ObjectRepository::class)->getPanTypologyClassification($objectId);
+
+            if (!empty($panClassification)) {
+                $classificationDescriptionData = app(ClassificationRepository::class)->expandValues($panClassification->getId());
+
+                $classificationDescription = array_get($classificationDescriptionData, 'productionClassificationDescription');
             }
 
             $productionClassification = [

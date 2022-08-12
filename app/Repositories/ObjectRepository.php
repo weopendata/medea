@@ -103,6 +103,35 @@ class ObjectRepository extends BaseRepository
     }
 
     /**
+     * @param  int $objectId
+     * @return ProductionClassification
+     * @throws \Exception
+     */
+    public function getPanTypologyClassification(int $objectId)
+    {
+        $tenantStatement = NodeService::getTenantWhereStatement(['n', 'classification']);
+        $query = "MATCH (n)-[*2..2]-(classification:E17)-[P2]-(:E55 {value: \"Typologie\"}) WHERE id(n) = $objectId AND $tenantStatement return classification";
+
+        $client = $this->getClient();
+
+        $cypherQuery = new Query($client, $query);
+        $result = $cypherQuery->getResultSet();
+
+        if ($result->count() == 0) {
+            return;
+        }
+
+        $nodeId = $result->current()->current()->getId();
+
+        $classification = app(ClassificationRepository::class)->getById($nodeId);
+
+        $classificationObject = new ProductionClassification();
+        $classificationObject->setNode($classification);
+
+        return $classificationObject;
+    }
+
+    /**
      * @param  int   $objectId
      * @param  array $productionClassification
      * @return void
