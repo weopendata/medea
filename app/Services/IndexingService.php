@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Context;
+use App\Repositories\ClassificationRepository;
+use App\Repositories\ContextRepository;
 use App\Repositories\ElasticSearch\FindRepository;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use App\Repositories\ExcavationRepository;
+use App\Repositories\ObjectRepository;
 
 class IndexingService
 {
@@ -53,9 +57,18 @@ class IndexingService
         // Get the related excavation information
         $excavation = [];
         $excavationId = array_get($find, 'excavationId');
+        $contextId = array_get($find, 'contextId');
+        $contextLegacyId = null;
 
         if (!empty($excavationId)) {
             $excavation = app(ExcavationRepository::class)->getDataViaInternalId($excavationId);
+        }
+
+        if (!empty($excavationId) && !empty($contextId)) {
+            $contextInternalId = Context::createInternalId($contextId, $excavationId);
+            $context = app(ContextRepository::class)->getDataViaInternalId($contextInternalId);
+
+            $contextLegacyId = array_get($context, 'contextLegacyId.contextLegacyIdValue');
         }
 
         $object = $find['object'];
@@ -79,6 +92,7 @@ class IndexingService
             'findUUID' => @$find['internalId'],
             'excavationId' => @$find['excavationId'],
             'contextId' => @$find['contextId'],
+            'contextLegacyId' => $contextLegacyId,
             'finderId' => array_get($find, 'person.identifier'),
             'finderEmail' => array_get($find, 'person.email'),
             'findDate' => array_get($find, 'findDate'),

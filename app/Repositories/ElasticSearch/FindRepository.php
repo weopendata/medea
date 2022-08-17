@@ -440,12 +440,17 @@ class FindRepository extends BaseRepository
         $ftsFields = [
             'category',
             'objectNr',
-            'identifier',
             'objectDescription',
             'material',
             'modification',
             'technique',
             'identifier',
+            'excavationTitle',
+            'excavationId',
+            'contextLegacyId',
+            'findUUID',
+            'classificationDescription',
+            'objectDescription'
         ];
 
         foreach ($ftsFields as $ftsField) {
