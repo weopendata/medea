@@ -34,6 +34,7 @@ class FindRepository extends BaseRepository
         'findSpotLocality',
         'excavationLocality',
         'photographCaptionPresent',
+        'excavationTitle'
     ];
 
     /**
@@ -155,6 +156,7 @@ class FindRepository extends BaseRepository
      * @param  int|null    $offset
      * @param  string|null $orderBy
      * @param  string|null $orderFlow
+     * @param  bool        $withFacets
      * @return array
      */
     public function getAllWithFilter(
@@ -399,6 +401,7 @@ class FindRepository extends BaseRepository
             'query' => 'fts_description',
             'panid' => 'panId',
             'finderEmail' => 'finderEmail',
+            'excavationTitle' => 'excavationTitle',
         ];
     }
 

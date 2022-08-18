@@ -121,7 +121,8 @@ export default {
         photographCaption: null,
         collection: true,
         findSpotLocation: null,
-        excavationLocation: null
+        excavationLocation: null,
+        excavationTitle: null
       }, showFacets)
     }
   },
@@ -202,6 +203,11 @@ export default {
           label: 'Collecties',
           prop: 'collection',
           options: this.collectionFacetOptions
+        },
+        {
+          label: 'Opgravingen',
+          prop: 'excavationTitle',
+          options: this.getFilterFacetOptions('excavationTitle', facets).sort()
         }
       ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0 && !this.excludedFacets.includes(dynamicFacet.prop))
     },

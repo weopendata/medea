@@ -55,7 +55,7 @@
             value: 'find',
           },
           {
-            label: 'Vondsten - PAN',
+            label: 'Update vondsten PAN-typologie',
             value: 'pan'
           }
         ]
