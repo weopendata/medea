@@ -3,12 +3,10 @@
 namespace App\Services;
 
 use App\Models\Context;
-use App\Repositories\ClassificationRepository;
 use App\Repositories\ContextRepository;
 use App\Repositories\ElasticSearch\FindRepository;
 use App\Repositories\Eloquent\PanTypologyRepository;
 use App\Repositories\ExcavationRepository;
-use App\Repositories\ObjectRepository;
 
 class IndexingService
 {

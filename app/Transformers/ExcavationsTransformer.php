@@ -61,6 +61,12 @@ class ExcavationsTransformer extends Transformer
             $transformedExcavation[$key] = array_get($excavation, $path) ?? '';
         }
 
+        foreach ($transformedExcavation as $key => &$value) {
+            if (is_array($value) && empty($value)) {
+                $value = '';
+            }
+        }
+
         return $transformedExcavation;
     }
 }

@@ -13,5 +13,6 @@
     <script type="text/javascript">
         window.typologyTree = {!! json_encode($typologyTree) !!};
         window.typologyMap = {!! json_encode($typologyMap) !!};
+        window.typologyMapType = {!! json_encode($typologyMapType) !!}
     </script>
 @endsection

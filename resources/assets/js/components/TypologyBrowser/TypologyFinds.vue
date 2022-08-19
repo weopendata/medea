@@ -1,9 +1,10 @@
 <template>
   <div>
     <!-- map -->
-    <div v-if="finds.length && coordinates.length">
+    <div v-if="finds.length && (markers.length || heatmap.length)">
       <gmap-map :center.sync="map.center" :zoom="map.zoom" class="typology-finds__map-container">
-        <gmap-marker v-for="f in coordinates" :position="f.position"></gmap-marker>
+        <gmap-rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></gmap-rectangle>
+        <gmap-marker v-for="f in markers" :position="f.position"></gmap-marker>
       </gmap-map>
     </div>
 
@@ -32,6 +33,8 @@
 
 <script>
 
+const HEATMAP_GRID_BOX_SIZE = 0.0221;  // This represents half of ~5km which is our grid size - https://www.nhc.noaa.gov/gccalc.shtml
+
 import FindEventSmall from '../FindEventSmall.vue'
 
 export default {
@@ -42,7 +45,9 @@ export default {
       fetching: false,
       finds: [],
       findCoordinates: [],
+      findHeatMap: [],
       findsCount: 0,
+      mapType: window.typologyMapType || 'markers'
     }
   },
   computed: {
@@ -63,7 +68,7 @@ export default {
         zoom: 8,
       }
     },
-    coordinates () {
+    markers () {
       if (!this.findCoordinates) {
         return []
       }
@@ -77,6 +82,28 @@ export default {
               position: { lat: parseFloat(f.location.lat), lng: parseFloat(f.location.lon) }
             }
           })
+    },
+    maxAmountOfFindInARectangle () {
+      return this.findHeatMap ? Math.max.apply(Math, this.findHeatMap.map(x => x.count)) : 0
+    },
+    heatmap () {
+      var max = this.maxAmountOfFindInARectangle
+
+      return this.findHeatMap && this.findHeatMap.map(x => {
+        const gridCentre = x.centre
+        return {
+          options: {
+            fillOpacity: 0.1 + 0.6 * x.count / max,
+            strokeWeight: 0
+          },
+          bounds: {
+            north: parseFloat(gridCentre['lat']) + HEATMAP_GRID_BOX_SIZE,
+            south: parseFloat(gridCentre['lat']) - HEATMAP_GRID_BOX_SIZE,
+            east: parseFloat(gridCentre['lon']) + HEATMAP_GRID_BOX_SIZE,
+            west: parseFloat(gridCentre['lon']) - HEATMAP_GRID_BOX_SIZE
+          }
+        }
+      })
     }
   },
   methods: {
@@ -100,9 +127,14 @@ export default {
             this.fetching = false
           })
 
-      axios.get('/api/finds?type=markers&status=Gepubliceerd&panid=' + this.typology.code)
+      axios.get('/api/finds?type=' + this.mapType + '&status=Gepubliceerd&panid=' + this.typology.code)
           .then(result => {
-            this.findCoordinates = result.data.markers
+
+            if (this.mapType === 'markers') {
+              this.findCoordinates = result.data.markers
+            } else if (this.mapType === 'heatmap') {
+              this.findHeatMap = result.data
+            }
           })
           .catch(error => {
             console.log(error)

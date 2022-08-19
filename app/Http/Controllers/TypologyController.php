@@ -33,7 +33,8 @@ class TypologyController extends Controller
             'pages.typology-browser',
             [
                 'typologyTree' => $typologyTree,
-                'typologyMap' => $typologyMap
+                'typologyMap' => $typologyMap,
+                'typologyMapType' => env('APP_EXPOSE_EXACT_LOCATIONS') == true ? 'markers' : 'heatmap'
             ]
         );
     }
