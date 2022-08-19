@@ -77,6 +77,7 @@ class PanTypologyRepository
                         'parent_id' => $result['parent_id'],
                         'startYear' => $result['start_year'],
                         'endYear' => $result['end_year'],
+                        'productionClassificationDescription' => implode(' ', array_get($result, 'meta.scopeNotes') ?? [])
                     ],
                 ];
             });

@@ -23,7 +23,6 @@ class FindRepository extends BaseRepository
      */
     const AGGREGATION_FIELDS = [
         'objectMaterial',
-        'collection',
         'objectCategory',
         'objectPeriod',
         'modification',
@@ -414,7 +413,7 @@ class FindRepository extends BaseRepository
     {
         $findDate = null;
 
-        if (!empty($find['findDate']) && $findDate['findDate'] !== 'onbekend') {
+        if (!empty($find['findDate']) && $find['findDate'] !== 'onbekend') {
             try {
                 $findDate = new Carbon($findDate['findDate']);
                 $findDate = $findDate->toDateString();
@@ -511,7 +510,7 @@ class FindRepository extends BaseRepository
             'excavationLocality' => array_get($find, 'excavationLocality'),
             'accuracy' => array_get($find, 'accuracy'),
             'finderId' => array_get($find, 'finderId'),
-            'finderEmail' => array_get($find, 'email'),
+            'finderEmail' => array_get($find, 'finderEmail'),
             'panId' => array_get($find, 'panId'),
             'panInitialPeriod' => array_get($find, 'panInitialPeriod'),
             'panFinalPeriod' => array_get($find, 'panFinalPeriod'),
@@ -523,8 +522,8 @@ class FindRepository extends BaseRepository
             'photographPath' => array_get($find, 'photographPath'),
             'photographCaption' => array_get($find, 'photographCaption'),
             'photographNote' => array_get($find, 'photographNote'),
-            'photographAttribution' => array_get($find, 'photographRightsAttribution'),
-            'photographLicense' => array_get($find, 'photographRightsLicense'),
+            'photographAttribution' => array_get($find, 'photographAttribution'),
+            'photographLicense' => array_get($find, 'photographLicense'),
             'photographCaptionPresent' => array_get($find, 'photographCaptionPresent'),
             'embargo' => array_get($find, 'embargo'),
             'collection' => array_get($find, 'collection'),
