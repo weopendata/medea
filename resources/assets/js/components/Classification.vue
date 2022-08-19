@@ -41,7 +41,7 @@
         <time v-if="cls.created_at" :title="cls.created_at">op {{cls.created_at | fromDate}}</time>
         <time v-if="cls.updated_at!==cls.created_at" :title="cls.updated_at" style="margin-left:1em">update op {{cls.updated_at | fromDate}}</time>
       </span>
-      <div style="float:right">
+      <div style="float:right" v-if="cls.productionClassificationType !== 'Typologie'">
         <button class="btn" @click.prevent.stop="rm" v-if="removable"><i class="trash icon"></i></button>
       </div>
     </div>

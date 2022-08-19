@@ -45,7 +45,7 @@
         Inhoudelijke fout gevonden op deze pagina? Meld het aan onze beheerder.
       </a>
     </div>
-    </div>
+    <classification @removed="fetch()" v-for="cls in find.object.productionEvent.productionClassification" :cls="cls" :obj="find.object.identifier"></classification>
   </article>
 </template>
 
