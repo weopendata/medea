@@ -353,7 +353,7 @@ class FindController extends Controller
 
         $panClassification = collect($classifications)
             ->filter(function ($classification) {
-                return $classification['productionClassificationType'] == 'Typologie';
+                return @$classification['productionClassificationType'] == 'Typologie';
             })
             ->values()
             ->toArray();

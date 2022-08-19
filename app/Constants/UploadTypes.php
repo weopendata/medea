@@ -16,7 +16,7 @@ class UploadTypes
     {
         return [
             self::EXCAVATION_UPLOAD,
-            self::FIND_PAN_UPLOAD,
+            self::FIND_UPLOAD,
             self::CONTEXT_UPLOAD,
             self::FIND_PAN_UPLOAD,
         ];
