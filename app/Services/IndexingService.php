@@ -67,6 +67,10 @@ class IndexingService
             $context = app(ContextRepository::class)->getDataViaInternalId($contextInternalId);
 
             $contextLegacyId = array_get($context, 'contextLegacyId.contextLegacyIdValue');
+
+            if (is_scalar($contextLegacyId)) {
+                $contextLegacyId = null;
+            }
         }
 
         $object = $find['object'];
