@@ -456,7 +456,13 @@ class FindRepository extends BaseRepository
         ];
 
         foreach ($ftsFields as $ftsField) {
-            $ftsDescription .= ' ' . @$find[$ftsField];
+            $ftsFieldValue = @$find[$ftsField];
+
+            if (!is_string($ftsFieldValue)) {
+                continue;
+            }
+
+            $ftsDescription .= ' ' . $ftsFieldValue;
         }
 
         // Convert fields that are indexed with numerical doubles to actual double typed values
