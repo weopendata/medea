@@ -10,12 +10,13 @@
       <dt>Zeven</dt>
       <dd>{{ excavationSifting }}</dd>
     </dl>-->
+
+    <context-tree :is-root="true" :excavation="excavation" :context="find.object.context" v-if="find.object.context"/>
+
     <dl class="object-features_location-dl" v-if="excavationMetalDetection">
       <dt>Metaaldetectie</dt>
       <dd>{{ excavationMetalDetection }}</dd>
     </dl>
-
-    <context-tree :is-root="true" :excavation="excavation" :context="find.object.context" v-if="find.object.context"/>
 
     <h4>Foto</h4>
     <dl v-for="photographFeature in photographFeatures">

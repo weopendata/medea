@@ -106,7 +106,7 @@
         })
 
         parts.push({
-          title: 'Datering',
+          title: 'Datering context',
           value: this.contextDating
         })
 

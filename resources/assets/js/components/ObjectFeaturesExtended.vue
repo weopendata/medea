@@ -5,41 +5,55 @@
       <dt>Aantal</dt>
       <dd>{{find.object.objectNumberOfParts}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="find.object.objectMaterial">
       <dt>Materiaal</dt>
       <dd>{{find.object.objectMaterial}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueType&&find.object.productionEvent.productionTechnique.productionTechniqueType.length">
       <dt>Techniek</dt>
       <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueType}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="find.object.productionEvent&&find.object.productionEvent.productionTechnique&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType&&find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType.length">
       <dt>Oppervlaktebehandeling</dt>
       <dd>{{find.object.productionEvent.productionTechnique.productionTechniqueSurfaceTreatmentType}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="find.object.dimensions && find.object.dimensions.length">
-      <template v-for="(dim, index) in find.object.dimensions">
+      <template v-for="(dim, index) in findObjectDimensions">
         <dt>{{index == 0 ? 'Dimensies' : ''}}</dt>
         <dd>{{dim.dimensionType == 'diepte' ? 'dikte/hoogte' : dim.dimensionType}}:
           {{dim.measurementValue|comma}}{{dim.dimensionUnit}}</dd>
       </template>
     </dl>
+
+    <dl class="object-features_object-dl" v-if="isWhole">
+      <dt>Volledig bewaard</dt>
+      <dd>{{isWhole}}</dd>
+    </dl>
+
     <dl class="object-features_object-dl" v-if="conservationTreatment">
       <dt>Conservatiebehandeling</dt>
       <dd>{{conservationTreatment}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="inscription">
       <dt>Opschrift</dt>
       <dd>{{inscription}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="mark">
-      <dt>Merteken</dt>
+      <dt>Merkteken</dt>
       <dd>{{mark}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="typeDescription">
       <dt v-if="canUserSeeDetails">Typologische beschrijving</dt>
       <dd v-if="canUserSeeDetails">{{typeDescription}}</dd>
     </dl>
+
     <dl class="object-features_object-dl" v-if="find.object.objectDescription">
       <dt v-if="canUserSeeDetails">Beschrijving</dt>
       <dd v-if="canUserSeeDetails">{{find.object.objectDescription}}</dd>
@@ -47,7 +61,7 @@
 
     <h4>Typologie</h4>
     <dl>
-      <dt>Categorie</dt>
+      <dt>Groep</dt>
       <dd>{{ typology.mainCategory }}</dd>
     </dl>
     <dl>
@@ -67,6 +81,18 @@
   export default {
     props: ['find', 'typology'],
     computed: {
+      findObjectDimensions () {
+        return this.find.object.dimensions.sort((a, b) => {
+          if (a.dimensionType === 'lengte') {
+            return -1
+          }
+
+          return 1
+        })
+      },
+      isWhole () {
+        return this.findDistinguishingFeature('volledigheid')
+      },
       inscription () {
         return this.findDistinguishingFeature('opschrift')
       },
