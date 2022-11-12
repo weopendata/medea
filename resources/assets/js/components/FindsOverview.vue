@@ -14,23 +14,33 @@
       </div>
       <div class="list-right">
         <div class="list-controls">
-          <span class="finds-order" v-if="displayOrderByOptions">
+          <div class="finds-order" v-if="displayOrderByOptions">
             Sorteren op:
-            <a @click.prevent="sortBy('findDate')"
-               :class="{active: filterState.order == 'findDate', reverse:filterState.order == '-findDate'}">vondstdatum</a>
-            <a @click.prevent="sortBy('identifier')"
-               :class="{active: filterState.order == 'identifier', reverse:filterState.order == '-identifier'}">vondstnummer (ID)</a>
-          </span>
+            <a
+                @click.prevent="sortBy('findDate')"
+                :class="{active: filterState.order == 'findDate', reverse:filterState.order == '-findDate'}"
+            >vondstdatum</a>
+            <a
+                @click.prevent="sortBy('identifier')"
+                :class="{active: filterState.order == 'identifier', reverse:filterState.order == '-identifier'}"
+            >vondstnummer (ID)</a>
+          </div>
 
-          <span class="finds-card-style" v-if="displayCardStyleOptions">
+          <div class="finds-card-style" v-if="displayCardStyleOptions">
             Kaartstijl:
-            <a @click.prevent="setCardStyle('list')"
-               :class="{active: viewState.cardStyle == 'list'}">Lijst</a>
-            <a @click.prevent="setCardStyle('tile')"
-               :class="{active: viewState.cardStyle == 'tile'}">Tegels</a>
-          </span>
+            <a
+                @click.prevent="setCardStyle('list')"
+                :class="{active: viewState.cardStyle == 'list'}"
+            >Lijst</a>
+            <a
+                @click.prevent="setCardStyle('tile')"
+                :class="{active: viewState.cardStyle == 'tile'}"
+            >Tegels</a>
+          </div>
 
-          <label class="pull-right">
+
+          <label class="pull-right" style="display: flex;">
+            <div class="finds-overview__total-amount-of-results">Aantal zoekresultaten: {{searchResultCount}}</div>
             <button class="ui basic button" :class="{green:filterState.type=='map'}" @click="mapToggle('map')">Kaart
             </button>
           </label>
@@ -56,20 +66,30 @@
 
           <gmap-map :center.sync="map.center" :zoom.sync="map.zoom" class="fe-overview-map">
             <gmap-rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></gmap-rectangle>
-            <gmap-marker v-for="f in markable" @g-click="mapClick(f)" @g-mouseover="mapClick(f)"
-                         :position.sync="f.position"></gmap-marker>
-            <gmap-rectangle v-for="f in rectangable" @g-click="mapClick(f)" :bounds="f.bounds"
-                            :options="markerOptions"></gmap-rectangle>
+            <gmap-marker
+                v-for="f in markable" @g-click="mapClick(f)" @g-mouseover="mapClick(f)"
+                :position.sync="f.position"
+            ></gmap-marker>
+            <gmap-rectangle
+                v-for="f in rectangable" @g-click="mapClick(f)" :bounds="f.bounds"
+                :options="markerOptions"
+            ></gmap-rectangle>
             <div slot="visible"> <!-- deprecated from Vue 2.6 onwards -->
-              <div class="gm-panel"
-                   style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;right: 10px;"
-                   v-if="map.info" v-html="map.info"></div>
-              <div class="gm-panel"
-                   style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 50px;"
-                   @click="showHelp(filterState.type=='heatmap'?'heatmap':'map')">Help
+              <div
+                  class="gm-panel"
+                  style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;right: 10px;"
+                  v-if="map.info" v-html="map.info"
+              ></div>
+              <div
+                  class="gm-panel"
+                  style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 50px;"
+                  @click="showHelp(filterState.type=='heatmap'?'heatmap':'map')"
+              >Help
               </div>
-              <div class="gm-panel"
-                   style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;">
+              <div
+                  class="gm-panel"
+                  style="direction: ltr; overflow: hidden; position: absolute; color: rgb(0, 0, 0); font-family: Roboto, Arial, sans-serif; -webkit-user-select: none; font-size: 11px; padding: 8px; border-bottom-left-radius: 2px; border-top-left-radius: 2px; -webkit-background-clip: padding-box; box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px; min-width: 27px; font-weight: 500; background-color: rgb(255, 255, 255); background-clip: padding-box;top: 10px;top:auto;left: 10px;bottom: 10px;"
+              >
                 Alle regio's van de vondsten die aan de zoekcriteria voldoen worden op de kaart getoond.
               </div>
             </div>
@@ -157,6 +177,9 @@ export default {
     }
   },
   computed: {
+    searchResultCount () {
+      return this.paging?.total_count ?? 0
+    },
     cardStyle () {
       if (!this.viewState.cardStyle || !['list', 'tile'].includes(this.viewState.cardStyle)) {
         return 'list'
@@ -445,3 +468,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.finds-overview__total-amount-of-results {
+  margin-top: 10px;
+  margin-right: 15px;
+}
+</style>

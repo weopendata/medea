@@ -40,7 +40,7 @@ export function findPanTypologyTitle (find) {
     return
   }
 
-  let title = find._panTypologyInfo.label + '(' + find._panTypologyInfo.mainCategory + ')'
+  let title = find._panTypologyInfo.label + ' (' + find._panTypologyInfo.mainCategory + ')'
 
   if (find.material) {
     title += ', ' + find.material

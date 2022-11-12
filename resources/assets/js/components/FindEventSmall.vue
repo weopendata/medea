@@ -7,7 +7,7 @@
     </div>
     <div class="find-event-small__content">
       <div class="find-event-small__title textual">
-        {{ find._panTypologyInfo.label }} ({{ find._panTypologyInfo.mainCategory }})
+        {{ find._panTypologyInfo.label }}&nbsp;({{ find._panTypologyInfo.mainCategory }})
       </div>
       <br/>
       <div style="font-size: 12px;">

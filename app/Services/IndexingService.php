@@ -140,7 +140,7 @@ class IndexingService
             'photographNote' => array_get($object, 'photograph.0.photographNote'),
             'photographAttribution' => array_get($object, 'photograph.0.photographRights.photographRightsAttribution'),
             'photographLicense' => array_get($object, 'photograph.0.photographRights.photographRightsLicense'),
-            'photographCaptionPresent' => empty(array_get($object, 'photograph.photographCaption')) ? 'nee' : 'ja',
+            'photographCaptionPresent' => empty(array_get($object, 'photograph.0.photographCaption')) ? 'nee' : 'ja',
             'embargo' => array_get($object, 'embargo'),
             'collection' => array_get($find, 'collection.title'),
         ];

@@ -31,7 +31,7 @@
     </div>
 
     <div style="display: flex; justify-content: space-between;">
-      <h3>Filter opties</h3>
+      <h3>Filters</h3>
       <span style="margin-top: 0.2rem;" v-if="fetching">(bezig met bijwerken...)</span>
     </div>
 
@@ -48,7 +48,7 @@
       </div>
 
       <div class="facet" v-if="canFilterOnPanTypologyDates">
-        <h3 class="facet-title">Datering</h3>
+        <h3 class="facet-title">Datering type</h3>
         <div class="facet-date-container">
           <div style="margin-right: 0.5rem; margin-left: 1rem;">van - tot:</div>
           <input type="number" v-model="model.startYear" class="facet-date-filter"/>
@@ -107,19 +107,18 @@ export default {
       advanced: false,
       backupState: { myfinds: false },
       show: Object.assign({
-        category: true,
-        status: true,
-        embargo: true,
+        category: null,
+        status: null,
+        embargo: null,
         period: null,
         technique: null,
         modification: null,
-        objectMaterial: true,
-        volledigheid: null,
+        objectMaterial: null,
         merkteken: null,
         opschrift: null,
         collections: null,
         photographCaption: null,
-        collection: true,
+        collection: null,
         findSpotLocation: null,
         excavationLocation: null,
         excavationTitle: null
@@ -170,12 +169,12 @@ export default {
           options: this.getFilterFacetOptions('material', facets)
         },
         {
-          label: 'Locatie',
+          label: 'Gemeente',
           prop: 'findSpotLocation',
           options: this.getFilterFacetOptions('findSpotLocality', facets)
         },
         {
-          label: 'Locatie',
+          label: 'Gemeente',
           prop: 'excavationLocation',
           options: this.getFilterFacetOptions('excavationLocality', facets)
         },
@@ -185,9 +184,9 @@ export default {
           options: this.getFilterFacetOptions('modification', facets)
         },
         {
-          label: 'Volledig',
-          prop: 'volledigheid',
-          options: this.getFilterFacetOptions('complete', facets)
+          label: 'Opgraving',
+          prop: 'excavationTitle',
+          options: this.getFilterFacetOptions('excavationTitle', facets).sort()
         },
         {
           label: 'Merkteken',
@@ -203,11 +202,6 @@ export default {
           label: 'Collecties',
           prop: 'collection',
           options: this.collectionFacetOptions
-        },
-        {
-          label: 'Opgravingen',
-          prop: 'excavationTitle',
-          options: this.getFilterFacetOptions('excavationTitle', facets).sort()
         }
       ].filter(dynamicFacet => dynamicFacet.options && dynamicFacet.options.length > 0 && !this.excludedFacets.includes(dynamicFacet.prop))
     },
@@ -255,6 +249,10 @@ export default {
     },
     getFilterFacetOptions(facetName, facets) {
       var options = facets[facetName] || []
+
+      if (['excavationLocality', 'findSpotLocality'].includes(facetName)) {
+        options = options.sort()
+      }
 
       return this.appendActiveFilterToFacetOptions(facetName, options)
     },

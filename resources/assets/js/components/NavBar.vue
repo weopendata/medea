@@ -18,7 +18,7 @@
         <template>
           <a href="/typology-browser" class="item" :class="path == '/typology-browser' ? 'active' : ''" data-step="5" data-intro="Klik hier om via de typologie vondsten te ontdekken" id="typology-browser">Typologie Browser</a>
         </template>
-        <a class="item" :href="cmsLink">Over {{ cmsLabel }}</a>
+        <a class="item" target="_blank" :href="cmsLink">Over {{ cmsLabel }}</a>
 
         <div class="right menu">
           <template v-if="isGuest && !isApplicationPublic">

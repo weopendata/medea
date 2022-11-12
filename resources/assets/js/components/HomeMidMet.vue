@@ -32,7 +32,7 @@
             <a href="https://historiesvzw.be/" target="_blank">Histories</a>, <a href="https://portable-antiquities.nl/pan/#/public" target="_blank"> Portable Antiquities Nederland</a>, <a href="https://meemoo.be/en">meemoo</a> en <a href="https://weconnectdata.com/" target="_blank">We
             Connect Data</a>.
           </p>
-          <p><a href="" target="_blank">Meer informatie over dit project.</a></p>
+          <p><a :href="cmsLink" target="_blank">Meer informatie over dit project.</a></p>
         </div>
         <div style="margin-top: 2.5rem;">
           <img src="/images/midmet-logos.png"/>
@@ -52,8 +52,15 @@ import Ajax from '@/mixins/Ajax.js'
 import Notifications from '@/mixins/Notifications.js'
 
 export default {
+  data() {
+    return {
+      user: null,
+      cmsLink: '',
+    }
+  },
   mounted () {
     this.user = window.medeaUser;
+    this.cmsLink = window.cmsLink;
   },
   computed: {
     stats () {

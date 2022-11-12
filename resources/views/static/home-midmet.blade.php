@@ -12,12 +12,5 @@
 
     <script type="text/javascript">
       var stats = {!! json_encode($stats) !!}
-    </script>
-
-    <script>
-      import HomeMidMet from '../../assets/js/components/HomeMidMet.vue'
-
-      export default {
-        components: { HomeMidMet }
-      }
+      var cmsLink = {!! json_encode(env('CMS_LINK')) !!}
     </script>
