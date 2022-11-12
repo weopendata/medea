@@ -5,7 +5,7 @@
         <p class="lead" data-step="1" data-intro="Deze intro zal je begeleiden bij het registreren van een vondst.">
           Welkom op Middeleeuws Metaal. Deze databank ontsluit typologische en contextuele gegevens over <span
             v-if="stats.validatedFinds">{{stats.validatedFinds}}</span> middeleeuwse metaalvondsten uit
-          <span v-if="stats.excavationCount">{{stats.excavationCount}}</span> archeologische opgravingen in Vlaamse
+          <span v-if="stats.excavations">{{stats.excavations}}</span> archeologische opgravingen in Vlaamse
           steden.
         </p>
         <p>
@@ -27,14 +27,12 @@
           <p>
             Middeleeuws Metaal is een synthese-onderzoek (2020-2022) gefinancierd door het <a target="_blank" href="https://www.onroerenderfgoed.be/">Agentschap Onroerend Erfgoed</a> en
             uitgevoerd door <a href="https://vub.be/" target="_blank">Vrije Universiteit Brussel</a> (coördinerende partner)
-          </p>
-          <p>
             in samenwerking met <a href="https://www.artefactresearch.be/" target="_blank">Center for Artefact Research</a>, <a target="_blank" href="https://www.co7.be/">CO7</a>, <a href="https://stad.gent/nl/cultuur-sport-vrije-tijd/cultuur/dienst-stadsarcheologie-en-monumentenzorg-team-stadsarcheologie">Stad Gent - Dienst Stadsarcheologie en Monumentenzorg</a>,
             <a href="https://www.antwerpenmorgen.be/nl/toekomstvisies/visie-archeologie/over" target="_blank">Stedelijke Archeologische Dienst Stad Antwerpen</a>,
             <a href="https://historiesvzw.be/" target="_blank">Histories</a>, <a href="https://portable-antiquities.nl/pan/#/public" target="_blank"> Portable Antiquities Nederland</a>, <a href="https://meemoo.be/en">meemoo</a> en <a href="https://weconnectdata.com/" target="_blank">We
             Connect Data</a>.
-            <!--Meer informatie is te vinden op deze archiefpagina:-->
           </p>
+          <p><a href="" target="_blank">Meer informatie over dit project.</a></p>
         </div>
         <div style="margin-top: 2.5rem;">
           <img src="/images/midmet-logos.png"/>

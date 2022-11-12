@@ -131,9 +131,10 @@ class FindRepository extends BaseRepository
         $orderBy = 'findDate',
         $orderFlow = 'ASC',
         $validationStatus = '*'
-    )
-    {
-        extract($this->prepareFilteredFindsListQuery($filters, $validationStatus, $limit, $offset, $orderBy, $orderFlow));
+    ) {
+        extract(
+            $this->prepareFilteredFindsListQuery($filters, $validationStatus, $limit, $offset, $orderBy, $orderFlow)
+        );
 
         $cypherQuery = new Query($this->getClient(), $query, $variables);
 
@@ -155,8 +156,14 @@ class FindRepository extends BaseRepository
      * @return array
      * @throws \Exception
      */
-    private function prepareFilteredFindsListQuery($filters, $validationStatus, $limit = 50, $offset = 0, $orderBy = 'findDate', $orderFlow = 'ASC')
-    {
+    private function prepareFilteredFindsListQuery(
+        $filters,
+        $validationStatus,
+        $limit = 50,
+        $offset = 0,
+        $orderBy = 'findDate',
+        $orderFlow = 'ASC'
+    ) {
         extract($this->getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus));
 
         $withProperties = [
@@ -260,8 +267,13 @@ class FindRepository extends BaseRepository
      * @return array
      * @throws \Exception
      */
-    private function getQueryStatements($filters, $orderBy, $orderFlow, $validationStatus, ?array $excludeOptionalStatements = [])
-    {
+    private function getQueryStatements(
+        $filters,
+        $orderBy,
+        $orderFlow,
+        $validationStatus,
+        ?array $excludeOptionalStatements = []
+    ) {
         $matchStatements = [];
         $whereStatements = [];
 
@@ -283,9 +295,11 @@ class FindRepository extends BaseRepository
 
         if ($validationStatus == '*') {
             $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value =~ '.*'";
-        } else if (!empty($validationStatus)) {
-            $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
-            $variables['validationStatus'] = $validationStatus;
+        } else {
+            if (!empty($validationStatus)) {
+                $whereStatements[] = "validation.name = 'objectValidationStatus' AND validation.value = {validationStatus}";
+                $variables['validationStatus'] = $validationStatus;
+            }
         }
 
         $withStatement = ['validation', 'person'];
@@ -297,9 +311,11 @@ class FindRepository extends BaseRepository
             $matchStatements[] = '(object:E22)-[P42]-(period:E55)';
             $withStatement[] = 'period';
             $orderStatement = "period.value $orderFlow";
-        } else if ($orderBy == 'findDate') {
-            $withStatement[] = 'findDate';
-            $orderStatement = "findDate.value $orderFlow";
+        } else {
+            if ($orderBy == 'findDate') {
+                $withStatement[] = 'findDate';
+                $orderStatement = "findDate.value $orderFlow";
+            }
         }
 
         foreach ($this->getFilterPropertyQueryStatements() as $property => $config) {
@@ -347,17 +363,21 @@ class FindRepository extends BaseRepository
             ],
             'typology' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(typologyClassification:E55), (productionClassification:productionClassification)-[:P2]-(pcvType:E55 {value: "Typologie"})',
-                'where' => NodeService::getTenantWhereStatement(['object', 'productionEvent', 'productionClassification', 'typologyClassification']),
+                'where' => NodeService::getTenantWhereStatement(
+                    ['object', 'productionEvent', 'productionClassification', 'typologyClassification']
+                ),
                 'with' => ['typologyClassification'],
             ],
             'excavationTitle' => [
                 'match' => '(excavationEvent:A9)-[:P1]->(excavationTitle:E41)',
-                'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
+                'where' => NodeService::getTenantWhereStatement(['excavationEvent']
+                    ) . ' AND excavationEvent.internalId = find.excavationId',
                 'with' => ['excavationTitle'],
             ],
             'excavationLocation' => [
                 'match' => '(excavationEvent:A9)-[:AP3]->(:E27)-[:P53]->(:E53)-[:P89]->(:E53)-[:P87]->(excavationLocation:E45{name:"locationAddressLocality"})',
-                'where' => NodeService::getTenantWhereStatement(['excavationEvent']) . ' AND excavationEvent.internalId = find.excavationId',
+                'where' => NodeService::getTenantWhereStatement(['excavationEvent']
+                    ) . ' AND excavationEvent.internalId = find.excavationId',
                 'with' => ['excavationLocation'],
             ],
             'volledigheid' => [
@@ -440,13 +460,17 @@ class FindRepository extends BaseRepository
             ],
             'findSpot' => [
                 'match' => '(find:E10)-[P7]->(findSpot:E27)-[P2]->(findSpotType:E55)',
-                'where' => 'findSpotType.value = {findSpotType} AND ' . NodeService::getTenantWhereStatement(['findSpotType']),
+                'where' => 'findSpotType.value = {findSpotType} AND ' . NodeService::getTenantWhereStatement(
+                        ['findSpotType']
+                    ),
                 'whereVariableName' => 'findSpotType',
                 'with' => 'findSpotType',
             ],
             'modification' => [
                 'match' => '(object:E22)-[treatedDuring:P108]->(treatmentEvent:E11)-[P33]->(modificationTechnique:E29)-[P2]->(modificationTechniqueType:E55)',
-                'where' => 'modificationTechniqueType.value = {modificationTechniqueType} AND ' . NodeService::getTenantWhereStatement(['modificationTechniqueType']),
+                'where' => 'modificationTechniqueType.value = {modificationTechniqueType} AND ' . NodeService::getTenantWhereStatement(
+                        ['modificationTechniqueType']
+                    ),
                 'whereVariableName' => 'modificationTechniqueType',
                 'with' => 'modificationTechniqueType',
             ],
@@ -484,36 +508,46 @@ class FindRepository extends BaseRepository
             ],
             'volledigheid' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "volledigheid"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(
+                        ['distinguishingFeature']
+                    ),
                 'whereVariableName' => 'distinguishingFeatureValueNode',
             ],
             'merkteken' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "merkteken"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(
+                        ['distinguishingFeature']
+                    ),
                 'whereVariableName' => 'distinguishingFeatureValueNode',
             ],
             'opschrift' => [
                 'match' => '(object:E22)-[:P56]->(distinguishingFeature:E25)-[:P2]->(:E55 {value: "opschrift"}), (distinguishingFeature:E25)-[:P3]->(distinguishingFeatureValueNode:E62)',
-                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(['distinguishingFeature']),
+                'where' => 'NOT distinguishingFeatureValueNode.value IN ["Nee", "nee", "Neen", "neen", "Onbekend"] AND ' . NodeService::getTenantWhereStatement(
+                        ['distinguishingFeature']
+                    ),
                 'whereVariableName' => 'distinguishingFeatureValueNode',
             ],
             'panid' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',
-                'where' => 'productionClassificationValue.value =~ {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement([
-                        'productionEvent',
-                        'productionClassification',
-                        'productionClassificationValue',
-                    ]),
+                'where' => 'productionClassificationValue.value =~ {productionClassificationValue} AND ' . NodeService::getTenantWhereStatement(
+                        [
+                            'productionEvent',
+                            'productionClassification',
+                            'productionClassificationValue',
+                        ]
+                    ),
                 'whereVariableName' => 'productionClassificationValue',
                 'with' => 'object',
             ],
             'panids' => [
                 'match' => '(object:E22)-[r:P108]->(productionEvent:productionEvent)-[:P41]->(productionClassification:productionClassification)-[:P42]->(productionClassificationValue:E55)',
-                'where' => 'productionClassificationValue.value IN {panIdValues} AND ' . NodeService::getTenantWhereStatement([
-                        'productionEvent',
-                        'productionClassification',
-                        'productionClassificationValue',
-                    ]),
+                'where' => 'productionClassificationValue.value IN {panIdValues} AND ' . NodeService::getTenantWhereStatement(
+                        [
+                            'productionEvent',
+                            'productionClassification',
+                            'productionClassificationValue',
+                        ]
+                    ),
                 'whereVariableName' => 'panIdValues',
                 'with' => 'object',
             ],
@@ -528,12 +562,6 @@ class FindRepository extends BaseRepository
      */
     public function getStatistics()
     {
-        $statistics = [
-            'finds' => 0,
-            'validatedFinds' => 0,
-            'classifications' => 0,
-        ];
-
         // There could be finds & related objects but no classifications at all
         // if the query would take the match statements below as one statement this
         // would make the result return zero rows, even though finds have been registered
@@ -541,6 +569,7 @@ class FindRepository extends BaseRepository
         $classificationWhereStatement = NodeService::getTenantWhereStatement(['classification']);
         $objectWhereStatement = NodeService::getTenantWhereStatement(['object']);
         $allFindsWhereStatement = NodeService::getTenantWhereStatement(['allFinds']);
+        $allExcavationWhereStaement = NodeService::getTenantWhereStatement(['excavationEvent']);
 
         $countQuery = "
         MATCH (classification:productionClassification)
@@ -553,6 +582,11 @@ class FindRepository extends BaseRepository
         WITH count(distinct allFinds) as count
         RETURN count
         UNION ALL
+        MATCH (excavationEvent:excavationEvent)
+        WHERE $allExcavationWhereStaement
+        WITH count(distinct excavationEvent.internalId) as count
+        return count
+        UNION ALL
         MATCH (object:E22)-[objectVal:P2]->(validation)
         WHERE validation.name = 'objectValidationStatus' AND validation.value='Gepubliceerd' AND $objectWhereStatement
         RETURN count(distinct object) as count";
@@ -561,10 +595,23 @@ class FindRepository extends BaseRepository
 
         $resultSet = $cypherQuery->getResultSet();
 
-        if ($resultSet->count() > 0) {
-            $statistics['classifications'] = empty(@$resultSet[0][0]) ? 0 : $resultSet[0][0];
-            $statistics['finds'] = empty(@$resultSet[1][0]) ? 0 : $resultSet[1][0];
-            $statistics['validatedFinds'] = empty(@$resultSet[2][0]) ? 0 : $resultSet[2][0];
+        $statistics = [
+            'finds' => 0,
+            'validatedFinds' => 0,
+            'excavations' => 0,
+            'classifications' => 0,
+        ];
+
+        if ($resultSet->count() <= 0) {
+            return $statistics;
+        }
+
+        $index = 0;
+
+        foreach ($statistics as $key => $count) {
+            $statistics[$key] = empty(@$resultSet[$index][0]) ? 0 : $resultSet[$index][0];
+
+            $index++;
         }
 
         return $statistics;
@@ -591,45 +638,53 @@ class FindRepository extends BaseRepository
             foreach ($result as $key => $val) {
                 if (!is_object($val)) {
                     $tmp[$key] = $val;
-                } else if ($key == 'photograph' && $val->count()) {
-                    $tmp[$key] = $val->current()->resized;
+                } else {
+                    if ($key == 'photograph' && $val->count()) {
+                        $tmp[$key] = $val->current()->resized;
 
-                    if (empty($tmp[$key])) {
-                        $tmp[$key] = $val->current()->src;
-                    }
-                } else if ($key == 'collection' && $val->getProperty('title')) {
-                    $tmp['collectionTitle'] = $val->getProperty('title');
-                } else if ($key == 'classifications') {
-                    $tmp['classificationCount'] = 0;
-                    $classifications = [];
-
-                    foreach ($val as $classification) {
-                        $classifications[] = $classification->getId();
-                    }
-
-                    $tmp['classificationCount'] = collect($classifications)->unique()->count();
-                } else if ($key == 'typologyClassification') {
-                    if (!is_array($val)) {
-                        $val = [$val];
-                    }
-
-                    // Get the PAN ID typology
-                    foreach ($val as $classification) {
-                        $classificationValue = $classification->getProperty('value');
-
-                        if (empty($classificationValue)) {
-                            continue;
+                        if (empty($tmp[$key])) {
+                            $tmp[$key] = $val->current()->src;
                         }
+                    } else {
+                        if ($key == 'collection' && $val->getProperty('title')) {
+                            $tmp['collectionTitle'] = $val->getProperty('title');
+                        } else {
+                            if ($key == 'classifications') {
+                                $tmp['classificationCount'] = 0;
+                                $classifications = [];
 
-                        // We have an issue where if the value is 0X (i.e. 02) the value is returned as 2
-                        // We need to have the proper typology code, so we handle that issue here, instead of fiddling
-                        // with the underlying library
-                        if (strlen($classificationValue) == 1) {
-                            $classificationValue = '0' . $classificationValue;
-                        }
+                                foreach ($val as $classification) {
+                                    $classifications[] = $classification->getId();
+                                }
 
-                        if (preg_match('#^\d{2}(-\d{2})*$#', $classificationValue)) {
-                            $tmp['panId'] = $classificationValue;
+                                $tmp['classificationCount'] = collect($classifications)->unique()->count();
+                            } else {
+                                if ($key == 'typologyClassification') {
+                                    if (!is_array($val)) {
+                                        $val = [$val];
+                                    }
+
+                                    // Get the PAN ID typology
+                                    foreach ($val as $classification) {
+                                        $classificationValue = $classification->getProperty('value');
+
+                                        if (empty($classificationValue)) {
+                                            continue;
+                                        }
+
+                                        // We have an issue where if the value is 0X (i.e. 02) the value is returned as 2
+                                        // We need to have the proper typology code, so we handle that issue here, instead of fiddling
+                                        // with the underlying library
+                                        if (strlen($classificationValue) == 1) {
+                                            $classificationValue = '0' . $classificationValue;
+                                        }
+
+                                        if (preg_match('#^\d{2}(-\d{2})*$#', $classificationValue)) {
+                                            $tmp['panId'] = $classificationValue;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -699,10 +754,18 @@ class FindRepository extends BaseRepository
         WHERE ' . NodeService::getTenantWhereStatement(['find', 'object'])
             . ' OPTIONAL MATCH (find:E10)-[P7]-(findSpot:E27)-[P53]-(location:E53), (location:E53)-[latRel:P87]-(lat:E47{name:"lat"}), (location:E53)-[lngRel:P87]-(lng:E47{name:"lng"}) '
             . ' WHERE ' . NodeService::getTenantWhereStatement(['find', 'findSpot', 'location', 'lat', 'lng']) .
-            'OPTIONAL MATCH (find:E10)-[P29]-(person:person) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['find', 'person']) .
-            'OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'period']) .
-            'OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'category']) .
-            'OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(['object', 'material']) .
+            'OPTIONAL MATCH (find:E10)-[P29]-(person:person) ' . ' WHERE ' . NodeService::getTenantWhereStatement(
+                ['find', 'person']
+            ) .
+            'OPTIONAL MATCH (object:E22)-[P42]-(period:E55{name:"period"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(
+                ['object', 'period']
+            ) .
+            'OPTIONAL MATCH (object:E22)-[P2]-(category:E55{name:"objectCategory"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(
+                ['object', 'category']
+            ) .
+            'OPTIONAL MATCH (object:E22)-[P45]-(material:E57{name:"objectMaterial"}) ' . ' WHERE ' . NodeService::getTenantWhereStatement(
+                ['object', 'material']
+            ) .
             ' WITH distinct find, category, period, material, person, lat, lng, location
         WHERE id(find) = {findId}
          RETURN id(find) as identifier, category.value as objectCategory, period.value as objectPeriod, material.value as objectMaterial,

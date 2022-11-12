@@ -36,7 +36,8 @@
 <script type="text/javascript">
 _paq = [];
 var medeaUser = {isGuest: true};
-var cmsLink = {!! json_encode(env('CMS', 'http://medea-cms.weopendata.com')) !!};
+var cmsLink = {!! json_encode(env('CMS_LINK', 'http://medea-cms.weopendata.com')) !!};
+var cmsLabel = {!! json_encode(env('CMS_LABEL', 'MEDEA')) !!};
 var isApplicationPublic = {!! json_encode(env('APP_PUBLIC_ONLY', false) == true) !!};
 
 @if (!Auth::guest())

@@ -18,7 +18,7 @@
         <template>
           <a href="/typology-browser" class="item" :class="path == '/typology-browser' ? 'active' : ''" data-step="5" data-intro="Klik hier om via de typologie vondsten te ontdekken" id="typology-browser">Typologie Browser</a>
         </template>
-        <!--<a class="item" :href="cmsLink">Over MEDEA</a>-->
+        <a class="item" :href="cmsLink">Over {{ cmsLabel }}</a>
 
         <div class="right menu">
           <template v-if="isGuest && !isApplicationPublic">
@@ -67,7 +67,8 @@
     data () {
       return {
         user: {},
-        cmsLink: ''
+        cmsLink: '',
+        cmsLabel: ''
       }
     },
     computed: {
@@ -93,6 +94,7 @@
     mounted() {
       this.user = window.medeaUser
       this.cmsLink = window.cmsLink
+      this.cmsLabel = window.cmsLabel
     },
     created () {
       $(document).ready(function() {
