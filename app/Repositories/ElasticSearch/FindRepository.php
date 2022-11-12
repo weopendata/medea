@@ -37,6 +37,8 @@ class FindRepository extends BaseRepository
     ];
 
     /**
+     * List of properties that have a "yes"/"no" value, they're either present or they are not
+     *
      * @const array
      */
     const PRESENCE_FACET_PROPERTIES = [
@@ -343,11 +345,11 @@ class FindRepository extends BaseRepository
         }
 
         if ($propertyName === 'fts_description') {
-            $match = new MatchQuery();
-            $match->setFieldParam($propertyName, 'query', $filterValue);
-            $match->setFieldFuzziness($propertyName, 3);
+            $matchPhrase = new Query\MatchPhrase();
+            //$matchPhrase->setParam($propertyName, '\"' . $filterValue . '\"');
+            $matchPhrase->setParam($propertyName, $filterValue);
 
-            $query->addMust($match);
+            $query->addMust($matchPhrase);
 
             return;
         }
@@ -452,13 +454,17 @@ class FindRepository extends BaseRepository
             'contextLegacyId',
             'findUUID',
             'classificationDescription',
-            'objectDescription'
+            'objectDescription',
+            'findUUID',
+            'findId',
+            'panLabel',
+            'panClassificationDescription',
         ];
 
         foreach ($ftsFields as $ftsField) {
             $ftsFieldValue = @$find[$ftsField];
 
-            if (!is_string($ftsFieldValue)) {
+            if (empty($ftsFieldValue) || is_array($ftsFieldValue)) {
                 continue;
             }
 
@@ -520,6 +526,8 @@ class FindRepository extends BaseRepository
             'panId' => array_get($find, 'panId'),
             'panInitialPeriod' => array_get($find, 'panInitialPeriod'),
             'panFinalPeriod' => array_get($find, 'panFinalPeriod'),
+            'panLabel' => array_get($find, 'panLabel'),
+            'panClassificationDescription' => array_get($find, 'panClassificationDescription'),
             'classificationDescription' => array_get($find, 'classificationDescription'),
             'conservation' => array_get($find, 'conservation'),
             'complete' => array_get($find, 'complete'),

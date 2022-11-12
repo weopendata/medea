@@ -170,6 +170,12 @@
       "panId": {
         "type": "keyword"
       },
+      "panLabel": {
+        "type": "keyword"
+      },
+      "panClassificationDescription": {
+        "type": "text"
+      },
       "panInitialPeriod": {
         "type": "integer",
         "coerce": true

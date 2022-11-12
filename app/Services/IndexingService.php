@@ -129,7 +129,8 @@ class IndexingService
             'panId' => array_get($panTypology, 'panId'),
             'panInitialPeriod' => array_get($panTypology, 'startYear'),
             'panFinalPeriod' => array_get($panTypology, 'endYear'),
-            'classificationDescription' => array_get($panTypology, 'classificationDescription'),
+            'panLabel' => array_get($panTypology, 'label'),
+            'panClassificationDescription' => array_get($panTypology, 'classificationDescription'),
             'conservation' => in_array(strtolower(array_get($conservation, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
             'complete' => in_array(strtolower(array_get($complete, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
             'mark' => in_array(strtolower(array_get($mark, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
@@ -207,14 +208,15 @@ class IndexingService
             return [];
         }
 
-        $information = app(PanTypologyRepository::class)->getPanTypologyInformationForIds([$panId]);
-        $information = @$information[$panId] ?? [];
+        $panTypologyInformation = app(PanTypologyRepository::class)->getPanTypologyInformationForIds([$panId]);
+        $panTypologyInformation = @$panTypologyInformation[$panId] ?? [];
 
         return [
             'panId' => $panId,
-            'classificationDescription' => array_get($information, 'productionClassificationDescription'),
-            'startYear' => array_get($information, 'startYear'),
-            'endYear' => array_get($information, 'endYear'),
+            'label' => array_get($panTypologyInformation, 'label'),
+            'classificationDescription' => array_get($panTypologyInformation, 'productionClassificationDescription'),
+            'startYear' => array_get($panTypologyInformation, 'startYear'),
+            'endYear' => array_get($panTypologyInformation, 'endYear'),
         ];
     }
 

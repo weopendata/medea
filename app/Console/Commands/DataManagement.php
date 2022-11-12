@@ -223,7 +223,6 @@ class DataManagement extends Command
      */
     private function indexFinds()
     {
-        // Make sure the mapping has been made in the index
         app(\App\Repositories\ElasticSearch\FindRepository::class)->createIndexIfAbsent(database_path('mappings/elastic_search_finds_mapping.json'));
 
         $findsCount = app(FindRepository::class)->getCountOfAllFinds();
@@ -242,7 +241,7 @@ class DataManagement extends Command
                     // Factor in a short resting period
                     // The reason why is that Neo4j or the system that runs it runs out of open files
                     // and needs time to close them again. Not adding a sleep causes a curl error 7 - could not connect
-                    // indicating that the Neo4J can't handle anymore requests.
+                    // indicating that the Neo4J can't handle anymore requests, which is due to the maximum of open files.
                     sleep(1);
                 } catch (\Exception $ex) {
                     \Log::error($ex->getMessage());
