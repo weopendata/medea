@@ -42,6 +42,10 @@ export function findPanTypologyTitle (find) {
 
   let title = find._panTypologyInfo.label + ' (' + find._panTypologyInfo.mainCategory + ')'
 
+  if (find._panTypologyInfo.label.toLowerCase() === find._panTypologyInfo.mainCategory.toLowerCase()) {
+    title = find._panTypologyInfo.label
+  }
+
   if (find.material) {
     title += ', ' + find.material
   }
