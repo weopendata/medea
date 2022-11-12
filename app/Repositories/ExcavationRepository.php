@@ -8,7 +8,6 @@ use App\Models\ExcavationEvent;
 use App\Models\SearchArea;
 use App\Services\NodeService;
 use Everyman\Neo4j\Cypher\Query;
-use Everyman\Neo4j\Exception;
 
 class ExcavationRepository extends BaseRepository
 {
@@ -50,7 +49,6 @@ class ExcavationRepository extends BaseRepository
 
         $metaData = [];
 
-        // Return the first hit
         foreach ($cypherQuery->getResultSet() as $row) {
             $excavation = $row['excavationEvent'];
             $searchAreaNode = $row['searchArea'];
@@ -61,6 +59,8 @@ class ExcavationRepository extends BaseRepository
 
             $metaData['searchArea'] = $searchArea;
             $metaData['internalId'] = $excavation->getProperty('internalId');
+            $metaData['inventoryCompleteness'] = $excavation->getProperty('inventoryCompleteness');
+            $metaData['remarks'] = $excavation->getProperty('remarks');
             $metaData['excavationTitle'] = $row['excavationTitle']->getProperty('value');
 
             break;

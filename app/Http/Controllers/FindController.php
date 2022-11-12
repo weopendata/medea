@@ -276,7 +276,7 @@ class FindController extends Controller
             }
         }
 
-        // Build the necessary meta data so that it can be indexed properly by search engines
+        // Build the necessary metadata so that it can be indexed properly by search engines
         $meta = [];
         $meta['og:image'] = Arr::get($find, 'object.photograph.0.resized');
         $meta['og:title'] = makeFindTitle($find);
@@ -339,7 +339,10 @@ class FindController extends Controller
             return [];
         }
 
-        return app(ExcavationRepository::class)->getDataViaInternalId($excavationUUID);
+        return  array_merge(
+            app(ExcavationRepository::class)->getDataViaInternalId($excavationUUID),
+            app(ExcavationRepository::class)->getMetaDataForExcavation($excavationUUID)
+        );
     }
 
     /**
