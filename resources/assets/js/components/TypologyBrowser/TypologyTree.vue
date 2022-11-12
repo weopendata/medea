@@ -94,8 +94,18 @@ export default {
       $bus.$emit('typologySelected', { typology: this.root })
     }
   },
+  mounted () {
+    $bus.$on('collapseTree', () => {
+      this.collapsed = true
+    })
+  },
+  beforeDestroy () {
+    $bus.$off('collapseTree', () => {
+      this.collapsed = true
+    })
+  },
   watch: {
-    searchQuery (v) {
+    searchQuery () {
       this.childMatchesSearchQuery = false
     }
   }

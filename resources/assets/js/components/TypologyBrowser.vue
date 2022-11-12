@@ -1,9 +1,20 @@
 <template>
   <div class="typology-browser__container">
     <div class="typology-tree-view">
-      <div class="typology-browser__query-input ui icon input">
-        <i class="search icon"/>
-        <input placeholder="Zoeken..." type="text" @keyup.enter="filterTree($event.target.value)"/>
+      <div class="typology-browser__search-container">
+        <div class="typology-browser__query-input ui icon input">
+          <i class="search icon"/>
+          <input placeholder="Zoeken..." type="text" @keyup.enter="filterTree($event.target.value)"/>
+        </div>
+
+        <div class="ui" style="margin-bottom: 1rem;">
+          <div class="field">
+            <button class="ui icon button" @click="resetFilters()">
+              Reset filters
+              <i class="refresh icon"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -89,6 +100,12 @@ export default {
     }
   },
   methods: {
+    resetFilters () {
+      this.searchQuery = ''
+      this.selectedTypology = {}
+
+      $bus.$emit('collapseTree')
+    },
     filterTree (val) {
       this.updatingTreeVisibility = true
 
@@ -151,6 +168,12 @@ export default {
 </script>
 
 <style scoped>
+
+.typology-browser__search-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .typology-browser__container {
   display: flex;
   justify-content: space-between;
