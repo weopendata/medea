@@ -7,7 +7,7 @@
           <input placeholder="Zoeken..." type="text" @keyup.enter="filterTree($event.target.value)"/>
         </div>
 
-        <div class="ui" style="margin-bottom: 1rem;">
+        <div class="ui">
           <div class="field">
             <button class="ui icon button" @click="resetFilters()">
               Reset filters

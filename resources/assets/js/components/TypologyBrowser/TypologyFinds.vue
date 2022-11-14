@@ -1,7 +1,12 @@
 <template>
-  <div>
+  <div class="typology-finds__container">
+    <div class="typology-finds__title-container">
+      <h2>Vondsten uit Middeleeuws Metaal</h2>
+      <button class="ui basic button" style="height: 36px;" @click="toggleDisplayMap">Kaart
+      </button>
+    </div>
     <!-- map -->
-    <div v-if="finds.length && (markers.length || heatmap.length)">
+    <div v-if="displayMap && finds.length && (markers.length || heatmap.length)">
       <gmap-map :center.sync="map.center" :zoom="map.zoom" class="typology-finds__map-container">
         <gmap-rectangle v-for="f in heatmap" :bounds="f.bounds" :options="f.options"></gmap-rectangle>
         <gmap-marker v-for="f in markers" :position="f.position"></gmap-marker>
@@ -10,11 +15,11 @@
 
     <!-- finds -->
     <div v-if="finds.length" class="typology-finds__results-container">
-      <h2>Vondsten uit Middeleeuws Metaal</h2>
+      <!--<h2>Vondsten uit Middeleeuws Metaal</h2>-->
       <span><a :href="allFindsWithTypologyLink" target="_blank">Bekijk alle vondsten ({{ findsCount }}) behorende tot type {{
           typology.label
         }}&nbsp;({{ typology.code }})</a></span>
-      <div class="typology-finds__container">
+      <div class="typology-finds__find-results-container">
         <find-event-small v-for="find in finds" :find="find"/>
       </div>
     </div>
@@ -47,7 +52,8 @@ export default {
       findCoordinates: [],
       findHeatMap: [],
       findsCount: 0,
-      mapType: window.typologyMapType || 'markers'
+      mapType: window.typologyMapType || 'markers',
+      displayMap: true
     }
   },
   computed: {
@@ -107,6 +113,9 @@ export default {
     }
   },
   methods: {
+    toggleDisplayMap () {
+      this.displayMap = !this.displayMap
+    },
     fetchFinds () {
       this.fetching = true
       this.finds = []
@@ -157,7 +166,17 @@ export default {
 </script>
 
 <style scoped>
+
 .typology-finds__container {
+  margin-top: -15px;
+}
+
+.typology-finds__title-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.typology-finds__find-results-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
