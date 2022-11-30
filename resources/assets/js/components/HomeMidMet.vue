@@ -35,7 +35,7 @@
           <p><a :href="cmsLink" target="_blank">Meer informatie over dit project.</a></p>
         </div>
         <div style="margin-top: 2.5rem;">
-          <img src="/images/midmet-logos.png"/>
+          <img style="width:600px;" src="/images/midmet-logos.png"/>
         </div>
       </form>
     </div>
