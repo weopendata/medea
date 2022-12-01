@@ -61,8 +61,8 @@ class PanTypologyRepository
             ->whereIn('code', $panIds)
             ->get()
             ->mapWithKeys(function ($result) use (&$parentIds) {
-                if (!empty($result['parent_id'])) {
-                    $parentIds[] = $result['parent_id'];
+                if (!empty($result['main_category_id'])) {
+                    $parentIds[] = $result['main_category_id'];
                 }
 
                 return [
@@ -74,7 +74,7 @@ class PanTypologyRepository
                         'code' => $result['code'],
                         'imageUrl' => array_get($result, 'meta.imageUrl'),
                         'mainCategory' => $result['label'],
-                        'parent_id' => $result['parent_id'],
+                        'main_category_id' => $result['main_category_id'],
                         'startYear' => $result['start_year'],
                         'endYear' => $result['end_year'],
                         'productionClassificationDescription' => implode(' ', array_get($result, 'meta.scopeNotes') ?? [])
@@ -99,11 +99,11 @@ class PanTypologyRepository
 
         return $panTypologyInformation
             ->map(function ($typology) use ($parentLabels) {
-                if (!empty($typology['parent_id']) && !empty($parentLabels[$typology['parent_id']])) {
-                    $typology['mainCategory'] = $parentLabels[$typology['parent_id']];
+                if (!empty($typology['main_category_id']) && !empty($parentLabels[$typology['main_category_id']])) {
+                    $typology['mainCategory'] = $parentLabels[$typology['main_category_id']];
                 }
 
-                unset($typology['parent_id']);
+                unset($typology['main_category_id']);
 
                 return $typology;
             })
@@ -197,8 +197,8 @@ class PanTypologyRepository
 
         $mainCategory = $panTypology['label'];
 
-        if (!empty($panTypology['parent_id'])) {
-            $parent = $this->getById($panTypology['parent_id']);
+        if (!empty($panTypology['main_category_id'])) {
+            $parent = $this->getById($panTypology['main_category_id']);
 
             $mainCategory = $parent['label'];
         }
@@ -208,6 +208,8 @@ class PanTypologyRepository
             'label' => $panTypology['label'],
             'initialPeriod' => array_get($panTypology, 'meta.initialperiod'),
             'finalPeriod' => array_get($panTypology, 'meta.finalperiod'),
+            'initialDate' => array_get($panTypology, 'meta.properties.InitialDate.0'),
+            'finalDate' => array_get($panTypology, 'meta.properties.FinalDate.0'),
             'code' => $panTypology['code'],
             'imageUrl' => array_get($panTypology, 'meta.imageUrl'),
             'mainCategory' => $mainCategory,

@@ -103,18 +103,18 @@
         return this.findDistinguishingFeature('merkteken')
       },
       typologyDate() {
-        var initialPeriod = 'onbekend';
-        var finalPeriod = 'onbekend'
+        var initialDate = 'onbekend';
+        var finalDate = 'onbekend'
 
-        if (this.typology.initialPeriod && this.typology.initialPeriod.label) {
-          initialPeriod = this.typology.initialPeriod.startyear
+        if (this.typology.initialDate) {
+          initialDate = this.typology.initialDate
         }
 
-        if (this.typology.finalPeriod && this.typology.finalPeriod.label) {
-          finalPeriod = this.typology.finalPeriod.endyear
+        if (this.typology.finalDate) {
+          finalDate = this.typology.finalDate
         }
 
-        return initialPeriod + ' - ' + finalPeriod
+        return initialDate + ' - ' + finalDate
       },
       typeDescription() {
         return this.find.object.productionEvent

@@ -68,11 +68,19 @@ class UpdatePanTypologyTree extends Command
         if ($type == 'seed') {
             $this->seedTypologies();
 
+            $this->fillInMainCategoryIds();
+
             return 1;
         }
 
         if ($type == 'extract-dates') {
             $this->seedDatesFromMetaData();
+
+            return 1;
+        }
+
+        if ($type == 'extract-main-category-id') {
+            $this->fillInMainCategoryIds();
 
             return 1;
         }
@@ -239,5 +247,33 @@ class UpdatePanTypologyTree extends Command
 
                 $progressBar->advance($typologies->count());
             });
+    }
+
+    /**
+     * @return void
+     */
+    private function fillInMainCategoryIds()
+    {
+        PanTypology
+            ::orderBy('id')
+            ->chunk(100, function ($typologies) {
+                $this->info("Processing batch of typologies...");
+
+                foreach ($typologies as $typology) {
+                    $mainCategoryId = $this->getMainCategoryId($typology);
+
+                    $typology->main_category_id = $mainCategoryId;
+                    $typology->save();
+                }
+            });
+    }
+
+    private function getMainCategoryId(PanTypology $typology)
+    {
+        if (empty($typology->parent_id)) {
+            return $typology->id;
+        }
+
+        return $this->getMainCategoryId(app(PanTypologyRepository::class)->getById($typology->parent_id));
     }
 }
