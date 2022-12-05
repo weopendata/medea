@@ -91,6 +91,8 @@ class ImportFinds extends AbstractImporter
 
                 app(ObjectRepository::class)->upsertClassification($objectId, $productionClassification);
             }
+
+            event(new FindEventUpdated($findId));
         } catch (\Exception $ex) {
             \Log::error($ex->getMessage());
             \Log::error($ex->getTraceAsString());

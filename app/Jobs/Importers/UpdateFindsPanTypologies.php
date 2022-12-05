@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Importers;
 
+use App\Events\FindEventUpdated;
 use App\Repositories\ClassificationRepository;
 use App\Repositories\FindRepository;
 use App\Repositories\ObjectRepository;
@@ -52,6 +53,8 @@ class UpdateFindsPanTypologies extends AbstractImporter
             ];
 
             app(ObjectRepository::class)->updatePanTypologyClassification($objectId, $productionClassification);
+
+            event(new FindEventUpdated($findId));
 
             $this->addLog($index, "Updated a find, set pan ID to $panId for find with node id $findId", 'update', ['identifier' => $findId, 'data' => $data], true);
         } catch (\Exception $ex) {
