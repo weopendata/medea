@@ -37,10 +37,10 @@ class UpdateFindsPanTypologies extends AbstractImporter
                 throw new \Exception("No object node found, attached to the find with identifier $findId");
             }
 
-            // If the classification description is empty, keep the old one attached to the existing pan reference typology
-            $panClassification = app(ObjectRepository::class)->getPanTypologyClassification($objectId);
+            if (empty($classificationDescription)) {
+                // If the classification description is empty, keep the old one attached to the existing pan reference typology
+                $panClassification = app(ObjectRepository::class)->getPanTypologyClassification($objectId);
 
-            if (!empty($panClassification)) {
                 $classificationDescriptionData = app(ClassificationRepository::class)->expandValues($panClassification->getId());
 
                 $classificationDescription = array_get($classificationDescriptionData, 'productionClassificationDescription');
