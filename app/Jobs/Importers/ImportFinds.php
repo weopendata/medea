@@ -28,6 +28,11 @@ class ImportFinds extends AbstractImporter
 
             $find = $this->buildFindModel($data);
 
+            // Get the classification information
+            $panId = @$find['PANid'];
+            $classificationDescription = @$find['classificationDescription'];
+            unset($find['PANid']);
+
             $existingFind = app(FindRepository::class)->getByInternalId($find['internalId']);
 
             if (!empty($existingFind)) {
@@ -38,11 +43,6 @@ class ImportFinds extends AbstractImporter
             }
 
             $action = !empty($existingFind) ? 'update' : 'create';
-
-            // Get the classification information
-            $panId = @$find['PANid'];
-            $classificationDescription = @$find['classificationDescription'];
-            unset($find['PANid']);
 
             // Perform the creation / update of the find
             if ($action == 'update') {
@@ -79,7 +79,7 @@ class ImportFinds extends AbstractImporter
                     'productionClassificationDescription' => $classificationDescription,
                 ];
 
-                app(ObjectRepository::class)->upsertClassification($objectId, $productionClassification);
+                app(ObjectRepository::class)->updatePanTypologyClassification($objectId, $productionClassification);
             }
 
             // Add a classification for the publication if applicable
