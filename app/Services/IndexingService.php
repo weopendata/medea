@@ -130,7 +130,8 @@ class IndexingService
             'panInitialPeriod' => array_get($panTypology, 'startYear'),
             'panFinalPeriod' => array_get($panTypology, 'endYear'),
             'panLabel' => array_get($panTypology, 'label'),
-            'panClassificationDescription' => array_get($panTypology, 'classificationDescription'),
+            'panClassificationDescription' => array_get($panTypology, 'panClassificationDescription'),
+            'classificationDescription' => array_get($panTypology, 'classificationDescription'),
             'conservation' => in_array(strtolower(array_get($conservation, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
             'complete' => in_array(strtolower(array_get($complete, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
             'mark' => in_array(strtolower(array_get($mark, 'distinguishingFeatureNote') ?? ''), ["nee", "neen", "onbekend"]) ? 'nee' : 'ja',
@@ -214,7 +215,8 @@ class IndexingService
         return [
             'panId' => $panId,
             'label' => array_get($panTypologyInformation, 'label'),
-            'classificationDescription' => array_get($panTypologyInformation, 'productionClassificationDescription'),
+            'panClassificationDescription' => array_get($panTypologyInformation, 'productionClassificationDescription'),
+            'classificationDescription' => array_get($panTypology, 'productionClassificationDescription'),
             'startYear' => array_get($panTypologyInformation, 'startYear'),
             'endYear' => array_get($panTypologyInformation, 'endYear'),
         ];
