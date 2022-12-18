@@ -105,7 +105,7 @@ export default {
       reportsAndPublications.push({ value: this.archiveUri, type: 'link' })
       reportsAndPublications.push({ value: this.researchUri, type: 'link' })
 
-      return reportsAndPublications.filter(r => r)
+      return reportsAndPublications.filter(r => r.value)
     },
     excavationReportAuthorString () {
       if (!this.excavation?.publication || !this.excavation.publication.length) {
@@ -197,7 +197,7 @@ export default {
       return photographFeatures.filter(r => r.value)
     },
     legacyId () {
-      return this.context?.contextLegacyId?.contextLegacyIdValue
+      return this.context?.contextLegacyId?.contextLegacyIdValue instanceof String ? this.context.contextLegacyId.contextLegacyIdValue : null
     },
     finder () {
       return window.publicUserInfo || {}
