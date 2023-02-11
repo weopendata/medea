@@ -152,7 +152,7 @@ class DataManagement extends Command
             return;
         }
 
-        app(ExcavationRepository::class)->delete($excavation->id);
+        app(ExcavationRepository::class)->delete($excavation->getId());
     }
 
     /**
