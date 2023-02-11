@@ -244,6 +244,7 @@ class DataManagement extends Command
                     // indicating that the Neo4J can't handle anymore requests, which is due to the maximum of open files.
                     sleep(1);
                 } catch (\Exception $ex) {
+                    \Log::error("Something went wrong while indexing find " . $find['identifier']);
                     \Log::error($ex->getMessage());
                     \Log::error($ex->getTraceAsString());
                 }
