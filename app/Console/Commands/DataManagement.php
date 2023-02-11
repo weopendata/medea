@@ -145,6 +145,13 @@ class DataManagement extends Command
         $internalId = $this->ask('Enter the "internal ID" of the excavation we need to remove. This is the Id of the excavation that comes with the excavation upload.');
 
         $excavation = app(ExcavationRepository::class)->getByInternalId($internalId);
+
+        if (empty($excavation)) {
+            $this->info("No excavation found for " . $excavation);
+
+            return;
+        }
+
         app(ExcavationRepository::class)->delete($excavation->id);
     }
 
