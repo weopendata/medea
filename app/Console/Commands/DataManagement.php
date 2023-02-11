@@ -60,9 +60,10 @@ class DataManagement extends Command
         $this->info('2. Remove all users.');
         $this->info('3. Remove single find.');
         $this->info('4. Remove all excavations.');
-        $this->info('5. Remove all contexts.');
-        $this->info('6. Remove all collections.');
-        $this->info('7. Index all finds');
+        $this->info('5. Remove single excavation.');
+        $this->info('6. Remove all contexts.');
+        $this->info('7. Remove all collections.');
+        $this->info('8. Index all finds');
 
         $choice = $this->ask('Enter your choice of action');
 
@@ -95,6 +96,9 @@ class DataManagement extends Command
 
                 break;
             case 5:
+                $this->removeSingleExcavation();
+                break;
+            case 6:
                 $repository = app(ContextRepository::class);
                 $class = Context::class;
 
@@ -103,7 +107,7 @@ class DataManagement extends Command
                 }
 
                 break;
-            case 6:
+            case 7:
                 $repository = app(CollectionRepository::class);
                 $class = Collection::class;
 
@@ -112,7 +116,7 @@ class DataManagement extends Command
                 }
 
                 break;
-            case 7:
+            case 8:
                 $this->indexFinds();
                 break;
             default:
@@ -135,10 +139,25 @@ class DataManagement extends Command
 
     /**
      * @return void
+     */
+    private function removeSingleExcavation()
+    {
+        $internalId = $this->ask('Enter the "internal ID" of the excavation we need to remove. This is the Id of the excavation that comes with the excavation upload.');
+
+        $excavation = app(ExcavationRepository::class)->getByInternalId($internalId);
+        app(ExcavationRepository::class)->delete($excavation->id);
+    }
+
+    /**
+     * @return void
      * @throws \Everyman\Neo4j\Exception
      */
     private function removeAllUsers()
     {
+        if ($this->isAppRunningInProduction()) {
+            $this->info("You cannot do this in a production environment.");
+        }
+
         $count = 0;
 
         $userNodes = $this->users->getAllNodes();
@@ -165,6 +184,10 @@ class DataManagement extends Command
      */
     private function removeAllFinds()
     {
+        if ($this->isAppRunningInProduction()) {
+            $this->info("You cannot do this in a production environment.");
+        }
+
         $count = 0;
 
         $findNodes = $this->finds->getAllNodes();
@@ -193,6 +216,10 @@ class DataManagement extends Command
      */
     private function removeAll($repository, string $class)
     {
+        if ($this->isAppRunningInProduction()) {
+            $this->info("You cannot do this in a production environment.");
+        }
+
         $count = 0;
 
         $nodes = $repository->getAllNodes();
@@ -261,5 +288,13 @@ class DataManagement extends Command
 
         $this->info('');
         $this->info("We found $findsCount FindEvent nodes, the index contains $elasticCount documents");
+    }
+
+    /**
+     * @return bool
+     */
+    private function isAppRunningInProduction(): bool
+    {
+        return strtolower(env('APP_ENV')) === 'production';
     }
 }
