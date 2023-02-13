@@ -64,7 +64,7 @@ class DataManagement extends Command
         $this->info('6. Remove all contexts.');
         $this->info('7. Remove all collections.');
         $this->info('8. Index all finds');
-        $this->info('9. Health check of indexed finds.');
+        $this->info('9. Perform indexed finds health check.');
 
         $choice = $this->ask('Enter your choice of action');
 
@@ -316,8 +316,10 @@ class DataManagement extends Command
 
         while (count($finds['data']) > 0) {
             foreach ($finds['data'] as $find) {
-                dd($find['elasticId']);
-                
+                $document = app(\App\Repositories\ElasticSearch\FindRepository::class)->getByNeo4jId($find['id']);
+
+                dd($document);
+
                 $bar->advance();
             }
 
