@@ -324,7 +324,7 @@ class DataManagement extends Command
                     die;
                 }
 
-                $this->info("Found a document for find " . $find['id']);
+                $this->info("Found a document for find " . $find['identifier']);
 
                 $bar->advance();
             }
