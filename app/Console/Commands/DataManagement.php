@@ -319,10 +319,14 @@ class DataManagement extends Command
                 $document = app(\App\Repositories\ElasticSearch\FindRepository::class)->getByNeo4jId($find['id']);
 
                 if (empty($document)) {
-                    $this->error("No document found for find with identifier " . $find['id']);
+                    $this->error("No document found for this find ");
+
+                    dd($find);
 
                     die;
                 }
+
+                $this->info("Found a document for find " . $find['id']);
 
                 $bar->advance();
             }
