@@ -316,15 +316,10 @@ class DataManagement extends Command
 
         while (count($finds['data']) > 0) {
             foreach ($finds['data'] as $find) {
-                if (empty($find['id'])) {
-                    dd($find);
-                }
-                $document = app(\App\Repositories\ElasticSearch\FindRepository::class)->getByNeo4jId($find['id']);
+                $document = app(\App\Repositories\ElasticSearch\FindRepository::class)->getByNeo4jId($find['identifier']);
 
                 if (empty($document)) {
-                    $this->error("No document found for this find ");
-
-                    dd($find);
+                    $this->error("No document found for the find with identifier " . $find['identifier']);
 
                     die;
                 }
