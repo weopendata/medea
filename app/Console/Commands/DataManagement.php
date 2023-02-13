@@ -64,6 +64,7 @@ class DataManagement extends Command
         $this->info('6. Remove all contexts.');
         $this->info('7. Remove all collections.');
         $this->info('8. Index all finds');
+        $this->info('9. Health check of indexed finds.');
 
         $choice = $this->ask('Enter your choice of action');
 
@@ -119,6 +120,9 @@ class DataManagement extends Command
             case 8:
                 $this->indexFinds();
                 break;
+            case 9:
+                $this->findsHealthCheck();
+                break;
             default:
                 break;
         }
@@ -147,7 +151,7 @@ class DataManagement extends Command
         $excavation = app(ExcavationRepository::class)->getByInternalId($internalId);
 
         if (empty($excavation)) {
-            $this->info("No excavation found for " . $excavation);
+            $this->info("No excavation found for " . $internalId);
 
             return;
         }
@@ -295,6 +299,32 @@ class DataManagement extends Command
 
         $this->info('');
         $this->info("We found $findsCount FindEvent nodes, the index contains $elasticCount documents");
+    }
+
+    /**
+     * @return void
+     */
+    private function findsHealthCheck(): void
+    {
+        $findsCount = app(FindRepository::class)->getCountOfAllFinds();
+        $bar = $this->output->createProgressBar($findsCount);
+
+        $limit = 20;
+        $offset = 0;
+
+        $finds = app(FindRepository::class)->getAllWithFilter([], $limit, $offset);
+
+        while (count($finds['data']) > 0) {
+            foreach ($finds['data'] as $find) {
+                dd($find['elasticId']);
+                
+                $bar->advance();
+            }
+
+            $offset += $limit;
+
+            $finds = app(FindRepository::class)->getAllWithFilter([], $limit, $offset);
+        }
     }
 
     /**

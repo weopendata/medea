@@ -569,7 +569,7 @@ class FindRepository extends BaseRepository
         $classificationWhereStatement = NodeService::getTenantWhereStatement(['classification']);
         $objectWhereStatement = NodeService::getTenantWhereStatement(['object']);
         $allFindsWhereStatement = NodeService::getTenantWhereStatement(['allFinds']);
-        $allExcavationWhereStaement = NodeService::getTenantWhereStatement(['excavationEvent']);
+        $allExcavationWhereStatement = NodeService::getTenantWhereStatement(['excavationEvent']);
 
         $countQuery = "
         MATCH (classification:productionClassification)
@@ -583,7 +583,7 @@ class FindRepository extends BaseRepository
         RETURN count
         UNION ALL
         MATCH (excavationEvent:excavationEvent)
-        WHERE $allExcavationWhereStaement
+        WHERE $allExcavationWhereStatement
         WITH count(distinct excavationEvent.internalId) as count
         return count
         UNION ALL
