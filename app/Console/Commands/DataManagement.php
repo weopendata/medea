@@ -316,6 +316,9 @@ class DataManagement extends Command
 
         while (count($finds['data']) > 0) {
             foreach ($finds['data'] as $find) {
+                if (empty($find['id'])) {
+                    dd($find);
+                }
                 $document = app(\App\Repositories\ElasticSearch\FindRepository::class)->getByNeo4jId($find['id']);
 
                 if (empty($document)) {
