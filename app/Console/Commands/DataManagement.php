@@ -318,7 +318,11 @@ class DataManagement extends Command
             foreach ($finds['data'] as $find) {
                 $document = app(\App\Repositories\ElasticSearch\FindRepository::class)->getByNeo4jId($find['id']);
 
-                dd($document);
+                if (empty($document)) {
+                    $this->error("No document found for find with identifier " . $find['id']);
+
+                    die;
+                }
 
                 $bar->advance();
             }
