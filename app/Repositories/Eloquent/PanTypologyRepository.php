@@ -45,6 +45,18 @@ class PanTypologyRepository
     }
 
     /**
+     * @param string $uri
+     * @return mixed
+     */
+    public function findByUri(string $uri)
+    {
+        return $this
+            ->typology
+            ->where('uri', $uri)
+            ->first();
+    }
+
+    /**
      * @param  array $panIds
      * @return array
      */
@@ -140,21 +152,20 @@ class PanTypologyRepository
             return $typology;
         }
 
-        // NOTE: this snippet below can be removed, or updated. The assumption that the path of the node contains the parent path is wrong, i.e. 05-01-91-03
-        // I'll leave this here as a reminder in case someone has the idea to base the logic based on the assumption that paths contain the parent's path as a sub-path
-        /*// Remove the last piece of the code, which is the code for the child/leaf itself and keep the other parts, which is the unique code for the parent
-        array_pop($pieces);
+        $parentUri = array_get($typology, 'meta.broaders.0');
 
-        $parentCode = implode('-', $pieces);
+        if (empty($parentUri)) {
+            return $typology;
+        }
 
-        $parentTypology = $this->findByCode($parentCode);
+        $parentTypology = $this->findByUri($parentUri);
 
         if (empty($parentTypology)) {
-            throw new \Exception("We have updated / insert the typology, but the parent with code $parentCode could not be found.");
+            throw new \Exception("We have updated / insert the typology, but the parent with uri $parentUri could not be found.");
         }
 
         $typology->parent_id = $parentTypology->id;
-        $typology->save();*/
+        $typology->save();
 
         return $typology;
     }
