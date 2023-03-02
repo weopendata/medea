@@ -406,7 +406,7 @@ class FindController extends Controller
 
         // If the object of the find is not linked to a collection, hide the objectNr property of the object
         // unless the user is the owner of the find (or is a registrator or adminstrator)
-        if (!(!empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
+        if (! isApplicationPublic() && !(!empty($user) && ($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') == $user->id))
             && !empty($find['object']['objectNr']) && empty($find['object']['collection'])
         ) {
             unset($find['object']['objectNr']);

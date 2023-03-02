@@ -50,13 +50,13 @@
     </dl>
 
     <dl class="object-features_object-dl" v-if="typeDescription">
-      <dt v-if="canUserSeeDetails">Typologische beschrijving</dt>
-      <dd v-if="canUserSeeDetails">{{typeDescription}}</dd>
+      <dt>Typologische beschrijving</dt>
+      <dd>{{typeDescription}}</dd>
     </dl>
 
     <dl class="object-features_object-dl" v-if="find.object.objectDescription">
-      <dt v-if="canUserSeeDetails">Beschrijving</dt>
-      <dd v-if="canUserSeeDetails">{{find.object.objectDescription}}</dd>
+      <dt>Beschrijving</dt>
+      <dd>{{find.object.objectDescription}}</dd>
     </dl>
 
     <h4>Typologie</h4>
@@ -127,14 +127,14 @@
           return this.find.findSpot.location.lng + ' O , ' + this.find.findSpot.location.lat + ' N (WGS84)'
         }
       },
-      canUserSeeDetails() {
+      /*canUserSeeDetails() {
         // The coordinates returned from the API are already transformed according to the role of the user
         if (!this.user || this.user.isGuest || !this.user.id) {
           return false
         }
 
         return this.user.administrator || this.user.onderzoeker || this.user.id == this.finder.id
-      },
+      },*/
       user() {
         return window.medeaUser
       }

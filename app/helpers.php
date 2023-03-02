@@ -42,7 +42,7 @@ function makeFindTitle($find)
  *
  * @return boolean
  */
-function isApplicationPublic()
+function isApplicationPublic(): bool
 {
     return env('APP_PUBLIC_ONLY', false) == true;
 }
