@@ -398,7 +398,7 @@ class FindController extends Controller
 
         // Filter out the findSpotTitle, findSpotType, objectDescription for
         // - any person who is not the finder, nor a researcher nor an administrator
-        if (empty($user) || !($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
+        if (! isApplicationPublic() && empty($user) || !($user->hasRole('registrator', 'administrator') || Arr::get($find, 'person.identifier') != $user->id)) {
             unset($find['findSpot']['findSpotType']);
             unset($find['findSpot']['findSpotTitle']);
             unset($find['object']['objectDescription']);
