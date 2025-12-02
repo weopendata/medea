@@ -5,6 +5,8 @@ namespace App\Console;
 use App\Console\Commands\ImportFinds;
 use App\Console\Commands\DataManagement;
 use App\Console\Commands\SendNotificationsForSavedSearches;
+use App\Console\Commands\ExportFindsToCSV;
+use App\Console\Commands\ExportFindImages;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -18,7 +20,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         DataManagement::class,
         SendNotificationsForSavedSearches::class,
-
+        ExportFindsToCSV::class,
+        ExportFindImages::class,
     ];
 
     /**
