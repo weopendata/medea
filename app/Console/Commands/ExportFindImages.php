@@ -119,8 +119,18 @@ class ExportFindImages extends Command
                             continue;
                         }
 
+                        // Handle both relative paths and full URLs
+                        if (filter_var($srcPath, FILTER_VALIDATE_URL)) {
+                            // It's a full URL - extract the path portion
+                            $parsedUrl = parse_url($srcPath);
+                            $relativePath = $parsedUrl['path'] ?? '';
+                        } else {
+                            // It's already a relative path
+                            $relativePath = $srcPath;
+                        }
+
                         // Construct full path to the image
-                        $fullSrcPath = public_path($srcPath);
+                        $fullSrcPath = public_path($relativePath);
 
                         // Check if file exists
                         if (!file_exists($fullSrcPath)) {
