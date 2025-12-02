@@ -119,11 +119,16 @@ class ExportFindImages extends Command
                             continue;
                         }
 
+                        // Trim any whitespace
+                        $srcPath = trim($srcPath);
+
                         // Handle both relative paths and full URLs
-                        if (filter_var($srcPath, FILTER_VALIDATE_URL)) {
+                        if (preg_match('#^https?://#i', $srcPath)) {
                             // It's a full URL - extract the path portion
                             $parsedUrl = parse_url($srcPath);
                             $relativePath = $parsedUrl['path'] ?? '';
+                            // URL decode in case there are encoded characters
+                            $relativePath = urldecode($relativePath);
                         } else {
                             // It's already a relative path
                             $relativePath = $srcPath;
@@ -131,6 +136,13 @@ class ExportFindImages extends Command
 
                         // Construct full path to the image
                         $fullSrcPath = public_path($relativePath);
+
+                        // Additional fallback check - if the constructed path still has http(s) in it, something went wrong
+                        if (strpos($fullSrcPath, 'http') !== false) {
+                            // Extract just the filename and try uploads directory
+                            $filename = basename($srcPath);
+                            $fullSrcPath = public_path('uploads/' . $filename);
+                        }
 
                         // Check if file exists
                         if (!file_exists($fullSrcPath)) {
