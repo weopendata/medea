@@ -75,6 +75,7 @@ class ExportFindImages extends Command
         // Define CSV headers
         $headers = [
             'MEDEA ID',
+            'Vondst ID',
             'Internal Find ID',
             'Image Number',
             'Filename',
@@ -100,6 +101,7 @@ class ExportFindImages extends Command
 
                 // Get MEDEA UUID
                 $medeaId = data_get($findData, 'identifier.MEDEA_UUID', data_get($findData, 'identifier', ''));
+                $vondstId = data_get($findData, 'identifier', ''); // Vondst ID (displayed as ID-{identifier} on detail page)
                 $internalId = data_get($findData, 'identifier', '');
 
                 // Get photographs
@@ -141,6 +143,7 @@ class ExportFindImages extends Command
                             // Add to CSV mapping
                             $csv->insertOne([
                                 $medeaId,
+                                $vondstId,
                                 $internalId,
                                 $imageNumber,
                                 $newFilename,

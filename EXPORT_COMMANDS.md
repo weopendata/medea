@@ -91,8 +91,9 @@ The command creates two files in the output directory:
 
 1. **medea_images.zip** - Contains all find images with renamed filenames
 2. **image_mapping.csv** - Mapping table with the following columns:
-   - MEDEA ID
-   - Internal Find ID
+   - MEDEA ID (the MEDEA_UUID)
+   - Vondst ID (the find identifier shown on detail page as ID-{identifier})
+   - Internal Find ID (Neo4j node ID)
    - Image Number
    - Filename (new filename in ZIP)
    - Original Path
