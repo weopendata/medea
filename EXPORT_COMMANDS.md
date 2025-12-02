@@ -91,8 +91,9 @@ The command creates two files in the output directory:
 
 1. **medea_images.zip** - Contains all find images with renamed filenames
 2. **image_mapping.csv** - Mapping table with the following columns:
-   - MEDEA ID
-   - Internal Find ID
+   - MEDEA ID (the MEDEA_UUID)
+   - Vondst ID (the find identifier shown on detail page as ID-{identifier})
+   - Internal Find ID (Neo4j node ID)
    - Image Number
    - Filename (new filename in ZIP)
    - Original Path
@@ -110,20 +111,23 @@ This will create:
 
 ## Important Notes
 
-1. **Permissions**: Ensure the PHP process has write permissions to the output directories.
+1. **All Finds**: Both commands export ALL finds in the database (no pagination limits applied).
 
-2. **Disk Space**: The image export command creates a temporary directory during processing. Ensure you have sufficient disk space (at least 2x the total size of all images).
+2. **Permissions**: Ensure the PHP process has write permissions to the output directories.
 
-3. **Memory**: For large datasets, you may need to increase PHP's memory limit:
+3. **Disk Space**: The image export command creates a temporary directory during processing. Ensure you have sufficient disk space (at least 2x the total size of all images).
+
+4. **Memory**: For large datasets, you may need to increase PHP's memory limit:
    ```bash
    php -d memory_limit=512M artisan medea:export-finds-csv
+   php -d memory_limit=1024M artisan medea:export-images
    ```
 
-4. **Progress Bars**: Both commands show progress bars during execution, so you can monitor the export process.
+5. **Progress Bars**: Both commands show progress bars during execution, so you can monitor the export process.
 
-5. **Error Handling**: Both commands will continue processing even if individual records fail, and will report the number of errors at the end.
+6. **Error Handling**: Both commands will continue processing even if individual records fail, and will report the number of errors at the end.
 
-6. **Multi-Tenancy**: The commands respect the `DB_TENANCY_LABEL` environment variable and only export data for the configured tenant.
+7. **Multi-Tenancy**: The commands respect the `DB_TENANCY_LABEL` environment variable and only export data for the configured tenant.
 
 ## Troubleshooting
 
