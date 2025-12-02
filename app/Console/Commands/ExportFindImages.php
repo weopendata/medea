@@ -57,8 +57,8 @@ class ExportFindImages extends Command
 
         $this->info('Starting image export...');
 
-        // Get all find nodes
-        $findNodes = $this->finds->getAll();
+        // Get all find nodes (pass null for limit to get ALL finds)
+        $findNodes = $this->finds->getAll(null, 0);
         $totalFinds = count($findNodes);
 
         if ($totalFinds === 0) {

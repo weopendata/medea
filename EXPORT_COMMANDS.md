@@ -111,13 +111,16 @@ This will create:
 
 ## Important Notes
 
-1. **Permissions**: Ensure the PHP process has write permissions to the output directories.
+1. **All Finds**: Both commands export ALL finds in the database (no pagination limits applied).
 
-2. **Disk Space**: The image export command creates a temporary directory during processing. Ensure you have sufficient disk space (at least 2x the total size of all images).
+2. **Permissions**: Ensure the PHP process has write permissions to the output directories.
 
-3. **Memory**: For large datasets, you may need to increase PHP's memory limit:
+3. **Disk Space**: The image export command creates a temporary directory during processing. Ensure you have sufficient disk space (at least 2x the total size of all images).
+
+4. **Memory**: For large datasets, you may need to increase PHP's memory limit:
    ```bash
    php -d memory_limit=512M artisan medea:export-finds-csv
+   php -d memory_limit=1024M artisan medea:export-images
    ```
 
 4. **Progress Bars**: Both commands show progress bars during execution, so you can monitor the export process.
