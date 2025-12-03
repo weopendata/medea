@@ -101,7 +101,7 @@ class ExportFindImages extends Command
 
                 // Get MEDEA UUID
                 $medeaId = data_get($findData, 'identifier.MEDEA_UUID', data_get($findData, 'identifier', ''));
-                $vondstId = data_get($findData, 'identifier', ''); // Vondst ID (displayed as ID-{identifier} on detail page)
+                $vondstId = data_get($findData, 'internalId', ''); // Vondst ID (displayed as ID-{identifier} on detail page)
                 $internalId = data_get($findData, 'identifier', '');
 
                 // Get photographs
